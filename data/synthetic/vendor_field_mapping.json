@@ -1,0 +1,1148 @@
+{
+  "_meta": {
+    "disclaimer": "本表全部为映射【建议】，不构成已确定的映射；任何非 high 置信度的条目都必须人工确认。",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "legacy_source": "data\\legacy\\legacy_vendors.json",
+    "target_schema": "schemas\\business_partner_target_schema.json",
+    "legacy_record_count": 224,
+    "target_field_count": 87,
+    "scoring": {
+      "formula": "confidence = (w_sem*semantic + w_fuzzy*fuzzy) / (w_sem + w_fuzzy) * type_gate",
+      "type_gate": "TYPE_GATE_FLOOR + (1 - TYPE_GATE_FLOOR) * type_score",
+      "note": "type 是乘性闸门，不能凭空制造匹配；alias 命中则置信度取 max(base, alias_floor)",
+      "weight_semantic": 0.55,
+      "weight_fuzzy": 0.2,
+      "type_gate_floor": 0.6,
+      "computed_field_penalty": 0.85
+    },
+    "thresholds": {
+      "alias_confidence_floor": 0.9,
+      "high": 0.7,
+      "medium": 0.45,
+      "no_match": 0.4
+    }
+  },
+  "mappings": [
+    {
+      "legacy_field": "legacy_vendor_id",
+      "legacy_profile": {
+        "observed_max_length": 9,
+        "distinct_ratio": 1.0,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "V100146",
+          "V100079D",
+          "V100008"
+        ]
+      },
+      "recommendation": "A_BusinessPartner.BusinessPartnerIDByExtSystem",
+      "confidence": 0.5622,
+      "band": "medium",
+      "status": "needs_review",
+      "needs_review": true,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "BusinessPartnerIDByExtSystem",
+          "qualified": "A_BusinessPartner.BusinessPartnerIDByExtSystem",
+          "confidence": 0.5622,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.6628,
+            "fuzzy": 0.2857,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "id"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 20,
+          "target_description_zh": "外部系统中的业务伙伴 ID（迁移时保留遗留主键的常用落点）",
+          "evidence": [
+            "语义相似度 0.663",
+            "字符串模糊匹配 0.286",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['id']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "BusinessPartner",
+          "qualified": "A_BusinessPartner.BusinessPartner",
+          "confidence": 0.4535,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.5047,
+            "fuzzy": 0.3125,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "业务伙伴编号（主键）",
+          "evidence": [
+            "语义相似度 0.505",
+            "字符串模糊匹配 0.312",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "目标字段是主键的一部分",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "BusinessPartnerCategory",
+          "qualified": "A_BusinessPartner.BusinessPartnerCategory",
+          "confidence": 0.4498,
+          "band": "low",
+          "signals": {
+            "semantic": 0.5277,
+            "fuzzy": 0.3902,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 1,
+          "target_description_zh": "业务伙伴类别：1=自然人, 2=组织/公司, 3=集团",
+          "evidence": [
+            "语义相似度 0.528",
+            "字符串模糊匹配 0.390",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 9 超过目标字段上限 1"
+          ]
+        }
+      ]
+    },
+    {
+      "legacy_field": "vendor_name",
+      "legacy_profile": {
+        "observed_max_length": 37,
+        "distinct_ratio": 0.9464,
+        "is_free_text": true,
+        "inferred_kind": "string",
+        "samples": [
+          "Tucker Technologies Corp.",
+          "HANDE  STAHLHANDEL AG  ",
+          "Schmiedecke Stahlhandel AG"
+        ]
+      },
+      "recommendation": "A_BusinessPartner.OrganizationBPName1",
+      "confidence": 0.9,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "OrganizationBPName1",
+          "qualified": "A_BusinessPartner.OrganizationBPName1",
+          "confidence": 0.9,
+          "band": "high",
+          "signals": {
+            "semantic": 0.4473,
+            "fuzzy": 0.4242,
+            "type": 1.0,
+            "alias": "schema.aliases",
+            "lexical_overlap": [
+              "name"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 40,
+          "target_description_zh": "组织名称第 1 行（Category=2 时使用，公司法定名称主字段）",
+          "evidence": [
+            "alias 命中（来源 schema.aliases），schema 预埋的强信号",
+            "语义相似度 0.447",
+            "字符串模糊匹配 0.424",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['name']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "BusinessPartnerName",
+          "qualified": "A_BusinessPartner.BusinessPartnerName",
+          "confidence": 0.5284,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.724,
+            "fuzzy": 0.4375,
+            "type": 0.9,
+            "alias": null,
+            "lexical_overlap": [
+              "name"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 81,
+          "target_description_zh": "业务伙伴名称（显示用，系统派生）",
+          "evidence": [
+            "语义相似度 0.724",
+            "字符串模糊匹配 0.438",
+            "类型/长度兼容性 0.900（乘性闸门 0.960）",
+            "共享词元 ['name']"
+          ],
+          "warnings": [
+            "目标字段为系统派生/只读，通常不能直接写入"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "BusinessPartnerCategory",
+          "qualified": "A_BusinessPartner.BusinessPartnerCategory",
+          "confidence": 0.4959,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.6507,
+            "fuzzy": 0.3333,
+            "type": 0.69,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 1,
+          "target_description_zh": "业务伙伴类别：1=自然人, 2=组织/公司, 3=集团",
+          "evidence": [
+            "语义相似度 0.651",
+            "字符串模糊匹配 0.333",
+            "类型/长度兼容性 0.690（乘性闸门 0.876）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 37 超过目标字段上限 1"
+          ]
+        }
+      ]
+    },
+    {
+      "legacy_field": "country",
+      "legacy_profile": {
+        "observed_max_length": 13,
+        "distinct_ratio": 0.0625,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "us",
+          "de",
+          "DE"
+        ]
+      },
+      "recommendation": "A_BusinessPartnerAddress.Country",
+      "confidence": 0.916,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "Country",
+          "qualified": "A_BusinessPartnerAddress.Country",
+          "confidence": 0.916,
+          "band": "high",
+          "signals": {
+            "semantic": 1.0,
+            "fuzzy": 1.0,
+            "type": 0.79,
+            "alias": "schema.legacy_hint",
+            "lexical_overlap": [
+              "country"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 3,
+          "target_description_zh": "国家/地区代码（ISO 3166-1 alpha-2，如 DE/JP/US）",
+          "evidence": [
+            "alias 命中（来源 schema.legacy_hint），schema 预埋的强信号",
+            "语义相似度 1.000",
+            "字符串模糊匹配 1.000",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "共享词元 ['country']"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 13 超过目标字段上限 3"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartnerBank",
+          "target_field": "BankCountryKey",
+          "qualified": "A_BusinessPartnerBank.BankCountryKey",
+          "confidence": 0.4433,
+          "band": "low",
+          "signals": {
+            "semantic": 0.4386,
+            "fuzzy": 0.6087,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": [
+              "country"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 3,
+          "target_description_zh": "银行所在国家代码",
+          "evidence": [
+            "语义相似度 0.439",
+            "字符串模糊匹配 0.609",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "共享词元 ['country']"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 13 超过目标字段上限 3"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "Industry",
+          "qualified": "A_BusinessPartner.Industry",
+          "confidence": 0.4432,
+          "band": "low",
+          "signals": {
+            "semantic": 0.4659,
+            "fuzzy": 0.5333,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "行业代码",
+          "evidence": [
+            "语义相似度 0.466",
+            "字符串模糊匹配 0.533",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 13 超过目标字段上限 10"
+          ]
+        }
+      ]
+    },
+    {
+      "legacy_field": "city",
+      "legacy_profile": {
+        "observed_max_length": 17,
+        "distinct_ratio": 0.625,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "East Heatherstad",
+          "Aachen",
+          "Hildesheim"
+        ]
+      },
+      "recommendation": "A_BusinessPartnerAddress.CityName",
+      "confidence": 0.9,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "CityName",
+          "qualified": "A_BusinessPartnerAddress.CityName",
+          "confidence": 0.9,
+          "band": "high",
+          "signals": {
+            "semantic": 0.8448,
+            "fuzzy": 0.6154,
+            "type": 1.0,
+            "alias": "schema.legacy_hint",
+            "lexical_overlap": [
+              "city"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 40,
+          "target_description_zh": "城市名称",
+          "evidence": [
+            "alias 命中（来源 schema.legacy_hint），schema 预埋的强信号",
+            "语义相似度 0.845",
+            "字符串模糊匹配 0.615",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['city']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "CityCode",
+          "qualified": "A_BusinessPartnerAddress.CityCode",
+          "confidence": 0.6004,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.67,
+            "fuzzy": 0.6154,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": [
+              "city"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 12,
+          "target_description_zh": "城市代码（城市主数据）",
+          "evidence": [
+            "语义相似度 0.670",
+            "字符串模糊匹配 0.615",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "共享词元 ['city']"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 17 超过目标字段上限 12"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "District",
+          "qualified": "A_BusinessPartnerAddress.District",
+          "confidence": 0.505,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.5674,
+            "fuzzy": 0.3333,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 40,
+          "target_description_zh": "城区/区",
+          "evidence": [
+            "语义相似度 0.567",
+            "字符串模糊匹配 0.333",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "legacy_field": "street",
+      "legacy_profile": {
+        "observed_max_length": 32,
+        "distinct_ratio": 0.6696,
+        "is_free_text": true,
+        "inferred_kind": "string",
+        "samples": [
+          "51085 Chavez Trail Suite 082",
+          "Christa-Geisler-Ring 1-5",
+          "Stolzeweg 92/41"
+        ]
+      },
+      "recommendation": "A_BusinessPartnerAddress.StreetName",
+      "confidence": 0.9,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "StreetName",
+          "qualified": "A_BusinessPartnerAddress.StreetName",
+          "confidence": 0.9,
+          "band": "high",
+          "signals": {
+            "semantic": 0.8242,
+            "fuzzy": 0.7059,
+            "type": 1.0,
+            "alias": "schema.legacy_hint",
+            "lexical_overlap": [
+              "street"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 60,
+          "target_description_zh": "街道名称",
+          "evidence": [
+            "alias 命中（来源 schema.legacy_hint），schema 预埋的强信号",
+            "语义相似度 0.824",
+            "字符串模糊匹配 0.706",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['street']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "StreetPrefixName",
+          "qualified": "A_BusinessPartnerAddress.StreetPrefixName",
+          "confidence": 0.6051,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.6434,
+            "fuzzy": 0.5,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "street"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 40,
+          "target_description_zh": "街道前缀行（街道上方补充行）",
+          "evidence": [
+            "语义相似度 0.643",
+            "字符串模糊匹配 0.500",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['street']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "StreetSuffixName",
+          "qualified": "A_BusinessPartnerAddress.StreetSuffixName",
+          "confidence": 0.5836,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.6139,
+            "fuzzy": 0.5,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "street"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 40,
+          "target_description_zh": "街道后缀行（街道下方补充行）",
+          "evidence": [
+            "语义相似度 0.614",
+            "字符串模糊匹配 0.500",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['street']"
+          ],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "legacy_field": "postal_code",
+      "legacy_profile": {
+        "observed_max_length": 8,
+        "distinct_ratio": 0.6696,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "51887",
+          "93233",
+          "12727"
+        ]
+      },
+      "recommendation": "A_BusinessPartnerAddress.PostalCode",
+      "confidence": 1.0,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "PostalCode",
+          "qualified": "A_BusinessPartnerAddress.PostalCode",
+          "confidence": 1.0,
+          "band": "high",
+          "signals": {
+            "semantic": 1.0,
+            "fuzzy": 1.0,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "code",
+              "postal"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "邮政编码（各国格式不同，是格式一致性检测的重点字段）",
+          "evidence": [
+            "语义相似度 1.000",
+            "字符串模糊匹配 1.000",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['code', 'postal']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "CompanyPostalCode",
+          "qualified": "A_BusinessPartnerAddress.CompanyPostalCode",
+          "confidence": 0.831,
+          "band": "high",
+          "signals": {
+            "semantic": 0.8666,
+            "fuzzy": 0.7333,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "code",
+              "postal"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "公司专用邮编（大客户专属邮编）",
+          "evidence": [
+            "语义相似度 0.867",
+            "字符串模糊匹配 0.733",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['code', 'postal']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "POBoxPostalCode",
+          "qualified": "A_BusinessPartnerAddress.POBoxPostalCode",
+          "confidence": 0.8284,
+          "band": "high",
+          "signals": {
+            "semantic": 0.8538,
+            "fuzzy": 0.7586,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "code",
+              "postal"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "邮政信箱邮编",
+          "evidence": [
+            "语义相似度 0.854",
+            "字符串模糊匹配 0.759",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['code', 'postal']"
+          ],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "legacy_field": "tax_number",
+      "legacy_profile": {
+        "observed_max_length": 13,
+        "distinct_ratio": 0.7074,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "51-9136081",
+          "DE065870919",
+          "DE764920829"
+        ]
+      },
+      "recommendation": "A_BusinessPartnerTaxNumber.BPTaxNumber",
+      "confidence": 0.7246,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerTaxNumber",
+          "target_field": "BPTaxNumber",
+          "qualified": "A_BusinessPartnerTaxNumber.BPTaxNumber",
+          "confidence": 0.7246,
+          "band": "high",
+          "signals": {
+            "semantic": 0.6719,
+            "fuzzy": 0.8696,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "number",
+              "tax"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 20,
+          "target_description_zh": "税号（短字段，长度 ≤20）",
+          "evidence": [
+            "语义相似度 0.672",
+            "字符串模糊匹配 0.870",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['number', 'tax']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerTaxNumber",
+          "target_field": "BPTaxLongNumber",
+          "qualified": "A_BusinessPartnerTaxNumber.BPTaxLongNumber",
+          "confidence": 0.64,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.6129,
+            "fuzzy": 0.7143,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "number",
+              "tax"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 60,
+          "target_description_zh": "长税号（长度 >20 时使用；迁移时需按长度决定落在哪个字段）",
+          "evidence": [
+            "语义相似度 0.613",
+            "字符串模糊匹配 0.714",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['number', 'tax']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "TaxJurisdiction",
+          "qualified": "A_BusinessPartnerAddress.TaxJurisdiction",
+          "confidence": 0.5064,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.5227,
+            "fuzzy": 0.4615,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "tax"
+            ]
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 15,
+          "target_description_zh": "税收管辖代码（美国等国家必填）",
+          "evidence": [
+            "语义相似度 0.523",
+            "字符串模糊匹配 0.462",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['tax']"
+          ],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "legacy_field": "email",
+      "legacy_profile": {
+        "observed_max_length": 32,
+        "distinct_ratio": 0.7287,
+        "is_free_text": true,
+        "inferred_kind": "string",
+        "samples": [
+          "info@tucker-technologies.net",
+          "info@shimizu-seizo.co.jp",
+          "info@hood-solutions.com"
+        ]
+      },
+      "recommendation": null,
+      "confidence": 0.3295,
+      "band": "low",
+      "status": "no_confident_target",
+      "needs_review": true,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "AddressID",
+          "qualified": "A_BusinessPartnerAddress.AddressID",
+          "confidence": 0.3295,
+          "band": "low",
+          "signals": {
+            "semantic": 0.416,
+            "fuzzy": 0.2667,
+            "type": 0.69,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "地址编号（主键组成部分）",
+          "evidence": [
+            "语义相似度 0.416",
+            "字符串模糊匹配 0.267",
+            "类型/长度兼容性 0.690（乘性闸门 0.876）",
+            "目标字段是主键的一部分",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 32 超过目标字段上限 10"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "MiddleName",
+          "qualified": "A_BusinessPartner.MiddleName",
+          "confidence": 0.3194,
+          "band": "low",
+          "signals": {
+            "semantic": 0.3173,
+            "fuzzy": 0.375,
+            "type": 0.9,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 40,
+          "target_description_zh": "中间名",
+          "evidence": [
+            "语义相似度 0.317",
+            "字符串模糊匹配 0.375",
+            "类型/长度兼容性 0.900（乘性闸门 0.960）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "PostalCode",
+          "qualified": "A_BusinessPartnerAddress.PostalCode",
+          "confidence": 0.278,
+          "band": "low",
+          "signals": {
+            "semantic": 0.2963,
+            "fuzzy": 0.375,
+            "type": 0.69,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 10,
+          "target_description_zh": "邮政编码（各国格式不同，是格式一致性检测的重点字段）",
+          "evidence": [
+            "语义相似度 0.296",
+            "字符串模糊匹配 0.375",
+            "类型/长度兼容性 0.690（乘性闸门 0.876）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 32 超过目标字段上限 10"
+          ]
+        }
+      ]
+    },
+    {
+      "legacy_field": "phone",
+      "legacy_profile": {
+        "observed_max_length": 22,
+        "distinct_ratio": 0.7015,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "3259363074",
+          "+49(0) 172814513",
+          "+49(0)2753 85254"
+        ]
+      },
+      "recommendation": null,
+      "confidence": 0.3588,
+      "band": "low",
+      "status": "no_confident_target",
+      "needs_review": true,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "Language",
+          "qualified": "A_BusinessPartner.Language",
+          "confidence": 0.3588,
+          "band": "low",
+          "signals": {
+            "semantic": 0.4223,
+            "fuzzy": 0.3077,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 2,
+          "target_description_zh": "语言键",
+          "evidence": [
+            "语义相似度 0.422",
+            "字符串模糊匹配 0.308",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 22 超过目标字段上限 2"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "Country",
+          "qualified": "A_BusinessPartnerAddress.Country",
+          "confidence": 0.3395,
+          "band": "low",
+          "signals": {
+            "semantic": 0.3842,
+            "fuzzy": 0.3333,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 3,
+          "target_description_zh": "国家/地区代码（ISO 3166-1 alpha-2，如 DE/JP/US）",
+          "evidence": [
+            "语义相似度 0.384",
+            "字符串模糊匹配 0.333",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 22 超过目标字段上限 3"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "Region",
+          "qualified": "A_BusinessPartnerAddress.Region",
+          "confidence": 0.3138,
+          "band": "low",
+          "signals": {
+            "semantic": 0.3349,
+            "fuzzy": 0.3636,
+            "type": 0.79,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 3,
+          "target_description_zh": "地区/州/省代码",
+          "evidence": [
+            "语义相似度 0.335",
+            "字符串模糊匹配 0.364",
+            "类型/长度兼容性 0.790（乘性闸门 0.916）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": [
+            "截断风险：观测到的最大长度 22 超过目标字段上限 3"
+          ]
+        }
+      ]
+    },
+    {
+      "legacy_field": "currency",
+      "legacy_profile": {
+        "observed_max_length": 3,
+        "distinct_ratio": 0.0134,
+        "is_free_text": false,
+        "inferred_kind": "string",
+        "samples": [
+          "USD",
+          "EUR",
+          "EUR"
+        ]
+      },
+      "recommendation": "A_BusinessPartnerBank.BankAccount",
+      "confidence": 0.4999,
+      "band": "medium",
+      "status": "possible_false_friend",
+      "needs_review": true,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartnerBank",
+          "target_field": "BankAccount",
+          "qualified": "A_BusinessPartnerBank.BankAccount",
+          "confidence": 0.4999,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.5725,
+            "fuzzy": 0.3,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 18,
+          "target_description_zh": "银行账号",
+          "evidence": [
+            "语义相似度 0.573",
+            "字符串模糊匹配 0.300",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "Country",
+          "qualified": "A_BusinessPartnerAddress.Country",
+          "confidence": 0.4491,
+          "band": "low",
+          "signals": {
+            "semantic": 0.4184,
+            "fuzzy": 0.5333,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 3,
+          "target_description_zh": "国家/地区代码（ISO 3166-1 alpha-2，如 DE/JP/US）",
+          "evidence": [
+            "语义相似度 0.418",
+            "字符串模糊匹配 0.533",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerBank",
+          "target_field": "BankCountryKey",
+          "qualified": "A_BusinessPartnerBank.BankCountryKey",
+          "confidence": 0.4479,
+          "band": "low",
+          "signals": {
+            "semantic": 0.4593,
+            "fuzzy": 0.4167,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": []
+          },
+          "target_type": "Edm.String",
+          "target_max_length": 3,
+          "target_description_zh": "银行所在国家代码",
+          "evidence": [
+            "语义相似度 0.459",
+            "字符串模糊匹配 0.417",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "与目标字段名零共享词元，匹配仅由 embedding 支撑"
+          ],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "legacy_field": "created_date",
+      "legacy_profile": {
+        "observed_max_length": 8,
+        "distinct_ratio": 0.6607,
+        "is_free_text": false,
+        "inferred_kind": "date",
+        "samples": [
+          "20070105",
+          "20151019",
+          "20171126"
+        ]
+      },
+      "recommendation": "A_BusinessPartner.CreationDate",
+      "confidence": 0.7494,
+      "band": "high",
+      "status": "suggested",
+      "needs_review": false,
+      "candidates": [
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "CreationDate",
+          "qualified": "A_BusinessPartner.CreationDate",
+          "confidence": 0.7494,
+          "band": "high",
+          "signals": {
+            "semantic": 0.9114,
+            "fuzzy": 0.8,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "date"
+            ]
+          },
+          "target_type": "Edm.DateTime",
+          "target_max_length": null,
+          "target_description_zh": "创建日期",
+          "evidence": [
+            "语义相似度 0.911",
+            "字符串模糊匹配 0.800",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['date']"
+          ],
+          "warnings": [
+            "目标字段为系统派生/只读，通常不能直接写入"
+          ]
+        },
+        {
+          "target_entity": "A_BusinessPartner",
+          "target_field": "BirthDate",
+          "qualified": "A_BusinessPartner.BirthDate",
+          "confidence": 0.6284,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.6256,
+            "fuzzy": 0.6364,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "date"
+            ]
+          },
+          "target_type": "Edm.DateTime",
+          "target_max_length": null,
+          "target_description_zh": "出生日期（个人数据，合成数据中为伪造值）",
+          "evidence": [
+            "语义相似度 0.626",
+            "字符串模糊匹配 0.636",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['date']"
+          ],
+          "warnings": []
+        },
+        {
+          "target_entity": "A_BusinessPartnerAddress",
+          "target_field": "ValidityStartDate",
+          "qualified": "A_BusinessPartnerAddress.ValidityStartDate",
+          "confidence": 0.4943,
+          "band": "medium",
+          "signals": {
+            "semantic": 0.5333,
+            "fuzzy": 0.3871,
+            "type": 1.0,
+            "alias": null,
+            "lexical_overlap": [
+              "date"
+            ]
+          },
+          "target_type": "Edm.DateTime",
+          "target_max_length": null,
+          "target_description_zh": "地址生效起始日期",
+          "evidence": [
+            "语义相似度 0.533",
+            "字符串模糊匹配 0.387",
+            "类型/长度兼容性 1.000（乘性闸门 1.000）",
+            "共享词元 ['date']"
+          ],
+          "warnings": []
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "legacy_field": "email",
+      "status": "no_confident_target",
+      "best_candidate": "A_BusinessPartnerAddress.AddressID",
+      "best_confidence": 0.3295,
+      "message": "字段 `email` 在目标 schema 中找不到可信落点（最高置信度 0.330 < 0.4），需人工确认是否属于未展开的子实体或 Fit-to-Standard 差异项。"
+    },
+    {
+      "legacy_field": "phone",
+      "status": "no_confident_target",
+      "best_candidate": "A_BusinessPartner.Language",
+      "best_confidence": 0.3588,
+      "message": "字段 `phone` 在目标 schema 中找不到可信落点（最高置信度 0.359 < 0.4），需人工确认是否属于未展开的子实体或 Fit-to-Standard 差异项。"
+    },
+    {
+      "legacy_field": "currency",
+      "status": "possible_false_friend",
+      "best_candidate": "A_BusinessPartnerBank.BankAccount",
+      "best_confidence": 0.4999,
+      "message": "字段 `currency` 的最佳候选 `A_BusinessPartnerBank.BankAccount` （置信度 0.500）与其零共享词元、且未命中任何 alias，匹配仅由 embedding 支撑，疑似假朋友——目标端很可能没有正确落点。"
+    }
+  ]
+}

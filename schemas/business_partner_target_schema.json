@@ -1,0 +1,203 @@
+{
+  "_source_note": {
+    "zh": "本文件是人工整理的『字段结构参考』，来源为 SAP 公开的 API Business Hub (api.sap.com) 上 API_BUSINESS_PARTNER (Business Partner A2X, OData v2) 的公开接口文档。不包含任何真实客户数据、不来自任何真实 SAP 系统的导出，也未连接过任何 SAP 实例。本项目全程离线运行。",
+    "en": "Hand-curated field-structure reference derived from the publicly documented SAP API_BUSINESS_PARTNER (Business Partner A2X, OData v2) on api.sap.com. Contains no real customer data, no export from any live SAP system, and no SAP API was called. This project runs fully offline.",
+    "source_api": "API_BUSINESS_PARTNER",
+    "source_url": "https://api.sap.com/api/API_BUSINESS_PARTNER/overview",
+    "sap_trademark_notice": "SAP, S/4HANA and other SAP product names are trademarks of SAP SE. This project is an independent, educational implementation and is not affiliated with or endorsed by SAP SE.",
+    "curation_disclaimer": "字段清单为教学用途的子集，非全量。类型/长度以公开文档为准整理，个别字段可能随 SAP 版本 (release) 变化；用于合成数据的映射演示，不应作为真实迁移项目的权威依据。",
+    "data_classification": "synthetic-only",
+    "curated_on": "2026-07-09",
+    "curated_by": "CarveOps Copilot project (educational)"
+  },
+
+  "_revision_log": [
+    {
+      "date": "2026-07-09",
+      "change": "为 A_BusinessPartner.OrganizationBPName1 增加 aliases: [VendorName, CompanyName, Name1, SupplierName]",
+      "trigger_zh": "首轮 field_mapping 跑出问题：legacy 字段 vendor_name 未能命中 OrganizationBPName1（名称语义相似度仅 0.363，连 top-3 都没进），top1 反而是只读派生字段 BusinessPartnerName（0.528, medium）。该字段原本只有 legacy_hint=BUT000-NAME_ORG1，归一化后 token 为 `nameorg`，与 `vendorname` 匹配不上。",
+      "resolution_zh": "补充 aliases 作为 schema 侧的强信号种子，令 field_mapping 的 alias 命中生效。",
+      "trace_zh": "保留此条目以记录『跑出问题 → 补元数据 → 重跑』的迭代过程，而非把结论倒填进初版 schema 假装一次做对。"
+    }
+  ],
+
+  "schema_version": "0.2.0",
+  "domain": "business_partner",
+  "odata_version": "v2",
+  "default_max_length_unit": "characters",
+
+  "entities": {
+    "A_BusinessPartner": {
+      "description_zh": "业务伙伴主数据主表（人员 / 组织 / 集团的统一主实体）",
+      "description_en": "Business Partner master (root entity for person, organization and group).",
+      "underlying_table_hint": "BUT000",
+      "keys": ["BusinessPartner"],
+      "fields": [
+        { "name": "BusinessPartner", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "业务伙伴编号（主键）", "legacy_hint": "BUT000-PARTNER" },
+        { "name": "BusinessPartnerCategory", "type": "Edm.String", "max_length": 1, "is_key": false, "nullable": true, "description_zh": "业务伙伴类别：1=自然人, 2=组织/公司, 3=集团", "allowed_values": ["1", "2", "3"], "legacy_hint": "BUT000-TYPE" },
+        { "name": "BusinessPartnerGrouping", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "业务伙伴分组（决定编号范围：内部/外部编号）", "legacy_hint": "BUT000-BU_GROUP" },
+        { "name": "BusinessPartnerFullName", "type": "Edm.String", "max_length": 81, "is_key": false, "nullable": true, "description_zh": "业务伙伴完整名称（系统派生，通常只读）", "is_computed": true },
+        { "name": "BusinessPartnerName", "type": "Edm.String", "max_length": 81, "is_key": false, "nullable": true, "description_zh": "业务伙伴名称（显示用，系统派生）", "is_computed": true },
+        { "name": "BusinessPartnerUUID", "type": "Edm.Guid", "max_length": null, "is_key": false, "nullable": true, "description_zh": "业务伙伴 GUID（技术键）" },
+
+        { "name": "OrganizationBPName1", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "组织名称第 1 行（Category=2 时使用，公司法定名称主字段）", "legacy_hint": "BUT000-NAME_ORG1", "is_free_text": true, "aliases": ["VendorName", "CompanyName", "Name1", "SupplierName"], "aliases_note_zh": "见 _revision_log[0]：首轮映射中 vendor_name 未能命中本字段，事后补充。" },
+        { "name": "OrganizationBPName2", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "组织名称第 2 行（名称过长时续行）", "legacy_hint": "BUT000-NAME_ORG2", "is_free_text": true },
+        { "name": "OrganizationBPName3", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "组织名称第 3 行", "legacy_hint": "BUT000-NAME_ORG3", "is_free_text": true },
+        { "name": "OrganizationBPName4", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "组织名称第 4 行", "legacy_hint": "BUT000-NAME_ORG4", "is_free_text": true },
+        { "name": "OrganizationFoundationDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "组织成立日期" },
+        { "name": "OrganizationLiquidationDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "组织清算/注销日期" },
+        { "name": "LegalForm", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "法律形式（如 GmbH / AG / Inc. 的编码表示）", "legacy_hint": "BUT000-LEGAL_ENTY" },
+
+        { "name": "FirstName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "名（Category=1 自然人时使用）", "legacy_hint": "BUT000-NAME_FIRST" },
+        { "name": "MiddleName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "中间名" },
+        { "name": "LastName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "姓（Category=1 自然人时使用）", "legacy_hint": "BUT000-NAME_LAST" },
+        { "name": "AdditionalLastName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "附加姓氏（如西语双姓）" },
+        { "name": "PersonFullName", "type": "Edm.String", "max_length": 80, "is_key": false, "nullable": true, "description_zh": "自然人全名（派生）", "is_computed": true },
+        { "name": "BirthDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "出生日期（个人数据，合成数据中为伪造值）", "is_pii": true },
+        { "name": "FormOfAddress", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "称谓（Mr./Ms./Firma 等编码）" },
+        { "name": "AcademicTitle", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "学术头衔（Dr./Prof. 等编码）" },
+        { "name": "IsNaturalPerson", "type": "Edm.String", "max_length": 1, "is_key": false, "nullable": true, "description_zh": "自然人标识（税务用途）：X=是, 空=否" },
+
+        { "name": "SearchTerm1", "type": "Edm.String", "max_length": 20, "is_key": false, "nullable": true, "description_zh": "搜索项 1（常被遗留系统用作短名/助记码）", "legacy_hint": "BUT000-BU_SORT1" },
+        { "name": "SearchTerm2", "type": "Edm.String", "max_length": 20, "is_key": false, "nullable": true, "description_zh": "搜索项 2" },
+        { "name": "Industry", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "行业代码" },
+        { "name": "CorrespondenceLanguage", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "通信语言（ISO 639-1，如 EN/DE/JA）" },
+        { "name": "Language", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "语言键" },
+
+        { "name": "BusinessPartnerIsBlocked", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "业务伙伴是否被冻结（中央冻结标识）" },
+        { "name": "IsMarkedForArchiving", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "是否标记为归档/删除" },
+        { "name": "BusinessPartnerIDByExtSystem", "type": "Edm.String", "max_length": 20, "is_key": false, "nullable": true, "description_zh": "外部系统中的业务伙伴 ID（迁移时保留遗留主键的常用落点）" },
+
+        { "name": "CreationDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "创建日期", "is_computed": true },
+        { "name": "CreatedByUser", "type": "Edm.String", "max_length": 12, "is_key": false, "nullable": true, "description_zh": "创建人", "is_computed": true },
+        { "name": "LastChangeDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "最后修改日期", "is_computed": true },
+        { "name": "LastChangedByUser", "type": "Edm.String", "max_length": 12, "is_key": false, "nullable": true, "description_zh": "最后修改人", "is_computed": true },
+        { "name": "AuthorizationGroup", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "权限组" }
+      ],
+      "navigation_properties": [
+        { "name": "to_BusinessPartnerAddress", "target_entity": "A_BusinessPartnerAddress", "cardinality": "1..*" },
+        { "name": "to_BusinessPartnerTax", "target_entity": "A_BusinessPartnerTaxNumber", "cardinality": "0..*" },
+        { "name": "to_BusinessPartnerRole", "target_entity": "A_BusinessPartnerRole", "cardinality": "0..*" },
+        { "name": "to_BusinessPartnerBank", "target_entity": "A_BusinessPartnerBank", "cardinality": "0..*" }
+      ]
+    },
+
+    "A_BusinessPartnerAddress": {
+      "description_zh": "业务伙伴地址（一个 BP 可有多个带时效性的地址）",
+      "description_en": "Business Partner address; a BP may hold multiple time-dependent addresses.",
+      "underlying_table_hint": "ADRC / BUT020",
+      "keys": ["BusinessPartner", "AddressID"],
+      "fields": [
+        { "name": "BusinessPartner", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "业务伙伴编号（外键 + 主键组成部分）" },
+        { "name": "AddressID", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "地址编号（主键组成部分）", "legacy_hint": "ADRC-ADDRNUMBER" },
+        { "name": "ValidityStartDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "地址生效起始日期" },
+        { "name": "ValidityEndDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "地址生效截止日期（常见默认 9999-12-31）" },
+
+        { "name": "Country", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "国家/地区代码（ISO 3166-1 alpha-2，如 DE/JP/US）", "legacy_hint": "ADRC-COUNTRY" },
+        { "name": "Region", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "地区/州/省代码" },
+        { "name": "CityName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "城市名称", "legacy_hint": "ADRC-CITY1" },
+        { "name": "CityCode", "type": "Edm.String", "max_length": 12, "is_key": false, "nullable": true, "description_zh": "城市代码（城市主数据）" },
+        { "name": "District", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "城区/区" },
+        { "name": "PostalCode", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "邮政编码（各国格式不同，是格式一致性检测的重点字段）", "legacy_hint": "ADRC-POST_CODE1" },
+        { "name": "CompanyPostalCode", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "公司专用邮编（大客户专属邮编）" },
+        { "name": "StreetName", "type": "Edm.String", "max_length": 60, "is_key": false, "nullable": true, "description_zh": "街道名称", "legacy_hint": "ADRC-STREET", "is_free_text": true },
+        { "name": "StreetPrefixName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "街道前缀行（街道上方补充行）", "is_free_text": true },
+        { "name": "StreetSuffixName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "街道后缀行（街道下方补充行）", "is_free_text": true },
+        { "name": "HouseNumber", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "门牌号", "legacy_hint": "ADRC-HOUSE_NUM1" },
+        { "name": "HouseNumberSupplementText", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "门牌号补充（如 A/B 座）" },
+        { "name": "CareOfName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "c/o 转交人姓名", "is_free_text": true },
+        { "name": "POBox", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "邮政信箱号" },
+        { "name": "POBoxPostalCode", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "邮政信箱邮编" },
+        { "name": "POBoxDeviatingCityName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "邮政信箱所在城市（若与地址城市不同）" },
+
+        { "name": "FullName", "type": "Edm.String", "max_length": 80, "is_key": false, "nullable": true, "description_zh": "地址上的完整名称（派生）", "is_computed": true },
+        { "name": "PersonGivenName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "地址上的名" },
+        { "name": "PersonFamilyName", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "地址上的姓" },
+        { "name": "FormOfAddress", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "地址上的称谓" },
+        { "name": "Language", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "地址语言键" },
+        { "name": "AddressTimeZone", "type": "Edm.String", "max_length": 6, "is_key": false, "nullable": true, "description_zh": "地址时区" },
+        { "name": "TaxJurisdiction", "type": "Edm.String", "max_length": 15, "is_key": false, "nullable": true, "description_zh": "税收管辖代码（美国等国家必填）" },
+        { "name": "TransportZone", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "运输区域（定价/运费相关）" },
+        { "name": "AddressIDByExternalSystem", "type": "Edm.String", "max_length": 20, "is_key": false, "nullable": true, "description_zh": "外部系统地址 ID（保留遗留地址主键）" },
+        { "name": "AuthorizationGroup", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "权限组" }
+      ],
+      "navigation_properties": [
+        { "name": "to_EmailAddress", "target_entity": "A_AddressEmailAddress", "cardinality": "0..*" },
+        { "name": "to_PhoneNumber", "target_entity": "A_AddressPhoneNumber", "cardinality": "0..*" }
+      ],
+      "notes_zh": [
+        "邮箱和电话不在本实体内，而在 to_EmailAddress / to_PhoneNumber 子实体（本文件未展开，作为教学范围外）。",
+        "PostalCode 与 Country 的组合是格式校验规则的天然锚点：DE=5 位数字, JP=NNN-NNNN, US=NNNNN 或 NNNNN-NNNN。"
+      ]
+    },
+
+    "A_BusinessPartnerTaxNumber": {
+      "description_zh": "业务伙伴税号（一个 BP 可有多个不同税种的税号）",
+      "description_en": "Business Partner tax numbers; one BP may carry multiple tax numbers of different types.",
+      "underlying_table_hint": "DFKKBPTAXNUM",
+      "keys": ["BusinessPartner", "BPTaxType"],
+      "naming_note_zh": "需求中写作 A_BusinessPartnerTax；SAP 公开文档中的实体名为 A_BusinessPartnerTaxNumber，导航属性名才是 to_BusinessPartnerTax。此处采用文档中的实体名。",
+      "fields": [
+        { "name": "BusinessPartner", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "业务伙伴编号（外键 + 主键组成部分）" },
+        { "name": "BPTaxType", "type": "Edm.String", "max_length": 4, "is_key": true, "nullable": false, "description_zh": "税号类别（如 DE0=德国增值税号, JP1=日本法人番号, US1=美国 EIN；随国家而异）" },
+        { "name": "BPTaxNumber", "type": "Edm.String", "max_length": 20, "is_key": false, "nullable": true, "description_zh": "税号（短字段，长度 ≤20）" },
+        { "name": "BPTaxLongNumber", "type": "Edm.String", "max_length": 60, "is_key": false, "nullable": true, "description_zh": "长税号（长度 >20 时使用；迁移时需按长度决定落在哪个字段）" },
+        { "name": "AuthorizationGroup", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "权限组" }
+      ],
+      "notes_zh": [
+        "遗留系统常把 VAT / 税号塞在单一自由文本列里（含空格、国家前缀、连字符），迁移时需拆分为 BPTaxType + BPTaxNumber，是差异分析的典型案例。"
+      ]
+    },
+
+    "A_BusinessPartnerRole": {
+      "description_zh": "业务伙伴角色（决定该 BP 是客户、供应商还是两者兼有）",
+      "description_en": "Business Partner roles, e.g. customer (FLCU01) or supplier (FLVN01).",
+      "underlying_table_hint": "BUT100",
+      "keys": ["BusinessPartner", "BusinessPartnerRole"],
+      "fields": [
+        { "name": "BusinessPartner", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "业务伙伴编号" },
+        { "name": "BusinessPartnerRole", "type": "Edm.String", "max_length": 6, "is_key": true, "nullable": false, "description_zh": "角色代码，如 FLCU00/FLCU01=客户, FLVN00/FLVN01=供应商" },
+        { "name": "ValidFrom", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "角色生效起始（DateTimeOffset 语义）" },
+        { "name": "ValidTo", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "角色生效截止" },
+        { "name": "AuthorizationGroup", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "权限组" }
+      ],
+      "notes_zh": [
+        "剥离场景中该表很关键：留存实体 (RemainCo) 与剥离实体 (NewCo) 常常需要拆分同一个 BP 的不同角色。"
+      ]
+    },
+
+    "A_BusinessPartnerBank": {
+      "description_zh": "业务伙伴银行账户",
+      "description_en": "Business Partner bank details.",
+      "underlying_table_hint": "BUT0BK",
+      "keys": ["BusinessPartner", "BankIdentification"],
+      "fields": [
+        { "name": "BusinessPartner", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "业务伙伴编号" },
+        { "name": "BankIdentification", "type": "Edm.String", "max_length": 4, "is_key": true, "nullable": false, "description_zh": "银行明细标识（同一 BP 下多个账户的序号）" },
+        { "name": "BankCountryKey", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "银行所在国家代码" },
+        { "name": "BankNumber", "type": "Edm.String", "max_length": 15, "is_key": false, "nullable": true, "description_zh": "银行代码/路由号" },
+        { "name": "BankName", "type": "Edm.String", "max_length": 60, "is_key": false, "nullable": true, "description_zh": "银行名称", "is_free_text": true },
+        { "name": "SWIFTCode", "type": "Edm.String", "max_length": 11, "is_key": false, "nullable": true, "description_zh": "SWIFT/BIC 代码（8 或 11 位）" },
+        { "name": "BankAccount", "type": "Edm.String", "max_length": 18, "is_key": false, "nullable": true, "description_zh": "银行账号" },
+        { "name": "BankControlKey", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "银行控制键（校验位）" },
+        { "name": "BankAccountHolderName", "type": "Edm.String", "max_length": 60, "is_key": false, "nullable": true, "description_zh": "账户持有人姓名", "is_pii": true, "is_free_text": true },
+        { "name": "IBAN", "type": "Edm.String", "max_length": 34, "is_key": false, "nullable": true, "description_zh": "IBAN 国际银行账号（欧洲国家常用）" },
+        { "name": "ValidityStartDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "账户生效起始日期" },
+        { "name": "ValidityEndDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "账户生效截止日期" }
+      ]
+    }
+  },
+
+  "entity_relationships": [
+    { "from": "A_BusinessPartner", "to": "A_BusinessPartnerAddress", "on": ["BusinessPartner"], "cardinality": "1..*" },
+    { "from": "A_BusinessPartner", "to": "A_BusinessPartnerTaxNumber", "on": ["BusinessPartner"], "cardinality": "0..*" },
+    { "from": "A_BusinessPartner", "to": "A_BusinessPartnerRole", "on": ["BusinessPartner"], "cardinality": "0..*" },
+    { "from": "A_BusinessPartner", "to": "A_BusinessPartnerBank", "on": ["BusinessPartner"], "cardinality": "0..*" }
+  ],
+
+  "carveout_hints_zh": [
+    "BusinessPartnerCategory 决定名称字段走 OrganizationBPName1 还是 FirstName/LastName —— 遗留系统常把两类混在同一个 name 列里，这是映射工具需要判别的第一个分支。",
+    "OrganizationBPName1 最大 40 字符，遗留系统的公司名常超长，需要溢出到 Name2/Name3 而不是截断，属于 Fit-to-Standard 的典型 gap。",
+    "实体解析 (Splink) 的候选阻断键推荐：Country + PostalCode、Country + 归一化公司名前若干字符、BPTaxNumber 归一化值。"
+  ]
+}

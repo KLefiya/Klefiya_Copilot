@@ -1,0 +1,401 @@
+{
+  "_meta": {
+    "generated_at": "2026-07-09T02:56:29+00:00",
+    "record_count": 224,
+    "field_count": 11,
+    "thresholds": {
+      "identifier_distinct_ratio": 0.98,
+      "free_text_distinct_ratio": 0.5,
+      "free_text_avg_length": 15.0,
+      "low_cardinality_max_distinct": 20,
+      "missing_rate_flag_threshold": 0.1
+    },
+    "source_file": "data\\legacy\\legacy_vendors.json",
+    "schema_file": "schemas\\business_partner_target_schema.json"
+  },
+  "fields": {
+    "legacy_vendor_id": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 224,
+      "distinct_ratio": 1.0,
+      "avg_length": 7.42,
+      "is_probable_identifier": true,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 3,
+      "format_signatures": [
+        {
+          "signature": "AD",
+          "count": 150,
+          "example": "V100146"
+        },
+        {
+          "signature": "ADA",
+          "count": 53,
+          "example": "V100079D"
+        },
+        {
+          "signature": "ADAD",
+          "count": 21,
+          "example": "V100082D2"
+        }
+      ]
+    },
+    "vendor_name": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 212,
+      "distinct_ratio": 0.9464,
+      "avg_length": 23.54,
+      "is_probable_identifier": false,
+      "is_free_text": true,
+      "free_text_source": "heuristic",
+      "format_variants": null,
+      "format_signatures": null
+    },
+    "country": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 14,
+      "distinct_ratio": 0.0625,
+      "avg_length": 5.01,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 3,
+      "format_signatures": [
+        {
+          "signature": "A",
+          "count": 200,
+          "example": "us"
+        },
+        {
+          "signature": "A A",
+          "count": 18,
+          "example": "United States"
+        },
+        {
+          "signature": "A.A.A.",
+          "count": 6,
+          "example": "U.S.A."
+        }
+      ],
+      "value_distribution": [
+        {
+          "value": "Germany",
+          "count": 31
+        },
+        {
+          "value": "DE",
+          "count": 21
+        },
+        {
+          "value": "de",
+          "count": 19
+        },
+        {
+          "value": "Deutschland",
+          "count": 19
+        },
+        {
+          "value": "United States",
+          "count": 18
+        },
+        {
+          "value": "USA",
+          "count": 18
+        },
+        {
+          "value": "GER",
+          "count": 17
+        },
+        {
+          "value": "JPN",
+          "count": 14
+        },
+        {
+          "value": "Japan",
+          "count": 14
+        },
+        {
+          "value": "US",
+          "count": 13
+        },
+        {
+          "value": "JAPAN",
+          "count": 12
+        },
+        {
+          "value": "JP",
+          "count": 12
+        },
+        {
+          "value": "us",
+          "count": 10
+        },
+        {
+          "value": "U.S.A.",
+          "count": 6
+        }
+      ]
+    },
+    "city": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 140,
+      "distinct_ratio": 0.625,
+      "avg_length": 8.41,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 3,
+      "format_signatures": [
+        {
+          "signature": "A",
+          "count": 181,
+          "example": "Aachen"
+        },
+        {
+          "signature": "A A",
+          "count": 41,
+          "example": "East Heatherstad"
+        },
+        {
+          "signature": "A A A",
+          "count": 2,
+          "example": "Mühldorf am Inn"
+        }
+      ]
+    },
+    "street": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 150,
+      "distinct_ratio": 0.6696,
+      "avg_length": 18.79,
+      "is_probable_identifier": false,
+      "is_free_text": true,
+      "free_text_source": "schema:substring(streetname)",
+      "format_variants": null,
+      "format_signatures": null
+    },
+    "postal_code": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 150,
+      "distinct_ratio": 0.6696,
+      "avg_length": 5.7,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 2,
+      "format_signatures": [
+        {
+          "signature": "D",
+          "count": 172,
+          "example": "51887"
+        },
+        {
+          "signature": "D-D",
+          "count": 52,
+          "example": "736-6699"
+        }
+      ]
+    },
+    "tax_number": {
+      "record_count": 224,
+      "missing_count": 36,
+      "missing_rate": 0.1607,
+      "distinct_count": 133,
+      "distinct_ratio": 0.7074,
+      "avg_length": 11.22,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 3,
+      "format_signatures": [
+        {
+          "signature": "AD",
+          "count": 94,
+          "example": "DE065870919"
+        },
+        {
+          "signature": "D-D",
+          "count": 49,
+          "example": "51-9136081"
+        },
+        {
+          "signature": "D",
+          "count": 45,
+          "example": "8803754496765"
+        }
+      ]
+    },
+    "email": {
+      "record_count": 224,
+      "missing_count": 36,
+      "missing_rate": 0.1607,
+      "distinct_count": 137,
+      "distinct_ratio": 0.7287,
+      "avg_length": 25.28,
+      "is_probable_identifier": false,
+      "is_free_text": true,
+      "free_text_source": "heuristic",
+      "format_variants": null,
+      "format_signatures": null
+    },
+    "phone": {
+      "record_count": 224,
+      "missing_count": 23,
+      "missing_rate": 0.1027,
+      "distinct_count": 141,
+      "distinct_ratio": 0.7015,
+      "avg_length": 14.05,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 17,
+      "format_signatures": [
+        {
+          "signature": "D-D-D",
+          "count": 53,
+          "example": "070-7318-7746"
+        },
+        {
+          "signature": "D",
+          "count": 26,
+          "example": "3259363074"
+        },
+        {
+          "signature": "+D(D)D D",
+          "count": 18,
+          "example": "+49(0)2753 85254"
+        },
+        {
+          "signature": "D D",
+          "count": 17,
+          "example": "09524 359103"
+        },
+        {
+          "signature": "+D(D) D",
+          "count": 15,
+          "example": "+49(0) 172814513"
+        },
+        {
+          "signature": "(D) D",
+          "count": 15,
+          "example": "(01659) 50811"
+        }
+      ]
+    },
+    "currency": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 3,
+      "distinct_ratio": 0.0134,
+      "avg_length": 3.0,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 1,
+      "format_signatures": [
+        {
+          "signature": "A",
+          "count": 224,
+          "example": "USD"
+        }
+      ],
+      "value_distribution": [
+        {
+          "value": "EUR",
+          "count": 107
+        },
+        {
+          "value": "USD",
+          "count": 65
+        },
+        {
+          "value": "JPY",
+          "count": 52
+        }
+      ]
+    },
+    "created_date": {
+      "record_count": 224,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "distinct_count": 148,
+      "distinct_ratio": 0.6607,
+      "avg_length": 8.0,
+      "is_probable_identifier": false,
+      "is_free_text": false,
+      "free_text_source": "heuristic:structured",
+      "format_variants": 1,
+      "format_signatures": [
+        {
+          "signature": "D",
+          "count": 224,
+          "example": "20070105"
+        }
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "field": "phone",
+      "issue_type": "format_consistency",
+      "severity": "high",
+      "message": "字段 `phone` 存在 17 种不同的格式签名，取值写法不统一。示例：`070-7318-7746`, `3259363074`, `+49(0)2753 85254`。"
+    },
+    {
+      "field": "city",
+      "issue_type": "format_consistency",
+      "severity": "medium",
+      "message": "字段 `city` 存在 3 种不同的格式签名，取值写法不统一。示例：`Aachen`, `East Heatherstad`, `Mühldorf am Inn`。"
+    },
+    {
+      "field": "country",
+      "issue_type": "format_consistency",
+      "severity": "medium",
+      "message": "字段 `country` 存在 3 种不同的格式签名，取值写法不统一。示例：`us`, `United States`, `U.S.A.`。"
+    },
+    {
+      "field": "email",
+      "issue_type": "completeness",
+      "severity": "medium",
+      "message": "字段 `email` 缺失率 16.1% （36/224 条），超过 10% 阈值。"
+    },
+    {
+      "field": "phone",
+      "issue_type": "completeness",
+      "severity": "medium",
+      "message": "字段 `phone` 缺失率 10.3% （23/224 条），超过 10% 阈值。"
+    },
+    {
+      "field": "postal_code",
+      "issue_type": "format_consistency",
+      "severity": "medium",
+      "message": "字段 `postal_code` 存在 2 种不同的格式签名，取值写法不统一。示例：`51887`, `736-6699`。"
+    },
+    {
+      "field": "tax_number",
+      "issue_type": "completeness",
+      "severity": "medium",
+      "message": "字段 `tax_number` 缺失率 16.1% （36/224 条），超过 10% 阈值。"
+    },
+    {
+      "field": "tax_number",
+      "issue_type": "format_consistency",
+      "severity": "medium",
+      "message": "字段 `tax_number` 存在 3 种不同的格式签名，取值写法不统一。示例：`DE065870919`, `51-9136081`, `8803754496765`。"
+    }
+  ]
+}
