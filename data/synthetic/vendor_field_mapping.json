@@ -1,8 +1,8 @@
 {
   "_run_info": {
-    "content_sha256": "2811aab27e2c9d949a5aae97a09189c3d129f19ae396805d13ef22945dfe0ce9",
+    "content_sha256": "5f3514f54ce10614fa96985e8a221cd51fb316219baf0b359b07868f8480c044",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-09T06:11:50+00:00"
+    "generated_at": "2026-07-09T06:53:00+00:00"
   },
   "_meta": {
     "disclaimer": "本表全部为映射【建议】，不构成已确定的映射；任何非 high 置信度的条目都必须人工确认。",
@@ -1099,30 +1099,32 @@
           "warnings": []
         },
         {
-          "target_entity": "A_BusinessPartnerAddress",
-          "target_field": "ValidityStartDate",
-          "qualified": "A_BusinessPartnerAddress.ValidityStartDate",
-          "confidence": 0.4943,
+          "target_entity": "A_BusinessPartner",
+          "target_field": "CreatedByUser",
+          "qualified": "A_BusinessPartner.CreatedByUser",
+          "confidence": 0.4804,
           "band": "medium",
           "signals": {
-            "semantic": 0.5333,
-            "fuzzy": 0.3871,
-            "type": 1.0,
+            "semantic": 0.5954,
+            "fuzzy": 0.6667,
+            "type": 0.8,
             "alias": null,
             "lexical_overlap": [
-              "date"
+              "created"
             ]
           },
-          "target_type": "Edm.DateTime",
-          "target_max_length": null,
-          "target_description_zh": "地址生效起始日期",
+          "target_type": "Edm.String",
+          "target_max_length": 12,
+          "target_description_zh": "创建人",
           "evidence": [
-            "语义相似度 0.533",
-            "字符串模糊匹配 0.387",
-            "类型/长度兼容性 1.000（乘性闸门 1.000）",
-            "共享词元 ['date']"
+            "语义相似度 0.595",
+            "字符串模糊匹配 0.667",
+            "类型/长度兼容性 0.800（乘性闸门 0.920）",
+            "共享词元 ['created']"
           ],
-          "warnings": []
+          "warnings": [
+            "目标字段为系统派生/只读，通常不能直接写入"
+          ]
         }
       ]
     }

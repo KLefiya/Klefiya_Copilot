@@ -2,196 +2,1160 @@
   "_source_note": {
     "zh": "本文件是人工整理的『字段结构参考』，来源为 SAP 公开的 API Business Hub (api.sap.com) 上 API_PRODUCT_SRV (Product Master A2X, OData v2) 及 API_MATERIAL_STOCK_SRV 的公开接口文档。不包含任何真实客户数据、不来自任何真实 SAP 系统的导出，也未连接过任何 SAP 实例。本项目全程离线运行。",
     "en": "Hand-curated field-structure reference derived from the publicly documented SAP API_PRODUCT_SRV (Product Master A2X, OData v2) and API_MATERIAL_STOCK_SRV on api.sap.com. Contains no real customer data, no export from any live SAP system, and no SAP API was called. This project runs fully offline.",
-    "source_apis": ["API_PRODUCT_SRV", "API_MATERIAL_STOCK_SRV"],
+    "source_apis": [
+      "API_PRODUCT_SRV",
+      "API_MATERIAL_STOCK_SRV"
+    ],
     "source_urls": [
       "https://api.sap.com/api/API_PRODUCT_SRV/overview",
       "https://api.sap.com/api/API_MATERIAL_STOCK_SRV/overview"
     ],
     "sap_trademark_notice": "SAP, S/4HANA and other SAP product names are trademarks of SAP SE. This project is an independent, educational implementation and is not affiliated with or endorsed by SAP SE.",
-    "curation_disclaimer": "字段清单为教学用途的子集，非全量。类型/长度以公开文档为准整理，个别字段可能随 SAP 版本 (release) 变化；用于合成数据的映射演示，不应作为真实迁移项目的权威依据。",
+    "curation_disclaimer": "字段清单为教学用途的子集，非全量。每个字段带 verification_status：verified 表示已对照 _revision_log 中记录的一手 $metadata 快照逐字段核对一致；unverified 表示该字段（或其所属实体）不在该快照中，标注仍来自人工整理、未经一手来源核实。两类都不应作为真实迁移项目的权威依据——请以你所在 release 的 $metadata 为准。",
     "data_classification": "synthetic-only",
     "curated_on": "2026-07-09",
     "curated_by": "CarveOps Copilot project (educational)"
   },
-
-  "schema_version": "0.1.0",
+  "_revision_log": [
+    {
+      "date": "2026-07-09",
+      "change": "对照一手 $metadata 核对全部字段，修正 17 处标注，并为每个字段增加 verification_status",
+      "source": {
+        "api": "API_PRODUCT_SRV",
+        "metadata_url": "https://github.com/SAP-archive/s4hana-ext-product-catalog-ios/blob/master/productmasterapp/Proxy%20Classes/com.sap.bp.productmasterapp/internal/APIPRODUCTSRVEntitiesMetadataText.swift",
+        "repo": "SAP-archive/s4hana-ext-product-catalog-ios",
+        "sha256": "7d2217ea363e1a5663b79fb86503e2bd1eba838350a806e67a1f9695d7033cd8",
+        "extraction_note_zh": "该 EDMX 以 Swift 字符串字面量形式内嵌在自动生成的 proxy 类中，已反转义后解析。"
+      },
+      "caveat_zh": "这两份 metadata 均为【快照】：BP 来自集成测试 fixture，Product 来自 2019 年已归档的 iOS 示例工程。它们是一手的、公开可访问的、无需登录的真实 EDMX，但不保证与当前 SAP 最新 release 完全一致。verification_status=verified 的含义是『已与该快照逐字段核对一致』，而非『与 SAP 当前版本一致』。",
+      "corrections": [
+        "PRODUCT/A_Product.BaseUnit: nullable False -> True",
+        "PRODUCT/A_Product.Brand: max_length 2 -> 4",
+        "PRODUCT/A_Product.CreationDate: precision None -> 0",
+        "PRODUCT/A_Product.CrossPlantStatusValidityDate: precision None -> 0",
+        "PRODUCT/A_Product.LastChangeDate: precision None -> 0",
+        "PRODUCT/A_Product.ProductOldID: max_length 18 -> 40",
+        "PRODUCT/A_Product.ProductType: nullable False -> True",
+        "PRODUCT/A_Product.ValidityStartDate: precision None -> 0",
+        "PRODUCT/A_ProductPlant.IsSourceListRequired: 移除——metadata 显示该字段实际位于 A_ProductPlantProcurement",
+        "PRODUCT/A_ProductPlant.MaintenanceStatusName: is_computed True -> False (creatable=True, updatable=True)",
+        "PRODUCT/A_ProductPlant.PlndDelryDurnInDays: 移除——metadata 显示该字段实际位于 A_ProductSupplyPlanning / A_ProductPlantMRPArea（真实字段名为 PlannedDeliveryDurationInDays）",
+        "PRODUCT/A_ProductPlant.ReorderThresholdQuantity: 移除——metadata 显示该字段实际位于 A_ProductSupplyPlanning / A_ProductPlantMRPArea",
+        "PRODUCT/A_ProductPlant.SafetyStockQuantity: 移除——metadata 显示该字段实际位于 A_ProductSupplyPlanning / A_ProductPlantMRPArea",
+        "PRODUCT/A_ProductValuation.MovingAveragePrice: precision 11 -> 12",
+        "PRODUCT/A_ProductValuation.MovingAveragePrice: scale 2 -> 3",
+        "PRODUCT/A_ProductValuation.StandardPrice: precision 11 -> 12",
+        "PRODUCT/A_ProductValuation.StandardPrice: scale 2 -> 3"
+      ],
+      "trace_zh": "此前的 max_length / 类型 / 可写性标注均凭整理者记忆，未经一手核实；本次一次性还清标注债。"
+    }
+  ],
+  "_verification": {
+    "verified_fields": 61,
+    "unverified_fields": 16,
+    "unverified_list": [
+      "A_MaterialStock.Material",
+      "A_MatlStkInAcctMod.Batch",
+      "A_MatlStkInAcctMod.CustomerAccountNumber",
+      "A_MatlStkInAcctMod.InventorySpecialStockType",
+      "A_MatlStkInAcctMod.InventoryStockType",
+      "A_MatlStkInAcctMod.Material",
+      "A_MatlStkInAcctMod.MaterialBaseUnit",
+      "A_MatlStkInAcctMod.MatlWrhsStkQtyInMatlBaseUnit",
+      "A_MatlStkInAcctMod.Plant",
+      "A_MatlStkInAcctMod.SDDocument",
+      "A_MatlStkInAcctMod.SDDocumentItem",
+      "A_MatlStkInAcctMod.StorageLocation",
+      "A_MatlStkInAcctMod.SupplierAccountNumber",
+      "A_MatlStkInAcctMod.WBSElementInternalID",
+      "A_Product.IndustrySector",
+      "A_ProductValuation.Currency"
+    ],
+    "downstream_note_zh": "下游工具（如 pre_migration_validation）凡基于 unverified 字段的 max_length / 类型 得出的结论，必须在报告中注明『基于未核实的字段长度标注，需以官方 metadata 复核』。"
+  },
+  "schema_version": "0.2.0",
   "domain": "material",
   "odata_version": "v2",
   "default_max_length_unit": "characters",
-
   "naming_note_zh": {
     "summary": "『物料 (Material)』与『产品 (Product)』在 SAP 中是同一对象在不同 API 世代下的两套命名，本文件以 A2X 的 Product 命名为目标端规范名，并在 legacy_hint / aliases 中保留旧名，便于映射工具做同义识别。",
     "canonical_vs_legacy": [
-      { "canonical": "Product", "aliases": ["Material", "MATNR"] },
-      { "canonical": "ProductType", "aliases": ["MaterialType", "MTART"] },
-      { "canonical": "ProductGroup", "aliases": ["MaterialGroup", "MATKL"] },
-      { "canonical": "BaseUnit", "aliases": ["BaseUnitOfMeasure", "MEINS"] }
+      {
+        "canonical": "Product",
+        "aliases": [
+          "Material",
+          "MATNR"
+        ]
+      },
+      {
+        "canonical": "ProductType",
+        "aliases": [
+          "MaterialType",
+          "MTART"
+        ]
+      },
+      {
+        "canonical": "ProductGroup",
+        "aliases": [
+          "MaterialGroup",
+          "MATKL"
+        ]
+      },
+      {
+        "canonical": "BaseUnit",
+        "aliases": [
+          "BaseUnitOfMeasure",
+          "MEINS"
+        ]
+      }
     ],
     "caveat": "需求中提到的 MaterialGroup 在 API_PRODUCT_SRV 的 A_Product 里实际字段名为 ProductGroup（旧的 API_MATERIAL_SRV 与底表 MARA-MATKL 才叫 MaterialGroup）。两者都已记录，target 端以 ProductGroup 为准。"
   },
-
   "entities": {
     "A_Product": {
       "description_zh": "产品/物料主数据主表（跨工厂通用视图）",
       "description_en": "Product master root entity, client-level (cross-plant) attributes.",
       "underlying_table_hint": "MARA",
-      "keys": ["Product"],
+      "keys": [
+        "Product"
+      ],
       "fields": [
-        { "name": "Product", "type": "Edm.String", "max_length": 40, "is_key": true, "nullable": false, "description_zh": "产品/物料编号（主键）。S/4HANA 已扩展至 40 位，ECC 为 18 位——迁移时的经典长度陷阱", "legacy_hint": "MARA-MATNR", "aliases": ["Material"] },
-        { "name": "ProductType", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": false, "description_zh": "物料类型，如 FERT=成品, ROH=原材料, HALB=半成品, HAWA=贸易货物, DIEN=服务", "legacy_hint": "MARA-MTART", "aliases": ["MaterialType"], "example_values": ["FERT", "ROH", "HALB", "HAWA", "DIEN"] },
-        { "name": "ProductGroup", "type": "Edm.String", "max_length": 9, "is_key": false, "nullable": true, "description_zh": "物料组（用于采购/统计分组）", "legacy_hint": "MARA-MATKL", "aliases": ["MaterialGroup"] },
-        { "name": "BaseUnit", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": false, "description_zh": "基本计量单位（ISO/SAP 内部单位，如 PC/KG/L/M）", "legacy_hint": "MARA-MEINS", "aliases": ["BaseUnitOfMeasure"] },
-        { "name": "IndustrySector", "type": "Edm.String", "max_length": 1, "is_key": false, "nullable": true, "description_zh": "行业领域（创建时必填，之后不可改），如 M=机械制造, C=化工", "legacy_hint": "MARA-MBRSH" },
-        { "name": "Division", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "产品组/分部（SD 组织结构）", "legacy_hint": "MARA-SPART" },
-        { "name": "ProductHierarchy", "type": "Edm.String", "max_length": 18, "is_key": false, "nullable": true, "description_zh": "产品层级（定价/报表用的层级编码）", "legacy_hint": "MARA-PRDHA" },
-        { "name": "ItemCategoryGroup", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "项目类别组（决定销售订单行项目类别）" },
-        { "name": "ProductOldID", "type": "Edm.String", "max_length": 18, "is_key": false, "nullable": true, "description_zh": "旧物料号（迁移时保留遗留主键的标准落点，长度仅 18 位需注意）", "legacy_hint": "MARA-BISMT" },
-
-        { "name": "GrossWeight", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "毛重", "legacy_hint": "MARA-BRGEW" },
-        { "name": "NetWeight", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "净重（业务规则：NetWeight ≤ GrossWeight）", "legacy_hint": "MARA-NTGEW" },
-        { "name": "WeightUnit", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "重量单位（有重量则必填，是常见的条件必填校验点）", "legacy_hint": "MARA-GEWEI" },
-        { "name": "MaterialVolume", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "体积", "legacy_hint": "MARA-VOLUM" },
-        { "name": "VolumeUnit", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "体积单位（有体积则必填）", "legacy_hint": "MARA-VOLEH" },
-        { "name": "SizeOrDimensionText", "type": "Edm.String", "max_length": 32, "is_key": false, "nullable": true, "description_zh": "尺寸/规格描述文本", "is_free_text": true },
-
-        { "name": "CountryOfOrigin", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "原产国（贸易合规相关）" },
-        { "name": "Brand", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "品牌代码" },
-        { "name": "ProductStandardID", "type": "Edm.String", "max_length": 18, "is_key": false, "nullable": true, "description_zh": "国际商品编号 GTIN/EAN", "legacy_hint": "MARA-EAN11" },
-        { "name": "InternationalArticleNumberCat", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "EAN 类别（如 HE=EAN13）" },
-        { "name": "ProductManufacturerNumber", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "制造商物料号 (MPN)" },
-        { "name": "ManufacturerNumber", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "制造商业务伙伴编号（可关联到 A_BusinessPartner）", "cross_domain_ref": "A_BusinessPartner.BusinessPartner" },
-
-        { "name": "IsBatchManagementRequired", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "是否批次管理（跨工厂级）", "legacy_hint": "MARA-XCHPF" },
-        { "name": "ProductIsConfigurable", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "是否可配置物料" },
-        { "name": "IsMarkedForDeletion", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "跨工厂删除标记（剥离时用于排除废弃物料）", "legacy_hint": "MARA-LVORM" },
-        { "name": "CrossPlantStatus", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "跨工厂物料状态（冻结采购/生产等）", "legacy_hint": "MARA-MSTAE" },
-        { "name": "CrossPlantStatusValidityDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "跨工厂状态生效日期" },
-        { "name": "IsRelevantForHzdsSubstances", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "是否涉及危险品（EHS 相关）" },
-
-        { "name": "ValidityStartDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "有效期起始日期" },
-        { "name": "CreationDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "创建日期", "is_computed": true },
-        { "name": "CreatedByUser", "type": "Edm.String", "max_length": 12, "is_key": false, "nullable": true, "description_zh": "创建人", "is_computed": true },
-        { "name": "LastChangeDate", "type": "Edm.DateTime", "max_length": null, "is_key": false, "nullable": true, "description_zh": "最后修改日期", "is_computed": true },
-        { "name": "LastChangedByUser", "type": "Edm.String", "max_length": 12, "is_key": false, "nullable": true, "description_zh": "最后修改人", "is_computed": true },
-        { "name": "AuthorizationGroup", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "权限组" }
+        {
+          "name": "Product",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "产品/物料编号（主键）。S/4HANA 已扩展至 40 位，ECC 为 18 位——迁移时的经典长度陷阱",
+          "legacy_hint": "MARA-MATNR",
+          "aliases": [
+            "Material"
+          ],
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductType",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "物料类型，如 FERT=成品, ROH=原材料, HALB=半成品, HAWA=贸易货物, DIEN=服务",
+          "legacy_hint": "MARA-MTART",
+          "aliases": [
+            "MaterialType"
+          ],
+          "example_values": [
+            "FERT",
+            "ROH",
+            "HALB",
+            "HAWA",
+            "DIEN"
+          ],
+          "nullable_note_zh": "OData 层 Nullable=true；业务上创建时通常必填，由后端校验，不体现在 metadata。",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductGroup",
+          "type": "Edm.String",
+          "max_length": 9,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "物料组（用于采购/统计分组）",
+          "legacy_hint": "MARA-MATKL",
+          "aliases": [
+            "MaterialGroup"
+          ],
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "BaseUnit",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "基本计量单位（ISO/SAP 内部单位，如 PC/KG/L/M）",
+          "legacy_hint": "MARA-MEINS",
+          "aliases": [
+            "BaseUnitOfMeasure"
+          ],
+          "nullable_note_zh": "OData 层 Nullable=true；业务上创建时通常必填，由后端校验，不体现在 metadata。",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "IndustrySector",
+          "type": "Edm.String",
+          "max_length": 1,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "行业领域（创建时必填，之后不可改），如 M=机械制造, C=化工",
+          "legacy_hint": "MARA-MBRSH",
+          "verification_status": "unverified",
+          "verification_note_zh": "本次核对的 metadata 快照中不存在该字段；可能属于更新的 API 版本，或字段名有出入。标注未经一手来源核实。"
+        },
+        {
+          "name": "Division",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "产品组/分部（SD 组织结构）",
+          "legacy_hint": "MARA-SPART",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductHierarchy",
+          "type": "Edm.String",
+          "max_length": 18,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "产品层级（定价/报表用的层级编码）",
+          "legacy_hint": "MARA-PRDHA",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ItemCategoryGroup",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "项目类别组（决定销售订单行项目类别）",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductOldID",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "旧物料号（迁移时保留遗留主键的标准落点）。metadata 核对结果为 40 位，与 Product 同宽；此前误标为 18 位（那是 ECC/MARA-BISMT 语境）。",
+          "legacy_hint": "MARA-BISMT",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "GrossWeight",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 13,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "毛重",
+          "legacy_hint": "MARA-BRGEW",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "NetWeight",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 13,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "净重（业务规则：NetWeight ≤ GrossWeight）",
+          "legacy_hint": "MARA-NTGEW",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "WeightUnit",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "重量单位（有重量则必填，是常见的条件必填校验点）",
+          "legacy_hint": "MARA-GEWEI",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MaterialVolume",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 13,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "体积",
+          "legacy_hint": "MARA-VOLUM",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "VolumeUnit",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "体积单位（有体积则必填）",
+          "legacy_hint": "MARA-VOLEH",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "SizeOrDimensionText",
+          "type": "Edm.String",
+          "max_length": 32,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "尺寸/规格描述文本",
+          "is_free_text": true,
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "CountryOfOrigin",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "原产国（贸易合规相关）",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "Brand",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "品牌代码",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductStandardID",
+          "type": "Edm.String",
+          "max_length": 18,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "国际商品编号 GTIN/EAN",
+          "legacy_hint": "MARA-EAN11",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "InternationalArticleNumberCat",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "EAN 类别（如 HE=EAN13）",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductManufacturerNumber",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "制造商物料号 (MPN)",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ManufacturerNumber",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "制造商业务伙伴编号（可关联到 A_BusinessPartner）",
+          "cross_domain_ref": "A_BusinessPartner.BusinessPartner",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "IsBatchManagementRequired",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "是否批次管理（跨工厂级）",
+          "legacy_hint": "MARA-XCHPF",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductIsConfigurable",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "是否可配置物料",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "IsMarkedForDeletion",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "跨工厂删除标记（剥离时用于排除废弃物料）",
+          "legacy_hint": "MARA-LVORM",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "CrossPlantStatus",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "跨工厂物料状态（冻结采购/生产等）",
+          "legacy_hint": "MARA-MSTAE",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "CrossPlantStatusValidityDate",
+          "type": "Edm.DateTime",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "跨工厂状态生效日期",
+          "precision": 0,
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "IsRelevantForHzdsSubstances",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "是否涉及危险品（EHS 相关）",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ValidityStartDate",
+          "type": "Edm.DateTime",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "有效期起始日期",
+          "precision": 0,
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "CreationDate",
+          "type": "Edm.DateTime",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "创建日期",
+          "is_computed": true,
+          "precision": 0,
+          "is_creatable": false,
+          "is_updatable": false,
+          "verification_status": "verified"
+        },
+        {
+          "name": "CreatedByUser",
+          "type": "Edm.String",
+          "max_length": 12,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "创建人",
+          "is_computed": true,
+          "is_creatable": false,
+          "is_updatable": false,
+          "verification_status": "verified"
+        },
+        {
+          "name": "LastChangeDate",
+          "type": "Edm.DateTime",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "最后修改日期",
+          "is_computed": true,
+          "precision": 0,
+          "is_creatable": false,
+          "is_updatable": false,
+          "verification_status": "verified"
+        },
+        {
+          "name": "LastChangedByUser",
+          "type": "Edm.String",
+          "max_length": 12,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "最后修改人",
+          "is_computed": true,
+          "is_creatable": false,
+          "is_updatable": false,
+          "verification_status": "verified"
+        },
+        {
+          "name": "AuthorizationGroup",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "权限组",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        }
       ],
       "navigation_properties": [
-        { "name": "to_Description", "target_entity": "A_ProductDescription", "cardinality": "0..*" },
-        { "name": "to_Plant", "target_entity": "A_ProductPlant", "cardinality": "0..*" },
-        { "name": "to_ProductUnitsOfMeasure", "target_entity": "A_ProductUnitOfMeasure", "cardinality": "0..*" },
-        { "name": "to_Valuation", "target_entity": "A_ProductValuation", "cardinality": "0..*" }
+        {
+          "name": "to_Description",
+          "target_entity": "A_ProductDescription",
+          "cardinality": "0..*"
+        },
+        {
+          "name": "to_Plant",
+          "target_entity": "A_ProductPlant",
+          "cardinality": "0..*"
+        },
+        {
+          "name": "to_ProductUnitsOfMeasure",
+          "target_entity": "A_ProductUnitOfMeasure",
+          "cardinality": "0..*"
+        },
+        {
+          "name": "to_Valuation",
+          "target_entity": "A_ProductValuation",
+          "cardinality": "0..*"
+        }
       ]
     },
-
     "A_ProductDescription": {
       "description_zh": "产品描述（按语言分行，多语言场景下一个物料多条）",
       "description_en": "Language-dependent product descriptions.",
       "underlying_table_hint": "MAKT",
-      "keys": ["Product", "Language"],
+      "keys": [
+        "Product",
+        "Language"
+      ],
       "fields": [
-        { "name": "Product", "type": "Edm.String", "max_length": 40, "is_key": true, "nullable": false, "description_zh": "产品编号" },
-        { "name": "Language", "type": "Edm.String", "max_length": 2, "is_key": true, "nullable": false, "description_zh": "语言键（ISO 639-1，如 EN/DE/JA）", "legacy_hint": "MAKT-SPRAS" },
-        { "name": "ProductDescription", "type": "Edm.String", "max_length": 40, "is_key": false, "nullable": true, "description_zh": "产品描述（仅 40 字符——遗留系统的长描述必被截断，是 Fit-to-Standard 的高频 gap）", "legacy_hint": "MAKT-MAKTX", "is_free_text": true }
+        {
+          "name": "Product",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "产品编号",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "Language",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "语言键（ISO 639-1，如 EN/DE/JA）",
+          "legacy_hint": "MAKT-SPRAS",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductDescription",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "产品描述（仅 40 字符——遗留系统的长描述必被截断，是 Fit-to-Standard 的高频 gap）",
+          "legacy_hint": "MAKT-MAKTX",
+          "is_free_text": true,
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        }
       ],
       "notes_zh": [
         "40 字符上限对 CJK 语言尤其敏感：字节长度与字符长度不一致，需在数据画像里单独检测。"
       ]
     },
-
     "A_ProductPlant": {
       "description_zh": "产品的工厂级视图（MRP、采购、质检等工厂相关属性）",
       "description_en": "Plant-level product attributes (MRP, purchasing, QM).",
       "underlying_table_hint": "MARC",
-      "keys": ["Product", "Plant"],
+      "keys": [
+        "Product",
+        "Plant"
+      ],
       "fields": [
-        { "name": "Product", "type": "Edm.String", "max_length": 40, "is_key": true, "nullable": false, "description_zh": "产品编号" },
-        { "name": "Plant", "type": "Edm.String", "max_length": 4, "is_key": true, "nullable": false, "description_zh": "工厂（剥离场景的核心切分维度：哪些工厂归 NewCo）", "legacy_hint": "MARC-WERKS" },
-        { "name": "PurchasingGroup", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "采购组", "legacy_hint": "MARC-EKGRP" },
-        { "name": "ProfitCenter", "type": "Edm.String", "max_length": 10, "is_key": false, "nullable": true, "description_zh": "利润中心（剥离时常需整体重映射）", "legacy_hint": "MARC-PRCTR" },
-        { "name": "ProductionInvtryManagedLoc", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "生产库存管理存储地点" },
-        { "name": "AvailabilityCheckType", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "可用性检查组", "legacy_hint": "MARC-MTVFP" },
-        { "name": "ProcurementType", "type": "Edm.String", "max_length": 1, "is_key": false, "nullable": true, "description_zh": "采购类型：E=自制, F=外购, X=两者皆可", "legacy_hint": "MARC-BESKZ", "allowed_values": ["E", "F", "X"] },
-        { "name": "IsInternalBatchManaged", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "工厂级批次管理标识" },
-        { "name": "MRPType", "type": "Edm.String", "max_length": 2, "is_key": false, "nullable": true, "description_zh": "MRP 类型，如 PD=MRP, VB=再订货点, ND=不做计划", "legacy_hint": "MARC-DISMM" },
-        { "name": "MRPResponsible", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "MRP 控制者", "legacy_hint": "MARC-DISPO" },
-        { "name": "ABCIndicator", "type": "Edm.String", "max_length": 1, "is_key": false, "nullable": true, "description_zh": "ABC 分类标识" },
-        { "name": "SafetyStockQuantity", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "安全库存数量", "legacy_hint": "MARC-EISBE" },
-        { "name": "ReorderThresholdQuantity", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "再订货点数量", "legacy_hint": "MARC-MINBE" },
-        { "name": "MinimumLotSizeQuantity", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "最小批量" },
-        { "name": "MaximumLotSizeQuantity", "type": "Edm.Decimal", "max_length": null, "precision": 13, "scale": 3, "is_key": false, "nullable": true, "description_zh": "最大批量" },
-        { "name": "GoodsReceiptDuration", "type": "Edm.Decimal", "max_length": null, "precision": 3, "scale": 0, "is_key": false, "nullable": true, "description_zh": "收货处理时间（天）" },
-        { "name": "PlndDelryDurnInDays", "type": "Edm.Decimal", "max_length": null, "precision": 3, "scale": 0, "is_key": false, "nullable": true, "description_zh": "计划交货时间（天）", "legacy_hint": "MARC-PLIFZ" },
-        { "name": "IsMarkedForDeletion", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "工厂级删除标记", "legacy_hint": "MARC-LVORM" },
-        { "name": "MaintenanceStatusName", "type": "Edm.String", "max_length": 15, "is_key": false, "nullable": true, "description_zh": "已维护视图标识（哪些视图已创建）", "is_computed": true },
-        { "name": "CountryOfOrigin", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "工厂级原产国" },
-        { "name": "IsSourceListRequired", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "是否强制货源清单" }
+        {
+          "name": "Product",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "产品编号",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "Plant",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "工厂（剥离场景的核心切分维度：哪些工厂归 NewCo）",
+          "legacy_hint": "MARC-WERKS",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "PurchasingGroup",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "采购组",
+          "legacy_hint": "MARC-EKGRP",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProfitCenter",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "利润中心（剥离时常需整体重映射）",
+          "legacy_hint": "MARC-PRCTR",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProductionInvtryManagedLoc",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "生产库存管理存储地点",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "AvailabilityCheckType",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "可用性检查组",
+          "legacy_hint": "MARC-MTVFP",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ProcurementType",
+          "type": "Edm.String",
+          "max_length": 1,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "采购类型：E=自制, F=外购, X=两者皆可",
+          "legacy_hint": "MARC-BESKZ",
+          "allowed_values": [
+            "E",
+            "F",
+            "X"
+          ],
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "IsInternalBatchManaged",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "工厂级批次管理标识",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MRPType",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "MRP 类型，如 PD=MRP, VB=再订货点, ND=不做计划",
+          "legacy_hint": "MARC-DISMM",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MRPResponsible",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "MRP 控制者",
+          "legacy_hint": "MARC-DISPO",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ABCIndicator",
+          "type": "Edm.String",
+          "max_length": 1,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "ABC 分类标识",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MinimumLotSizeQuantity",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 13,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "最小批量",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MaximumLotSizeQuantity",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 13,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "最大批量",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "GoodsReceiptDuration",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 3,
+          "scale": 0,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "收货处理时间（天）",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "IsMarkedForDeletion",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "工厂级删除标记",
+          "legacy_hint": "MARC-LVORM",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MaintenanceStatusName",
+          "type": "Edm.String",
+          "max_length": 15,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "已维护视图标识（哪些视图已创建）",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "CountryOfOrigin",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "工厂级原产国",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        }
       ],
       "notes_zh": [
         "Plant 是 carve-out 的主切分键：先按 Plant 划分 RemainCo / NewCo，再回溯哪些 A_Product 需要被复制到新系统。",
-        "同一 Product 在不同 Plant 下可有不同的 ProcurementType / MRPType，剥离后可能出现『工厂没了但物料还在』的孤儿记录，是治理 Agent 的检查项。"
+        "同一 Product 在不同 Plant 下可有不同的 ProcurementType / MRPType，剥离后可能出现『工厂没了但物料还在』的孤儿记录，是治理 Agent 的检查项。",
+        "以下字段曾被错误地放在本实体，metadata 核对后已移除：IsSourceListRequired → A_ProductPlantProcurement；PlndDelryDurnInDays → A_ProductSupplyPlanning / A_ProductPlantMRPArea（真实字段名为 PlannedDeliveryDurationInDays）；ReorderThresholdQuantity → A_ProductSupplyPlanning / A_ProductPlantMRPArea；SafetyStockQuantity → A_ProductSupplyPlanning / A_ProductPlantMRPArea"
       ]
     },
-
     "A_ProductValuation": {
       "description_zh": "产品的评估（会计）视图",
       "description_en": "Product valuation (accounting) view.",
       "underlying_table_hint": "MBEW",
-      "keys": ["Product", "ValuationArea", "ValuationType"],
+      "keys": [
+        "Product",
+        "ValuationArea",
+        "ValuationType"
+      ],
       "fields": [
-        { "name": "Product", "type": "Edm.String", "max_length": 40, "is_key": true, "nullable": false, "description_zh": "产品编号" },
-        { "name": "ValuationArea", "type": "Edm.String", "max_length": 4, "is_key": true, "nullable": false, "description_zh": "评估范围（通常等于 Plant）", "legacy_hint": "MBEW-BWKEY" },
-        { "name": "ValuationType", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "评估类型（无分割评估时为空字符串，注意空串作为主键的一部分）", "legacy_hint": "MBEW-BWTAR" },
-        { "name": "ValuationClass", "type": "Edm.String", "max_length": 4, "is_key": false, "nullable": true, "description_zh": "评估类（决定总账科目确定）", "legacy_hint": "MBEW-BKLAS" },
-        { "name": "InventoryValuationProcedure", "type": "Edm.String", "max_length": 1, "is_key": false, "nullable": true, "description_zh": "价格控制：S=标准价, V=移动平均价", "legacy_hint": "MBEW-VPRSV", "allowed_values": ["S", "V"] },
-        { "name": "StandardPrice", "type": "Edm.Decimal", "max_length": null, "precision": 11, "scale": 2, "is_key": false, "nullable": true, "description_zh": "标准价（价格控制=S 时有效）", "legacy_hint": "MBEW-STPRS" },
-        { "name": "MovingAveragePrice", "type": "Edm.Decimal", "max_length": null, "precision": 11, "scale": 2, "is_key": false, "nullable": true, "description_zh": "移动平均价（价格控制=V 时有效）", "legacy_hint": "MBEW-VERPR" },
-        { "name": "PriceUnitQty", "type": "Edm.Decimal", "max_length": null, "precision": 5, "scale": 0, "is_key": false, "nullable": true, "description_zh": "价格单位（价格对应的数量基数，常见 1/100/1000）", "legacy_hint": "MBEW-PEINH" },
-        { "name": "Currency", "type": "Edm.String", "max_length": 5, "is_key": false, "nullable": true, "description_zh": "货币码（ISO 4217）", "is_computed": true },
-        { "name": "IsMarkedForDeletion", "type": "Edm.Boolean", "max_length": null, "is_key": false, "nullable": true, "description_zh": "评估视图删除标记" }
+        {
+          "name": "Product",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "产品编号",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ValuationArea",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "评估范围（通常等于 Plant）",
+          "legacy_hint": "MBEW-BWKEY",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ValuationType",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "评估类型（无分割评估时为空字符串，注意空串作为主键的一部分）",
+          "legacy_hint": "MBEW-BWTAR",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "ValuationClass",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "评估类（决定总账科目确定）",
+          "legacy_hint": "MBEW-BKLAS",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "InventoryValuationProcedure",
+          "type": "Edm.String",
+          "max_length": 1,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "价格控制：S=标准价, V=移动平均价",
+          "legacy_hint": "MBEW-VPRSV",
+          "allowed_values": [
+            "S",
+            "V"
+          ],
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "StandardPrice",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 12,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "标准价（价格控制=S 时有效）",
+          "legacy_hint": "MBEW-STPRS",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "MovingAveragePrice",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 12,
+          "scale": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "移动平均价（价格控制=V 时有效）",
+          "legacy_hint": "MBEW-VERPR",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "PriceUnitQty",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 5,
+          "scale": 0,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "价格单位（价格对应的数量基数，常见 1/100/1000）",
+          "legacy_hint": "MBEW-PEINH",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        },
+        {
+          "name": "Currency",
+          "type": "Edm.String",
+          "max_length": 5,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "货币码（ISO 4217）",
+          "is_computed": true,
+          "verification_status": "unverified",
+          "verification_note_zh": "本次核对的 metadata 快照中不存在该字段；可能属于更新的 API 版本，或字段名有出入。标注未经一手来源核实。"
+        },
+        {
+          "name": "IsMarkedForDeletion",
+          "type": "Edm.Boolean",
+          "max_length": null,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "评估视图删除标记",
+          "is_creatable": true,
+          "is_updatable": true,
+          "verification_status": "verified"
+        }
       ],
       "notes_zh": [
         "ValuationType 在无分割评估时是空字符串而非 NULL；生成合成数据与做主键去重时必须区分 '' 与 NULL，否则 Splink 阻断会错。"
       ]
     },
-
     "A_MaterialStock": {
       "description_zh": "物料库存主实体（来自 API_MATERIAL_STOCK_SRV，与 Product Master 是不同的 API）",
       "description_en": "Material stock root entity from API_MATERIAL_STOCK_SRV (a different API from Product Master).",
       "underlying_table_hint": "MARD / MCHB 聚合视图",
-      "keys": ["Material"],
+      "keys": [
+        "Material"
+      ],
       "api_note_zh": "该实体属于 API_MATERIAL_STOCK_SRV，字段命名沿用旧的 Material 而非 Product；实际数量明细在子实体 A_MatlStkInAcctMod 中。",
       "fields": [
-        { "name": "Material", "type": "Edm.String", "max_length": 40, "is_key": true, "nullable": false, "description_zh": "物料编号（对应 A_Product.Product）", "cross_domain_ref": "A_Product.Product" }
+        {
+          "name": "Material",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "物料编号（对应 A_Product.Product）",
+          "cross_domain_ref": "A_Product.Product",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        }
       ],
       "navigation_properties": [
-        { "name": "to_MatlStkInAcctMod", "target_entity": "A_MatlStkInAcctMod", "cardinality": "0..*" }
+        {
+          "name": "to_MatlStkInAcctMod",
+          "target_entity": "A_MatlStkInAcctMod",
+          "cardinality": "0..*"
+        }
       ]
     },
-
     "A_MatlStkInAcctMod": {
       "description_zh": "按科目设置分解的物料库存明细（真正带数量的实体）",
       "description_en": "Material stock broken down by account determination / stock type.",
       "underlying_table_hint": "MARD, MCHB, MSKA, MSKU",
       "keys": [
-        "Material", "Plant", "StorageLocation", "Batch",
-        "SDDocument", "SDDocumentItem", "WBSElementInternalID",
-        "SupplierAccountNumber", "CustomerAccountNumber",
-        "InventorySpecialStockType", "InventoryStockType"
+        "Material",
+        "Plant",
+        "StorageLocation",
+        "Batch",
+        "SDDocument",
+        "SDDocumentItem",
+        "WBSElementInternalID",
+        "SupplierAccountNumber",
+        "CustomerAccountNumber",
+        "InventorySpecialStockType",
+        "InventoryStockType"
       ],
       "fields": [
-        { "name": "Material", "type": "Edm.String", "max_length": 40, "is_key": true, "nullable": false, "description_zh": "物料编号" },
-        { "name": "Plant", "type": "Edm.String", "max_length": 4, "is_key": true, "nullable": false, "description_zh": "工厂" },
-        { "name": "StorageLocation", "type": "Edm.String", "max_length": 4, "is_key": true, "nullable": false, "description_zh": "存储地点", "legacy_hint": "MARD-LGORT" },
-        { "name": "Batch", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "批次号（非批次管理物料为空字符串）" },
-        { "name": "SDDocument", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "销售订单号（销售订单库存时使用，否则空串）" },
-        { "name": "SDDocumentItem", "type": "Edm.String", "max_length": 6, "is_key": true, "nullable": false, "description_zh": "销售订单行项目号" },
-        { "name": "WBSElementInternalID", "type": "Edm.String", "max_length": 8, "is_key": true, "nullable": false, "description_zh": "WBS 元素内部 ID（项目库存时使用）" },
-        { "name": "SupplierAccountNumber", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "供应商编号（供应商寄售库存）", "cross_domain_ref": "A_BusinessPartner.BusinessPartner" },
-        { "name": "CustomerAccountNumber", "type": "Edm.String", "max_length": 10, "is_key": true, "nullable": false, "description_zh": "客户编号（客户寄售库存）", "cross_domain_ref": "A_BusinessPartner.BusinessPartner" },
-        { "name": "InventorySpecialStockType", "type": "Edm.String", "max_length": 1, "is_key": true, "nullable": false, "description_zh": "特殊库存标识（K=供应商寄售, E=销售订单库存, Q=项目库存, 空=自有库存）" },
-        { "name": "InventoryStockType", "type": "Edm.String", "max_length": 2, "is_key": true, "nullable": false, "description_zh": "库存类型：01=非限制使用, 02=质检库存, 03=冻结库存" },
-        { "name": "MatlWrhsStkQtyInMatlBaseUnit", "type": "Edm.Decimal", "max_length": null, "precision": 31, "scale": 14, "is_key": false, "nullable": true, "description_zh": "以基本计量单位表示的库存数量" },
-        { "name": "MaterialBaseUnit", "type": "Edm.String", "max_length": 3, "is_key": false, "nullable": true, "description_zh": "物料基本计量单位（应与 A_Product.BaseUnit 一致，不一致即为数据质量问题）" }
+        {
+          "name": "Material",
+          "type": "Edm.String",
+          "max_length": 40,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "物料编号",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "Plant",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "工厂",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "StorageLocation",
+          "type": "Edm.String",
+          "max_length": 4,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "存储地点",
+          "legacy_hint": "MARD-LGORT",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "Batch",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "批次号（非批次管理物料为空字符串）",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "SDDocument",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "销售订单号（销售订单库存时使用，否则空串）",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "SDDocumentItem",
+          "type": "Edm.String",
+          "max_length": 6,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "销售订单行项目号",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "WBSElementInternalID",
+          "type": "Edm.String",
+          "max_length": 8,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "WBS 元素内部 ID（项目库存时使用）",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "SupplierAccountNumber",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "供应商编号（供应商寄售库存）",
+          "cross_domain_ref": "A_BusinessPartner.BusinessPartner",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "CustomerAccountNumber",
+          "type": "Edm.String",
+          "max_length": 10,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "客户编号（客户寄售库存）",
+          "cross_domain_ref": "A_BusinessPartner.BusinessPartner",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "InventorySpecialStockType",
+          "type": "Edm.String",
+          "max_length": 1,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "特殊库存标识（K=供应商寄售, E=销售订单库存, Q=项目库存, 空=自有库存）",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "InventoryStockType",
+          "type": "Edm.String",
+          "max_length": 2,
+          "is_key": true,
+          "nullable": false,
+          "description_zh": "库存类型：01=非限制使用, 02=质检库存, 03=冻结库存",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "MatlWrhsStkQtyInMatlBaseUnit",
+          "type": "Edm.Decimal",
+          "max_length": null,
+          "precision": 31,
+          "scale": 14,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "以基本计量单位表示的库存数量",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        },
+        {
+          "name": "MaterialBaseUnit",
+          "type": "Edm.String",
+          "max_length": 3,
+          "is_key": false,
+          "nullable": true,
+          "description_zh": "物料基本计量单位（应与 A_Product.BaseUnit 一致，不一致即为数据质量问题）",
+          "verification_status": "unverified",
+          "verification_note_zh": "该实体不在本次核对的 metadata 快照中（属另一 OData 服务），标注未经一手来源核实。"
+        }
       ],
       "notes_zh": [
         "该实体是 11 个字段组成的复合主键，且多数键字段用空字符串而非 NULL 表示『不适用』。教学项目中只需生成 Plant + StorageLocation + InventoryStockType 三维的简化子集即可。",
@@ -199,15 +1163,52 @@
       ]
     }
   },
-
   "entity_relationships": [
-    { "from": "A_Product", "to": "A_ProductDescription", "on": ["Product"], "cardinality": "0..*" },
-    { "from": "A_Product", "to": "A_ProductPlant", "on": ["Product"], "cardinality": "0..*" },
-    { "from": "A_Product", "to": "A_ProductValuation", "on": ["Product"], "cardinality": "0..*" },
-    { "from": "A_Product", "to": "A_MaterialStock", "on": [["Product", "Material"]], "cardinality": "0..1", "note_zh": "跨 API 关联，字段名不同名（Product ↔ Material）" },
-    { "from": "A_MaterialStock", "to": "A_MatlStkInAcctMod", "on": ["Material"], "cardinality": "0..*" }
+    {
+      "from": "A_Product",
+      "to": "A_ProductDescription",
+      "on": [
+        "Product"
+      ],
+      "cardinality": "0..*"
+    },
+    {
+      "from": "A_Product",
+      "to": "A_ProductPlant",
+      "on": [
+        "Product"
+      ],
+      "cardinality": "0..*"
+    },
+    {
+      "from": "A_Product",
+      "to": "A_ProductValuation",
+      "on": [
+        "Product"
+      ],
+      "cardinality": "0..*"
+    },
+    {
+      "from": "A_Product",
+      "to": "A_MaterialStock",
+      "on": [
+        [
+          "Product",
+          "Material"
+        ]
+      ],
+      "cardinality": "0..1",
+      "note_zh": "跨 API 关联，字段名不同名（Product ↔ Material）"
+    },
+    {
+      "from": "A_MaterialStock",
+      "to": "A_MatlStkInAcctMod",
+      "on": [
+        "Material"
+      ],
+      "cardinality": "0..*"
+    }
   ],
-
   "carveout_hints_zh": [
     "Product 主键长度 18 → 40 的扩展是最经典的映射陷阱：遗留 18 位物料号迁入后若做过前导零填充 (alpha conversion)，会与新号段产生假重复。",
     "ProductDescription 的 40 字符上限 + CJK 多语言，是 Fit-to-Standard 差异分析里最容易出报告的一条 gap。",

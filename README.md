@@ -39,6 +39,35 @@ python scripts/prefetch_model.py --check
 
 ---
 
+## 为什么用合成数据，而不是公开的实体解析基准集
+
+做实体解析（entity resolution）时，用 Leipzig record linkage benchmark、MusicBrainz、DBLP-Scholar 这类公开基准集是常见做法。这个项目没有这么做，原因是它们解决不了这里的核心问题。
+
+**公开基准集不是 SAP 字段结构。** 本项目的重点根本不是"两条记录是不是同一个实体"这个通用问题，而是**遗留字段如何映射到 SAP A2X 的目标 schema**：`vendor_name` 该落到 `OrganizationBPName1` 还是 `BusinessPartnerName`？`OrganizationBPName1` 只有 40 字符，超长的公司名该溢出到 `Name2` 还是截断？`Country` 是 `CHAR(3)`，`"United States"` 进不去。这些约束只存在于 SAP 的目标 schema 里，任何通用基准集都不具备。
+
+**公开基准集不体现跨国主数据的真实形态。** 德国公司的 `GmbH & Co. KG` 后缀、日本的 `K.K.`、`NNN-NNNN` 邮编、`+49` 电话格式、各国互不相同的税号规则——这些是 carve-out 场景中数据质量问题的主要来源，也是"格式一致性检测必须按国家分组"这个结论的由来。MusicBrainz 里没有这些。
+
+**合成数据同时给了两样东西：精确的 ground truth，和零真实实体的合规性。** `generate_legacy_vendors.py` 在生成脏数据的同时输出 `legacy_vendors_ground_truth.json`（`record_id → 真实实体 id`），Splink 的 precision/recall 可以精确计算，不依赖人工标注，也不受基准集自身标注噪声的影响。而且每一条记录都是伪造的，不存在任何真实公司、真实地址、真实税号——这让"不接触真实客户数据"从一句声明变成了结构上的事实。
+
+代价是合成数据的脏法是我们自己设计的，可能不覆盖真实世界的全部脏法。这是自觉接受的权衡：本项目要演示的是**方法与可解释性**，不是刷某个基准集的分数。
+
+---
+
+## 字段结构参考的核实状态
+
+`schemas/` 下的两个文件不是凭记忆写的。每个字段带 `verification_status`：
+
+- `verified` —— 已对照**一手 `$metadata`** 逐字段核对一致（类型、`MaxLength`、`Nullable`、`sap:creatable` / `sap:updatable`）。来源 EDMX 的仓库、URL 与 sha256 记录在各文件的 `_revision_log` 里，均为公开可访问、无需登录。
+- `unverified` —— 该字段（或其所属实体）不在核对所用的 metadata 快照中，标注仍来自人工整理。文件顶部的 `_verification.unverified_list` 列出全部这类字段。
+
+当前：Business Partner 84/87 verified，Product 61/77 verified（未核实的主要是 `A_MaterialStock` / `A_MatlStkInAcctMod`，它们属于另一个 OData 服务 `API_MATERIAL_STOCK_SRV`）。
+
+**核对是有代价的，也确实抓到了错。** 首轮凭记忆整理的标注里，`ProductOldID` 被标成 18 位（实为 40），`Brand` 标成 2（实为 4），`StandardPrice` / `MovingAveragePrice` 的精度标成 `(11,2)`（实为 `(12,3)`），四个 MRP 字段被错放进 `A_ProductPlant`（实际属于 `A_ProductSupplyPlanning` / `A_ProductPlantProcurement`），`ValidityStartDate` / `ValidityEndDate` 类型标成 `Edm.DateTime`（实为 `Edm.DateTimeOffset`），`BankName` / `SWIFTCode` 漏标了只读。
+
+需要注意：这两份 metadata 都是**快照**（BP 来自集成测试 fixture，Product 来自 2019 年已归档的 iOS 示例），`verified` 的含义是"与该快照一致"，**不是**"与你所在 SAP release 一致"。真实项目请以自己系统的 `$metadata` 为准。
+
+---
+
 ## 目录结构
 
 ```
