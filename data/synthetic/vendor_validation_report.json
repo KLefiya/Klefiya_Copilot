@@ -1,0 +1,2156 @@
+{
+  "_run_info": {
+    "content_sha256": "1aed567ec90c39bd5d96757e7f0f24b8a836d21dbaea6679b9c56a1a02ff847c",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-09T07:05:22+00:00"
+  },
+  "_meta": {
+    "disclaimer": "本报告只诊断并给出建议，不修改源数据、不做任何自动修复。",
+    "orthogonality_note_zh": "semantic_match 与 loadable 是两个正交维度，报告中分别独立表达。semantic_match=true 且 loadable=false 的字段（如 created_date -> CreationDate）映射语义正确但不可作为加载目标，只能作 lineage / 参考，不得记为『通过』。",
+    "reuse_note_zh": "映射结论（阈值、no_confident_target、possible_false_friend）直接沿用 field_mapping 的输出，本工具不重新判定。",
+    "sources": {
+      "legacy": "data\\legacy\\legacy_vendors.json",
+      "schema": "schemas\\business_partner_target_schema.json",
+      "schema_version": "0.3.0",
+      "mapping": "data\\synthetic\\vendor_field_mapping.json",
+      "mapping_content_sha256": "5f3514f54ce10614fa96985e8a221cd51fb316219baf0b359b07868f8480c044"
+    },
+    "record_count": 224,
+    "records_with_issues": 100,
+    "records_clean": 124,
+    "checks_implemented": {
+      "1_readonly_block": "target_not_creatable_or_updatable",
+      "2_required_and_key": "required_field_missing / unmapped_target_key",
+      "3_duplicate_primary_key": "duplicate_primary_key",
+      "4_max_length_overflow": "max_length_overflow",
+      "5_type_parseability": "type_not_parseable",
+      "6_allowed_values": "value_not_in_allowed_values",
+      "7_normalization": "normalization_required",
+      "8_missing_target": "no_target_in_schema"
+    }
+  },
+  "summary": {
+    "by_issue_type": {
+      "mapping_needs_review": 1,
+      "max_length_overflow": 100,
+      "no_target_in_schema": 2,
+      "normalization_required": 1,
+      "possible_false_friend_target": 1,
+      "target_not_creatable_or_updatable": 1,
+      "unmapped_target_key": 7
+    },
+    "by_severity": {
+      "high": 110,
+      "medium": 2,
+      "low": 1
+    },
+    "verdicts": {
+      "loadable_ok": 6,
+      "mapping_ok_but_not_loadable": 1,
+      "needs_human_decision": 2,
+      "no_source": 7,
+      "no_target": 2
+    }
+  },
+  "field_view": [
+    {
+      "legacy_field": "city",
+      "target": "A_BusinessPartnerAddress.CityName",
+      "mapping_status": "suggested",
+      "mapping_confidence": 0.9,
+      "semantic_match": true,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "loadable_ok",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 40,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": []
+    },
+    {
+      "legacy_field": "country",
+      "target": "A_BusinessPartnerAddress.Country",
+      "mapping_status": "suggested",
+      "mapping_confidence": 0.916,
+      "semantic_match": true,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "loadable_ok",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 3,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {
+        "max_length_overflow": 100
+      },
+      "field_issues": [
+        {
+          "issue_type": "normalization_required",
+          "severity": "medium",
+          "field": "country",
+          "detail_zh": "字段 `country` 需先归一化为 ISO 3166-1 alpha-2 代码。当前 14 种写法中有 11 种不符合规范形态（^[A-Z]{2}$），且目标字段上限仅 3 字符。",
+          "non_conforming_values": [
+            {
+              "value": "Deutschland",
+              "count": 19
+            },
+            {
+              "value": "GER",
+              "count": 17
+            },
+            {
+              "value": "Germany",
+              "count": 31
+            },
+            {
+              "value": "JAPAN",
+              "count": 12
+            },
+            {
+              "value": "JPN",
+              "count": 14
+            },
+            {
+              "value": "Japan",
+              "count": 14
+            },
+            {
+              "value": "U.S.A.",
+              "count": 6
+            },
+            {
+              "value": "USA",
+              "count": 18
+            },
+            {
+              "value": "United States",
+              "count": 18
+            },
+            {
+              "value": "de",
+              "count": 19
+            },
+            {
+              "value": "us",
+              "count": 10
+            }
+          ],
+          "suggestion_zh": "建立 ISO 3166-1 alpha-2 归一化映射表，在加载前统一转换；不要截断。"
+        }
+      ]
+    },
+    {
+      "legacy_field": "created_date",
+      "target": "A_BusinessPartner.CreationDate",
+      "mapping_status": "suggested",
+      "mapping_confidence": 0.7494,
+      "semantic_match": true,
+      "loadable": false,
+      "loadable_reason": "target_not_creatable_or_updatable",
+      "verdict": "mapping_ok_but_not_loadable",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.DateTime",
+        "max_length": null,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": false,
+        "is_updatable": false,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "target_not_creatable_or_updatable",
+          "severity": "high",
+          "field": "created_date",
+          "detail_zh": "目标字段 `A_BusinessPartner.CreationDate` 的 sap:creatable 与 sap:updatable 均为 false，不可写入。该字段的映射语义是正确的，但它不能作为加载目标。",
+          "suggestion_zh": "仅可作 lineage / 参考保留，不纳入加载负载；若确需保留源系统的创建时间，改用可写的自定义扩展字段。"
+        }
+      ]
+    },
+    {
+      "legacy_field": "currency",
+      "target": "A_BusinessPartnerBank.BankAccount",
+      "mapping_status": "possible_false_friend",
+      "mapping_confidence": 0.4999,
+      "semantic_match": false,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "needs_human_decision",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 18,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "possible_false_friend_target",
+          "severity": "medium",
+          "field": "currency",
+          "detail_zh": "field_mapping 将 `currency` 标为疑似假朋友：候选 `A_BusinessPartnerBank.BankAccount` 与其零共享词元且未命中 alias。",
+          "suggestion_zh": "人工决策：目标端很可能没有正确落点，不要据此建立映射。"
+        }
+      ]
+    },
+    {
+      "legacy_field": "email",
+      "target": null,
+      "mapping_status": "no_confident_target",
+      "mapping_confidence": 0.3295,
+      "semantic_match": false,
+      "loadable": null,
+      "loadable_reason": "target_missing",
+      "verdict": "no_target",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "no_target_in_schema",
+          "severity": "high",
+          "field": "email",
+          "detail_zh": "字段 `email` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.330）。",
+          "suggestion_zh": "确认是否属于本 schema 未展开的子实体（如 A_AddressEmailAddress / A_AddressPhoneNumber），或作为 Fit-to-Standard 差异项走人工决策。"
+        }
+      ]
+    },
+    {
+      "legacy_field": "legacy_vendor_id",
+      "target": "A_BusinessPartner.BusinessPartnerIDByExtSystem",
+      "mapping_status": "needs_review",
+      "mapping_confidence": 0.5622,
+      "semantic_match": null,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "needs_human_decision",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 20,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "mapping_needs_review",
+          "severity": "low",
+          "field": "legacy_vendor_id",
+          "detail_zh": "映射置信度 0.562（medium），未达 high 档。",
+          "suggestion_zh": "人工确认映射目标后再纳入加载。"
+        }
+      ]
+    },
+    {
+      "legacy_field": "phone",
+      "target": null,
+      "mapping_status": "no_confident_target",
+      "mapping_confidence": 0.3588,
+      "semantic_match": false,
+      "loadable": null,
+      "loadable_reason": "target_missing",
+      "verdict": "no_target",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "no_target_in_schema",
+          "severity": "high",
+          "field": "phone",
+          "detail_zh": "字段 `phone` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.359）。",
+          "suggestion_zh": "确认是否属于本 schema 未展开的子实体（如 A_AddressEmailAddress / A_AddressPhoneNumber），或作为 Fit-to-Standard 差异项走人工决策。"
+        }
+      ]
+    },
+    {
+      "legacy_field": "postal_code",
+      "target": "A_BusinessPartnerAddress.PostalCode",
+      "mapping_status": "suggested",
+      "mapping_confidence": 1.0,
+      "semantic_match": true,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "loadable_ok",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 10,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": []
+    },
+    {
+      "legacy_field": "street",
+      "target": "A_BusinessPartnerAddress.StreetName",
+      "mapping_status": "suggested",
+      "mapping_confidence": 0.9,
+      "semantic_match": true,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "loadable_ok",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 60,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": []
+    },
+    {
+      "legacy_field": "tax_number",
+      "target": "A_BusinessPartnerTaxNumber.BPTaxNumber",
+      "mapping_status": "suggested",
+      "mapping_confidence": 0.7246,
+      "semantic_match": true,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "loadable_ok",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 20,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": []
+    },
+    {
+      "legacy_field": "vendor_name",
+      "target": "A_BusinessPartner.OrganizationBPName1",
+      "mapping_status": "suggested",
+      "mapping_confidence": 0.9,
+      "semantic_match": true,
+      "loadable": true,
+      "loadable_reason": null,
+      "verdict": "loadable_ok",
+      "based_on_unverified": false,
+      "target_constraints": {
+        "type": "Edm.String",
+        "max_length": 40,
+        "nullable": true,
+        "is_key": false,
+        "is_creatable": true,
+        "is_updatable": true,
+        "allowed_values": null,
+        "verification_status": "verified"
+      },
+      "record_issue_counts": {},
+      "field_issues": []
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartner.BusinessPartner",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartner.BusinessPartner",
+          "detail_zh": "目标实体 `A_BusinessPartner` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartnerAddress.AddressID",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartnerAddress.AddressID",
+          "detail_zh": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `AddressID` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartnerAddress.BusinessPartner",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartnerAddress.BusinessPartner",
+          "detail_zh": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartnerBank.BankIdentification",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartnerBank.BankIdentification",
+          "detail_zh": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BankIdentification` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartnerBank.BusinessPartner",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartnerBank.BusinessPartner",
+          "detail_zh": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartnerTaxNumber.BPTaxType",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartnerTaxNumber.BPTaxType",
+          "detail_zh": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BPTaxType` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    },
+    {
+      "legacy_field": null,
+      "target": "A_BusinessPartnerTaxNumber.BusinessPartner",
+      "mapping_status": "unmapped",
+      "mapping_confidence": null,
+      "semantic_match": null,
+      "loadable": null,
+      "loadable_reason": "no_source_field_mapped",
+      "verdict": "no_source",
+      "based_on_unverified": false,
+      "target_constraints": null,
+      "record_issue_counts": {},
+      "field_issues": [
+        {
+          "issue_type": "unmapped_target_key",
+          "severity": "high",
+          "field": "A_BusinessPartnerTaxNumber.BusinessPartner",
+          "detail_zh": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+          "suggestion_zh": "主键需由目标系统的编号范围生成（内部编号），或由外部编号字段 + 编号转换表推导；不能留空。"
+        }
+      ]
+    }
+  ],
+  "record_view": [
+    {
+      "record_id": "V100001",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100002",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100004",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100005",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100006",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100009",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100010",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100011",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100015",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100015X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100017",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100017D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100018D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100018D2",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100019",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100020",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100020X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100023",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100028",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100028D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100030",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "U.S.A.",
+          "detail_zh": "源值长度 6 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100031",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100032",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100035D2",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100036",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100039",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100039D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100040",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100041",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100042",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100043",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100044",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100047",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100048D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100049",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100049X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100050",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100051",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100055",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100056D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100057",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100058",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100060",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100061",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "U.S.A.",
+          "detail_zh": "源值长度 6 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100062",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100063",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "U.S.A.",
+          "detail_zh": "源值长度 6 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100064",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100067",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100071",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100073",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100074",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100075D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100077D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100077D2",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100083",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100083X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100085D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100086",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100087",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100088",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100088D2",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100089",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100090D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100092",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100093",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100094",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100095",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100096",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100096D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100096X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100097D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100098",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100098X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100100",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "U.S.A.",
+          "detail_zh": "源值长度 6 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100102",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Japan",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100106",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100107D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100109",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100117",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100118",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100120",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100121",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100122",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100124",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100126",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "U.S.A.",
+          "detail_zh": "源值长度 6 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100126D2",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "U.S.A.",
+          "detail_zh": "源值长度 6 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100127",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100127D",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100128",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100131",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Deutschland",
+          "detail_zh": "源值长度 11 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100132",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100133",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100135",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100139",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100139X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100141",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100141X",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "JAPAN",
+          "detail_zh": "源值长度 5 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100142",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100147",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "United States",
+          "detail_zh": "源值长度 13 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    },
+    {
+      "record_id": "V100150",
+      "issue_count": 1,
+      "issues": [
+        {
+          "field": "country",
+          "target": "A_BusinessPartnerAddress.Country",
+          "issue_type": "max_length_overflow",
+          "severity": "high",
+          "value": "Germany",
+          "detail_zh": "源值长度 7 超过目标字段 `A_BusinessPartnerAddress.Country` 上限 3。",
+          "suggestion_zh": "优先归一化（如国家名 -> ISO 代码）；确无标准代码时才考虑截断，并评估是否溢出到后续行字段（如 Name2/Name3）。",
+          "based_on_unverified": false
+        }
+      ]
+    }
+  ],
+  "deferred_checks": [
+    {
+      "check": "country_grouped_format_validation",
+      "fields": [
+        "tax_number",
+        "postal_code"
+      ],
+      "status": "not_implemented",
+      "reason_zh": "税号与邮编的格式因国家而异（DE=DE+9位数字 / US=NN-NNNNNNN / JP=13位数字；邮编 DE=5位 / JP=NNN-NNNN / US=NNNNN[-NNNN]）。跨国混合校验必然误报，需先按 country 归一化并分组后再逐组校验。",
+      "blocked_by_zh": "依赖 normalization_required（country）先落地。"
+    }
+  ]
+}

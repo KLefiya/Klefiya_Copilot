@@ -97,6 +97,7 @@ pip install -r requirements.txt
 | 1 | `src/tools/generate_legacy_vendors.py` | `data/legacy/legacy_vendors.json` + ground truth |
 | 2 | `src/tools/data_profile.py` | `data/synthetic/vendor_profile_report.json` |
 | 3 | `src/tools/field_mapping.py` | `data/synthetic/vendor_field_mapping.json` |
+| 4 | `src/tools/pre_migration_validation.py` | `data/synthetic/vendor_validation_report.json` |
 
 按顺序运行即可复现全部产物：
 
@@ -104,7 +105,10 @@ pip install -r requirements.txt
 python src/tools/generate_legacy_vendors.py
 python src/tools/data_profile.py
 python src/tools/field_mapping.py
+python src/tools/pre_migration_validation.py
 ```
+
+迁移前校验把两个**正交**维度分开表达，不混为一谈：`semantic_match`（映射语义是否正确，沿用 field_mapping 的结论）与 `loadable`（目标字段是否可写入，取 `is_creatable or is_updatable`）。典型情形是 `created_date → CreationDate`：语义完全正确，但该字段 `sap:creatable` 与 `sap:updatable` 均为 false，只能作 lineage / 参考，不能记为"通过"。
 
 ## 可复现性
 
