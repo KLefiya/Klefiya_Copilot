@@ -1,4 +1,9 @@
 {
+  "_run_info": {
+    "content_sha256": "2811aab27e2c9d949a5aae97a09189c3d129f19ae396805d13ef22945dfe0ce9",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-09T06:11:50+00:00"
+  },
   "_meta": {
     "disclaimer": "本表全部为映射【建议】，不构成已确定的映射；任何非 high 置信度的条目都必须人工确认。",
     "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",

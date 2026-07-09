@@ -16,7 +16,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import re
 import sys
 from collections import Counter
@@ -232,6 +234,26 @@ def build_quality_flags(fields: dict[str, dict[str, Any]]) -> list[dict[str, Any
 # --------------------------------------------------------------------------
 # 主流程
 # --------------------------------------------------------------------------
+def attach_run_info(report: dict[str, Any]) -> dict[str, Any]:
+    """把不可复现的运行元信息隔离进 _run_info，使报告主体跨次运行字节一致。
+
+    generated_at 每次运行都变，若混在内容主体里就无法做字节级比对。
+    这里把它单独放在 _run_info 区块，并附上主体内容的 sha256，
+    比对时只需忽略 _run_info（或直接比 content_sha256）。
+
+    设 CARVEOPS_OMIT_TIMESTAMP=1 可完全不写入时间戳，让整个文件字节一致。
+    """
+    body = {key: value for key, value in report.items() if key != "_run_info"}
+    canonical = json.dumps(body, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    run_info: dict[str, Any] = {
+        "content_sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+        "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    }
+    if os.environ.get("CARVEOPS_OMIT_TIMESTAMP") != "1":
+        run_info["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return {"_run_info": run_info, **body}
+
+
 def profile_records(
     records: list[dict[str, Any]],
     schema_free_text: set[str] | None = None,
@@ -253,7 +275,6 @@ def profile_records(
 
     return {
         "_meta": {
-            "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "record_count": len(records),
             "field_count": len(field_names),
             "thresholds": {
@@ -282,6 +303,7 @@ def main() -> None:
     report["_meta"]["schema_file"] = (
         str(SCHEMA_PATH.relative_to(PROJECT_ROOT)) if SCHEMA_PATH.exists() else None
     )
+    report = attach_run_info(report)
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
@@ -290,7 +312,8 @@ def main() -> None:
 
     print(f"Records : {report['_meta']['record_count']}")
     print(f"Fields  : {report['_meta']['field_count']}")
-    print(f"Flags   : {len(report['quality_flags'])}\n")
+    print(f"Flags   : {len(report['quality_flags'])}")
+    print(f"Content : sha256 {report['_run_info']['content_sha256'][:16]}\n")
 
     print("Quality flags:")
     for flag in report["quality_flags"]:

@@ -32,7 +32,7 @@ from rapidfuzz import fuzz
 from sentence_transformers import SentenceTransformer
 
 sys.path.insert(0, str(Path(__file__).parent))
-from data_profile import profile_records  # noqa: E402  复用第三步的画像逻辑
+from data_profile import attach_run_info, profile_records  # noqa: E402  复用第三步的逻辑
 
 # --------------------------------------------------------------------------
 # 可调参数
@@ -498,7 +498,7 @@ def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-    report = build_mapping_suggestions()
+    report = attach_run_info(build_mapping_suggestions())
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
@@ -507,7 +507,8 @@ def main() -> None:
 
     print(f"Legacy fields : {len(report['mappings'])}")
     print(f"Target fields : {report['_meta']['target_field_count']}")
-    print(f"Gaps          : {len(report['gaps'])}\n")
+    print(f"Gaps          : {len(report['gaps'])}")
+    print(f"Content       : sha256 {report['_run_info']['content_sha256'][:16]}\n")
 
     header = f"{'legacy field':<18} {'suggested target':<45} {'conf':>6}  {'band':<7} status"
     print(header)
