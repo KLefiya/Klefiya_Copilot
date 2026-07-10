@@ -1,17 +1,17 @@
 {
   "_run_info": {
-    "content_sha256": "ff8533b232ae8f98bfae3b9933de9ee54685c9eafabcd8b3fdf978c5d9282d1b",
+    "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-10T07:38:39+00:00"
+    "generated_at": "2026-07-10T08:33:31+00:00"
   },
   "_meta": {
     "disclaimer": "本报告只标记疑似重复组并给出建议，不修改源数据、不执行任何合并。",
     "method": "Splink 4 (Fellegi-Sunter) · dedupe_only",
-    "preprocessing_zh": "vendor_name 先标准化为 name_norm / name_core / legal_form，country 归一为 ISO 3166-1 alpha-2，再交给 Splink 比对。法律形式表编码的是真实世界的公司法律形式，独立于合成数据生成器。",
+    "preprocessing_zh": "vendor_name -> name_norm / name_core / legal_form；country -> ISO 3166-1 alpha-2；tax_number -> tax_norm（去分隔符）；phone -> phone_norm（只留数字）。标准化后的列同时用于阻断、确定性规则与比较器，三者保持一致——只在比较器里标准化而阻断仍用原始列，标准化就不会作用到候选生成上。法律形式表编码的是真实世界的公司法律形式，独立于合成数据生成器。对 tax_number / phone 做标准化的依据是 data_profile 独立报出的format_consistency 告警，不是 ground truth。",
     "training": {
-      "probability_two_random_records_match": 0.0038537,
+      "probability_two_random_records_match": 0.00435418,
       "deterministic_rules": [
-        "l.tax_number = r.tax_number",
+        "l.tax_norm = r.tax_norm",
         "l.email = r.email",
         "l.name_norm = r.name_norm and l.postal_code = r.postal_code"
       ],
@@ -19,25 +19,56 @@
       "blocking_rules": [
         "name_norm",
         "postal_code",
-        "tax_number",
-        "email"
+        "tax_norm",
+        "email",
+        "city",
+        "name_prefix"
       ],
       "u_estimation": "random_sampling",
       "u_sampling_max_pairs": 10000000.0,
       "u_sampling_seed": 20260709,
-      "m_estimation": "expectation_maximisation (2 passes)",
+      "m_estimation": "expectation_maximisation",
+      "em_training_blocking_rules": [
+        "name_prefix",
+        "city"
+      ],
+      "em_training_note_zh": "EM 的阻断规则刻意避开强精确键（postal_code / name_norm）。用它们圈出的训练对几乎全是干净的重复对，会把 m 系统性地推向『处处一致』，使模型对脏对要求过严。name_prefix 不是任何比较器所用的列，该轮 EM 因此不固定任何参数，且候选集里含大量脏对。",
       "model_diagnostics": {
-        "untrained_levels": [
-          "country_code :: All other comparisons",
-          "legal_form :: All other comparisons",
-          "name_core :: All other comparisons"
-        ],
+        "untrained_levels": [],
         "degenerate_m_equals_one_levels": [
           "country_code :: Exact match on country_code",
-          "legal_form :: Exact match on legal_form",
-          "postal_code :: Exact match on postal_code"
+          "legal_form :: Exact match on legal_form"
         ],
-        "interpretation_zh": "untrained_levels：该比较层在训练数据中从未被观测到，预测时退回默认值。本项目里全部是模糊匹配层（Jaro-Winkler / Levenshtein）——因为标准化之后，真实重复对的名称已经逐字相同，模糊层永远不会命中。 | degenerate_m_equals_one_levels：m=1 表示匹配对中该字段总是完全一致，概率加权退化为硬性一致判断。二者同时出现，说明本数据集没有为概率匹配留下可被利用的模糊性。结论见 evaluation.metric_validity。"
+        "expected_degenerate_columns": [
+          "country_code",
+          "legal_form"
+        ],
+        "unexpected_degenerate_levels": [],
+        "all_comparisons_degenerate": false,
+        "probabilistic_weighting_active": true,
+        "max_positive_evidence_bits": 68.6,
+        "veto_threshold_bits": -20.0,
+        "veto_levels": [
+          {
+            "level": "country_code :: All other comparisons",
+            "m_probability": 4.61049e-107,
+            "u_probability": 0.636571,
+            "match_weight_bits": -352.6
+          },
+          {
+            "level": "legal_form :: All other comparisons",
+            "m_probability": 3.72762e-20,
+            "u_probability": 0.866912,
+            "match_weight_bits": -64.3
+          },
+          {
+            "level": "name_core :: All other comparisons",
+            "m_probability": 1.59672e-16,
+            "u_probability": 0.986387,
+            "match_weight_bits": -52.5
+          }
+        ],
+        "interpretation_zh": "untrained_levels 为空表示每个比较层都被真实观测到过。 | degenerate_m_equals_one_levels：m=1 表示匹配对中该字段总是完全一致；其中 ['country_code', 'legal_form'] 属于【预期】退化——同一家公司不会在两条档案之间更换法律形式或国籍。 | unexpected_degenerate_levels 非空通常意味着 EM 训练集有偏。 | veto_levels：匹配权重低于 -20.0 bit 的层。全部正证据合计仅 68.6 bit，因此落进任一否决层的记录对概率归零，其余字段再吻合也无用。这是 EM 在零观测下把 m 估成 ~0 的产物，不是『该字段不一致就必然不是同一实体』的事实。 | probabilistic_weighting_active 为 false 时，模型退化成一组硬性一致判断。"
       }
     },
     "thresholds": {
@@ -46,25 +77,30 @@
     },
     "sources": {
       "legacy": "data\\legacy\\legacy_vendors.json",
-      "ground_truth": "data\\legacy\\legacy_vendors_ground_truth.json"
+      "ground_truth": "data\\legacy\\legacy_vendors_ground_truth.json",
+      "variant_manifest": "data\\legacy\\legacy_vendors_variant_manifest.json"
     },
     "limitations_zh": [
-      "合成数据的变体记录逐字复制了基础记录的地址、邮编、币种与建档日期，只改名称与国家写法。真实世界的重复记录往往地址也不一致，因此这里的 precision/recall 是乐观估计，不可外推到真实主数据。",
+      "【模型存在一票否决层】见 _meta.training.model_diagnostics.veto_levels。EM 对『匹配对中从未出现过不一致』的比较层把 m 估成 ~0，使该层的匹配权重达到 -52 乃至 -353 bit，而全部正证据合计仅约 +69 bit。后果是：只要一对记录在这类字段上不一致，概率立刻归零，即便税号与城市完全相同也无法挽回。m=0 编码的是『不可能』，而它实际只是『有限样本里没见过』。当前配置下【没有】真实重复对落进否决层，但安全裕度极薄：真实重复对中最低的 name_core Jaro-Winkler 相似度是 0.8167，而兜底层的门槛在 0.80——只差 0.0167。这是台阶设置的运气，不是稳健性。两级台阶（0.95/0.88）的上一版正因此漏掉 2 对。正确缓解是给 m 加平滑下限；splink 4 未暴露该接口，改私有属性不是本项目愿意付的代价，因此选择如实报告。已验证『删掉 legal_form / country_code 比较器』无法消除否决——否决会转移到 name_core 与 tax_norm 上，F1 反降至 0.9505。",
+      "唯一漏掉的一对（V100081 / V100081D，`Ritter Automation GmbH` vs `ritter  autornation gmbh`，OCR 的 m<->rn 混淆）匹配概率 0.9493，比聚类阈值 0.95 低 0.0007。它出现在 borderline_pairs 里。阈值 0.95 是先验选定的常用值，【没有】按 ground truth 调过——把它下调到 0.94 就能拿到满分，但那是拿答案调参，不是模型变好了。",
+      "阻断阶段的 recall 天花板是 99.0%（204 个候选对中覆盖 97/98 对真实重复）。剩下 1 对两条记录同时被打坏（城市各自笔误成不同值、邮编各自错位、税号一缺一有、邮箱全缺、电话两处笔误），任何不做全量两两比较的方案都召不回它。这是数据本身的极端情况，不是为了凑高 recall 就该无限放宽阻断的理由。",
       "λ（两条随机记录匹配的先验概率）由确定性规则 + 假定召回率 0.8 反推。该召回率是假设，不是测量值。",
-      "ground truth 仅用于评估，不参与训练、阻断、阈值选择或聚类。"
+      "ground truth 与 variant_manifest 仅用于评估，不参与训练、阻断、阈值选择或聚类。",
+      "合成数据的脏法由生成器设计，可能不覆盖真实世界的全部脏法。本报告演示的是方法与可解释性，指标不可直接外推到真实主数据。"
     ],
     "country_spellings_unresolved": []
   },
   "summary": {
     "record_count": 224,
-    "predicted_cluster_count": 165,
-    "duplicate_group_count": 46,
-    "records_in_duplicate_groups": 105,
-    "records_unique": 119,
-    "needs_review_count": 9,
+    "predicted_cluster_count": 151,
+    "duplicate_group_count": 50,
+    "records_in_duplicate_groups": 123,
+    "records_unique": 101,
+    "needs_review_count": 3,
+    "borderline_pair_count": 1,
     "group_size_distribution": {
-      "2": 34,
-      "3": 11,
+      "2": 28,
+      "3": 21,
       "4": 1
     }
   },
@@ -73,38 +109,38 @@
     "primary_metric": "cluster_level_duplicate_groups",
     "note_zh": "业务问的是『这几条记录有没有被正确归成同一家供应商』，是 cluster 级问题。cluster_level_all 含 99 个单条 singleton，它们几乎不可能判错，会把指标稀释得虚高；因此主指标取 cluster_level_duplicate_groups（只看真实存在重复的 51 组）。pairwise 一并给出以便与文献对照，但它无法区分『3 条的组拆成 2+1』与『完全没找到』。",
     "cluster_level_duplicate_groups": {
-      "precision": 0.8261,
-      "recall": 0.7451,
-      "f1": 0.7835,
-      "true_positives": 38,
-      "false_positives": 8,
-      "false_negatives": 13,
-      "exactly_recovered": 38,
-      "predicted_clusters": 46,
+      "precision": 1.0,
+      "recall": 0.9804,
+      "f1": 0.9901,
+      "true_positives": 50,
+      "false_positives": 0,
+      "false_negatives": 1,
+      "exactly_recovered": 50,
+      "predicted_clusters": 50,
       "true_clusters": 51
     },
     "cluster_level_all": {
-      "precision": 0.8303,
-      "recall": 0.9133,
-      "f1": 0.8698,
-      "true_positives": 137,
-      "false_positives": 28,
-      "false_negatives": 13,
-      "exactly_recovered": 137,
-      "predicted_clusters": 165,
+      "precision": 0.9868,
+      "recall": 0.9933,
+      "f1": 0.99,
+      "true_positives": 149,
+      "false_positives": 2,
+      "false_negatives": 1,
+      "exactly_recovered": 149,
+      "predicted_clusters": 151,
       "true_clusters": 150
     },
     "pairwise": {
       "precision": 1.0,
-      "recall": 0.7449,
-      "f1": 0.8538,
-      "true_positives": 73,
+      "recall": 0.9898,
+      "f1": 0.9949,
+      "true_positives": 97,
       "false_positives": 0,
-      "false_negatives": 25
+      "false_negatives": 1
     },
     "error_breakdown": {
-      "exact": 137,
-      "split": 28,
+      "exact": 149,
+      "split": 2,
       "merged": 0,
       "meaning_zh": {
         "exact": "预测组与某个真实实体的记录集合完全一致。",
@@ -112,41 +148,139 @@
         "merged": "多个真实实体的记录被错并进同一预测组（误配）。"
       }
     },
+    "blocking": {
+      "note_zh": "阻断阶段漏掉的记录对，后续无论模型多好都无法召回——它给 recall 定了天花板。放宽阻断能抬高天花板，代价是候选对（即打分次数）增加。二者都列在这里。",
+      "baseline": {
+        "rules": [
+          "name_norm",
+          "postal_code",
+          "tax_number",
+          "email"
+        ],
+        "candidate_pairs": 86,
+        "candidate_pairs_share_of_all": 0.00344,
+        "true_pairs_covered": 85,
+        "true_pairs_total": 98,
+        "recall_ceiling": 0.8673
+      },
+      "widened": {
+        "rules": [
+          "name_norm",
+          "postal_code",
+          "tax_norm",
+          "email",
+          "city",
+          "name_prefix"
+        ],
+        "candidate_pairs": 204,
+        "candidate_pairs_share_of_all": 0.00817,
+        "true_pairs_covered": 97,
+        "true_pairs_total": 98,
+        "recall_ceiling": 0.9898
+      },
+      "rejected_alternative": {
+        "rules": [
+          "country_code+legal_form"
+        ],
+        "reason_zh": "该规则可把天花板抬到 100%，但候选对从 204 涨到 3324（全部可能对的 13.3%），为多召回 1 对而放大 16 倍计算量，是边际收益崩溃。不采用。"
+      },
+      "excluded_rule_phone_zh": "phone 单独可覆盖 57 对真实重复对，但这些对已全部被其它规则覆盖，加入后候选对数量不变（121 -> 121），故不纳入。"
+    },
+    "recall_by_dirt_level": {
+      "definition_zh": "recall = 该档中被归入其所属供应商簇的重复记录数 / 该档重复记录总数。基础记录本身不计入。",
+      "by_level": {
+        "exact_duplicate": {
+          "recovered": 11,
+          "total": 11,
+          "recall": 1.0
+        },
+        "clean": {
+          "recovered": 21,
+          "total": 21,
+          "recall": 1.0
+        },
+        "moderate": {
+          "recovered": 20,
+          "total": 20,
+          "recall": 1.0
+        },
+        "dirty": {
+          "recovered": 21,
+          "total": 22,
+          "recall": 0.9545
+        }
+      }
+    },
     "metric_validity": {
-      "verdict": "not_informative",
-      "splink_beaten_or_matched_by_trivial_baselines": [
-        "group_by_postal_code"
-      ],
-      "fields_identical_in_every_true_duplicate_pair": [
-        "currency"
-      ],
-      "field_agreement_within_true_duplicates": {
-        "true_duplicate_pairs": 98,
-        "identical_rate": {
-          "vendor_name": 0.1122,
-          "country": 0.3061,
-          "city": 0.898,
-          "street": 0.6327,
-          "postal_code": 0.7653,
-          "tax_number": 0.5816,
-          "email": 0.5204,
-          "phone": 0.5816,
-          "currency": 1.0,
-          "created_date": 0.6122
+      "verdict": "informative",
+      "leak_criterion_zh": "某字段单独 `GROUP BY` 的 cluster 级 F1 ≥ 0.99 即判定它泄漏了 ground truth。只看『组内一致率 100%』会误判——currency 满足它却毫无区分度。",
+      "fields_that_leak_ground_truth": [],
+      "splink_beaten_or_matched_by_trivial_baselines": [],
+      "splink_f1": 0.9901,
+      "best_trivial_baseline_f1": 0.8041,
+      "single_field_baselines": {
+        "vendor_name": {
+          "identical_rate_within_true_duplicates": 0.1122,
+          "group_by_f1": 0.2857,
+          "group_by_precision": 0.75,
+          "group_by_recall": 0.1765
+        },
+        "country": {
+          "identical_rate_within_true_duplicates": 0.3061,
+          "group_by_f1": 0.0,
+          "group_by_precision": 0.0,
+          "group_by_recall": 0.0
+        },
+        "city": {
+          "identical_rate_within_true_duplicates": 0.898,
+          "group_by_f1": 0.72,
+          "group_by_precision": 0.7347,
+          "group_by_recall": 0.7059
+        },
+        "street": {
+          "identical_rate_within_true_duplicates": 0.6327,
+          "group_by_f1": 0.6818,
+          "group_by_precision": 0.8108,
+          "group_by_recall": 0.5882
+        },
+        "postal_code": {
+          "identical_rate_within_true_duplicates": 0.7653,
+          "group_by_f1": 0.8041,
+          "group_by_precision": 0.8478,
+          "group_by_recall": 0.7647
+        },
+        "tax_number": {
+          "identical_rate_within_true_duplicates": 0.5816,
+          "group_by_f1": 0.5843,
+          "group_by_precision": 0.6842,
+          "group_by_recall": 0.5098
+        },
+        "email": {
+          "identical_rate_within_true_duplicates": 0.5204,
+          "group_by_f1": 0.5682,
+          "group_by_precision": 0.6757,
+          "group_by_recall": 0.4902
+        },
+        "phone": {
+          "identical_rate_within_true_duplicates": 0.5816,
+          "group_by_f1": 0.6222,
+          "group_by_precision": 0.7179,
+          "group_by_recall": 0.549
+        },
+        "currency": {
+          "identical_rate_within_true_duplicates": 1.0,
+          "group_by_f1": 0.0,
+          "group_by_precision": 0.0,
+          "group_by_recall": 0.0
+        },
+        "created_date": {
+          "identical_rate_within_true_duplicates": 0.6122,
+          "group_by_f1": 0.6,
+          "group_by_precision": 0.6923,
+          "group_by_recall": 0.5294
         }
       },
-      "trivial_baselines": {
-        "group_by_postal_code": {
-          "precision": 0.8478,
-          "recall": 0.7647,
-          "f1": 0.8041,
-          "true_positives": 39,
-          "false_positives": 7,
-          "false_negatives": 12,
-          "exactly_recovered": 39,
-          "predicted_clusters": 46,
-          "true_clusters": 51
-        },
+      "composite_baselines": {
         "group_by_name_norm": {
           "precision": 0.6364,
           "recall": 0.4118,
@@ -168,23 +302,31 @@
           "exactly_recovered": 24,
           "predicted_clusters": 33,
           "true_clusters": 51
+        },
+        "group_by_city_and_postal_code": {
+          "precision": 0.8182,
+          "recall": 0.7059,
+          "f1": 0.7579,
+          "true_positives": 36,
+          "false_positives": 8,
+          "false_negatives": 15,
+          "exactly_recovered": 36,
+          "predicted_clusters": 44,
+          "true_clusters": 51
         }
       },
-      "warning_zh": "⚠ 本数据集上的 precision/recall 不构成模型能力的证据。字段 ['currency'] 在【每一对】真实重复记录中都逐字相同——合成数据生成器构造变体时只改写 vendor_name 与 country，其余字段整条复制。因此 `group_by_postal_code` 就能取得与 Splink 相同的 F1。同时模型诊断显示所有比较器的 m 均退化为 1、模糊匹配层从未被观测到（见 _meta.training.model_diagnostics），即概率匹配的机制并未被真正触发。要让这套指标具备意义，需要在生成器中注入字符级噪声（拼写错误、字符换位、地址缩写、邮编错位），而不是只注入可被标准化完全还原的格式变化。"
+      "verdict_zh": "指标具备区分力：没有任何单字段 `GROUP BY` 能复原 ground truth（最佳平凡基线 F1 = 0.8041，Splink = 0.9901）。重复记录的字段已不再逐字相同，模型必须真正做概率匹配才能找回它们。"
     }
   },
   "duplicate_groups": [
     {
       "group_id": "GV100003",
       "size": 2,
-      "needs_review": true,
-      "review_reasons": [
-        "组内最弱匹配概率 0.9869 低于复核阈值 0.99。",
-        "强标识符 `tax_number` 在组内取值冲突：['85-9650149', '859650149']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
-        "min_match_probability": 0.986888,
-        "mean_match_probability": 0.986888,
+        "min_match_probability": 0.999999,
+        "mean_match_probability": 0.999999,
         "direct_edges": 1,
         "possible_edges": 1,
         "formed_by_transitive_closure": false
@@ -316,14 +458,14 @@
     },
     {
       "group_id": "GV100005",
-      "size": 2,
+      "size": 3,
       "needs_review": false,
       "review_reasons": [],
       "confidence": {
-        "min_match_probability": 0.999367,
-        "mean_match_probability": 0.999367,
-        "direct_edges": 1,
-        "possible_edges": 1,
+        "min_match_probability": 0.999898,
+        "mean_match_probability": 0.999943,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -365,12 +507,31 @@
           "name_diff_from_canonical": [
             "different_name"
           ]
+        },
+        {
+          "vendor_name": "Barron  Sppuplyy Corp",
+          "country": "us",
+          "city": "Phillipsfort",
+          "street": "036 Medina Gateway Ste. 526",
+          "postal_code": null,
+          "tax_number": "12 5346539",
+          "email": "sales@barron-supply.com",
+          "phone": "585-653-6838",
+          "currency": "USD",
+          "created_date": "20110511",
+          "legacy_vendor_id": "V100005D2",
+          "is_canonical": false,
+          "name_norm": "barron sppuplyy corp",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
         }
       ],
       "field_agreement": {
         "vendor_name": {
           "agrees": false,
           "distinct_values": [
+            "Barron  Sppuplyy Corp",
             "Barron Supply Corp.",
             "Barron Suppyl Corp.   "
           ],
@@ -380,7 +541,8 @@
           "agrees": false,
           "distinct_values": [
             "US",
-            "United States"
+            "United States",
+            "us"
           ],
           "missing_count": 0
         },
@@ -394,6 +556,7 @@
         "street": {
           "agrees": false,
           "distinct_values": [
+            "036 Medina Gateway Ste. 526",
             "036 Medina Gateway Suite 526",
             "736 Medina Gateway Ste. 526"
           ],
@@ -404,19 +567,21 @@
           "distinct_values": [
             "69138"
           ],
-          "missing_count": 0
+          "missing_count": 1
         },
         "tax_number": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "12 5346539",
             "12-5346539"
           ],
           "missing_count": 1
         },
         "email": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "info@barron-supply.com"
+            "info@barron-supply.com",
+            "sales@barron-supply.com"
           ],
           "missing_count": 1
         },
@@ -424,7 +589,8 @@
           "agrees": false,
           "distinct_values": [
             "585-603-6830",
-            "585-603-6838"
+            "585-603-6838",
+            "585-653-6838"
           ],
           "missing_count": 0
         },
@@ -445,7 +611,7 @@
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100005"
         ]
@@ -604,10 +770,8 @@
     {
       "group_id": "GV100016",
       "size": 3,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `tax_number` 在组内取值冲突：['DE 229888629', 'DE229888629']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
         "min_match_probability": 1.0,
         "mean_match_probability": 1.0,
@@ -1319,11 +1483,8 @@
     {
       "group_id": "GV100025",
       "size": 3,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `tax_number` 在组内取值冲突：['7666-803595616', '7666803595616']。同一实体不应如此。",
-        "强标识符 `email` 在组内取值冲突：['info@yoshida-kogyo.jp', 'vertrieb@yoshida-kogyo.jp']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
         "min_match_probability": 1.0,
         "mean_match_probability": 1.0,
@@ -1475,6 +1636,164 @@
         "verdict": "exact",
         "true_cluster_ids": [
           "V100025"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100028",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 0.994828,
+        "mean_match_probability": 0.998259,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100028",
+        "vendor_name": "Yoshida Shoji Co., Ltd.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Yoshida Shoji Co., Ltd.",
+          "country": "Japan",
+          "city": "荒川区",
+          "street": "天神島40丁目7番20号",
+          "postal_code": "122-0486",
+          "tax_number": "3934506752082",
+          "email": "info@yoshida-shoji.co.jp",
+          "phone": "090-6528-0032",
+          "currency": "JPY",
+          "created_date": "20120423",
+          "legacy_vendor_id": "V100028",
+          "is_canonical": true,
+          "name_norm": "yoshida shoji co_ltd",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": " TOSHIDA SHOJI CO., LTD.   ",
+          "country": "JAPAN",
+          "city": "荒川区",
+          "street": "天神島40丁目7番20号",
+          "postal_code": "122-2486",
+          "tax_number": "3934506752082",
+          "email": "info@yoshida-shoji.co.jp",
+          "phone": "090-6528-0032",
+          "currency": "JPY",
+          "created_date": "20120423",
+          "legacy_vendor_id": "V100028D",
+          "is_canonical": false,
+          "name_norm": "toshida shoji co_ltd",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "Yoshicap  Shoji Co., Ltd.",
+          "country": "JPN",
+          "city": "荒川区",
+          "street": "天神島40丁目7番20号",
+          "postal_code": null,
+          "tax_number": null,
+          "email": "kontakt@yoshida-shoji.co.jp",
+          "phone": "390-6528-0032",
+          "currency": "JPY",
+          "created_date": "20120919",
+          "legacy_vendor_id": "V100028D2",
+          "is_canonical": false,
+          "name_norm": "yoshicap shoji co_ltd",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            " TOSHIDA SHOJI CO., LTD.   ",
+            "Yoshicap  Shoji Co., Ltd.",
+            "Yoshida Shoji Co., Ltd."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JAPAN",
+            "JPN",
+            "Japan"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "荒川区"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "天神島40丁目7番20号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": false,
+          "distinct_values": [
+            "122-0486",
+            "122-2486"
+          ],
+          "missing_count": 1
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "3934506752082"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": false,
+          "distinct_values": [
+            "info@yoshida-shoji.co.jp",
+            "kontakt@yoshida-shoji.co.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "090-6528-0032",
+            "390-6528-0032"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20120423",
+            "20120919"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100028"
         ]
       }
     },
@@ -1637,10 +1956,8 @@
     {
       "group_id": "GV100037",
       "size": 2,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `tax_number` 在组内取值冲突：['DE 763285078', 'DE763285078']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
         "min_match_probability": 1.0,
         "mean_match_probability": 1.0,
@@ -2216,16 +2533,16 @@
     },
     {
       "group_id": "GV100048",
-      "size": 2,
+      "size": 3,
       "needs_review": true,
       "review_reasons": [
-        "强标识符 `tax_number` 在组内取值冲突：['DE 849372766', 'DE849372766']。同一实体不应如此。"
+        "组内最弱匹配概率 0.9507 低于复核阈值 0.99。"
       ],
       "confidence": {
-        "min_match_probability": 1.0,
-        "mean_match_probability": 1.0,
-        "direct_edges": 1,
-        "possible_edges": 1,
+        "min_match_probability": 0.950726,
+        "mean_match_probability": 0.967151,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -2251,6 +2568,24 @@
           "name_diff_from_canonical": []
         },
         {
+          "vendor_name": "  dhön chernis gmbh",
+          "country": "Germany",
+          "city": "Parsberg",
+          "street": "Vinzenz-Schäfer-Pl. 801",
+          "postal_code": "66156",
+          "tax_number": "DE 849372766",
+          "email": null,
+          "phone": "04952 38390",
+          "currency": "EUR",
+          "created_date": "20190921",
+          "legacy_vendor_id": "V100048D",
+          "is_canonical": false,
+          "name_norm": "dhon chernis gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
           "vendor_name": "   Döhn Chemiie GmbH.",
           "country": "de",
           "city": "Parsberg",
@@ -2274,13 +2609,15 @@
           "agrees": false,
           "distinct_values": [
             "   Döhn Chemiie GmbH.",
+            "  dhön chernis gmbh",
             "Döhn Chemie GmbH"
           ],
           "missing_count": 0
         },
         "country": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "Germany",
             "de"
           ],
           "missing_count": 0
@@ -2293,16 +2630,18 @@
           "missing_count": 0
         },
         "street": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "Vinzenz-Schäfer-Pl. 801",
             "Vinzenz-Schäfer-Platz 801"
           ],
           "missing_count": 0
         },
         "postal_code": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "46156"
+            "46156",
+            "66156"
           ],
           "missing_count": 0
         },
@@ -2319,12 +2658,13 @@
           "distinct_values": [
             "info@doehn-chemie.com"
           ],
-          "missing_count": 0
+          "missing_count": 1
         },
         "phone": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "04922 38390"
+            "04922 38390",
+            "04952 38390"
           ],
           "missing_count": 0
         },
@@ -2336,15 +2676,16 @@
           "missing_count": 0
         },
         "created_date": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "20151231"
+            "20151231",
+            "20190921"
           ],
           "missing_count": 0
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100048"
         ]
@@ -2482,15 +2823,17 @@
     },
     {
       "group_id": "GV100052",
-      "size": 2,
-      "needs_review": false,
-      "review_reasons": [],
+      "size": 3,
+      "needs_review": true,
+      "review_reasons": [
+        "该组由传递闭包形成（2/3 条直接边），并非两两都被判为匹配。"
+      ],
       "confidence": {
-        "min_match_probability": 1.0,
-        "mean_match_probability": 1.0,
-        "direct_edges": 1,
-        "possible_edges": 1,
-        "formed_by_transitive_closure": false
+        "min_match_probability": 0.999574,
+        "mean_match_probability": 0.999787,
+        "direct_edges": 2,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": true
       },
       "canonical_suggestion": {
         "legacy_vendor_id": "V100052",
@@ -2533,12 +2876,31 @@
             "case",
             "whitespace"
           ]
+        },
+        {
+          "vendor_name": "  FRANCIS MATWRIALS INC.",
+          "country": "US",
+          "city": "Clarkland",
+          "street": "99192 Carter Mills Ste. 000",
+          "postal_code": "18312",
+          "tax_number": null,
+          "email": "contact@francis-materials.com",
+          "phone": "(270)416-2590",
+          "currency": "USD",
+          "created_date": "20101214",
+          "legacy_vendor_id": "V100052D2",
+          "is_canonical": false,
+          "name_norm": "francis matwrials inc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
         }
       ],
       "field_agreement": {
         "vendor_name": {
           "agrees": false,
           "distinct_values": [
+            "  FRANCIS MATWRIALS INC.",
             "FRANCIS  MATERIALS INCORPORATED",
             "Francis Materials Inc."
           ],
@@ -2562,14 +2924,16 @@
         "street": {
           "agrees": false,
           "distinct_values": [
+            "99192 Carter Mills Ste. 000",
             "99192 Carter Mills Ste. 300",
             "99192 Carter Mills Suite 000"
           ],
           "missing_count": 0
         },
         "postal_code": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "18312",
             "18316"
           ],
           "missing_count": 0
@@ -2577,19 +2941,21 @@
         "tax_number": {
           "agrees": true,
           "distinct_values": [],
-          "missing_count": 2
+          "missing_count": 3
         },
         "email": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "contact@francis-materials.com",
             "info@francis-materials.com"
           ],
           "missing_count": 0
         },
         "phone": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "(270)416-2550"
+            "(270)416-2550",
+            "(270)416-2590"
           ],
           "missing_count": 0
         },
@@ -2601,15 +2967,16 @@
           "missing_count": 0
         },
         "created_date": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "20080714"
+            "20080714",
+            "20101214"
           ],
           "missing_count": 0
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100052"
         ]
@@ -3319,10 +3686,8 @@
     {
       "group_id": "GV100077",
       "size": 3,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `tax_number` 在组内取值冲突：['DE 022181741', 'DE022181741']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
         "min_match_probability": 1.0,
         "mean_match_probability": 1.0,
@@ -3611,6 +3976,170 @@
       }
     },
     {
+      "group_id": "GV100082",
+      "size": 3,
+      "needs_review": true,
+      "review_reasons": [
+        "该组由传递闭包形成（2/3 条直接边），并非两两都被判为匹配。"
+      ],
+      "confidence": {
+        "min_match_probability": 0.99046,
+        "mean_match_probability": 0.995192,
+        "direct_edges": 2,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": true
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100082",
+        "vendor_name": "Steuer Kunststoff GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Steuer Kunststoff GmbH",
+          "country": "DE",
+          "city": "Ahaus",
+          "street": "Edit-Kabus-Ring 61",
+          "postal_code": "94788",
+          "tax_number": "DE161220319",
+          "email": "info@steuer-kunststoff.de",
+          "phone": "0308484100",
+          "currency": "EUR",
+          "created_date": "20111012",
+          "legacy_vendor_id": "V100082",
+          "is_canonical": true,
+          "name_norm": "steuer kunststoff gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Setuer Kuntstofv GmbH ",
+          "country": "GER",
+          "city": "Ahajs",
+          "street": "Edit-Kabus-Ring 69",
+          "postal_code": "94748",
+          "tax_number": "DE161220319",
+          "email": null,
+          "phone": "0308464100",
+          "currency": "EUR",
+          "created_date": "20130928",
+          "legacy_vendor_id": "V100082D",
+          "is_canonical": false,
+          "name_norm": "setuer kuntstofv gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": " STEUER KUNNSSTTOFF GMBH",
+          "country": "GER",
+          "city": "Ahaus",
+          "street": "Edit-Kabus-Ring 01",
+          "postal_code": "34788",
+          "tax_number": null,
+          "email": null,
+          "phone": "0305484100",
+          "currency": "EUR",
+          "created_date": "20111130",
+          "legacy_vendor_id": "V100082D2",
+          "is_canonical": false,
+          "name_norm": "steuer kunnssttoff gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            " STEUER KUNNSSTTOFF GMBH",
+            "Setuer Kuntstofv GmbH ",
+            "Steuer Kunststoff GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "GER"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": false,
+          "distinct_values": [
+            "Ahajs",
+            "Ahaus"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Edit-Kabus-Ring 01",
+            "Edit-Kabus-Ring 61",
+            "Edit-Kabus-Ring 69"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": false,
+          "distinct_values": [
+            "34788",
+            "94748",
+            "94788"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE161220319"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@steuer-kunststoff.de"
+          ],
+          "missing_count": 2
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "0305484100",
+            "0308464100",
+            "0308484100"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20111012",
+            "20111130",
+            "20130928"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100082"
+        ]
+      }
+    },
+    {
       "group_id": "GV100083",
       "size": 2,
       "needs_review": false,
@@ -3746,8 +4275,8 @@
       "needs_review": false,
       "review_reasons": [],
       "confidence": {
-        "min_match_probability": 0.999998,
-        "mean_match_probability": 0.999998,
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
         "direct_edges": 1,
         "possible_edges": 1,
         "formed_by_transitive_closure": false
@@ -3879,14 +4408,14 @@
     },
     {
       "group_id": "GV100088",
-      "size": 2,
+      "size": 3,
       "needs_review": false,
       "review_reasons": [],
       "confidence": {
-        "min_match_probability": 1.0,
+        "min_match_probability": 0.999999,
         "mean_match_probability": 1.0,
-        "direct_edges": 1,
-        "possible_edges": 1,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -3912,6 +4441,24 @@
           "name_diff_from_canonical": []
         },
         {
+          "vendor_name": "RING  LOISTIJ GMBH ",
+          "country": "GER",
+          "city": "Regen",
+          "street": "Ljudmila-Ziegert-Gasse 7",
+          "postal_code": "48146",
+          "tax_number": "DE898850122",
+          "email": null,
+          "phone": "+49(0) 973406202",
+          "currency": "EUR",
+          "created_date": "20171210",
+          "legacy_vendor_id": "V100088D",
+          "is_canonical": false,
+          "name_norm": "ring loistij gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
           "vendor_name": "RING LOGISTIIK GMBH ",
           "country": "Germany",
           "city": "Regen",
@@ -3934,6 +4481,7 @@
         "vendor_name": {
           "agrees": false,
           "distinct_values": [
+            "RING  LOISTIJ GMBH ",
             "RING LOGISTIIK GMBH ",
             "Ring Logistik GmbH"
           ],
@@ -3943,6 +4491,7 @@
           "agrees": false,
           "distinct_values": [
             "Deutschland",
+            "GER",
             "Germany"
           ],
           "missing_count": 0
@@ -3955,16 +4504,18 @@
           "missing_count": 0
         },
         "street": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "Ljudmila-Ziegert-Gasse 0"
+            "Ljudmila-Ziegert-Gasse 0",
+            "Ljudmila-Ziegert-Gasse 7"
           ],
           "missing_count": 0
         },
         "postal_code": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "48141"
+            "48141",
+            "48146"
           ],
           "missing_count": 0
         },
@@ -3980,7 +4531,7 @@
           "distinct_values": [
             "info@ring-logistik.de"
           ],
-          "missing_count": 0
+          "missing_count": 1
         },
         "phone": {
           "agrees": true,
@@ -3997,15 +4548,16 @@
           "missing_count": 0
         },
         "created_date": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "20150116"
+            "20150116",
+            "20171210"
           ],
           "missing_count": 0
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100088"
         ]
@@ -4014,10 +4566,8 @@
     {
       "group_id": "GV100090",
       "size": 2,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `email` 在组内取值冲突：['contact@hale-technologies.net', 'info@hale-technologies.net']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
         "min_match_probability": 1.0,
         "mean_match_probability": 1.0,
@@ -4606,16 +5156,14 @@
     },
     {
       "group_id": "GV100100",
-      "size": 2,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `email` 在组内取值冲突：['info@morris-manufacturing.com', 'vertrieb@morris-manufacturing.com']。同一实体不应如此。"
-      ],
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
-        "min_match_probability": 0.999999,
-        "mean_match_probability": 0.999999,
-        "direct_edges": 1,
-        "possible_edges": 1,
+        "min_match_probability": 0.999033,
+        "mean_match_probability": 0.999677,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -4641,6 +5189,24 @@
           "name_diff_from_canonical": []
         },
         {
+          "vendor_name": "Morrris  Mannuufacturing LLC",
+          "country": "USA",
+          "city": "North Steve",
+          "street": "736 Barnett Freeway",
+          "postal_code": "23099",
+          "tax_number": "59-3466641",
+          "email": "sales@morris-manufacturing.com",
+          "phone": "(667)379-9162x53306",
+          "currency": "USD",
+          "created_date": "19980829",
+          "legacy_vendor_id": "V100100D",
+          "is_canonical": false,
+          "name_norm": "morrris mannuufacturing llc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
           "vendor_name": "MORRIS MANUFACTURNG LLC",
           "country": "US",
           "city": "North Steve",
@@ -4664,7 +5230,8 @@
           "agrees": false,
           "distinct_values": [
             "MORRIS MANUFACTURNG LLC",
-            "Morris Manufacturing LLC"
+            "Morris Manufacturing LLC",
+            "Morrris  Mannuufacturing LLC"
           ],
           "missing_count": 0
         },
@@ -4672,7 +5239,8 @@
           "agrees": false,
           "distinct_values": [
             "U.S.A.",
-            "US"
+            "US",
+            "USA"
           ],
           "missing_count": 0
         },
@@ -4692,9 +5260,10 @@
           "missing_count": 0
         },
         "postal_code": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "23029"
+            "23029",
+            "23099"
           ],
           "missing_count": 0
         },
@@ -4709,14 +5278,16 @@
           "agrees": false,
           "distinct_values": [
             "info@morris-manufacturing.com",
+            "sales@morris-manufacturing.com",
             "vertrieb@morris-manufacturing.com"
           ],
           "missing_count": 0
         },
         "phone": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "(667)379-9162x53006"
+            "(667)379-9162x53006",
+            "(667)379-9162x53306"
           ],
           "missing_count": 1
         },
@@ -4737,7 +5308,7 @@
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100100"
         ]
@@ -4880,10 +5451,8 @@
     {
       "group_id": "GV100107",
       "size": 2,
-      "needs_review": true,
-      "review_reasons": [
-        "强标识符 `tax_number` 在组内取值冲突：['DE 136268908', 'DE136268908']。同一实体不应如此。"
-      ],
+      "needs_review": false,
+      "review_reasons": [],
       "confidence": {
         "min_match_probability": 1.0,
         "mean_match_probability": 1.0,
@@ -5016,7 +5585,7 @@
       }
     },
     {
-      "group_id": "GV100120",
+      "group_id": "GV100116",
       "size": 2,
       "needs_review": false,
       "review_reasons": [],
@@ -5025,6 +5594,143 @@
         "mean_match_probability": 1.0,
         "direct_edges": 1,
         "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100116",
+        "vendor_name": "Kruschwitz Werkzeugbau GmbH & Co. KG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Kruschwitz Werkzeugbau GmbH & Co. KG",
+          "country": "DE",
+          "city": "Havelberg",
+          "street": "Hübelplatz 6-7",
+          "postal_code": "41552",
+          "tax_number": "DE258575010",
+          "email": "info@kruschwitz-werkzeugbau.de",
+          "phone": "+49(0)9896063458",
+          "currency": "EUR",
+          "created_date": "20161228",
+          "legacy_vendor_id": "V100116",
+          "is_canonical": true,
+          "name_norm": "kruschwitz werkzeugbau gmbh_co_kg",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Kruhcwitz Werkzeugbau GmbH & Co. KG ",
+          "country": "de",
+          "city": "Havelberg",
+          "street": "Hübelplatz 6-8",
+          "postal_code": null,
+          "tax_number": "DE 258575010",
+          "email": null,
+          "phone": "+49(0)9891063458",
+          "currency": "EUR",
+          "created_date": "20161228",
+          "legacy_vendor_id": "V100116D",
+          "is_canonical": false,
+          "name_norm": "kruhcwitz werkzeugbau gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Kruhcwitz Werkzeugbau GmbH & Co. KG ",
+            "Kruschwitz Werkzeugbau GmbH & Co. KG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Havelberg"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Hübelplatz 6-7",
+            "Hübelplatz 6-8"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "41552"
+          ],
+          "missing_count": 1
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "DE 258575010",
+            "DE258575010"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@kruschwitz-werkzeugbau.de"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "+49(0)9891063458",
+            "+49(0)9896063458"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20161228"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100116"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100120",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -5050,6 +5756,24 @@
           "name_diff_from_canonical": []
         },
         {
+          "vendor_name": "   Velasqquez Fabrication LLC",
+          "country": "USA",
+          "city": "Kathleenton",
+          "street": "47121 Brian Flat",
+          "postal_code": "86130",
+          "tax_number": "56-7913902",
+          "email": null,
+          "phone": "836.424.8243x0950",
+          "currency": "USD",
+          "created_date": "20070906",
+          "legacy_vendor_id": "V100120D",
+          "is_canonical": false,
+          "name_norm": "velasqquez fabrication llc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
           "vendor_name": "Velasquez Fabrication L.L.C",
           "country": "USA",
           "city": "Kathleenton",
@@ -5072,6 +5796,7 @@
         "vendor_name": {
           "agrees": false,
           "distinct_values": [
+            "   Velasqquez Fabrication LLC",
             "Velasquez Fabrication L.L.C",
             "Velasquez Fabrication LLC"
           ],
@@ -5100,9 +5825,10 @@
           "missing_count": 0
         },
         "postal_code": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "26130"
+            "26130",
+            "86130"
           ],
           "missing_count": 0
         },
@@ -5118,7 +5844,7 @@
           "distinct_values": [
             "info@velasquez-fabrication.com"
           ],
-          "missing_count": 0
+          "missing_count": 1
         },
         "phone": {
           "agrees": true,
@@ -5138,13 +5864,14 @@
           "agrees": false,
           "distinct_values": [
             "20060926",
-            "20070825"
+            "20070825",
+            "20070906"
           ],
           "missing_count": 0
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100120"
         ]
@@ -5418,14 +6145,14 @@
     },
     {
       "group_id": "GV100126",
-      "size": 2,
+      "size": 3,
       "needs_review": false,
       "review_reasons": [],
       "confidence": {
-        "min_match_probability": 1.0,
-        "mean_match_probability": 1.0,
-        "direct_edges": 1,
-        "possible_edges": 1,
+        "min_match_probability": 0.999779,
+        "mean_match_probability": 0.999852,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -5467,12 +6194,31 @@
           "name_diff_from_canonical": [
             "whitespace"
           ]
+        },
+        {
+          "vendor_name": "Gomez  SSupply Incorporated",
+          "country": "U.S.A.",
+          "city": "West Marcsuville",
+          "street": "120 Anderson Camp",
+          "postal_code": "96272",
+          "tax_number": "37-1970541",
+          "email": null,
+          "phone": null,
+          "currency": "USD",
+          "created_date": "20040103",
+          "legacy_vendor_id": "V100126D2",
+          "is_canonical": false,
+          "name_norm": "gomez ssupply inc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
         }
       ],
       "field_agreement": {
         "vendor_name": {
           "agrees": false,
           "distinct_values": [
+            "Gomez  SSupply Incorporated",
             "Gomez Supply Inc.",
             "Gomez Supply Inc.  "
           ],
@@ -5487,8 +6233,9 @@
           "missing_count": 0
         },
         "city": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "West Marcsuville",
             "West Marcusville"
           ],
           "missing_count": 0
@@ -5501,8 +6248,9 @@
           "missing_count": 0
         },
         "postal_code": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "96272",
             "96274"
           ],
           "missing_count": 0
@@ -5519,14 +6267,14 @@
           "distinct_values": [
             "info@gomez-supply.com"
           ],
-          "missing_count": 0
+          "missing_count": 1
         },
         "phone": {
           "agrees": true,
           "distinct_values": [
             "2834139439"
           ],
-          "missing_count": 0
+          "missing_count": 1
         },
         "currency": {
           "agrees": true,
@@ -5536,15 +6284,16 @@
           "missing_count": 0
         },
         "created_date": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "20030426"
+            "20030426",
+            "20040103"
           ],
           "missing_count": 0
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100126"
         ]
@@ -5822,15 +6571,153 @@
       }
     },
     {
-      "group_id": "GV100137",
+      "group_id": "GV100133",
       "size": 2,
       "needs_review": false,
       "review_reasons": [],
       "confidence": {
-        "min_match_probability": 1.0,
-        "mean_match_probability": 1.0,
+        "min_match_probability": 0.999947,
+        "mean_match_probability": 0.999947,
         "direct_edges": 1,
         "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100133",
+        "vendor_name": "Hettner Automation GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Hettner Automation GmbH",
+          "country": "Germany",
+          "city": "Kleve",
+          "street": "Carstenstraße 57/97",
+          "postal_code": "41962",
+          "tax_number": "DE398554988",
+          "email": "info@hettner-automation.com",
+          "phone": "05697 75645",
+          "currency": "EUR",
+          "created_date": "20161118",
+          "legacy_vendor_id": "V100133",
+          "is_canonical": true,
+          "name_norm": "hettner automation gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "HETNTER  AUTORNATIO GMBH.",
+          "country": "de",
+          "city": "Kleev",
+          "street": "Carstenstr. 58/97",
+          "postal_code": "49962",
+          "tax_number": "DE398554988",
+          "email": "info@hettner-automation.com",
+          "phone": "05697 75645",
+          "currency": "EUR",
+          "created_date": "20170812",
+          "legacy_vendor_id": "V100133D",
+          "is_canonical": false,
+          "name_norm": "hetnter autornatio gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "HETNTER  AUTORNATIO GMBH.",
+            "Hettner Automation GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "Germany",
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": false,
+          "distinct_values": [
+            "Kleev",
+            "Kleve"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Carstenstr. 58/97",
+            "Carstenstraße 57/97"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": false,
+          "distinct_values": [
+            "41962",
+            "49962"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE398554988"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@hettner-automation.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "05697 75645"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20161118",
+            "20170812"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100133"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100137",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 0.991558,
+        "mean_match_probability": 0.997183,
+        "direct_edges": 3,
+        "possible_edges": 3,
         "formed_by_transitive_closure": false
       },
       "canonical_suggestion": {
@@ -5873,6 +6760,24 @@
             "case",
             "whitespace"
           ]
+        },
+        {
+          "vendor_name": "Ficsher  Aitomtaion GmbH.",
+          "country": "GER",
+          "city": "Que",
+          "street": "Weihmanng. 724",
+          "postal_code": "69790",
+          "tax_number": "DE 764920829",
+          "email": null,
+          "phone": "07518 30269",
+          "currency": "EUR",
+          "created_date": "20071216",
+          "legacy_vendor_id": "V100137D2",
+          "is_canonical": false,
+          "name_norm": "ficsher aitomtaion gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
         }
       ],
       "field_agreement": {
@@ -5880,27 +6785,31 @@
           "agrees": false,
           "distinct_values": [
             "   FISCHER AUTOMATION GMBH",
+            "Ficsher  Aitomtaion GmbH.",
             "Fischer Automation GmbH"
           ],
           "missing_count": 0
         },
         "country": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "DE"
+            "DE",
+            "GER"
           ],
           "missing_count": 0
         },
         "city": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
-            "Aue"
+            "Aue",
+            "Que"
           ],
           "missing_count": 0
         },
         "street": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "Weihmanng. 724",
             "Weihmanngasse 726"
           ],
           "missing_count": 0
@@ -5913,8 +6822,9 @@
           "missing_count": 0
         },
         "tax_number": {
-          "agrees": true,
+          "agrees": false,
           "distinct_values": [
+            "DE 764920829",
             "DE764920829"
           ],
           "missing_count": 0
@@ -5924,7 +6834,7 @@
           "distinct_values": [
             "info@fischer-automation.com"
           ],
-          "missing_count": 1
+          "missing_count": 2
         },
         "phone": {
           "agrees": false,
@@ -5945,13 +6855,14 @@
           "agrees": false,
           "distinct_values": [
             "20060125",
-            "20060414"
+            "20060414",
+            "20071216"
           ],
           "missing_count": 0
         }
       },
       "ground_truth": {
-        "verdict": "split",
+        "verdict": "exact",
         "true_cluster_ids": [
           "V100137"
         ]
@@ -6612,5 +7523,27 @@
         ]
       }
     }
-  ]
+  ],
+  "borderline_pairs": {
+    "note_zh": "匹配概率落在 [0.3, 0.95) 且两条记录最终未被并到一起的候选对。needs_review 只能标出可能被错并的组（精确度风险），漏配的记录成了 singleton，不属于任何组，只能在这里被看见。",
+    "threshold_used_for_clustering": 0.95,
+    "scored_down_to": 0.3,
+    "pairs": [
+      {
+        "record_ids": [
+          "V100081",
+          "V100081D"
+        ],
+        "match_probability": 0.949255,
+        "vendor_names": [
+          "Ritter Automation GmbH",
+          "ritter  autornation gmbh"
+        ],
+        "name_diff": [
+          "different_name"
+        ],
+        "would_be_correct": true
+      }
+    ]
+  }
 }

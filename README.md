@@ -70,6 +70,26 @@ python scripts/prefetch_model.py --check
 
 代价是合成数据的脏法是我们自己设计的，可能不覆盖真实世界的全部脏法。这是自觉接受的权衡：本项目要演示的是**方法与可解释性**，不是刷某个基准集的分数。
 
+### 脏法的设计要经得起"平凡基线"的检验
+
+第一版生成器造重复变体时只改写 `vendor_name` 与 `country`，其余字段**整条复制**。结果是 `city` / `street` / `postal_code` / `currency` / `created_date` 在每一对真实重复记录中都逐字相同——**一句 `GROUP BY postal_code` 就能完美复原 ground truth**，Splink 的 F1 也是 1.0，但那度量的是生成器的性质，不是模型的能力。
+
+根因是那些脏法（大小写、空格、标点、`&`/`und`、法律形式后缀写法）**全都可被标准化完全还原**，因此不构成难度。真正的难度来自不可逆噪声。现在按脏度梯度注入：
+
+- **名称**：拼写错误、字符换位、字符重复、键盘相邻键误击、OCR 混淆（`m` ↔ `rn`、`0` ↔ `O`、`1` ↔ `l`）
+- **地址**：街道类型词的缩写/展开（`Apt.` ↔ `Apartment`、`straße` ↔ `str.`）、门牌号数字笔误
+- **邮编**：数字错位，或整体缺失
+- **建档日期**：漂移(重复档案本就是后来才建的)
+- **联系方式与税号**：`info@` → `sales@`、电话数字笔误、税号分隔符写法不同
+
+每条变体抽一个脏度档（`clean` / `moderate` / `dirty`，比例是模块顶部的常量），`clean` 档只有格式差异，`dirty` 档必须靠模糊匹配才可能找回。**梯度的意义在于下游的匹配置信度才会有分布、`needs_review` 才有内容**。
+
+改完之后，标准化后名称仍逐字相同的比例从 **100% 降到 44.9%**，全部单字段 `GROUP BY` 的 F1 最高只剩 **0.8041**。生成器的 `_leakage_report()` 每次运行都会打印这张表并给出判词，**让泄漏在数据产出的那一刻就暴露，而不是等下游评估时才被发现**。
+
+噪声走**独立的 `noise_rng`**，不消费主 rng。因此基础供应商、哪些供应商产生变体、`country` 的写法抽样全部与注入噪声前逐字一致——记录总数、实体数、国家分布不变，只有变体记录的字段内容变脏。这让改动的影响面可控且可审计（实测：150 条基础记录与 11 条完全重复记录逐字未变，ground truth 未变）。
+
+`legacy_vendors_variant_manifest.json` 记录每条记录的角色（`base` / `name_variant` / `exact_duplicate`）、脏度档与实际施加的噪声清单。它与 ground truth 一样**只用于评估**，判定组件在结构上被禁止读取。
+
 ---
 
 ## 字段结构参考的核实状态
@@ -113,7 +133,7 @@ pip install -r requirements.txt
 
 | 顺序 | 工具 | 输出 |
 | --- | --- | --- |
-| 1 | `src/tools/generate_legacy_vendors.py` | `data/legacy/legacy_vendors.json` + ground truth |
+| 1 | `src/tools/generate_legacy_vendors.py` | `data/legacy/legacy_vendors.json` + ground truth + 变体清单 |
 | 2 | `src/tools/data_profile.py` | `data/synthetic/vendor_profile_report.json` |
 | 3 | `src/tools/field_mapping.py` | `data/synthetic/vendor_field_mapping.json` |
 | 4 | `src/tools/pre_migration_validation.py` | `data/synthetic/vendor_validation_report.json` |
@@ -131,23 +151,79 @@ python src/tools/entity_resolution.py
 
 迁移前校验把两个**正交**维度分开表达，不混为一谈：`semantic_match`（映射语义是否正确，沿用 field_mapping 的结论）与 `loadable`（目标字段是否可写入，取 `is_creatable or is_updatable`）。典型情形是 `created_date → CreationDate`：语义完全正确，但该字段 `sap:creatable` 与 `sap:updatable` 均为 false，只能作 lineage / 参考，不能记为"通过"。
 
-## 实体解析：为什么它的 precision/recall 是 1.0，以及为什么这不算好消息
+## 实体解析
 
-`entity_resolution.py` 用 Splink 4（Fellegi-Sunter 概率匹配）做 `dedupe_only`，在 224 条记录中识别出 **51 个疑似重复组**（覆盖 125 条记录），cluster 级 precision / recall / F1 **全部为 1.0000**。
+`entity_resolution.py` 用 Splink 4（Fellegi-Sunter 概率匹配）做 `dedupe_only`，在 224 条记录中识别出 **50 个疑似重复组**（覆盖 123 条记录）。
 
-**这个 1.0 不构成模型能力的证据，报告本身会这么说。** `evaluation.metric_validity.verdict` 的取值是 `not_informative`，理由写在报告里，也复述在这里：
+| cluster 级（只看真实存在重复的 51 组） | precision | recall | F1 |
+| --- | --- | --- | --- |
+| **Splink** | **1.0000** | **0.9804** | **0.9901** |
+| 最佳平凡基线（`GROUP BY postal_code`） | 0.8478 | 0.7647 | 0.8041 |
 
-- 生成器构造"变体重复"时只改写 `vendor_name` 与 `country`，其余字段**整条复制**。于是 `city` / `street` / `postal_code` / `currency` / `created_date` 在**每一对**真实重复记录中都逐字相同。
-- 报告内置三个平凡基线做对照。`group_by_postal_code` 与 `group_by_street_and_created_date` 各自就能取得 F1 = 1.0000——**一句 `GROUP BY` 打平了整套概率模型**。
-- 模型诊断（`_meta.training.model_diagnostics`）显示：10 个比较器的精确匹配层 `m` 全部退化为 1，7 个模糊匹配层（Jaro-Winkler ≥0.95 / ≥0.88、Levenshtein ≤2）**从未被观测到**。因为标准化之后，98 对真实重复的名称已经逐字相同，模糊匹配无事可做。Fellegi-Sunter 的概率加权在这份数据上根本没有被触发。
+按脏度档拆开看，模型在不同难度下的表现是不一样的——这比一个总数有价值：
 
-根因是**生成器只注入了可被标准化完全还原的格式变化**（大小写、空格、标点、`&`/`und`、法律形式后缀写法），没有注入任何字符级噪声。要让这套指标具备意义，需要在生成器中加入拼写错误、字符换位、地址缩写（`Straße` / `Str.`）、邮编错位等不可逆噪声。**在那之前，把 1.0 当成绩单展示是误导。**
+| 脏度档 | 召回 | 说明 |
+| --- | --- | --- |
+| `exact_duplicate` | 11/11 = 1.000 | 整条复制 |
+| `clean` | 21/21 = 1.000 | 只有可被标准化还原的格式差异 |
+| `moderate` | 20/20 = 1.000 | 少量字符噪声 + 地址缩写 |
+| `dirty` | 21/22 = 0.955 | 名称被打坏 + 地址/邮编/日期同时变化 |
 
-把这条结论写进产物而不是藏起来，是这个项目的取舍：一个能自证"我的指标现在没有意义"的报告，比一个印着 1.0 的报告更有价值。
+### 这份报告有三处在自我拆台，都是刻意的
 
-标准化预处理本身是真的：`vendor_name → name_norm / name_core / legal_form`，`country → ISO 3166-1 alpha-2`。`LEGAL_FORMS` 编码的是真实世界的公司法律形式（GmbH / K.K. / LLC …），与生成器的变体表重合是因为二者描述同一个客观事实，不是因为读了它。ground truth 只用于评估，不参与训练、阻断、阈值选择或聚类。
+**一、`metric_validity`：先证明指标本身有没有意义。** 报告内置平凡基线对照——每个字段单独 `GROUP BY` 的 cluster 级 F1。若某个字段单独就能复原 ground truth，那么任何模型在这份数据上的分数都不构成能力证据。当前判定是 `informative`：最佳平凡基线 F1 = 0.8041，Splink = 0.9901。
 
-**关于 splink 的 salting bug：** 早前把 `estimate_u_using_random_sampling()` 的 `"Salting partitions must be specified"` 归因于 splink 4.0.16 + duckdb 的版本组合。在本机（splink 4.0.16 + duckdb 1.5.4，Windows / Python 3.12）**实测未复现**——完整比较器、`max_pairs` 到 1e7、带 seed，均正常。因此走标准训练路径（确定性规则估 λ → 随机抽样估 u → EM 估 m），没有为一个不存在的 bug 降级。若在别的平台重现该报错，退路记在 `requirements.txt` 的注释里。
+泄漏判据是 **`GROUP BY` 的 F1，不是"组内一致率"**。反例就印在报告里：`currency` 在**每一对**真实重复记录中都逐字相同（同一家公司当然同币种），但同国供应商的币种也都相同，`GROUP BY currency` 只得到 3 个大组，F1 = 0.0000。**组内一致是必要条件，跨实体有区分度才是充分条件**——早前只看一致率的版本把 `currency` 误列为泄漏字段。
+
+**二、`veto_levels`：模型里有一票否决层。** EM 对"匹配对中从未出现过不一致"的比较层把 `m` 估成 ~0，于是：
+
+| 比较层 | m | 匹配权重 |
+| --- | --- | --- |
+| `country_code :: All other` | 4.6e-107 | **−352.6 bit** |
+| `legal_form :: All other` | 3.7e-20 | **−64.3 bit** |
+| `name_core :: All other` | 1.6e-16 | **−52.5 bit** |
+
+而全部正证据加起来只有 **+68.6 bit**。一对记录落进其中任意一层，概率立刻归零——即便税号与城市完全相同。这不是在权衡证据，是硬性 AND。`m=0` 编码的是"不可能"，而它实际只是"有限样本里没见过"。
+
+当前**没有**真实重复对落进否决层，但安全裕度极薄:真实重复对中最低的 `name_core` Jaro-Winkler 相似度是 **0.8167**，兜底层门槛在 **0.80**，只差 0.0167。这是台阶设置的运气，不是稳健性。两级台阶（0.95/0.88）的上一版正因此漏掉 2 对。
+
+正确缓解是给 `m` 加平滑下限，splink 4 未暴露该接口；改私有属性不是本项目愿意付的代价，因此选择如实报告。**已验证"删掉 `legal_form` / `country_code` 比较器"无法消除否决**——否决会转移到 `name_core` 与 `tax_norm` 上，F1 反降至 0.9505。
+
+**三、`borderline_pairs`：漏配只能在这里被看见。** `needs_review` 只能标出"可能被错并到一起"的组，那是精确度风险。它在结构上标不出"本该并进来却没并"的记录——那条记录成了 singleton，不属于任何组，没有任何组会为它亮灯。因此模型打分打到 0.30，聚类只用 0.95 以上的边，中间那段单独列出。
+
+唯一漏掉的一对正是这么被捞出来的：`Ritter Automation GmbH` vs `ritter  autornation gmbh`（OCR 的 `m` ↔ `rn` 混淆），匹配概率 **0.9493**，比阈值 0.95 低 0.0007。**阈值 0.95 是先验选定的常用值，没有按 ground truth 调过**——下调到 0.94 就能拿满分，但那是拿答案调参，不是模型变好了。
+
+### 阻断：recall 的天花板
+
+阻断阶段漏掉的记录对，后面无论模型多好都救不回来。
+
+| 阻断规则集 | 候选对 | 占全部 24976 对 | 天花板 recall |
+| --- | --- | --- | --- |
+| `name_norm` / `postal_code` / `tax_number` / `email` | 86 | 0.3% | 0.8673 |
+| **+ `city` + `name_prefix`（采用）** | **204** | **0.8%** | **0.9898** |
+| + `country_code + legal_form` | 3324 | 13.3% | 1.0000 |
+
+最后一档为多召回 1 对把候选对放大 16 倍，是边际收益崩溃，不采用。`phone` 单独能覆盖 57 对，但已被其它规则全部覆盖，加进来一条新候选对都不产生，故不加。
+
+召不回的那 1 对（`V100082D` / `V100082D2`）两条记录**同时**被打坏：城市各自笔误成不同值、邮编各自错位、税号一缺一有、邮箱全缺、电话两处笔误。任何不做全量两两比较的方案都够不着它。**这是数据本身的极端情况，不是无限放宽阻断的理由**——实际上它最终经由基础记录的传递闭包被并了回来，而该组被如实标成"由传递闭包形成，需人工复核"。
+
+### EM 的训练集偏倚
+
+EM 只在阻断规则圈出的记录对上估计 `m`。若用强精确键（`postal_code`、`name_norm`）去圈，圈进来的几乎全是**干净的**重复对，于是 `m` 被系统性推向"处处一致"，模型对脏对要求过严。症状很直白：`postal_code` 精确匹配层的 `m = 1`，而我们明知邮编在 23.5% 的真实重复对里并不相同；`dirty` 档召回率只有 **0.55**。
+
+改用 `name_prefix` + `city` 做 EM 的阻断规则（`name_prefix` **不是**任何比较器所用的列，该轮 EM 因此不固定任何参数，且候选集里含大量脏对）：未训练层从 3 降到 0，`dirty` 档召回率 **0.55 → 0.95**。
+
+### 标准化
+
+`vendor_name → name_norm / name_core / legal_form`，`country → ISO 3166-1 alpha-2`，`tax_number → tax_norm`（去分隔符），`phone → phone_norm`（只留数字）。
+
+标准化后的列**同时**用于阻断、确定性规则与比较器——只在比较器里标准化而阻断仍用原始列，标准化就不会作用到候选生成上。对 `tax_number` / `phone` 做标准化的依据是 `data_profile` 独立报出的 `format_consistency` 告警，不是 ground truth。
+
+`LEGAL_FORMS` 编码的是真实世界的公司法律形式（GmbH / K.K. / LLC …），与生成器的变体表重合是因为二者描述同一个客观事实，不是因为读了它。**ground truth 与 `legacy_vendors_variant_manifest.json` 只用于评估，不参与训练、阻断、阈值选择或聚类**；二者都在 `data/legacy/` 下，而后端白名单只暴露 `data/synthetic/`，结构上够不到。
+
+### 关于 splink 的 salting bug
+
+早前把 `estimate_u_using_random_sampling()` 的 `"Salting partitions must be specified"` 归因于 splink 4.0.16 + duckdb 的版本组合。在本机（splink 4.0.16 + duckdb 1.5.4，Windows / Python 3.12）**实测未复现**——完整比较器、`max_pairs` 到 1e7、带 seed，均正常。因此走标准训练路径（确定性规则估 λ → 随机抽样估 u → EM 估 m），没有为一个不存在的 bug 降级。若在别的平台重现该报错，退路记在 `requirements.txt` 的注释里。
 
 ## SAP 标准流程知识库（模块二的 RAG 检索底座）
 
@@ -266,3 +342,7 @@ python src/tools/data_profile.py   # 打印 Content : sha256 <前16位>
 ```
 
 需要整个文件字节一致时（例如提交进 git 做 diff），设 `CARVEOPS_OMIT_TIMESTAMP=1` 即可完全不写入时间戳。
+
+**一个真实踩到的坑：浮点末位会毁掉 sha256。** `entity_resolution.py` 最初把 EM 训练出的 `m_probability` 原样写进报告。EM 在 duckdb 里做并行浮点求和，加法不满足结合律，末位随线程调度抖动——`4.610490895533171e-107` 与 `4.6104908955331746e-107` 交替出现，于是每次运行的 `content_sha256` 都不一样。聚类结果与全部指标本身是完全确定的，抖的只有这两个数的最后几位。
+
+修法是按**有效数字**舍入（`_round_sig`，6 位）后再写入，不能用 `round(x, n)`——这些概率跨越 1e-107 到 1 的量级。现已验证连续 5 次运行 sha256 完全一致。

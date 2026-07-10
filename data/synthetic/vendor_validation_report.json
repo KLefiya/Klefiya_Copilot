@@ -1,8 +1,7 @@
 {
   "_run_info": {
     "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-10T07:38:37+00:00"
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "disclaimer": "本报告只诊断并给出建议，不修改源数据、不做任何自动修复。",
