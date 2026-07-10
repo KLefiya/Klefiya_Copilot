@@ -1,0 +1,1624 @@
+{
+  "V100001": {
+    "entity_id": "V100001",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100002": {
+    "entity_id": "V100002",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100003": {
+    "entity_id": "V100003",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100003D": {
+    "entity_id": "V100003",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "email_missing",
+      "name_delete",
+      "street_abbreviation",
+      "tax_separator"
+    ]
+  },
+  "V100004": {
+    "entity_id": "V100004",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100005": {
+    "entity_id": "V100005",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100005D": {
+    "entity_id": "V100005",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_missing",
+      "house_number_typo",
+      "name_transpose",
+      "phone_typo",
+      "street_abbreviation",
+      "tax_number_missing",
+      "tax_separator"
+    ]
+  },
+  "V100005D2": {
+    "entity_id": "V100005",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "email_local_part",
+      "name_insert",
+      "name_transpose",
+      "phone_typo",
+      "postal_missing",
+      "street_abbreviation",
+      "tax_separator"
+    ]
+  },
+  "V100006": {
+    "entity_id": "V100006",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100007": {
+    "entity_id": "V100007",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100008": {
+    "entity_id": "V100008",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100009": {
+    "entity_id": "V100009",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100010": {
+    "entity_id": "V100010",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100011": {
+    "entity_id": "V100011",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100012": {
+    "entity_id": "V100012",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100013": {
+    "entity_id": "V100013",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100014": {
+    "entity_id": "V100014",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100015": {
+    "entity_id": "V100015",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100015D": {
+    "entity_id": "V100015",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "name_insert",
+      "tax_number_missing"
+    ]
+  },
+  "V100015X": {
+    "entity_id": "V100015",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100016": {
+    "entity_id": "V100016",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100016D": {
+    "entity_id": "V100016",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "name_transpose",
+      "phone_typo",
+      "tax_separator"
+    ]
+  },
+  "V100016D2": {
+    "entity_id": "V100016",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100017": {
+    "entity_id": "V100017",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100017D": {
+    "entity_id": "V100017",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "house_number_typo",
+      "name_insert",
+      "name_ocr",
+      "name_substitute",
+      "phone_missing",
+      "street_abbreviation"
+    ]
+  },
+  "V100018": {
+    "entity_id": "V100018",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100018D": {
+    "entity_id": "V100018",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "email_missing"
+    ]
+  },
+  "V100018D2": {
+    "entity_id": "V100018",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100019": {
+    "entity_id": "V100019",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100020": {
+    "entity_id": "V100020",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100020X": {
+    "entity_id": "V100020",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100021": {
+    "entity_id": "V100021",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100022": {
+    "entity_id": "V100022",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100022D": {
+    "entity_id": "V100022",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "email_missing",
+      "tax_number_missing"
+    ]
+  },
+  "V100023": {
+    "entity_id": "V100023",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100024": {
+    "entity_id": "V100024",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100025": {
+    "entity_id": "V100025",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100025D": {
+    "entity_id": "V100025",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "email_local_part",
+      "email_missing",
+      "house_number_typo",
+      "name_ocr",
+      "phone_typo",
+      "tax_separator"
+    ]
+  },
+  "V100025D2": {
+    "entity_id": "V100025",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "email_local_part",
+      "house_number_typo"
+    ]
+  },
+  "V100026": {
+    "entity_id": "V100026",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100027": {
+    "entity_id": "V100027",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100028": {
+    "entity_id": "V100028",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100028D": {
+    "entity_id": "V100028",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "name_substitute",
+      "postal_typo"
+    ]
+  },
+  "V100028D2": {
+    "entity_id": "V100028",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_local_part",
+      "name_ocr",
+      "name_substitute",
+      "name_transpose",
+      "phone_typo",
+      "postal_missing",
+      "tax_number_missing",
+      "tax_separator"
+    ]
+  },
+  "V100029": {
+    "entity_id": "V100029",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100030": {
+    "entity_id": "V100030",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100031": {
+    "entity_id": "V100031",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100032": {
+    "entity_id": "V100032",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100033": {
+    "entity_id": "V100033",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100034": {
+    "entity_id": "V100034",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100035": {
+    "entity_id": "V100035",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100035D": {
+    "entity_id": "V100035",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "email_missing"
+    ]
+  },
+  "V100035D2": {
+    "entity_id": "V100035",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "house_number_typo",
+      "name_ocr",
+      "street_abbreviation"
+    ]
+  },
+  "V100036": {
+    "entity_id": "V100036",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100037": {
+    "entity_id": "V100037",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100037D": {
+    "entity_id": "V100037",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "email_local_part",
+      "email_missing",
+      "house_number_typo",
+      "name_delete",
+      "name_insert",
+      "name_substitute",
+      "tax_separator"
+    ]
+  },
+  "V100038": {
+    "entity_id": "V100038",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100038D": {
+    "entity_id": "V100038",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "tax_number_missing"
+    ]
+  },
+  "V100038D2": {
+    "entity_id": "V100038",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100039": {
+    "entity_id": "V100039",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100039D": {
+    "entity_id": "V100039",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100040": {
+    "entity_id": "V100040",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100040D": {
+    "entity_id": "V100040",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "tax_number_missing"
+    ]
+  },
+  "V100040D2": {
+    "entity_id": "V100040",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100041": {
+    "entity_id": "V100041",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100042": {
+    "entity_id": "V100042",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100043": {
+    "entity_id": "V100043",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100044": {
+    "entity_id": "V100044",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100045": {
+    "entity_id": "V100045",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100046": {
+    "entity_id": "V100046",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100047": {
+    "entity_id": "V100047",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100048": {
+    "entity_id": "V100048",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100048D": {
+    "entity_id": "V100048",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_missing",
+      "name_ocr",
+      "name_substitute",
+      "name_transpose",
+      "phone_typo",
+      "postal_typo",
+      "street_abbreviation",
+      "tax_separator"
+    ]
+  },
+  "V100048D2": {
+    "entity_id": "V100048",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "name_insert",
+      "tax_separator"
+    ]
+  },
+  "V100049": {
+    "entity_id": "V100049",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100049X": {
+    "entity_id": "V100049",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100050": {
+    "entity_id": "V100050",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100051": {
+    "entity_id": "V100051",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100052": {
+    "entity_id": "V100052",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100052D": {
+    "entity_id": "V100052",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "house_number_typo",
+      "street_abbreviation"
+    ]
+  },
+  "V100052D2": {
+    "entity_id": "V100052",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_local_part",
+      "name_substitute",
+      "phone_typo",
+      "postal_typo",
+      "street_abbreviation"
+    ]
+  },
+  "V100053": {
+    "entity_id": "V100053",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100054": {
+    "entity_id": "V100054",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100054X": {
+    "entity_id": "V100054",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100055": {
+    "entity_id": "V100055",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100055D": {
+    "entity_id": "V100055",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100055D2": {
+    "entity_id": "V100055",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "email_missing"
+    ]
+  },
+  "V100056": {
+    "entity_id": "V100056",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100056D": {
+    "entity_id": "V100056",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "phone_missing",
+      "tax_number_missing"
+    ]
+  },
+  "V100057": {
+    "entity_id": "V100057",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100058": {
+    "entity_id": "V100058",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100059": {
+    "entity_id": "V100059",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100060": {
+    "entity_id": "V100060",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100061": {
+    "entity_id": "V100061",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100062": {
+    "entity_id": "V100062",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100063": {
+    "entity_id": "V100063",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100064": {
+    "entity_id": "V100064",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100065": {
+    "entity_id": "V100065",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100066": {
+    "entity_id": "V100066",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100067": {
+    "entity_id": "V100067",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100068": {
+    "entity_id": "V100068",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100069": {
+    "entity_id": "V100069",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100070": {
+    "entity_id": "V100070",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100071": {
+    "entity_id": "V100071",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100072": {
+    "entity_id": "V100072",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100072D": {
+    "entity_id": "V100072",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "name_delete",
+      "phone_missing"
+    ]
+  },
+  "V100072D2": {
+    "entity_id": "V100072",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "email_missing"
+    ]
+  },
+  "V100073": {
+    "entity_id": "V100073",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100074": {
+    "entity_id": "V100074",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100075": {
+    "entity_id": "V100075",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100075D": {
+    "entity_id": "V100075",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "house_number_typo",
+      "name_transpose"
+    ]
+  },
+  "V100076": {
+    "entity_id": "V100076",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100077": {
+    "entity_id": "V100077",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100077D": {
+    "entity_id": "V100077",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "house_number_typo",
+      "name_delete",
+      "name_transpose",
+      "street_abbreviation",
+      "tax_separator"
+    ]
+  },
+  "V100077D2": {
+    "entity_id": "V100077",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100078": {
+    "entity_id": "V100078",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100079": {
+    "entity_id": "V100079",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100079D": {
+    "entity_id": "V100079",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100080": {
+    "entity_id": "V100080",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100081": {
+    "entity_id": "V100081",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100081D": {
+    "entity_id": "V100081",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "email_local_part",
+      "house_number_typo",
+      "name_ocr",
+      "phone_typo",
+      "postal_typo",
+      "tax_separator"
+    ]
+  },
+  "V100082": {
+    "entity_id": "V100082",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100082D": {
+    "entity_id": "V100082",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "email_local_part",
+      "email_missing",
+      "house_number_typo",
+      "name_delete",
+      "name_substitute",
+      "name_transpose",
+      "phone_typo",
+      "postal_typo"
+    ]
+  },
+  "V100082D2": {
+    "entity_id": "V100082",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_missing",
+      "house_number_typo",
+      "name_insert",
+      "name_transpose",
+      "phone_typo",
+      "postal_typo",
+      "tax_number_missing",
+      "tax_separator"
+    ]
+  },
+  "V100083": {
+    "entity_id": "V100083",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100083X": {
+    "entity_id": "V100083",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100084": {
+    "entity_id": "V100084",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100085": {
+    "entity_id": "V100085",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100085D": {
+    "entity_id": "V100085",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_local_part",
+      "email_missing",
+      "name_insert",
+      "phone_typo",
+      "street_abbreviation"
+    ]
+  },
+  "V100086": {
+    "entity_id": "V100086",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100087": {
+    "entity_id": "V100087",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100088": {
+    "entity_id": "V100088",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100088D": {
+    "entity_id": "V100088",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_local_part",
+      "email_missing",
+      "house_number_typo",
+      "name_delete",
+      "name_substitute",
+      "postal_typo"
+    ]
+  },
+  "V100088D2": {
+    "entity_id": "V100088",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "name_insert",
+      "phone_missing"
+    ]
+  },
+  "V100089": {
+    "entity_id": "V100089",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100090": {
+    "entity_id": "V100090",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100090D": {
+    "entity_id": "V100090",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "email_local_part",
+      "name_transpose",
+      "phone_typo"
+    ]
+  },
+  "V100091": {
+    "entity_id": "V100091",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100092": {
+    "entity_id": "V100092",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100093": {
+    "entity_id": "V100093",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100094": {
+    "entity_id": "V100094",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100095": {
+    "entity_id": "V100095",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100096": {
+    "entity_id": "V100096",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100096D": {
+    "entity_id": "V100096",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "name_insert",
+      "phone_missing"
+    ]
+  },
+  "V100096D2": {
+    "entity_id": "V100096",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100096X": {
+    "entity_id": "V100096",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100097": {
+    "entity_id": "V100097",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100097D": {
+    "entity_id": "V100097",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "phone_missing"
+    ]
+  },
+  "V100097D2": {
+    "entity_id": "V100097",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "email_missing",
+      "house_number_typo"
+    ]
+  },
+  "V100098": {
+    "entity_id": "V100098",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100098X": {
+    "entity_id": "V100098",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100099": {
+    "entity_id": "V100099",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100100": {
+    "entity_id": "V100100",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100100D": {
+    "entity_id": "V100100",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "email_local_part",
+      "name_insert",
+      "phone_typo",
+      "postal_typo"
+    ]
+  },
+  "V100100D2": {
+    "entity_id": "V100100",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "created_date_drift",
+      "email_local_part",
+      "house_number_typo",
+      "name_delete",
+      "name_ocr",
+      "phone_missing",
+      "tax_number_missing",
+      "tax_separator"
+    ]
+  },
+  "V100101": {
+    "entity_id": "V100101",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100102": {
+    "entity_id": "V100102",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100103": {
+    "entity_id": "V100103",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100104": {
+    "entity_id": "V100104",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100104D": {
+    "entity_id": "V100104",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "tax_number_missing"
+    ]
+  },
+  "V100105": {
+    "entity_id": "V100105",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100106": {
+    "entity_id": "V100106",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100107": {
+    "entity_id": "V100107",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100107D": {
+    "entity_id": "V100107",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "house_number_typo",
+      "name_delete",
+      "street_abbreviation",
+      "tax_separator"
+    ]
+  },
+  "V100108": {
+    "entity_id": "V100108",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100109": {
+    "entity_id": "V100109",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100110": {
+    "entity_id": "V100110",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100111": {
+    "entity_id": "V100111",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100112": {
+    "entity_id": "V100112",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100113": {
+    "entity_id": "V100113",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100114": {
+    "entity_id": "V100114",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100115": {
+    "entity_id": "V100115",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100116": {
+    "entity_id": "V100116",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100116D": {
+    "entity_id": "V100116",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "email_local_part",
+      "email_missing",
+      "house_number_typo",
+      "name_delete",
+      "name_transpose",
+      "phone_typo",
+      "postal_missing",
+      "tax_separator"
+    ]
+  },
+  "V100117": {
+    "entity_id": "V100117",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100118": {
+    "entity_id": "V100118",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100119": {
+    "entity_id": "V100119",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100120": {
+    "entity_id": "V100120",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100120D": {
+    "entity_id": "V100120",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "email_missing",
+      "name_insert",
+      "postal_typo"
+    ]
+  },
+  "V100120D2": {
+    "entity_id": "V100120",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "tax_number_missing"
+    ]
+  },
+  "V100121": {
+    "entity_id": "V100121",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100122": {
+    "entity_id": "V100122",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100123": {
+    "entity_id": "V100123",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100123X": {
+    "entity_id": "V100123",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100124": {
+    "entity_id": "V100124",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100124D": {
+    "entity_id": "V100124",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": [
+      "phone_missing"
+    ]
+  },
+  "V100125": {
+    "entity_id": "V100125",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100126": {
+    "entity_id": "V100126",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100126D": {
+    "entity_id": "V100126",
+    "role": "name_variant",
+    "dirt_level": "clean",
+    "noise_applied": []
+  },
+  "V100126D2": {
+    "entity_id": "V100126",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "email_local_part",
+      "email_missing",
+      "name_insert",
+      "phone_missing",
+      "phone_typo",
+      "postal_typo"
+    ]
+  },
+  "V100127": {
+    "entity_id": "V100127",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100127D": {
+    "entity_id": "V100127",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "name_transpose"
+    ]
+  },
+  "V100128": {
+    "entity_id": "V100128",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100129": {
+    "entity_id": "V100129",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100130": {
+    "entity_id": "V100130",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100130D": {
+    "entity_id": "V100130",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "tax_number_missing",
+      "tax_separator"
+    ]
+  },
+  "V100131": {
+    "entity_id": "V100131",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100132": {
+    "entity_id": "V100132",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100133": {
+    "entity_id": "V100133",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100133D": {
+    "entity_id": "V100133",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "house_number_typo",
+      "name_delete",
+      "name_ocr",
+      "name_transpose",
+      "postal_typo",
+      "street_abbreviation"
+    ]
+  },
+  "V100134": {
+    "entity_id": "V100134",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100135": {
+    "entity_id": "V100135",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100136": {
+    "entity_id": "V100136",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100137": {
+    "entity_id": "V100137",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100137D": {
+    "entity_id": "V100137",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "email_missing",
+      "phone_typo"
+    ]
+  },
+  "V100137D2": {
+    "entity_id": "V100137",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "email_missing",
+      "house_number_typo",
+      "name_substitute",
+      "name_transpose",
+      "street_abbreviation",
+      "tax_separator"
+    ]
+  },
+  "V100138": {
+    "entity_id": "V100138",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100139": {
+    "entity_id": "V100139",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100139X": {
+    "entity_id": "V100139",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100140": {
+    "entity_id": "V100140",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100140X": {
+    "entity_id": "V100140",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100141": {
+    "entity_id": "V100141",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100141X": {
+    "entity_id": "V100141",
+    "role": "exact_duplicate",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100142": {
+    "entity_id": "V100142",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100143": {
+    "entity_id": "V100143",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100144": {
+    "entity_id": "V100144",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100145": {
+    "entity_id": "V100145",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100145D": {
+    "entity_id": "V100145",
+    "role": "name_variant",
+    "dirt_level": "moderate",
+    "noise_applied": [
+      "created_date_drift",
+      "name_insert"
+    ]
+  },
+  "V100146": {
+    "entity_id": "V100146",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100147": {
+    "entity_id": "V100147",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100148": {
+    "entity_id": "V100148",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100148D": {
+    "entity_id": "V100148",
+    "role": "name_variant",
+    "dirt_level": "dirty",
+    "noise_applied": [
+      "city_typo",
+      "created_date_drift",
+      "house_number_typo",
+      "name_delete",
+      "name_insert",
+      "name_substitute"
+    ]
+  },
+  "V100149": {
+    "entity_id": "V100149",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  },
+  "V100150": {
+    "entity_id": "V100150",
+    "role": "base",
+    "dirt_level": null,
+    "noise_applied": []
+  }
+}

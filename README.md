@@ -117,6 +117,7 @@ pip install -r requirements.txt
 | 2 | `src/tools/data_profile.py` | `data/synthetic/vendor_profile_report.json` |
 | 3 | `src/tools/field_mapping.py` | `data/synthetic/vendor_field_mapping.json` |
 | 4 | `src/tools/pre_migration_validation.py` | `data/synthetic/vendor_validation_report.json` |
+| 5 | `src/tools/entity_resolution.py` | `data/synthetic/vendor_duplicate_report.json` |
 
 按顺序运行即可复现全部产物：
 
@@ -125,9 +126,28 @@ python src/tools/generate_legacy_vendors.py
 python src/tools/data_profile.py
 python src/tools/field_mapping.py
 python src/tools/pre_migration_validation.py
+python src/tools/entity_resolution.py
 ```
 
 迁移前校验把两个**正交**维度分开表达，不混为一谈：`semantic_match`（映射语义是否正确，沿用 field_mapping 的结论）与 `loadable`（目标字段是否可写入，取 `is_creatable or is_updatable`）。典型情形是 `created_date → CreationDate`：语义完全正确，但该字段 `sap:creatable` 与 `sap:updatable` 均为 false，只能作 lineage / 参考，不能记为"通过"。
+
+## 实体解析：为什么它的 precision/recall 是 1.0，以及为什么这不算好消息
+
+`entity_resolution.py` 用 Splink 4（Fellegi-Sunter 概率匹配）做 `dedupe_only`，在 224 条记录中识别出 **51 个疑似重复组**（覆盖 125 条记录），cluster 级 precision / recall / F1 **全部为 1.0000**。
+
+**这个 1.0 不构成模型能力的证据，报告本身会这么说。** `evaluation.metric_validity.verdict` 的取值是 `not_informative`，理由写在报告里，也复述在这里：
+
+- 生成器构造"变体重复"时只改写 `vendor_name` 与 `country`，其余字段**整条复制**。于是 `city` / `street` / `postal_code` / `currency` / `created_date` 在**每一对**真实重复记录中都逐字相同。
+- 报告内置三个平凡基线做对照。`group_by_postal_code` 与 `group_by_street_and_created_date` 各自就能取得 F1 = 1.0000——**一句 `GROUP BY` 打平了整套概率模型**。
+- 模型诊断（`_meta.training.model_diagnostics`）显示：10 个比较器的精确匹配层 `m` 全部退化为 1，7 个模糊匹配层（Jaro-Winkler ≥0.95 / ≥0.88、Levenshtein ≤2）**从未被观测到**。因为标准化之后，98 对真实重复的名称已经逐字相同，模糊匹配无事可做。Fellegi-Sunter 的概率加权在这份数据上根本没有被触发。
+
+根因是**生成器只注入了可被标准化完全还原的格式变化**（大小写、空格、标点、`&`/`und`、法律形式后缀写法），没有注入任何字符级噪声。要让这套指标具备意义，需要在生成器中加入拼写错误、字符换位、地址缩写（`Straße` / `Str.`）、邮编错位等不可逆噪声。**在那之前，把 1.0 当成绩单展示是误导。**
+
+把这条结论写进产物而不是藏起来，是这个项目的取舍：一个能自证"我的指标现在没有意义"的报告，比一个印着 1.0 的报告更有价值。
+
+标准化预处理本身是真的：`vendor_name → name_norm / name_core / legal_form`，`country → ISO 3166-1 alpha-2`。`LEGAL_FORMS` 编码的是真实世界的公司法律形式（GmbH / K.K. / LLC …），与生成器的变体表重合是因为二者描述同一个客观事实，不是因为读了它。ground truth 只用于评估，不参与训练、阻断、阈值选择或聚类。
+
+**关于 splink 的 salting bug：** 早前把 `estimate_u_using_random_sampling()` 的 `"Salting partitions must be specified"` 归因于 splink 4.0.16 + duckdb 的版本组合。在本机（splink 4.0.16 + duckdb 1.5.4，Windows / Python 3.12）**实测未复现**——完整比较器、`max_pairs` 到 1e7、带 seed，均正常。因此走标准训练路径（确定性规则估 λ → 随机抽样估 u → EM 估 m），没有为一个不存在的 bug 降级。若在别的平台重现该报错，退路记在 `requirements.txt` 的注释里。
 
 ## SAP 标准流程知识库（模块二的 RAG 检索底座）
 

@@ -1,0 +1,6616 @@
+{
+  "_run_info": {
+    "content_sha256": "ff8533b232ae8f98bfae3b9933de9ee54685c9eafabcd8b3fdf978c5d9282d1b",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-10T07:38:39+00:00"
+  },
+  "_meta": {
+    "disclaimer": "本报告只标记疑似重复组并给出建议，不修改源数据、不执行任何合并。",
+    "method": "Splink 4 (Fellegi-Sunter) · dedupe_only",
+    "preprocessing_zh": "vendor_name 先标准化为 name_norm / name_core / legal_form，country 归一为 ISO 3166-1 alpha-2，再交给 Splink 比对。法律形式表编码的是真实世界的公司法律形式，独立于合成数据生成器。",
+    "training": {
+      "probability_two_random_records_match": 0.0038537,
+      "deterministic_rules": [
+        "l.tax_number = r.tax_number",
+        "l.email = r.email",
+        "l.name_norm = r.name_norm and l.postal_code = r.postal_code"
+      ],
+      "deterministic_recall_assumed": 0.8,
+      "blocking_rules": [
+        "name_norm",
+        "postal_code",
+        "tax_number",
+        "email"
+      ],
+      "u_estimation": "random_sampling",
+      "u_sampling_max_pairs": 10000000.0,
+      "u_sampling_seed": 20260709,
+      "m_estimation": "expectation_maximisation (2 passes)",
+      "model_diagnostics": {
+        "untrained_levels": [
+          "country_code :: All other comparisons",
+          "legal_form :: All other comparisons",
+          "name_core :: All other comparisons"
+        ],
+        "degenerate_m_equals_one_levels": [
+          "country_code :: Exact match on country_code",
+          "legal_form :: Exact match on legal_form",
+          "postal_code :: Exact match on postal_code"
+        ],
+        "interpretation_zh": "untrained_levels：该比较层在训练数据中从未被观测到，预测时退回默认值。本项目里全部是模糊匹配层（Jaro-Winkler / Levenshtein）——因为标准化之后，真实重复对的名称已经逐字相同，模糊层永远不会命中。 | degenerate_m_equals_one_levels：m=1 表示匹配对中该字段总是完全一致，概率加权退化为硬性一致判断。二者同时出现，说明本数据集没有为概率匹配留下可被利用的模糊性。结论见 evaluation.metric_validity。"
+      }
+    },
+    "thresholds": {
+      "match_probability": 0.95,
+      "review_probability": 0.99
+    },
+    "sources": {
+      "legacy": "data\\legacy\\legacy_vendors.json",
+      "ground_truth": "data\\legacy\\legacy_vendors_ground_truth.json"
+    },
+    "limitations_zh": [
+      "合成数据的变体记录逐字复制了基础记录的地址、邮编、币种与建档日期，只改名称与国家写法。真实世界的重复记录往往地址也不一致，因此这里的 precision/recall 是乐观估计，不可外推到真实主数据。",
+      "λ（两条随机记录匹配的先验概率）由确定性规则 + 假定召回率 0.8 反推。该召回率是假设，不是测量值。",
+      "ground truth 仅用于评估，不参与训练、阻断、阈值选择或聚类。"
+    ],
+    "country_spellings_unresolved": []
+  },
+  "summary": {
+    "record_count": 224,
+    "predicted_cluster_count": 165,
+    "duplicate_group_count": 46,
+    "records_in_duplicate_groups": 105,
+    "records_unique": 119,
+    "needs_review_count": 9,
+    "group_size_distribution": {
+      "2": 34,
+      "3": 11,
+      "4": 1
+    }
+  },
+  "evaluation": {
+    "ground_truth_file": "data\\legacy\\legacy_vendors_ground_truth.json",
+    "primary_metric": "cluster_level_duplicate_groups",
+    "note_zh": "业务问的是『这几条记录有没有被正确归成同一家供应商』，是 cluster 级问题。cluster_level_all 含 99 个单条 singleton，它们几乎不可能判错，会把指标稀释得虚高；因此主指标取 cluster_level_duplicate_groups（只看真实存在重复的 51 组）。pairwise 一并给出以便与文献对照，但它无法区分『3 条的组拆成 2+1』与『完全没找到』。",
+    "cluster_level_duplicate_groups": {
+      "precision": 0.8261,
+      "recall": 0.7451,
+      "f1": 0.7835,
+      "true_positives": 38,
+      "false_positives": 8,
+      "false_negatives": 13,
+      "exactly_recovered": 38,
+      "predicted_clusters": 46,
+      "true_clusters": 51
+    },
+    "cluster_level_all": {
+      "precision": 0.8303,
+      "recall": 0.9133,
+      "f1": 0.8698,
+      "true_positives": 137,
+      "false_positives": 28,
+      "false_negatives": 13,
+      "exactly_recovered": 137,
+      "predicted_clusters": 165,
+      "true_clusters": 150
+    },
+    "pairwise": {
+      "precision": 1.0,
+      "recall": 0.7449,
+      "f1": 0.8538,
+      "true_positives": 73,
+      "false_positives": 0,
+      "false_negatives": 25
+    },
+    "error_breakdown": {
+      "exact": 137,
+      "split": 28,
+      "merged": 0,
+      "meaning_zh": {
+        "exact": "预测组与某个真实实体的记录集合完全一致。",
+        "split": "真实实体的记录被拆到多个预测组（漏配）。",
+        "merged": "多个真实实体的记录被错并进同一预测组（误配）。"
+      }
+    },
+    "metric_validity": {
+      "verdict": "not_informative",
+      "splink_beaten_or_matched_by_trivial_baselines": [
+        "group_by_postal_code"
+      ],
+      "fields_identical_in_every_true_duplicate_pair": [
+        "currency"
+      ],
+      "field_agreement_within_true_duplicates": {
+        "true_duplicate_pairs": 98,
+        "identical_rate": {
+          "vendor_name": 0.1122,
+          "country": 0.3061,
+          "city": 0.898,
+          "street": 0.6327,
+          "postal_code": 0.7653,
+          "tax_number": 0.5816,
+          "email": 0.5204,
+          "phone": 0.5816,
+          "currency": 1.0,
+          "created_date": 0.6122
+        }
+      },
+      "trivial_baselines": {
+        "group_by_postal_code": {
+          "precision": 0.8478,
+          "recall": 0.7647,
+          "f1": 0.8041,
+          "true_positives": 39,
+          "false_positives": 7,
+          "false_negatives": 12,
+          "exactly_recovered": 39,
+          "predicted_clusters": 46,
+          "true_clusters": 51
+        },
+        "group_by_name_norm": {
+          "precision": 0.6364,
+          "recall": 0.4118,
+          "f1": 0.5,
+          "true_positives": 21,
+          "false_positives": 12,
+          "false_negatives": 30,
+          "exactly_recovered": 21,
+          "predicted_clusters": 33,
+          "true_clusters": 51
+        },
+        "group_by_street_and_created_date": {
+          "precision": 0.7273,
+          "recall": 0.4706,
+          "f1": 0.5714,
+          "true_positives": 24,
+          "false_positives": 9,
+          "false_negatives": 27,
+          "exactly_recovered": 24,
+          "predicted_clusters": 33,
+          "true_clusters": 51
+        }
+      },
+      "warning_zh": "⚠ 本数据集上的 precision/recall 不构成模型能力的证据。字段 ['currency'] 在【每一对】真实重复记录中都逐字相同——合成数据生成器构造变体时只改写 vendor_name 与 country，其余字段整条复制。因此 `group_by_postal_code` 就能取得与 Splink 相同的 F1。同时模型诊断显示所有比较器的 m 均退化为 1、模糊匹配层从未被观测到（见 _meta.training.model_diagnostics），即概率匹配的机制并未被真正触发。要让这套指标具备意义，需要在生成器中注入字符级噪声（拼写错误、字符换位、地址缩写、邮编错位），而不是只注入可被标准化完全还原的格式变化。"
+    }
+  },
+  "duplicate_groups": [
+    {
+      "group_id": "GV100003",
+      "size": 2,
+      "needs_review": true,
+      "review_reasons": [
+        "组内最弱匹配概率 0.9869 低于复核阈值 0.99。",
+        "强标识符 `tax_number` 在组内取值冲突：['85-9650149', '859650149']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 0.986888,
+        "mean_match_probability": 0.986888,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100003",
+        "vendor_name": "Gregory Fabrication Inc.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Gregory Fabrication Inc.",
+          "country": "us",
+          "city": "South Ryanborough",
+          "street": "631 Heather Run Apt. 451",
+          "postal_code": "76260",
+          "tax_number": "85-9650149",
+          "email": "info@gregory-fabrication.net",
+          "phone": "368-251-9024",
+          "currency": "USD",
+          "created_date": "20150731",
+          "legacy_vendor_id": "V100003",
+          "is_canonical": true,
+          "name_norm": "gregory fabrication inc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": " Gregry Fabricaton Inc. ",
+          "country": "us",
+          "city": "outh Ryanborough",
+          "street": "631 Heather Run Apartment 451",
+          "postal_code": "76260",
+          "tax_number": "859650149",
+          "email": null,
+          "phone": "368-251-9024",
+          "currency": "USD",
+          "created_date": "20170509",
+          "legacy_vendor_id": "V100003D",
+          "is_canonical": false,
+          "name_norm": "gregry fabricaton inc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            " Gregry Fabricaton Inc. ",
+            "Gregory Fabrication Inc."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "us"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": false,
+          "distinct_values": [
+            "South Ryanborough",
+            "outh Ryanborough"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "631 Heather Run Apartment 451",
+            "631 Heather Run Apt. 451"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "76260"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "85-9650149",
+            "859650149"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@gregory-fabrication.net"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "368-251-9024"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20150731",
+            "20170509"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100003"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100005",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 0.999367,
+        "mean_match_probability": 0.999367,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100005",
+        "vendor_name": "Barron Supply Corp.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Barron Supply Corp.",
+          "country": "United States",
+          "city": "Phillipsfort",
+          "street": "036 Medina Gateway Suite 526",
+          "postal_code": "69138",
+          "tax_number": "12-5346539",
+          "email": "info@barron-supply.com",
+          "phone": "585-603-6838",
+          "currency": "USD",
+          "created_date": "20110511",
+          "legacy_vendor_id": "V100005",
+          "is_canonical": true,
+          "name_norm": "barron supply corp",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Barron Suppyl Corp.   ",
+          "country": "US",
+          "city": "Phillipsfort",
+          "street": "736 Medina Gateway Ste. 526",
+          "postal_code": "69138",
+          "tax_number": null,
+          "email": null,
+          "phone": "585-603-6830",
+          "currency": "USD",
+          "created_date": "20150129",
+          "legacy_vendor_id": "V100005D",
+          "is_canonical": false,
+          "name_norm": "barron suppyl corp",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Barron Supply Corp.",
+            "Barron Suppyl Corp.   "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "US",
+            "United States"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Phillipsfort"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "036 Medina Gateway Suite 526",
+            "736 Medina Gateway Ste. 526"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "69138"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "12-5346539"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@barron-supply.com"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "585-603-6830",
+            "585-603-6838"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20110511",
+            "20150129"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100005"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100015",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100015",
+        "vendor_name": "Yamada Seizo Co., Ltd.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Yamada Seizo Co., Ltd.",
+          "country": "Japan",
+          "city": "港区",
+          "street": "四区町5丁目11番7号",
+          "postal_code": "312-7508",
+          "tax_number": "9959465037258",
+          "email": "info@yamada-seizo.jp",
+          "phone": "070-3850-2555",
+          "currency": "JPY",
+          "created_date": "20050211",
+          "legacy_vendor_id": "V100015",
+          "is_canonical": true,
+          "name_norm": "yamada seizo co_ltd",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "YAMADA  SSEIZO CO., LTD.",
+          "country": "JP",
+          "city": "港区",
+          "street": "四区町5丁目11番7号",
+          "postal_code": "312-7508",
+          "tax_number": null,
+          "email": "info@yamada-seizo.jp",
+          "phone": "070-3850-2555",
+          "currency": "JPY",
+          "created_date": "20050211",
+          "legacy_vendor_id": "V100015D",
+          "is_canonical": false,
+          "name_norm": "yamada sseizo co_ltd",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "Yamada Seizo Co., Ltd.",
+          "country": "Japan",
+          "city": "港区",
+          "street": "四区町5丁目11番7号",
+          "postal_code": "312-7508",
+          "tax_number": "9959465037258",
+          "email": "info@yamada-seizo.jp",
+          "phone": "070-3850-2555",
+          "currency": "JPY",
+          "created_date": "20050211",
+          "legacy_vendor_id": "V100015X",
+          "is_canonical": false,
+          "name_norm": "yamada seizo co_ltd",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "YAMADA  SSEIZO CO., LTD.",
+            "Yamada Seizo Co., Ltd."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JP",
+            "Japan"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "港区"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "四区町5丁目11番7号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "312-7508"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "9959465037258"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@yamada-seizo.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "070-3850-2555"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20050211"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100015"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100016",
+      "size": 3,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `tax_number` 在组内取值冲突：['DE 229888629', 'DE229888629']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100016",
+        "vendor_name": "Bauer Logistik AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Bauer Logistik AG",
+          "country": "DE",
+          "city": "Forst",
+          "street": "Zänkerstraße 79",
+          "postal_code": "22672",
+          "tax_number": "DE229888629",
+          "email": "info@bauer-logistik.com",
+          "phone": "+49(0)4049 97484",
+          "currency": "EUR",
+          "created_date": "20130630",
+          "legacy_vendor_id": "V100016",
+          "is_canonical": true,
+          "name_norm": "bauer logistik ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Bauer  Logitsik AG",
+          "country": "DE",
+          "city": "Forst",
+          "street": "Zänkerstraße 79",
+          "postal_code": "22672",
+          "tax_number": "DE 229888629",
+          "email": "info@bauer-logistik.com",
+          "phone": "+49(0)4049 97444",
+          "currency": "EUR",
+          "created_date": "20140207",
+          "legacy_vendor_id": "V100016D",
+          "is_canonical": false,
+          "name_norm": "bauer logitsik ag",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "Bauer Logistik AG  ",
+          "country": "GER",
+          "city": "Forst",
+          "street": "Zänkerstraße 79",
+          "postal_code": "22672",
+          "tax_number": "DE229888629",
+          "email": "info@bauer-logistik.com",
+          "phone": "+49(0)4049 97484",
+          "currency": "EUR",
+          "created_date": "20130630",
+          "legacy_vendor_id": "V100016D2",
+          "is_canonical": false,
+          "name_norm": "bauer logistik ag",
+          "name_diff_from_canonical": [
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Bauer  Logitsik AG",
+            "Bauer Logistik AG",
+            "Bauer Logistik AG  "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "GER"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Forst"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Zänkerstraße 79"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "22672"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "DE 229888629",
+            "DE229888629"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@bauer-logistik.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "+49(0)4049 97444",
+            "+49(0)4049 97484"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20130630",
+            "20140207"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100016"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100017",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100017",
+        "vendor_name": "Dietz Stahlhandel GmbH & Co. KG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Dietz Stahlhandel GmbH & Co. KG",
+          "country": "Deutschland",
+          "city": "Marienberg",
+          "street": "Elfi-Köster-Straße 85/72",
+          "postal_code": "62693",
+          "tax_number": "DE511550449",
+          "email": "info@dietz-stahlhandel.com",
+          "phone": "(00245) 23821",
+          "currency": "EUR",
+          "created_date": "20160608",
+          "legacy_vendor_id": "V100017",
+          "is_canonical": true,
+          "name_norm": "dietz stahlhandel gmbh_co_kg",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "  Dietz 5Stahlhsndel GmbH und Co. KG",
+          "country": "Germany",
+          "city": "Marienberg",
+          "street": "Elfi-Köster-Str. 89/72",
+          "postal_code": "62693",
+          "tax_number": "DE511550449",
+          "email": "info@dietz-stahlhandel.com",
+          "phone": null,
+          "currency": "EUR",
+          "created_date": "20180105",
+          "legacy_vendor_id": "V100017D",
+          "is_canonical": false,
+          "name_norm": "dietz 5stahlhsndel gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "  Dietz 5Stahlhsndel GmbH und Co. KG",
+            "Dietz Stahlhandel GmbH & Co. KG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "Deutschland",
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Marienberg"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Elfi-Köster-Str. 89/72",
+            "Elfi-Köster-Straße 85/72"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "62693"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE511550449"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@dietz-stahlhandel.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(00245) 23821"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20160608",
+            "20180105"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100017"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100018",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100018",
+        "vendor_name": "Shimizu Seizo K.K.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Shimizu Seizo K.K.",
+          "country": "JPN",
+          "city": "鴨川市",
+          "street": "北青山31丁目18番14号",
+          "postal_code": "736-6699",
+          "tax_number": "8803754496765",
+          "email": "info@shimizu-seizo.co.jp",
+          "phone": "070-7318-7746",
+          "currency": "JPY",
+          "created_date": "20060629",
+          "legacy_vendor_id": "V100018",
+          "is_canonical": true,
+          "name_norm": "shimizu seizo kk",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "SHIMIZU SEIZO K.K.   ",
+          "country": "Japan",
+          "city": "鴨川市",
+          "street": "北青山31丁目18番14号",
+          "postal_code": "736-6699",
+          "tax_number": "8803754496765",
+          "email": null,
+          "phone": "070-7318-7746",
+          "currency": "JPY",
+          "created_date": "20060629",
+          "legacy_vendor_id": "V100018D",
+          "is_canonical": false,
+          "name_norm": "shimizu seizo kk",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        },
+        {
+          "vendor_name": "SHIMIZU SEIZO K.K.  ",
+          "country": "JAPAN",
+          "city": "鴨川市",
+          "street": "北青山31丁目18番14号",
+          "postal_code": "736-6699",
+          "tax_number": "8803754496765",
+          "email": "info@shimizu-seizo.co.jp",
+          "phone": "070-7318-7746",
+          "currency": "JPY",
+          "created_date": "20060629",
+          "legacy_vendor_id": "V100018D2",
+          "is_canonical": false,
+          "name_norm": "shimizu seizo kk",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "SHIMIZU SEIZO K.K.  ",
+            "SHIMIZU SEIZO K.K.   ",
+            "Shimizu Seizo K.K."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JAPAN",
+            "JPN",
+            "Japan"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "鴨川市"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "北青山31丁目18番14号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "736-6699"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "8803754496765"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@shimizu-seizo.co.jp"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "070-7318-7746"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20060629"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100018"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100020",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100020",
+        "vendor_name": "Schuchhardt Automation AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Schuchhardt Automation AG",
+          "country": "Germany",
+          "city": "Nürtingen",
+          "street": "Löchelallee 5",
+          "postal_code": "03238",
+          "tax_number": "DE330235664",
+          "email": "info@schuchhardt-automation.com",
+          "phone": "+49(0) 409332956",
+          "currency": "EUR",
+          "created_date": "20160425",
+          "legacy_vendor_id": "V100020",
+          "is_canonical": true,
+          "name_norm": "schuchhardt automation ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Schuchhardt Automation AG",
+          "country": "Germany",
+          "city": "Nürtingen",
+          "street": "Löchelallee 5",
+          "postal_code": "03238",
+          "tax_number": "DE330235664",
+          "email": "info@schuchhardt-automation.com",
+          "phone": "+49(0) 409332956",
+          "currency": "EUR",
+          "created_date": "20160425",
+          "legacy_vendor_id": "V100020X",
+          "is_canonical": false,
+          "name_norm": "schuchhardt automation ag",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Schuchhardt Automation AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Nürtingen"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Löchelallee 5"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "03238"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE330235664"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@schuchhardt-automation.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0) 409332956"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20160425"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100020"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100022",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100022",
+        "vendor_name": "Albers Elektrotechnik AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Albers Elektrotechnik AG",
+          "country": "de",
+          "city": "Regen",
+          "street": "Traude-Lachmann-Ring 8-5",
+          "postal_code": "46393",
+          "tax_number": "DE680112888",
+          "email": "info@albers-elektrotechnik.de",
+          "phone": "+49(0)5804 31841",
+          "currency": "EUR",
+          "created_date": "20001025",
+          "legacy_vendor_id": "V100022",
+          "is_canonical": true,
+          "name_norm": "albers elektrotechnik ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "  ALBERS ELEKTROTECHNIK AG",
+          "country": "GER",
+          "city": "Regen",
+          "street": "Traude-Lachmann-Ring 8-5",
+          "postal_code": "46393",
+          "tax_number": null,
+          "email": null,
+          "phone": "+49(0)5804 31841",
+          "currency": "EUR",
+          "created_date": "20001025",
+          "legacy_vendor_id": "V100022D",
+          "is_canonical": false,
+          "name_norm": "albers elektrotechnik ag",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "  ALBERS ELEKTROTECHNIK AG",
+            "Albers Elektrotechnik AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "GER",
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Regen"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Traude-Lachmann-Ring 8-5"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "46393"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE680112888"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@albers-elektrotechnik.de"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0)5804 31841"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20001025"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100022"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100025",
+      "size": 3,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `tax_number` 在组内取值冲突：['7666-803595616', '7666803595616']。同一实体不应如此。",
+        "强标识符 `email` 在组内取值冲突：['info@yoshida-kogyo.jp', 'vertrieb@yoshida-kogyo.jp']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100025",
+        "vendor_name": "Yoshida Kogyo Co., Ltd.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Yoshida Kogyo Co., Ltd.",
+          "country": "JPN",
+          "city": "千代田区",
+          "street": "戸塚町29丁目9番14号",
+          "postal_code": "707-9890",
+          "tax_number": "7666803595616",
+          "email": "info@yoshida-kogyo.jp",
+          "phone": "56-8668-9057",
+          "currency": "JPY",
+          "created_date": "20080509",
+          "legacy_vendor_id": "V100025",
+          "is_canonical": true,
+          "name_norm": "yoshida kogyo co_ltd",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "  yoshicla kogyo co., ltd.  ",
+          "country": "JPN",
+          "city": "千代田区",
+          "street": "戸塚町29丁目9番64号",
+          "postal_code": "707-9890",
+          "tax_number": "7666-803595616",
+          "email": null,
+          "phone": "56-8668-9058",
+          "currency": "JPY",
+          "created_date": "20080509",
+          "legacy_vendor_id": "V100025D",
+          "is_canonical": false,
+          "name_norm": "yoshicla kogyo co_ltd",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "yoshida  kogyo co ltd",
+          "country": "JPN",
+          "city": "千代田区",
+          "street": "戸塚町29丁目9番44号",
+          "postal_code": "707-9890",
+          "tax_number": "7666803595616",
+          "email": "vertrieb@yoshida-kogyo.jp",
+          "phone": "56-8668-9057",
+          "currency": "JPY",
+          "created_date": "20080509",
+          "legacy_vendor_id": "V100025D2",
+          "is_canonical": false,
+          "name_norm": "yoshida kogyo co_ltd",
+          "name_diff_from_canonical": [
+            "case",
+            "punctuation",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "  yoshicla kogyo co., ltd.  ",
+            "Yoshida Kogyo Co., Ltd.",
+            "yoshida  kogyo co ltd"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "JPN"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "千代田区"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "戸塚町29丁目9番14号",
+            "戸塚町29丁目9番44号",
+            "戸塚町29丁目9番64号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "707-9890"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "7666-803595616",
+            "7666803595616"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": false,
+          "distinct_values": [
+            "info@yoshida-kogyo.jp",
+            "vertrieb@yoshida-kogyo.jp"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "56-8668-9057",
+            "56-8668-9058"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20080509"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100025"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100035",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100035",
+        "vendor_name": "Rodriguez Industrial Inc.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Rodriguez Industrial Inc.",
+          "country": "us",
+          "city": "Port Joanntown",
+          "street": "88359 Barnett Center Suite 402",
+          "postal_code": "17404",
+          "tax_number": "48-1639888",
+          "email": "info@rodriguez-industrial.net",
+          "phone": "(411)854-6579",
+          "currency": "USD",
+          "created_date": "20150420",
+          "legacy_vendor_id": "V100035",
+          "is_canonical": true,
+          "name_norm": "rodriguez industrial inc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Rodriguez  Industrial Inc.",
+          "country": "USA",
+          "city": "Port Joanntown",
+          "street": "88359 Barnett Center Suite 402",
+          "postal_code": "17404",
+          "tax_number": "48-1639888",
+          "email": null,
+          "phone": "(411)854-6579",
+          "currency": "USD",
+          "created_date": "20150420",
+          "legacy_vendor_id": "V100035D",
+          "is_canonical": false,
+          "name_norm": "rodriguez industrial inc",
+          "name_diff_from_canonical": [
+            "whitespace"
+          ]
+        },
+        {
+          "vendor_name": " Rodriguez Industria1 Inc   ",
+          "country": "United States",
+          "city": "Port Joanntown",
+          "street": "88459 Barnett Center Ste. 402",
+          "postal_code": "17404",
+          "tax_number": "48-1639888",
+          "email": "info@rodriguez-industrial.net",
+          "phone": "(411)854-6579",
+          "currency": "USD",
+          "created_date": "20160423",
+          "legacy_vendor_id": "V100035D2",
+          "is_canonical": false,
+          "name_norm": "rodriguez industria1 inc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            " Rodriguez Industria1 Inc   ",
+            "Rodriguez  Industrial Inc.",
+            "Rodriguez Industrial Inc."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "USA",
+            "United States",
+            "us"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Port Joanntown"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "88359 Barnett Center Suite 402",
+            "88459 Barnett Center Ste. 402"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "17404"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "48-1639888"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@rodriguez-industrial.net"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(411)854-6579"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20150420",
+            "20160423"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100035"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100037",
+      "size": 2,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `tax_number` 在组内取值冲突：['DE 763285078', 'DE763285078']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100037",
+        "vendor_name": "Holzapfel Kunststoff GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Holzapfel Kunststoff GmbH",
+          "country": "GER",
+          "city": "Brandenburg",
+          "street": "Rörrichtplatz 8-8",
+          "postal_code": "75526",
+          "tax_number": "DE763285078",
+          "email": "info@holzapfel-kunststoff.de",
+          "phone": "06799 447674",
+          "currency": "EUR",
+          "created_date": "20020308",
+          "legacy_vendor_id": "V100037",
+          "is_canonical": true,
+          "name_norm": "holzapfel kunststoff gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "holzpfeo kkunststoff gmbh",
+          "country": "GER",
+          "city": "Brandenburg",
+          "street": "Rörrichtplatz 8-2",
+          "postal_code": "75526",
+          "tax_number": "DE 763285078",
+          "email": null,
+          "phone": "06799 447674",
+          "currency": "EUR",
+          "created_date": "20020308",
+          "legacy_vendor_id": "V100037D",
+          "is_canonical": false,
+          "name_norm": "holzpfeo kkunststoff gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Holzapfel Kunststoff GmbH",
+            "holzpfeo kkunststoff gmbh"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "GER"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Brandenburg"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Rörrichtplatz 8-2",
+            "Rörrichtplatz 8-8"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "75526"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "DE 763285078",
+            "DE763285078"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@holzapfel-kunststoff.de"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "06799 447674"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20020308"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100037"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100038",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100038",
+        "vendor_name": "Haley Components Corp.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Haley Components Corp.",
+          "country": "USA",
+          "city": "Lake Kevin",
+          "street": "410 Stone Cove",
+          "postal_code": "85926",
+          "tax_number": "35-4557879",
+          "email": "info@haley-components.com",
+          "phone": "3845599491",
+          "currency": "USD",
+          "created_date": "20190110",
+          "legacy_vendor_id": "V100038",
+          "is_canonical": true,
+          "name_norm": "haley components corp",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "haley components corp.",
+          "country": "USA",
+          "city": "Lake Kevin",
+          "street": "410 Stone Cove",
+          "postal_code": "85926",
+          "tax_number": null,
+          "email": "info@haley-components.com",
+          "phone": "3845599491",
+          "currency": "USD",
+          "created_date": "20190110",
+          "legacy_vendor_id": "V100038D",
+          "is_canonical": false,
+          "name_norm": "haley components corp",
+          "name_diff_from_canonical": [
+            "case"
+          ]
+        },
+        {
+          "vendor_name": "haley components corp.   ",
+          "country": "us",
+          "city": "Lake Kevin",
+          "street": "410 Stone Cove",
+          "postal_code": "85926",
+          "tax_number": "35-4557879",
+          "email": "info@haley-components.com",
+          "phone": "3845599491",
+          "currency": "USD",
+          "created_date": "20190110",
+          "legacy_vendor_id": "V100038D2",
+          "is_canonical": false,
+          "name_norm": "haley components corp",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Haley Components Corp.",
+            "haley components corp.",
+            "haley components corp.   "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "USA",
+            "us"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Lake Kevin"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "410 Stone Cove"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "85926"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "35-4557879"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@haley-components.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "3845599491"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20190110"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100038"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100039",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100039",
+        "vendor_name": "Suzuki Kagaku K.K.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Suzuki Kagaku K.K.",
+          "country": "Japan",
+          "city": "印旛郡印旛村",
+          "street": "北上野34丁目10番9号",
+          "postal_code": "539-0700",
+          "tax_number": "7864479596252",
+          "email": "info@suzuki-kagaku.jp",
+          "phone": "080-8119-4729",
+          "currency": "JPY",
+          "created_date": "20010220",
+          "legacy_vendor_id": "V100039",
+          "is_canonical": true,
+          "name_norm": "suzuki kagaku kk",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Suzuki Kagaku KK",
+          "country": "JAPAN",
+          "city": "印旛郡印旛村",
+          "street": "北上野34丁目10番9号",
+          "postal_code": "539-0700",
+          "tax_number": "7864479596252",
+          "email": "info@suzuki-kagaku.jp",
+          "phone": "080-8119-4729",
+          "currency": "JPY",
+          "created_date": "20010220",
+          "legacy_vendor_id": "V100039D",
+          "is_canonical": false,
+          "name_norm": "suzuki kagaku kk",
+          "name_diff_from_canonical": [
+            "punctuation"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Suzuki Kagaku K.K.",
+            "Suzuki Kagaku KK"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JAPAN",
+            "Japan"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "印旛郡印旛村"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "北上野34丁目10番9号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "539-0700"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "7864479596252"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@suzuki-kagaku.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "080-8119-4729"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20010220"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100039"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100040",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100040",
+        "vendor_name": "Fujita Shoji Co., Ltd.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Fujita Shoji Co., Ltd.",
+          "country": "JAPAN",
+          "city": "東久留米市",
+          "street": "小入27丁目21番18号",
+          "postal_code": "478-7861",
+          "tax_number": "3478640030609",
+          "email": "info@fujita-shoji.jp",
+          "phone": "080-8193-6690",
+          "currency": "JPY",
+          "created_date": "20160229",
+          "legacy_vendor_id": "V100040",
+          "is_canonical": true,
+          "name_norm": "fujita shoji co_ltd",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "FUJITA SHOJI CO LTD",
+          "country": "JP",
+          "city": "東久留米市",
+          "street": "小入27丁目21番18号",
+          "postal_code": "478-7861",
+          "tax_number": null,
+          "email": "info@fujita-shoji.jp",
+          "phone": "080-8193-6690",
+          "currency": "JPY",
+          "created_date": "20160229",
+          "legacy_vendor_id": "V100040D",
+          "is_canonical": false,
+          "name_norm": "fujita shoji co_ltd",
+          "name_diff_from_canonical": [
+            "case",
+            "punctuation"
+          ]
+        },
+        {
+          "vendor_name": "  Fujita  Shoji Co., Ltd.",
+          "country": "JPN",
+          "city": "東久留米市",
+          "street": "小入27丁目21番18号",
+          "postal_code": "478-7861",
+          "tax_number": "3478640030609",
+          "email": "info@fujita-shoji.jp",
+          "phone": "080-8193-6690",
+          "currency": "JPY",
+          "created_date": "20160229",
+          "legacy_vendor_id": "V100040D2",
+          "is_canonical": false,
+          "name_norm": "fujita shoji co_ltd",
+          "name_diff_from_canonical": [
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "  Fujita  Shoji Co., Ltd.",
+            "FUJITA SHOJI CO LTD",
+            "Fujita Shoji Co., Ltd."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JAPAN",
+            "JP",
+            "JPN"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "東久留米市"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "小入27丁目21番18号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "478-7861"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "3478640030609"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@fujita-shoji.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "080-8193-6690"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20160229"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100040"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100048",
+      "size": 2,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `tax_number` 在组内取值冲突：['DE 849372766', 'DE849372766']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100048",
+        "vendor_name": "Döhn Chemie GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Döhn Chemie GmbH",
+          "country": "de",
+          "city": "Parsberg",
+          "street": "Vinzenz-Schäfer-Platz 801",
+          "postal_code": "46156",
+          "tax_number": "DE849372766",
+          "email": "info@doehn-chemie.com",
+          "phone": "04922 38390",
+          "currency": "EUR",
+          "created_date": "20151231",
+          "legacy_vendor_id": "V100048",
+          "is_canonical": true,
+          "name_norm": "dohn chemie gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "   Döhn Chemiie GmbH.",
+          "country": "de",
+          "city": "Parsberg",
+          "street": "Vinzenz-Schäfer-Platz 801",
+          "postal_code": "46156",
+          "tax_number": "DE 849372766",
+          "email": "info@doehn-chemie.com",
+          "phone": "04922 38390",
+          "currency": "EUR",
+          "created_date": "20151231",
+          "legacy_vendor_id": "V100048D2",
+          "is_canonical": false,
+          "name_norm": "dohn chemiie gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "   Döhn Chemiie GmbH.",
+            "Döhn Chemie GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Parsberg"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Vinzenz-Schäfer-Platz 801"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "46156"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "DE 849372766",
+            "DE849372766"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@doehn-chemie.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "04922 38390"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20151231"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100048"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100049",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100049",
+        "vendor_name": "Heinrich Kunststoff AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Heinrich Kunststoff AG",
+          "country": "Deutschland",
+          "city": "Altötting",
+          "street": "Röhrdanzallee 4-6",
+          "postal_code": "38576",
+          "tax_number": "DE386695848",
+          "email": "info@heinrich-kunststoff.com",
+          "phone": "01743 575803",
+          "currency": "EUR",
+          "created_date": "20040604",
+          "legacy_vendor_id": "V100049",
+          "is_canonical": true,
+          "name_norm": "heinrich kunststoff ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Heinrich Kunststoff AG",
+          "country": "Deutschland",
+          "city": "Altötting",
+          "street": "Röhrdanzallee 4-6",
+          "postal_code": "38576",
+          "tax_number": "DE386695848",
+          "email": "info@heinrich-kunststoff.com",
+          "phone": "01743 575803",
+          "currency": "EUR",
+          "created_date": "20040604",
+          "legacy_vendor_id": "V100049X",
+          "is_canonical": false,
+          "name_norm": "heinrich kunststoff ag",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Heinrich Kunststoff AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "Deutschland"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Altötting"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Röhrdanzallee 4-6"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "38576"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE386695848"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@heinrich-kunststoff.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "01743 575803"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20040604"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100049"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100052",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100052",
+        "vendor_name": "Francis Materials Inc.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Francis Materials Inc.",
+          "country": "USA",
+          "city": "Clarkland",
+          "street": "99192 Carter Mills Suite 000",
+          "postal_code": "18316",
+          "tax_number": null,
+          "email": "info@francis-materials.com",
+          "phone": "(270)416-2550",
+          "currency": "USD",
+          "created_date": "20080714",
+          "legacy_vendor_id": "V100052",
+          "is_canonical": true,
+          "name_norm": "francis materials inc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "FRANCIS  MATERIALS INCORPORATED",
+          "country": "US",
+          "city": "Clarkland",
+          "street": "99192 Carter Mills Ste. 300",
+          "postal_code": "18316",
+          "tax_number": null,
+          "email": "info@francis-materials.com",
+          "phone": "(270)416-2550",
+          "currency": "USD",
+          "created_date": "20080714",
+          "legacy_vendor_id": "V100052D",
+          "is_canonical": false,
+          "name_norm": "francis materials inc",
+          "name_diff_from_canonical": [
+            "legal_suffix",
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "FRANCIS  MATERIALS INCORPORATED",
+            "Francis Materials Inc."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "US",
+            "USA"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Clarkland"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "99192 Carter Mills Ste. 300",
+            "99192 Carter Mills Suite 000"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "18316"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@francis-materials.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(270)416-2550"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20080714"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100052"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100054",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100054",
+        "vendor_name": "Wyatt Technologies LLC",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Wyatt Technologies LLC",
+          "country": "USA",
+          "city": "West Brian",
+          "street": "83161 Mark Underpass Apt. 470",
+          "postal_code": "21096",
+          "tax_number": "49-5061383",
+          "email": null,
+          "phone": null,
+          "currency": "USD",
+          "created_date": "20040529",
+          "legacy_vendor_id": "V100054",
+          "is_canonical": true,
+          "name_norm": "wyatt technologies llc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Wyatt Technologies LLC",
+          "country": "USA",
+          "city": "West Brian",
+          "street": "83161 Mark Underpass Apt. 470",
+          "postal_code": "21096",
+          "tax_number": "49-5061383",
+          "email": null,
+          "phone": null,
+          "currency": "USD",
+          "created_date": "20040529",
+          "legacy_vendor_id": "V100054X",
+          "is_canonical": false,
+          "name_norm": "wyatt technologies llc",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Wyatt Technologies LLC"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "USA"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "West Brian"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "83161 Mark Underpass Apt. 470"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "21096"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "49-5061383"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20040529"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100054"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100055",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100055",
+        "vendor_name": "Hänel Elektrotechnik GmbH & Co. KG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Hänel Elektrotechnik GmbH & Co. KG",
+          "country": "Germany",
+          "city": "Bischofswerda",
+          "street": "Schwitalstraße 56/55",
+          "postal_code": "38399",
+          "tax_number": "DE814673836",
+          "email": "info@haenel-elektrotechnik.de",
+          "phone": "+49(0)4161 71942",
+          "currency": "EUR",
+          "created_date": "19980105",
+          "legacy_vendor_id": "V100055",
+          "is_canonical": true,
+          "name_norm": "hanel elektrotechnik gmbh_co_kg",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "hänel elektrotechnik gmbh & co kg",
+          "country": "de",
+          "city": "Bischofswerda",
+          "street": "Schwitalstraße 56/55",
+          "postal_code": "38399",
+          "tax_number": "DE814673836",
+          "email": "info@haenel-elektrotechnik.de",
+          "phone": "+49(0)4161 71942",
+          "currency": "EUR",
+          "created_date": "19980105",
+          "legacy_vendor_id": "V100055D",
+          "is_canonical": false,
+          "name_norm": "hanel elektrotechnik gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "case",
+            "punctuation"
+          ]
+        },
+        {
+          "vendor_name": "hänel elektrotechnik gmbh & co. kg ",
+          "country": "de",
+          "city": "Bischofswerda",
+          "street": "Schwitalstraße 56/55",
+          "postal_code": "38399",
+          "tax_number": "DE814673836",
+          "email": null,
+          "phone": "+49(0)4161 71942",
+          "currency": "EUR",
+          "created_date": "19980105",
+          "legacy_vendor_id": "V100055D2",
+          "is_canonical": false,
+          "name_norm": "hanel elektrotechnik gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Hänel Elektrotechnik GmbH & Co. KG",
+            "hänel elektrotechnik gmbh & co kg",
+            "hänel elektrotechnik gmbh & co. kg "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "Germany",
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Bischofswerda"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Schwitalstraße 56/55"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "38399"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE814673836"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@haenel-elektrotechnik.de"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0)4161 71942"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "19980105"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100055"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100056",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100056",
+        "vendor_name": "Kato Seizo K.K.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Kato Seizo K.K.",
+          "country": "JP",
+          "city": "川崎市中原区",
+          "street": "鶴ヶ丘20丁目3番18号",
+          "postal_code": "029-9476",
+          "tax_number": "6901857633764",
+          "email": "info@kato-seizo.jp",
+          "phone": "69-4106-6303",
+          "currency": "JPY",
+          "created_date": "20021119",
+          "legacy_vendor_id": "V100056",
+          "is_canonical": true,
+          "name_norm": "kato seizo kk",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Kato Seizo KK  ",
+          "country": "Japan",
+          "city": "川崎市中原区",
+          "street": "鶴ヶ丘20丁目3番18号",
+          "postal_code": "029-9476",
+          "tax_number": null,
+          "email": "info@kato-seizo.jp",
+          "phone": null,
+          "currency": "JPY",
+          "created_date": "20021119",
+          "legacy_vendor_id": "V100056D",
+          "is_canonical": false,
+          "name_norm": "kato seizo kk",
+          "name_diff_from_canonical": [
+            "punctuation",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Kato Seizo K.K.",
+            "Kato Seizo KK  "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JP",
+            "Japan"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "川崎市中原区"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "鶴ヶ丘20丁目3番18号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "029-9476"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "6901857633764"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@kato-seizo.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "69-4106-6303"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20021119"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100056"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100072",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100072",
+        "vendor_name": "Rörricht Maschinenbau GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Rörricht Maschinenbau GmbH",
+          "country": "de",
+          "city": "Leipziger Land",
+          "street": "Walther-Eckbauer-Platz 614",
+          "postal_code": "36637",
+          "tax_number": "DE448337811",
+          "email": "info@roerricht-maschinenbau.com",
+          "phone": "+49(0)3893 536081",
+          "currency": "EUR",
+          "created_date": "20050720",
+          "legacy_vendor_id": "V100072",
+          "is_canonical": true,
+          "name_norm": "rorricht maschinenbau gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "RÖRRICHT  MASCHNENBAU GMBH",
+          "country": "DE",
+          "city": "Leipziger Land",
+          "street": "Walther-Eckbauer-Platz 614",
+          "postal_code": "36637",
+          "tax_number": "DE448337811",
+          "email": "info@roerricht-maschinenbau.com",
+          "phone": null,
+          "currency": "EUR",
+          "created_date": "20050720",
+          "legacy_vendor_id": "V100072D",
+          "is_canonical": false,
+          "name_norm": "rorricht maschnenbau gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "  Rörricht  Maschinenbau GmbH ",
+          "country": "de",
+          "city": "Leipziger Land",
+          "street": "Walther-Eckbauer-Platz 614",
+          "postal_code": "36637",
+          "tax_number": "DE448337811",
+          "email": null,
+          "phone": "+49(0)3893 536081",
+          "currency": "EUR",
+          "created_date": "20050720",
+          "legacy_vendor_id": "V100072D2",
+          "is_canonical": false,
+          "name_norm": "rorricht maschinenbau gmbh",
+          "name_diff_from_canonical": [
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "  Rörricht  Maschinenbau GmbH ",
+            "RÖRRICHT  MASCHNENBAU GMBH",
+            "Rörricht Maschinenbau GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Leipziger Land"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Walther-Eckbauer-Platz 614"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "36637"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE448337811"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@roerricht-maschinenbau.com"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0)3893 536081"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20050720"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100072"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100075",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100075",
+        "vendor_name": "Stadelmann Automation GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Stadelmann Automation GmbH",
+          "country": "DE",
+          "city": "Lemgo",
+          "street": "Kühnertplatz 14-50",
+          "postal_code": "56673",
+          "tax_number": null,
+          "email": null,
+          "phone": "+49(0)7940732319",
+          "currency": "EUR",
+          "created_date": "20130107",
+          "legacy_vendor_id": "V100075",
+          "is_canonical": true,
+          "name_norm": "stadelmann automation gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Stadelmann Automaiton GmbH  ",
+          "country": "Deutschland",
+          "city": "Lemgo",
+          "street": "Kühnertplatz 15-50",
+          "postal_code": "56673",
+          "tax_number": null,
+          "email": null,
+          "phone": "+49(0)7940732319",
+          "currency": "EUR",
+          "created_date": "20130201",
+          "legacy_vendor_id": "V100075D",
+          "is_canonical": false,
+          "name_norm": "stadelmann automaiton gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Stadelmann Automaiton GmbH  ",
+            "Stadelmann Automation GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "Deutschland"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Lemgo"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Kühnertplatz 14-50",
+            "Kühnertplatz 15-50"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "56673"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0)7940732319"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20130107",
+            "20130201"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100075"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100077",
+      "size": 3,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `tax_number` 在组内取值冲突：['DE 022181741', 'DE022181741']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100077",
+        "vendor_name": "Krebs Stahlhandel GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Krebs Stahlhandel GmbH",
+          "country": "DE",
+          "city": "Norden",
+          "street": "Schleichgasse 62-58",
+          "postal_code": "38927",
+          "tax_number": "DE022181741",
+          "email": "info@krebs-stahlhandel.de",
+          "phone": "+49(0) 755261207",
+          "currency": "EUR",
+          "created_date": "20030525",
+          "legacy_vendor_id": "V100077",
+          "is_canonical": true,
+          "name_norm": "krebs stahlhandel gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "KEBS SATHLHANDEL GMBH",
+          "country": "Germany",
+          "city": "Norden",
+          "street": "Schleichg. 69-58",
+          "postal_code": "38927",
+          "tax_number": "DE 022181741",
+          "email": "info@krebs-stahlhandel.de",
+          "phone": "+49(0) 755261207",
+          "currency": "EUR",
+          "created_date": "20051030",
+          "legacy_vendor_id": "V100077D",
+          "is_canonical": false,
+          "name_norm": "kebs sathlhandel gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "krebs  stahlhandel gmbh",
+          "country": "Deutschland",
+          "city": "Norden",
+          "street": "Schleichgasse 62-58",
+          "postal_code": "38927",
+          "tax_number": "DE022181741",
+          "email": "info@krebs-stahlhandel.de",
+          "phone": "+49(0) 755261207",
+          "currency": "EUR",
+          "created_date": "20030525",
+          "legacy_vendor_id": "V100077D2",
+          "is_canonical": false,
+          "name_norm": "krebs stahlhandel gmbh",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "KEBS SATHLHANDEL GMBH",
+            "Krebs Stahlhandel GmbH",
+            "krebs  stahlhandel gmbh"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "Deutschland",
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Norden"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Schleichg. 69-58",
+            "Schleichgasse 62-58"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "38927"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "DE 022181741",
+            "DE022181741"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@krebs-stahlhandel.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0) 755261207"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20030525",
+            "20051030"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100077"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100079",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100079",
+        "vendor_name": "Hande Stahlhandel AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Hande Stahlhandel AG",
+          "country": "de",
+          "city": "Aachen",
+          "street": "Christa-Geisler-Ring 1-5",
+          "postal_code": "93233",
+          "tax_number": "DE065870919",
+          "email": "info@hande-stahlhandel.com",
+          "phone": "+49(0) 172814513",
+          "currency": "EUR",
+          "created_date": "20151019",
+          "legacy_vendor_id": "V100079",
+          "is_canonical": true,
+          "name_norm": "hande stahlhandel ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "HANDE  STAHLHANDEL AG  ",
+          "country": "de",
+          "city": "Aachen",
+          "street": "Christa-Geisler-Ring 1-5",
+          "postal_code": "93233",
+          "tax_number": "DE065870919",
+          "email": "info@hande-stahlhandel.com",
+          "phone": "+49(0) 172814513",
+          "currency": "EUR",
+          "created_date": "20151019",
+          "legacy_vendor_id": "V100079D",
+          "is_canonical": false,
+          "name_norm": "hande stahlhandel ag",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "HANDE  STAHLHANDEL AG  ",
+            "Hande Stahlhandel AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "de"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Aachen"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Christa-Geisler-Ring 1-5"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "93233"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE065870919"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@hande-stahlhandel.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0) 172814513"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20151019"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100079"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100083",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100083",
+        "vendor_name": "Tintzmann Werkzeugbau AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Tintzmann Werkzeugbau AG",
+          "country": "Deutschland",
+          "city": "Grimma",
+          "street": "Höfigplatz 1",
+          "postal_code": "62671",
+          "tax_number": "DE193652831",
+          "email": "info@tintzmann-werkzeugbau.com",
+          "phone": "07183301577",
+          "currency": "EUR",
+          "created_date": "20011114",
+          "legacy_vendor_id": "V100083",
+          "is_canonical": true,
+          "name_norm": "tintzmann werkzeugbau ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Tintzmann Werkzeugbau AG",
+          "country": "Deutschland",
+          "city": "Grimma",
+          "street": "Höfigplatz 1",
+          "postal_code": "62671",
+          "tax_number": "DE193652831",
+          "email": "info@tintzmann-werkzeugbau.com",
+          "phone": "07183301577",
+          "currency": "EUR",
+          "created_date": "20011114",
+          "legacy_vendor_id": "V100083X",
+          "is_canonical": false,
+          "name_norm": "tintzmann werkzeugbau ag",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Tintzmann Werkzeugbau AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "Deutschland"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Grimma"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Höfigplatz 1"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "62671"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE193652831"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@tintzmann-werkzeugbau.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "07183301577"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20011114"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100083"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100085",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 0.999998,
+        "mean_match_probability": 0.999998,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100085",
+        "vendor_name": "Gutknecht Chemie AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Gutknecht Chemie AG",
+          "country": "DE",
+          "city": "Stadtroda",
+          "street": "Annika-Gorlitz-Straße 53-52",
+          "postal_code": "72474",
+          "tax_number": "DE679347071",
+          "email": "info@gutknecht-chemie.com",
+          "phone": "02636 569101",
+          "currency": "EUR",
+          "created_date": "20171216",
+          "legacy_vendor_id": "V100085",
+          "is_canonical": true,
+          "name_norm": "gutknecht chemie ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "  Gutknechtt CCChemie AG.",
+          "country": "Germany",
+          "city": "Stadtroda",
+          "street": "Annika-Gorlitz-Str. 53-52",
+          "postal_code": "72474",
+          "tax_number": "DE679347071",
+          "email": null,
+          "phone": "02636 559101",
+          "currency": "EUR",
+          "created_date": "20200929",
+          "legacy_vendor_id": "V100085D",
+          "is_canonical": false,
+          "name_norm": "gutknechtt ccchemie ag",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "  Gutknechtt CCChemie AG.",
+            "Gutknecht Chemie AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Stadtroda"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Annika-Gorlitz-Str. 53-52",
+            "Annika-Gorlitz-Straße 53-52"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "72474"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE679347071"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@gutknecht-chemie.com"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "02636 559101",
+            "02636 569101"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20171216",
+            "20200929"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100085"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100088",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100088",
+        "vendor_name": "Ring Logistik GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Ring Logistik GmbH",
+          "country": "Deutschland",
+          "city": "Regen",
+          "street": "Ljudmila-Ziegert-Gasse 0",
+          "postal_code": "48141",
+          "tax_number": "DE898850122",
+          "email": "info@ring-logistik.de",
+          "phone": "+49(0) 973406202",
+          "currency": "EUR",
+          "created_date": "20150116",
+          "legacy_vendor_id": "V100088",
+          "is_canonical": true,
+          "name_norm": "ring logistik gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "RING LOGISTIIK GMBH ",
+          "country": "Germany",
+          "city": "Regen",
+          "street": "Ljudmila-Ziegert-Gasse 0",
+          "postal_code": "48141",
+          "tax_number": "DE898850122",
+          "email": "info@ring-logistik.de",
+          "phone": null,
+          "currency": "EUR",
+          "created_date": "20150116",
+          "legacy_vendor_id": "V100088D2",
+          "is_canonical": false,
+          "name_norm": "ring logistiik gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "RING LOGISTIIK GMBH ",
+            "Ring Logistik GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "Deutschland",
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Regen"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Ljudmila-Ziegert-Gasse 0"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "48141"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE898850122"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@ring-logistik.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0) 973406202"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20150116"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100088"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100090",
+      "size": 2,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `email` 在组内取值冲突：['contact@hale-technologies.net', 'info@hale-technologies.net']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100090",
+        "vendor_name": "Hale Technologies Corp.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Hale Technologies Corp.",
+          "country": "USA",
+          "city": "West Jasonland",
+          "street": "04985 Joanna Street",
+          "postal_code": "08813",
+          "tax_number": "50-7785115",
+          "email": "info@hale-technologies.net",
+          "phone": "904.242.7435",
+          "currency": "USD",
+          "created_date": "20190205",
+          "legacy_vendor_id": "V100090",
+          "is_canonical": true,
+          "name_norm": "hale technologies corp",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "HALE TECHNOOLGIES CORP.",
+          "country": "United States",
+          "city": "West Jasonland",
+          "street": "04985 Joanna Street",
+          "postal_code": "08813",
+          "tax_number": "50-7785115",
+          "email": "contact@hale-technologies.net",
+          "phone": "004.242.7435",
+          "currency": "USD",
+          "created_date": "20190205",
+          "legacy_vendor_id": "V100090D",
+          "is_canonical": false,
+          "name_norm": "hale technoolgies corp",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "HALE TECHNOOLGIES CORP.",
+            "Hale Technologies Corp."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "USA",
+            "United States"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "West Jasonland"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "04985 Joanna Street"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "08813"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "50-7785115"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": false,
+          "distinct_values": [
+            "contact@hale-technologies.net",
+            "info@hale-technologies.net"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "004.242.7435",
+            "904.242.7435"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20190205"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100090"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100096",
+      "size": 4,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 6,
+        "possible_edges": 6,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100096",
+        "vendor_name": "Sasaki Kikai Co., Ltd.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Sasaki Kikai Co., Ltd.",
+          "country": "Japan",
+          "city": "御蔵島村",
+          "street": "九段南32丁目13番13号",
+          "postal_code": "110-6017",
+          "tax_number": "7058946582796",
+          "email": "info@sasaki-kikai.jp",
+          "phone": "070-5684-1159",
+          "currency": "JPY",
+          "created_date": "20031204",
+          "legacy_vendor_id": "V100096",
+          "is_canonical": true,
+          "name_norm": "sasaki kikai co_ltd",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "sassaki kikai co., ltd. ",
+          "country": "Japan",
+          "city": "御蔵島村",
+          "street": "九段南32丁目13番13号",
+          "postal_code": "110-6017",
+          "tax_number": "7058946582796",
+          "email": "info@sasaki-kikai.jp",
+          "phone": null,
+          "currency": "JPY",
+          "created_date": "20031204",
+          "legacy_vendor_id": "V100096D",
+          "is_canonical": false,
+          "name_norm": "sassaki kikai co_ltd",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        },
+        {
+          "vendor_name": "Sasaki Kikai Company Limited",
+          "country": "JPN",
+          "city": "御蔵島村",
+          "street": "九段南32丁目13番13号",
+          "postal_code": "110-6017",
+          "tax_number": "7058946582796",
+          "email": "info@sasaki-kikai.jp",
+          "phone": "070-5684-1159",
+          "currency": "JPY",
+          "created_date": "20031204",
+          "legacy_vendor_id": "V100096D2",
+          "is_canonical": false,
+          "name_norm": "sasaki kikai co_ltd",
+          "name_diff_from_canonical": [
+            "legal_suffix"
+          ]
+        },
+        {
+          "vendor_name": "Sasaki Kikai Co., Ltd.",
+          "country": "Japan",
+          "city": "御蔵島村",
+          "street": "九段南32丁目13番13号",
+          "postal_code": "110-6017",
+          "tax_number": "7058946582796",
+          "email": "info@sasaki-kikai.jp",
+          "phone": "070-5684-1159",
+          "currency": "JPY",
+          "created_date": "20031204",
+          "legacy_vendor_id": "V100096X",
+          "is_canonical": false,
+          "name_norm": "sasaki kikai co_ltd",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Sasaki Kikai Co., Ltd.",
+            "Sasaki Kikai Company Limited",
+            "sassaki kikai co., ltd. "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "JPN",
+            "Japan"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "御蔵島村"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "九段南32丁目13番13号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "110-6017"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "7058946582796"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@sasaki-kikai.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "070-5684-1159"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20031204"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100096"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100097",
+      "size": 3,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 3,
+        "possible_edges": 3,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100097",
+        "vendor_name": "Terrell Materials Inc.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Terrell Materials Inc.",
+          "country": "US",
+          "city": "Longville",
+          "street": "155 Richard Mall Apt. 506",
+          "postal_code": "71782",
+          "tax_number": "71-2448739",
+          "email": "info@terrell-materials.net",
+          "phone": "341.425.7779x5263",
+          "currency": "USD",
+          "created_date": "20170902",
+          "legacy_vendor_id": "V100097",
+          "is_canonical": true,
+          "name_norm": "terrell materials inc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "terrell materials inc.",
+          "country": "United States",
+          "city": "Longville",
+          "street": "155 Richard Mall Apt. 506",
+          "postal_code": "71782",
+          "tax_number": "71-2448739",
+          "email": "info@terrell-materials.net",
+          "phone": null,
+          "currency": "USD",
+          "created_date": "20170902",
+          "legacy_vendor_id": "V100097D",
+          "is_canonical": false,
+          "name_norm": "terrell materials inc",
+          "name_diff_from_canonical": [
+            "case"
+          ]
+        },
+        {
+          "vendor_name": "terrell materials inc",
+          "country": "USA",
+          "city": "Longville",
+          "street": "155 Richard Mall Apt. 706",
+          "postal_code": "71782",
+          "tax_number": "71-2448739",
+          "email": null,
+          "phone": "341.425.7779x5263",
+          "currency": "USD",
+          "created_date": "20170902",
+          "legacy_vendor_id": "V100097D2",
+          "is_canonical": false,
+          "name_norm": "terrell materials inc",
+          "name_diff_from_canonical": [
+            "case",
+            "punctuation"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Terrell Materials Inc.",
+            "terrell materials inc",
+            "terrell materials inc."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "US",
+            "USA",
+            "United States"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Longville"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "155 Richard Mall Apt. 506",
+            "155 Richard Mall Apt. 706"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "71782"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "71-2448739"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@terrell-materials.net"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "341.425.7779x5263"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20170902"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100097"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100098",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100098",
+        "vendor_name": "Gorlitz Logistik AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Gorlitz Logistik AG",
+          "country": "Germany",
+          "city": "Sankt Goar",
+          "street": "Adlerweg 77/44",
+          "postal_code": "91883",
+          "tax_number": "DE076533465",
+          "email": "info@gorlitz-logistik.com",
+          "phone": "+49(0) 724580706",
+          "currency": "EUR",
+          "created_date": "20100804",
+          "legacy_vendor_id": "V100098",
+          "is_canonical": true,
+          "name_norm": "gorlitz logistik ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Gorlitz Logistik AG",
+          "country": "Germany",
+          "city": "Sankt Goar",
+          "street": "Adlerweg 77/44",
+          "postal_code": "91883",
+          "tax_number": "DE076533465",
+          "email": "info@gorlitz-logistik.com",
+          "phone": "+49(0) 724580706",
+          "currency": "EUR",
+          "created_date": "20100804",
+          "legacy_vendor_id": "V100098X",
+          "is_canonical": false,
+          "name_norm": "gorlitz logistik ag",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Gorlitz Logistik AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Sankt Goar"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Adlerweg 77/44"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "91883"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE076533465"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@gorlitz-logistik.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0) 724580706"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20100804"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100098"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100100",
+      "size": 2,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `email` 在组内取值冲突：['info@morris-manufacturing.com', 'vertrieb@morris-manufacturing.com']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 0.999999,
+        "mean_match_probability": 0.999999,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100100",
+        "vendor_name": "Morris Manufacturing LLC",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Morris Manufacturing LLC",
+          "country": "U.S.A.",
+          "city": "North Steve",
+          "street": "736 Barnett Freeway",
+          "postal_code": "23029",
+          "tax_number": "59-3466641",
+          "email": "info@morris-manufacturing.com",
+          "phone": "(667)379-9162x53006",
+          "currency": "USD",
+          "created_date": "19980829",
+          "legacy_vendor_id": "V100100",
+          "is_canonical": true,
+          "name_norm": "morris manufacturing llc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "MORRIS MANUFACTURNG LLC",
+          "country": "US",
+          "city": "North Steve",
+          "street": "732 Barnett Freeway",
+          "postal_code": "23029",
+          "tax_number": null,
+          "email": "vertrieb@morris-manufacturing.com",
+          "phone": null,
+          "currency": "USD",
+          "created_date": "20010811",
+          "legacy_vendor_id": "V100100D2",
+          "is_canonical": false,
+          "name_norm": "morris manufacturng llc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "MORRIS MANUFACTURNG LLC",
+            "Morris Manufacturing LLC"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "U.S.A.",
+            "US"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "North Steve"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "732 Barnett Freeway",
+            "736 Barnett Freeway"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "23029"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "59-3466641"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": false,
+          "distinct_values": [
+            "info@morris-manufacturing.com",
+            "vertrieb@morris-manufacturing.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(667)379-9162x53006"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "19980829",
+            "20010811"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100100"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100104",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100104",
+        "vendor_name": "Norton Solutions Corp.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Norton Solutions Corp.",
+          "country": "US",
+          "city": "Schmidtfurt",
+          "street": "6194 May Curve",
+          "postal_code": "68828",
+          "tax_number": "12-1938112",
+          "email": "info@norton-solutions.com",
+          "phone": "(843)654-2376x839",
+          "currency": "USD",
+          "created_date": "20060323",
+          "legacy_vendor_id": "V100104",
+          "is_canonical": true,
+          "name_norm": "norton solutions corp",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": " Norton Solutions Corp.",
+          "country": "us",
+          "city": "Schmidtfurt",
+          "street": "6194 May Curve",
+          "postal_code": "68828",
+          "tax_number": null,
+          "email": "info@norton-solutions.com",
+          "phone": "(843)654-2376x839",
+          "currency": "USD",
+          "created_date": "20060323",
+          "legacy_vendor_id": "V100104D",
+          "is_canonical": false,
+          "name_norm": "norton solutions corp",
+          "name_diff_from_canonical": [
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            " Norton Solutions Corp.",
+            "Norton Solutions Corp."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "US",
+            "us"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Schmidtfurt"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "6194 May Curve"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "68828"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "12-1938112"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@norton-solutions.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(843)654-2376x839"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20060323"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100104"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100107",
+      "size": 2,
+      "needs_review": true,
+      "review_reasons": [
+        "强标识符 `tax_number` 在组内取值冲突：['DE 136268908', 'DE136268908']。同一实体不应如此。"
+      ],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100107",
+        "vendor_name": "Wieloch Werkzeugbau GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Wieloch Werkzeugbau GmbH",
+          "country": "GER",
+          "city": "Rostock",
+          "street": "Margit-Rose-Platz 440",
+          "postal_code": "88607",
+          "tax_number": "DE136268908",
+          "email": "info@wieloch-werkzeugbau.de",
+          "phone": "(01659) 50811",
+          "currency": "EUR",
+          "created_date": "20140613",
+          "legacy_vendor_id": "V100107",
+          "is_canonical": true,
+          "name_norm": "wieloch werkzeugbau gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "WIELOH WERKZEUGBAU GMBH  ",
+          "country": "Germany",
+          "city": "Rostock",
+          "street": "Margit-Rose-Pl. 460",
+          "postal_code": "88607",
+          "tax_number": "DE 136268908",
+          "email": "info@wieloch-werkzeugbau.de",
+          "phone": "(01659) 50811",
+          "currency": "EUR",
+          "created_date": "20140613",
+          "legacy_vendor_id": "V100107D",
+          "is_canonical": false,
+          "name_norm": "wieloh werkzeugbau gmbh",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "WIELOH WERKZEUGBAU GMBH  ",
+            "Wieloch Werkzeugbau GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "GER",
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Rostock"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "Margit-Rose-Pl. 460",
+            "Margit-Rose-Platz 440"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "88607"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": false,
+          "distinct_values": [
+            "DE 136268908",
+            "DE136268908"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@wieloch-werkzeugbau.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(01659) 50811"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20140613"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100107"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100120",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100120",
+        "vendor_name": "Velasquez Fabrication LLC",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Velasquez Fabrication LLC",
+          "country": "United States",
+          "city": "Kathleenton",
+          "street": "47121 Brian Flat",
+          "postal_code": "26130",
+          "tax_number": "56-7913902",
+          "email": "info@velasquez-fabrication.com",
+          "phone": "836.424.8243x0950",
+          "currency": "USD",
+          "created_date": "20060926",
+          "legacy_vendor_id": "V100120",
+          "is_canonical": true,
+          "name_norm": "velasquez fabrication llc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Velasquez Fabrication L.L.C",
+          "country": "USA",
+          "city": "Kathleenton",
+          "street": "47121 Brian Flat",
+          "postal_code": "26130",
+          "tax_number": null,
+          "email": "info@velasquez-fabrication.com",
+          "phone": "836.424.8243x0950",
+          "currency": "USD",
+          "created_date": "20070825",
+          "legacy_vendor_id": "V100120D2",
+          "is_canonical": false,
+          "name_norm": "velasquez fabrication llc",
+          "name_diff_from_canonical": [
+            "punctuation"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Velasquez Fabrication L.L.C",
+            "Velasquez Fabrication LLC"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "USA",
+            "United States"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Kathleenton"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "47121 Brian Flat"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "26130"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "56-7913902"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@velasquez-fabrication.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "836.424.8243x0950"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20060926",
+            "20070825"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100120"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100123",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100123",
+        "vendor_name": "Nakajima Kogyo Co., Ltd.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Nakajima Kogyo Co., Ltd.",
+          "country": "JPN",
+          "city": "我孫子市",
+          "street": "豊町37丁目17番6号",
+          "postal_code": "115-1189",
+          "tax_number": "1522053976927",
+          "email": "info@nakajima-kogyo.jp",
+          "phone": "55-7921-3681",
+          "currency": "JPY",
+          "created_date": "20001026",
+          "legacy_vendor_id": "V100123",
+          "is_canonical": true,
+          "name_norm": "nakajima kogyo co_ltd",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Nakajima Kogyo Co., Ltd.",
+          "country": "JPN",
+          "city": "我孫子市",
+          "street": "豊町37丁目17番6号",
+          "postal_code": "115-1189",
+          "tax_number": "1522053976927",
+          "email": "info@nakajima-kogyo.jp",
+          "phone": "55-7921-3681",
+          "currency": "JPY",
+          "created_date": "20001026",
+          "legacy_vendor_id": "V100123X",
+          "is_canonical": false,
+          "name_norm": "nakajima kogyo co_ltd",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Nakajima Kogyo Co., Ltd."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "JPN"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "我孫子市"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "豊町37丁目17番6号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "115-1189"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "1522053976927"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@nakajima-kogyo.jp"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "55-7921-3681"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20001026"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100123"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100124",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100124",
+        "vendor_name": "Fischer Kunststoff GmbH & Co. KG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Fischer Kunststoff GmbH & Co. KG",
+          "country": "Deutschland",
+          "city": "Sangerhausen",
+          "street": "Wähnerallee 976",
+          "postal_code": "05204",
+          "tax_number": "DE564763638",
+          "email": "info@fischer-kunststoff.de",
+          "phone": "07245994187",
+          "currency": "EUR",
+          "created_date": "20141207",
+          "legacy_vendor_id": "V100124",
+          "is_canonical": true,
+          "name_norm": "fischer kunststoff gmbh_co_kg",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "fischer  kunststoff gmbh & co kg",
+          "country": "DE",
+          "city": "Sangerhausen",
+          "street": "Wähnerallee 976",
+          "postal_code": "05204",
+          "tax_number": "DE564763638",
+          "email": "info@fischer-kunststoff.de",
+          "phone": null,
+          "currency": "EUR",
+          "created_date": "20141207",
+          "legacy_vendor_id": "V100124D",
+          "is_canonical": false,
+          "name_norm": "fischer kunststoff gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "case",
+            "punctuation",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Fischer Kunststoff GmbH & Co. KG",
+            "fischer  kunststoff gmbh & co kg"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "Deutschland"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Sangerhausen"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Wähnerallee 976"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "05204"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE564763638"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@fischer-kunststoff.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "07245994187"
+          ],
+          "missing_count": 1
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20141207"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100124"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100126",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100126",
+        "vendor_name": "Gomez Supply Inc.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Gomez Supply Inc.",
+          "country": "U.S.A.",
+          "city": "West Marcusville",
+          "street": "120 Anderson Camp",
+          "postal_code": "96274",
+          "tax_number": "37-1970541",
+          "email": "info@gomez-supply.com",
+          "phone": "2834139439",
+          "currency": "USD",
+          "created_date": "20030426",
+          "legacy_vendor_id": "V100126",
+          "is_canonical": true,
+          "name_norm": "gomez supply inc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Gomez Supply Inc.  ",
+          "country": "US",
+          "city": "West Marcusville",
+          "street": "120 Anderson Camp",
+          "postal_code": "96274",
+          "tax_number": "37-1970541",
+          "email": "info@gomez-supply.com",
+          "phone": "2834139439",
+          "currency": "USD",
+          "created_date": "20030426",
+          "legacy_vendor_id": "V100126D",
+          "is_canonical": false,
+          "name_norm": "gomez supply inc",
+          "name_diff_from_canonical": [
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Gomez Supply Inc.",
+            "Gomez Supply Inc.  "
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "U.S.A.",
+            "US"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "West Marcusville"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "120 Anderson Camp"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "96274"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "37-1970541"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@gomez-supply.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "2834139439"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20030426"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100126"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100127",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100127",
+        "vendor_name": "Jacob Automation AG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Jacob Automation AG",
+          "country": "Germany",
+          "city": "Waren",
+          "street": "Insa-Scholtz-Weg 91/23",
+          "postal_code": "35465",
+          "tax_number": "DE697594158",
+          "email": "info@jacob-automation.de",
+          "phone": "+49(0)7476896346",
+          "currency": "EUR",
+          "created_date": "20081019",
+          "legacy_vendor_id": "V100127",
+          "is_canonical": true,
+          "name_norm": "jacob automation ag",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Jacob  Automatino AG",
+          "country": "Deutschland",
+          "city": "Waren",
+          "street": "Insa-Scholtz-Weg 91/23",
+          "postal_code": "35465",
+          "tax_number": "DE697594158",
+          "email": "info@jacob-automation.de",
+          "phone": "+49(0)7476896346",
+          "currency": "EUR",
+          "created_date": "20090714",
+          "legacy_vendor_id": "V100127D",
+          "is_canonical": false,
+          "name_norm": "jacob automatino ag",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Jacob  Automatino AG",
+            "Jacob Automation AG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "Deutschland",
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Waren"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Insa-Scholtz-Weg 91/23"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "35465"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE697594158"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@jacob-automation.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "+49(0)7476896346"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20081019",
+            "20090714"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100127"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100130",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100130",
+        "vendor_name": "Gerlach Stahlhandel GmbH & Co. KG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Gerlach Stahlhandel GmbH & Co. KG",
+          "country": "GER",
+          "city": "Heinsberg",
+          "street": "Schülergasse 38-41",
+          "postal_code": "50324",
+          "tax_number": "DE707559137",
+          "email": "info@gerlach-stahlhandel.de",
+          "phone": "(07264) 646971",
+          "currency": "EUR",
+          "created_date": "20040510",
+          "legacy_vendor_id": "V100130",
+          "is_canonical": true,
+          "name_norm": "gerlach stahlhandel gmbh_co_kg",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "GERLACH  STAHLHANDEL GMBH and CO. KG",
+          "country": "DE",
+          "city": "Heinsberg",
+          "street": "Schülergasse 38-41",
+          "postal_code": "50324",
+          "tax_number": null,
+          "email": "info@gerlach-stahlhandel.de",
+          "phone": "(07264) 646971",
+          "currency": "EUR",
+          "created_date": "20040510",
+          "legacy_vendor_id": "V100130D",
+          "is_canonical": false,
+          "name_norm": "gerlach stahlhandel gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "case",
+            "ampersand",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "GERLACH  STAHLHANDEL GMBH and CO. KG",
+            "Gerlach Stahlhandel GmbH & Co. KG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "DE",
+            "GER"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Heinsberg"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Schülergasse 38-41"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "50324"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE707559137"
+          ],
+          "missing_count": 1
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@gerlach-stahlhandel.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(07264) 646971"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20040510"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100130"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100137",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100137",
+        "vendor_name": "Fischer Automation GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Fischer Automation GmbH",
+          "country": "DE",
+          "city": "Aue",
+          "street": "Weihmanngasse 726",
+          "postal_code": "69790",
+          "tax_number": "DE764920829",
+          "email": "info@fischer-automation.com",
+          "phone": "07518 30269",
+          "currency": "EUR",
+          "created_date": "20060125",
+          "legacy_vendor_id": "V100137",
+          "is_canonical": true,
+          "name_norm": "fischer automation gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "   FISCHER AUTOMATION GMBH",
+          "country": "DE",
+          "city": "Aue",
+          "street": "Weihmanngasse 726",
+          "postal_code": "69790",
+          "tax_number": "DE764920829",
+          "email": null,
+          "phone": "17518 30269",
+          "currency": "EUR",
+          "created_date": "20060414",
+          "legacy_vendor_id": "V100137D",
+          "is_canonical": false,
+          "name_norm": "fischer automation gmbh",
+          "name_diff_from_canonical": [
+            "case",
+            "whitespace"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "   FISCHER AUTOMATION GMBH",
+            "Fischer Automation GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "DE"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Aue"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Weihmanngasse 726"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "69790"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE764920829"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@fischer-automation.com"
+          ],
+          "missing_count": 1
+        },
+        "phone": {
+          "agrees": false,
+          "distinct_values": [
+            "07518 30269",
+            "17518 30269"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20060125",
+            "20060414"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "split",
+        "true_cluster_ids": [
+          "V100137"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100139",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100139",
+        "vendor_name": "Dörschner Stahlhandel GmbH",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Dörschner Stahlhandel GmbH",
+          "country": "Germany",
+          "city": "Brandenburg",
+          "street": "Sabri-Gunpf-Gasse 3",
+          "postal_code": "30141",
+          "tax_number": "DE303269771",
+          "email": "info@doerschner-stahlhandel.com",
+          "phone": null,
+          "currency": "EUR",
+          "created_date": "20050606",
+          "legacy_vendor_id": "V100139",
+          "is_canonical": true,
+          "name_norm": "dorschner stahlhandel gmbh",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Dörschner Stahlhandel GmbH",
+          "country": "Germany",
+          "city": "Brandenburg",
+          "street": "Sabri-Gunpf-Gasse 3",
+          "postal_code": "30141",
+          "tax_number": "DE303269771",
+          "email": "info@doerschner-stahlhandel.com",
+          "phone": null,
+          "currency": "EUR",
+          "created_date": "20050606",
+          "legacy_vendor_id": "V100139X",
+          "is_canonical": false,
+          "name_norm": "dorschner stahlhandel gmbh",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Dörschner Stahlhandel GmbH"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "Germany"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Brandenburg"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Sabri-Gunpf-Gasse 3"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "30141"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE303269771"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@doerschner-stahlhandel.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20050606"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100139"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100140",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100140",
+        "vendor_name": "Yates Components Corp.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Yates Components Corp.",
+          "country": "USA",
+          "city": "Smithfurt",
+          "street": "9091 Hill Knolls Apt. 702",
+          "postal_code": "42194",
+          "tax_number": "83-8117007",
+          "email": "info@yates-components.com",
+          "phone": "001-311-911-4287",
+          "currency": "USD",
+          "created_date": "20060701",
+          "legacy_vendor_id": "V100140",
+          "is_canonical": true,
+          "name_norm": "yates components corp",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Yates Components Corp.",
+          "country": "USA",
+          "city": "Smithfurt",
+          "street": "9091 Hill Knolls Apt. 702",
+          "postal_code": "42194",
+          "tax_number": "83-8117007",
+          "email": "info@yates-components.com",
+          "phone": "001-311-911-4287",
+          "currency": "USD",
+          "created_date": "20060701",
+          "legacy_vendor_id": "V100140X",
+          "is_canonical": false,
+          "name_norm": "yates components corp",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Yates Components Corp."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "USA"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Smithfurt"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "9091 Hill Knolls Apt. 702"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "42194"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "83-8117007"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@yates-components.com"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "001-311-911-4287"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20060701"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100140"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100141",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100141",
+        "vendor_name": "Yamaguchi Kagaku K.K.",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Yamaguchi Kagaku K.K.",
+          "country": "JAPAN",
+          "city": "西多摩郡日の出町",
+          "street": "百村12丁目27番8号",
+          "postal_code": "488-0964",
+          "tax_number": "0274498786393",
+          "email": null,
+          "phone": "89-0219-8706",
+          "currency": "JPY",
+          "created_date": "20060503",
+          "legacy_vendor_id": "V100141",
+          "is_canonical": true,
+          "name_norm": "yamaguchi kagaku kk",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Yamaguchi Kagaku K.K.",
+          "country": "JAPAN",
+          "city": "西多摩郡日の出町",
+          "street": "百村12丁目27番8号",
+          "postal_code": "488-0964",
+          "tax_number": "0274498786393",
+          "email": null,
+          "phone": "89-0219-8706",
+          "currency": "JPY",
+          "created_date": "20060503",
+          "legacy_vendor_id": "V100141X",
+          "is_canonical": false,
+          "name_norm": "yamaguchi kagaku kk",
+          "name_diff_from_canonical": []
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": true,
+          "distinct_values": [
+            "Yamaguchi Kagaku K.K."
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "JAPAN"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "西多摩郡日の出町"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "百村12丁目27番8号"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "488-0964"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "0274498786393"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "89-0219-8706"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "JPY"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": true,
+          "distinct_values": [
+            "20060503"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100141"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100145",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100145",
+        "vendor_name": "Franke Elektrotechnik GmbH & Co. KG",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Franke Elektrotechnik GmbH & Co. KG",
+          "country": "DE",
+          "city": "Mühldorf am Inn",
+          "street": "Kallertring 866",
+          "postal_code": "51461",
+          "tax_number": "DE790021838",
+          "email": "info@franke-elektrotechnik.de",
+          "phone": "0595818475",
+          "currency": "EUR",
+          "created_date": "20130802",
+          "legacy_vendor_id": "V100145",
+          "is_canonical": true,
+          "name_norm": "franke elektrotechnik gmbh_co_kg",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "Franke Elektrotechhnik GmbH&Co.KG",
+          "country": "DE",
+          "city": "Mühldorf am Inn",
+          "street": "Kallertring 866",
+          "postal_code": "51461",
+          "tax_number": "DE790021838",
+          "email": "info@franke-elektrotechnik.de",
+          "phone": "0595818475",
+          "currency": "EUR",
+          "created_date": "20140508",
+          "legacy_vendor_id": "V100145D",
+          "is_canonical": false,
+          "name_norm": "franke elektrotechhnik gmbh_co_kg",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "Franke Elektrotechhnik GmbH&Co.KG",
+            "Franke Elektrotechnik GmbH & Co. KG"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": true,
+          "distinct_values": [
+            "DE"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": true,
+          "distinct_values": [
+            "Mühldorf am Inn"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": true,
+          "distinct_values": [
+            "Kallertring 866"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "51461"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [
+            "DE790021838"
+          ],
+          "missing_count": 0
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@franke-elektrotechnik.de"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "0595818475"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "EUR"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20130802",
+            "20140508"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100145"
+        ]
+      }
+    },
+    {
+      "group_id": "GV100148",
+      "size": 2,
+      "needs_review": false,
+      "review_reasons": [],
+      "confidence": {
+        "min_match_probability": 1.0,
+        "mean_match_probability": 1.0,
+        "direct_edges": 1,
+        "possible_edges": 1,
+        "formed_by_transitive_closure": false
+      },
+      "canonical_suggestion": {
+        "legacy_vendor_id": "V100148",
+        "vendor_name": "Taylor Industrial LLC",
+        "reason_zh": "字段填充最完整；仅为建议，合并决策由人工做出。"
+      },
+      "records": [
+        {
+          "vendor_name": "Taylor Industrial LLC",
+          "country": "USA",
+          "city": "South James",
+          "street": "27868 Johnson Camp",
+          "postal_code": "07267",
+          "tax_number": null,
+          "email": "info@taylor-industrial.net",
+          "phone": "(295)436-6109",
+          "currency": "USD",
+          "created_date": "20100706",
+          "legacy_vendor_id": "V100148",
+          "is_canonical": true,
+          "name_norm": "taylor industrial llc",
+          "name_diff_from_canonical": []
+        },
+        {
+          "vendor_name": "TAYLOR INDUSTRIAP LLC",
+          "country": "US",
+          "city": "South Jarnes",
+          "street": "27864 Johnson Camp",
+          "postal_code": "07267",
+          "tax_number": null,
+          "email": "info@taylor-industrial.net",
+          "phone": "(295)436-6109",
+          "currency": "USD",
+          "created_date": "20111210",
+          "legacy_vendor_id": "V100148D",
+          "is_canonical": false,
+          "name_norm": "taylor industriap llc",
+          "name_diff_from_canonical": [
+            "different_name"
+          ]
+        }
+      ],
+      "field_agreement": {
+        "vendor_name": {
+          "agrees": false,
+          "distinct_values": [
+            "TAYLOR INDUSTRIAP LLC",
+            "Taylor Industrial LLC"
+          ],
+          "missing_count": 0
+        },
+        "country": {
+          "agrees": false,
+          "distinct_values": [
+            "US",
+            "USA"
+          ],
+          "missing_count": 0
+        },
+        "city": {
+          "agrees": false,
+          "distinct_values": [
+            "South James",
+            "South Jarnes"
+          ],
+          "missing_count": 0
+        },
+        "street": {
+          "agrees": false,
+          "distinct_values": [
+            "27864 Johnson Camp",
+            "27868 Johnson Camp"
+          ],
+          "missing_count": 0
+        },
+        "postal_code": {
+          "agrees": true,
+          "distinct_values": [
+            "07267"
+          ],
+          "missing_count": 0
+        },
+        "tax_number": {
+          "agrees": true,
+          "distinct_values": [],
+          "missing_count": 2
+        },
+        "email": {
+          "agrees": true,
+          "distinct_values": [
+            "info@taylor-industrial.net"
+          ],
+          "missing_count": 0
+        },
+        "phone": {
+          "agrees": true,
+          "distinct_values": [
+            "(295)436-6109"
+          ],
+          "missing_count": 0
+        },
+        "currency": {
+          "agrees": true,
+          "distinct_values": [
+            "USD"
+          ],
+          "missing_count": 0
+        },
+        "created_date": {
+          "agrees": false,
+          "distinct_values": [
+            "20100706",
+            "20111210"
+          ],
+          "missing_count": 0
+        }
+      },
+      "ground_truth": {
+        "verdict": "exact",
+        "true_cluster_ids": [
+          "V100148"
+        ]
+      }
+    }
+  ]
+}

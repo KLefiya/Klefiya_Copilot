@@ -1,8 +1,8 @@
 {
   "_run_info": {
-    "content_sha256": "e08c463e0bcc5c6b7a3131029b596570b0811306271adf31904bec6f9791c622",
+    "content_sha256": "2c2be2060f670dccf6f5367af2ed913ec316c169fd249672cab070b6d10a589e",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-09T06:52:42+00:00"
+    "generated_at": "2026-07-10T07:38:10+00:00"
   },
   "_meta": {
     "record_count": 224,
@@ -53,7 +53,7 @@
       "missing_rate": 0.0,
       "distinct_count": 212,
       "distinct_ratio": 0.9464,
-      "avg_length": 23.54,
+      "avg_length": 23.59,
       "is_probable_identifier": false,
       "is_free_text": true,
       "free_text_source": "heuristic",
@@ -151,9 +151,9 @@
       "record_count": 224,
       "missing_count": 0,
       "missing_rate": 0.0,
-      "distinct_count": 140,
-      "distinct_ratio": 0.625,
-      "avg_length": 8.41,
+      "distinct_count": 147,
+      "distinct_ratio": 0.6562,
+      "avg_length": 8.42,
       "is_probable_identifier": false,
       "is_free_text": false,
       "free_text_source": "heuristic:structured",
@@ -180,9 +180,9 @@
       "record_count": 224,
       "missing_count": 0,
       "missing_rate": 0.0,
-      "distinct_count": 150,
-      "distinct_ratio": 0.6696,
-      "avg_length": 18.79,
+      "distinct_count": 175,
+      "distinct_ratio": 0.7812,
+      "avg_length": 18.72,
       "is_probable_identifier": false,
       "is_free_text": true,
       "free_text_source": "schema:substring(streetname)",
@@ -191,11 +191,11 @@
     },
     "postal_code": {
       "record_count": 224,
-      "missing_count": 0,
-      "missing_rate": 0.0,
-      "distinct_count": 150,
-      "distinct_ratio": 0.6696,
-      "avg_length": 5.7,
+      "missing_count": 3,
+      "missing_rate": 0.0134,
+      "distinct_count": 161,
+      "distinct_ratio": 0.7285,
+      "avg_length": 5.69,
       "is_probable_identifier": false,
       "is_free_text": false,
       "free_text_source": "heuristic:structured",
@@ -203,52 +203,62 @@
       "format_signatures": [
         {
           "signature": "D",
-          "count": 172,
+          "count": 170,
           "example": "51887"
         },
         {
           "signature": "D-D",
-          "count": 52,
+          "count": 51,
           "example": "736-6699"
         }
       ]
     },
     "tax_number": {
       "record_count": 224,
-      "missing_count": 36,
-      "missing_rate": 0.1607,
-      "distinct_count": 133,
-      "distinct_ratio": 0.7074,
-      "avg_length": 11.22,
+      "missing_count": 33,
+      "missing_rate": 0.1473,
+      "distinct_count": 144,
+      "distinct_ratio": 0.7539,
+      "avg_length": 11.27,
       "is_probable_identifier": false,
       "is_free_text": false,
       "free_text_source": "heuristic:structured",
-      "format_variants": 3,
+      "format_variants": 5,
       "format_signatures": [
         {
           "signature": "AD",
-          "count": 94,
+          "count": 87,
           "example": "DE065870919"
         },
         {
           "signature": "D-D",
-          "count": 49,
+          "count": 48,
           "example": "51-9136081"
         },
         {
           "signature": "D",
-          "count": 45,
+          "count": 46,
           "example": "8803754496765"
+        },
+        {
+          "signature": "A D",
+          "count": 9,
+          "example": "DE 136268908"
+        },
+        {
+          "signature": "D D",
+          "count": 1,
+          "example": "12 5346539"
         }
       ]
     },
     "email": {
       "record_count": 224,
-      "missing_count": 36,
-      "missing_rate": 0.1607,
-      "distinct_count": 137,
-      "distinct_ratio": 0.7287,
-      "avg_length": 25.28,
+      "missing_count": 35,
+      "missing_rate": 0.1562,
+      "distinct_count": 145,
+      "distinct_ratio": 0.7672,
+      "avg_length": 25.41,
       "is_probable_identifier": false,
       "is_free_text": true,
       "free_text_source": "heuristic",
@@ -257,11 +267,11 @@
     },
     "phone": {
       "record_count": 224,
-      "missing_count": 23,
-      "missing_rate": 0.1027,
-      "distinct_count": 141,
-      "distinct_ratio": 0.7015,
-      "avg_length": 14.05,
+      "missing_count": 20,
+      "missing_rate": 0.0893,
+      "distinct_count": 156,
+      "distinct_ratio": 0.7647,
+      "avg_length": 14.04,
       "is_probable_identifier": false,
       "is_free_text": false,
       "free_text_source": "heuristic:structured",
@@ -269,7 +279,7 @@
       "format_signatures": [
         {
           "signature": "D-D-D",
-          "count": 53,
+          "count": 54,
           "example": "070-7318-7746"
         },
         {
@@ -284,8 +294,8 @@
         },
         {
           "signature": "D D",
-          "count": 17,
-          "example": "09524 359103"
+          "count": 18,
+          "example": "17518 30269"
         },
         {
           "signature": "+D(D) D",
@@ -336,8 +346,8 @@
       "record_count": 224,
       "missing_count": 0,
       "missing_rate": 0.0,
-      "distinct_count": 148,
-      "distinct_ratio": 0.6607,
+      "distinct_count": 173,
+      "distinct_ratio": 0.7723,
       "avg_length": 8.0,
       "is_probable_identifier": false,
       "is_free_text": false,
@@ -375,13 +385,7 @@
       "field": "email",
       "issue_type": "completeness",
       "severity": "medium",
-      "message": "字段 `email` 缺失率 16.1% （36/224 条），超过 10% 阈值。"
-    },
-    {
-      "field": "phone",
-      "issue_type": "completeness",
-      "severity": "medium",
-      "message": "字段 `phone` 缺失率 10.3% （23/224 条），超过 10% 阈值。"
+      "message": "字段 `email` 缺失率 15.6% （35/224 条），超过 10% 阈值。"
     },
     {
       "field": "postal_code",
@@ -393,13 +397,13 @@
       "field": "tax_number",
       "issue_type": "completeness",
       "severity": "medium",
-      "message": "字段 `tax_number` 缺失率 16.1% （36/224 条），超过 10% 阈值。"
+      "message": "字段 `tax_number` 缺失率 14.7% （33/224 条），超过 10% 阈值。"
     },
     {
       "field": "tax_number",
       "issue_type": "format_consistency",
       "severity": "medium",
-      "message": "字段 `tax_number` 存在 3 种不同的格式签名，取值写法不统一。示例：`DE065870919`, `51-9136081`, `8803754496765`。"
+      "message": "字段 `tax_number` 存在 5 种不同的格式签名，取值写法不统一。示例：`DE065870919`, `51-9136081`, `8803754496765`。"
     }
   ]
 }

@@ -20,7 +20,7 @@
     "street": "Christa-Geisler-Ring 1-5",
     "postal_code": "93233",
     "tax_number": "DE065870919",
-    "email": null,
+    "email": "info@hande-stahlhandel.com",
     "phone": "+49(0) 172814513",
     "currency": "EUR",
     "created_date": "20151019"
@@ -47,9 +47,9 @@
     "postal_code": "69790",
     "tax_number": "DE764920829",
     "email": null,
-    "phone": null,
+    "phone": "17518 30269",
     "currency": "EUR",
-    "created_date": "20060125"
+    "created_date": "20060414"
   },
   {
     "legacy_vendor_id": "V100018",
@@ -92,16 +92,16 @@
   },
   {
     "legacy_vendor_id": "V100082D2",
-    "vendor_name": " STEUER KUNSTSTOFF GMBH",
+    "vendor_name": " STEUER KUNNSSTTOFF GMBH",
     "country": "GER",
     "city": "Ahaus",
-    "street": "Edit-Kabus-Ring 61",
-    "postal_code": "94788",
+    "street": "Edit-Kabus-Ring 01",
+    "postal_code": "34788",
     "tax_number": null,
     "email": null,
-    "phone": "0308484100",
+    "phone": "0305484100",
     "currency": "EUR",
-    "created_date": "20111012"
+    "created_date": "20111130"
   },
   {
     "legacy_vendor_id": "V100040",
@@ -118,7 +118,7 @@
   },
   {
     "legacy_vendor_id": "V100015D",
-    "vendor_name": "YAMADA  SEIZO CO., LTD.",
+    "vendor_name": "YAMADA  SSEIZO CO., LTD.",
     "country": "JP",
     "city": "港区",
     "street": "四区町5丁目11番7号",
@@ -157,12 +157,12 @@
   },
   {
     "legacy_vendor_id": "V100107D",
-    "vendor_name": "WIELOCH WERKZEUGBAU GMBH  ",
+    "vendor_name": "WIELOH WERKZEUGBAU GMBH  ",
     "country": "Germany",
     "city": "Rostock",
-    "street": "Margit-Rose-Platz 440",
+    "street": "Margit-Rose-Pl. 460",
     "postal_code": "88607",
-    "tax_number": "DE136268908",
+    "tax_number": "DE 136268908",
     "email": "info@wieloch-werkzeugbau.de",
     "phone": "(01659) 50811",
     "currency": "EUR",
@@ -183,16 +183,16 @@
   },
   {
     "legacy_vendor_id": "V100120D",
-    "vendor_name": "   Velasquez Fabrication LLC",
+    "vendor_name": "   Velasqquez Fabrication LLC",
     "country": "USA",
     "city": "Kathleenton",
     "street": "47121 Brian Flat",
-    "postal_code": "26130",
+    "postal_code": "86130",
     "tax_number": "56-7913902",
     "email": null,
     "phone": "836.424.8243x0950",
     "currency": "USD",
-    "created_date": "20060926"
+    "created_date": "20070906"
   },
   {
     "legacy_vendor_id": "V100015",
@@ -235,27 +235,27 @@
   },
   {
     "legacy_vendor_id": "V100116D",
-    "vendor_name": "Kruschwitz Werkzeugbau GmbH & Co. KG ",
+    "vendor_name": "Kruhcwitz Werkzeugbau GmbH & Co. KG ",
     "country": "de",
     "city": "Havelberg",
-    "street": "Hübelplatz 6-7",
-    "postal_code": "41552",
-    "tax_number": "DE258575010",
+    "street": "Hübelplatz 6-8",
+    "postal_code": null,
+    "tax_number": "DE 258575010",
     "email": null,
-    "phone": "+49(0)9896063458",
+    "phone": "+49(0)9891063458",
     "currency": "EUR",
     "created_date": "20161228"
   },
   {
     "legacy_vendor_id": "V100025D",
-    "vendor_name": "  yoshida kogyo co., ltd.  ",
+    "vendor_name": "  yoshicla kogyo co., ltd.  ",
     "country": "JPN",
     "city": "千代田区",
-    "street": "戸塚町29丁目9番14号",
+    "street": "戸塚町29丁目9番64号",
     "postal_code": "707-9890",
-    "tax_number": "7666803595616",
+    "tax_number": "7666-803595616",
     "email": null,
-    "phone": "56-8668-9057",
+    "phone": "56-8668-9058",
     "currency": "JPY",
     "created_date": "20080509"
   },
@@ -404,16 +404,16 @@
   },
   {
     "legacy_vendor_id": "V100081D",
-    "vendor_name": "ritter  automation gmbh",
+    "vendor_name": "ritter  autornation gmbh",
     "country": "de",
-    "city": "Fürstenwalde",
-    "street": "Grazyna-Seidel-Ring 3833",
-    "postal_code": "29268",
-    "tax_number": "DE143073938",
-    "email": "info@ritter-automation.com",
-    "phone": "+49 (0) 2436 757663",
+    "city": "Füürstenwalde",
+    "street": "Grazyna-Seidel-Ring 2833",
+    "postal_code": "49268",
+    "tax_number": "DE 143073938",
+    "email": "sales@ritter-automation.com",
+    "phone": "+49 (6) 2436 757663",
     "currency": "EUR",
-    "created_date": "20191121"
+    "created_date": "20231003"
   },
   {
     "legacy_vendor_id": "V100142",
@@ -599,16 +599,16 @@
   },
   {
     "legacy_vendor_id": "V100126D2",
-    "vendor_name": "Gomez  Supply Incorporated",
+    "vendor_name": "Gomez  SSupply Incorporated",
     "country": "U.S.A.",
-    "city": "West Marcusville",
+    "city": "West Marcsuville",
     "street": "120 Anderson Camp",
-    "postal_code": "96274",
+    "postal_code": "96272",
     "tax_number": "37-1970541",
     "email": null,
     "phone": null,
     "currency": "USD",
-    "created_date": "20030426"
+    "created_date": "20040103"
   },
   {
     "legacy_vendor_id": "V100055D",
@@ -638,23 +638,23 @@
   },
   {
     "legacy_vendor_id": "V100003D",
-    "vendor_name": " Gregory Fabrication Inc. ",
+    "vendor_name": " Gregry Fabricaton Inc. ",
     "country": "us",
-    "city": "South Ryanborough",
-    "street": "631 Heather Run Apt. 451",
+    "city": "outh Ryanborough",
+    "street": "631 Heather Run Apartment 451",
     "postal_code": "76260",
-    "tax_number": "85-9650149",
+    "tax_number": "859650149",
     "email": null,
     "phone": "368-251-9024",
     "currency": "USD",
-    "created_date": "20150731"
+    "created_date": "20170509"
   },
   {
     "legacy_vendor_id": "V100097D2",
     "vendor_name": "terrell materials inc",
     "country": "USA",
     "city": "Longville",
-    "street": "155 Richard Mall Apt. 506",
+    "street": "155 Richard Mall Apt. 706",
     "postal_code": "71782",
     "tax_number": "71-2448739",
     "email": null,
@@ -755,7 +755,7 @@
   },
   {
     "legacy_vendor_id": "V100096D",
-    "vendor_name": "sasaki kikai co., ltd. ",
+    "vendor_name": "sassaki kikai co., ltd. ",
     "country": "Japan",
     "city": "御蔵島村",
     "street": "九段南32丁目13番13号",
@@ -794,16 +794,16 @@
   },
   {
     "legacy_vendor_id": "V100085D",
-    "vendor_name": "  Gutknecht Chemie AG.",
+    "vendor_name": "  Gutknechtt CCChemie AG.",
     "country": "Germany",
     "city": "Stadtroda",
-    "street": "Annika-Gorlitz-Straße 53-52",
+    "street": "Annika-Gorlitz-Str. 53-52",
     "postal_code": "72474",
     "tax_number": "DE679347071",
     "email": null,
-    "phone": "02636 569101",
+    "phone": "02636 559101",
     "currency": "EUR",
-    "created_date": "20171216"
+    "created_date": "20200929"
   },
   {
     "legacy_vendor_id": "V100116",
@@ -924,14 +924,14 @@
   },
   {
     "legacy_vendor_id": "V100100D",
-    "vendor_name": "Morris  Manufacturing LLC",
+    "vendor_name": "Morrris  Mannuufacturing LLC",
     "country": "USA",
     "city": "North Steve",
     "street": "736 Barnett Freeway",
-    "postal_code": "23029",
+    "postal_code": "23099",
     "tax_number": "59-3466641",
-    "email": "info@morris-manufacturing.com",
-    "phone": "(667)379-9162x53006",
+    "email": "sales@morris-manufacturing.com",
+    "phone": "(667)379-9162x53306",
     "currency": "USD",
     "created_date": "19980829"
   },
@@ -957,7 +957,7 @@
     "postal_code": "68828",
     "tax_number": null,
     "email": "info@norton-solutions.com",
-    "phone": null,
+    "phone": "(843)654-2376x839",
     "currency": "USD",
     "created_date": "20060323"
   },
@@ -1093,12 +1093,12 @@
   },
   {
     "legacy_vendor_id": "V100048D2",
-    "vendor_name": "   Döhn Chemie GmbH.",
+    "vendor_name": "   Döhn Chemiie GmbH.",
     "country": "de",
     "city": "Parsberg",
     "street": "Vinzenz-Schäfer-Platz 801",
     "postal_code": "46156",
-    "tax_number": null,
+    "tax_number": "DE 849372766",
     "email": "info@doehn-chemie.com",
     "phone": "04922 38390",
     "currency": "EUR",
@@ -1158,12 +1158,12 @@
   },
   {
     "legacy_vendor_id": "V100037D",
-    "vendor_name": "holzapfel kunststoff gmbh",
+    "vendor_name": "holzpfeo kkunststoff gmbh",
     "country": "GER",
     "city": "Brandenburg",
-    "street": "Rörrichtplatz 8-8",
+    "street": "Rörrichtplatz 8-2",
     "postal_code": "75526",
-    "tax_number": "DE763285078",
+    "tax_number": "DE 763285078",
     "email": null,
     "phone": "06799 447674",
     "currency": "EUR",
@@ -1197,16 +1197,16 @@
   },
   {
     "legacy_vendor_id": "V100028D2",
-    "vendor_name": "Yoshida  Shoji Co., Ltd.",
+    "vendor_name": "Yoshicap  Shoji Co., Ltd.",
     "country": "JPN",
     "city": "荒川区",
     "street": "天神島40丁目7番20号",
-    "postal_code": "122-0486",
-    "tax_number": "3934506752082",
-    "email": "info@yoshida-shoji.co.jp",
-    "phone": "090-6528-0032",
+    "postal_code": null,
+    "tax_number": null,
+    "email": "kontakt@yoshida-shoji.co.jp",
+    "phone": "390-6528-0032",
     "currency": "JPY",
-    "created_date": "20120423"
+    "created_date": "20120919"
   },
   {
     "legacy_vendor_id": "V100004",
@@ -1294,23 +1294,23 @@
     "street": "410 Stone Cove",
     "postal_code": "85926",
     "tax_number": null,
-    "email": null,
+    "email": "info@haley-components.com",
     "phone": "3845599491",
     "currency": "USD",
     "created_date": "20190110"
   },
   {
     "legacy_vendor_id": "V100100D2",
-    "vendor_name": "MORRIS MANUFACTURING LLC",
+    "vendor_name": "MORRIS MANUFACTURNG LLC",
     "country": "US",
     "city": "North Steve",
-    "street": "736 Barnett Freeway",
+    "street": "732 Barnett Freeway",
     "postal_code": "23029",
     "tax_number": null,
-    "email": "info@morris-manufacturing.com",
+    "email": "vertrieb@morris-manufacturing.com",
     "phone": null,
     "currency": "USD",
-    "created_date": "19980829"
+    "created_date": "20010811"
   },
   {
     "legacy_vendor_id": "V100024",
@@ -1356,7 +1356,7 @@
     "vendor_name": "FRANCIS  MATERIALS INCORPORATED",
     "country": "US",
     "city": "Clarkland",
-    "street": "99192 Carter Mills Suite 000",
+    "street": "99192 Carter Mills Ste. 300",
     "postal_code": "18316",
     "tax_number": null,
     "email": "info@francis-materials.com",
@@ -1392,7 +1392,7 @@
   },
   {
     "legacy_vendor_id": "V100088D2",
-    "vendor_name": "RING LOGISTIK GMBH ",
+    "vendor_name": "RING LOGISTIIK GMBH ",
     "country": "Germany",
     "city": "Regen",
     "street": "Ljudmila-Ziegert-Gasse 0",
@@ -1411,7 +1411,7 @@
     "street": "Schleichgasse 62-58",
     "postal_code": "38927",
     "tax_number": "DE022181741",
-    "email": null,
+    "email": "info@krebs-stahlhandel.de",
     "phone": "+49(0) 755261207",
     "currency": "EUR",
     "created_date": "20030525"
@@ -1479,7 +1479,7 @@
     "email": "info@velasquez-fabrication.com",
     "phone": "836.424.8243x0950",
     "currency": "USD",
-    "created_date": "20060926"
+    "created_date": "20070825"
   },
   {
     "legacy_vendor_id": "V100039",
@@ -1540,7 +1540,7 @@
     "city": "Sangerhausen",
     "street": "Wähnerallee 976",
     "postal_code": "05204",
-    "tax_number": null,
+    "tax_number": "DE564763638",
     "email": "info@fischer-kunststoff.de",
     "phone": null,
     "currency": "EUR",
@@ -1665,16 +1665,16 @@
   },
   {
     "legacy_vendor_id": "V100133D",
-    "vendor_name": "HETTNER  AUTOMATION GMBH.",
+    "vendor_name": "HETNTER  AUTORNATIO GMBH.",
     "country": "de",
-    "city": "Kleve",
-    "street": "Carstenstraße 57/97",
-    "postal_code": "41962",
+    "city": "Kleev",
+    "street": "Carstenstr. 58/97",
+    "postal_code": "49962",
     "tax_number": "DE398554988",
     "email": "info@hettner-automation.com",
     "phone": "05697 75645",
     "currency": "EUR",
-    "created_date": "20161118"
+    "created_date": "20170812"
   },
   {
     "legacy_vendor_id": "V100111",
@@ -1691,16 +1691,16 @@
   },
   {
     "legacy_vendor_id": "V100016D",
-    "vendor_name": "Bauer  Logistik AG",
+    "vendor_name": "Bauer  Logitsik AG",
     "country": "DE",
     "city": "Forst",
     "street": "Zänkerstraße 79",
     "postal_code": "22672",
-    "tax_number": "DE229888629",
+    "tax_number": "DE 229888629",
     "email": "info@bauer-logistik.com",
-    "phone": "+49(0)4049 97484",
+    "phone": "+49(0)4049 97444",
     "currency": "EUR",
-    "created_date": "20130630"
+    "created_date": "20140207"
   },
   {
     "legacy_vendor_id": "V100126D",
@@ -1782,16 +1782,16 @@
   },
   {
     "legacy_vendor_id": "V100075D",
-    "vendor_name": "Stadelmann Automation GmbH  ",
+    "vendor_name": "Stadelmann Automaiton GmbH  ",
     "country": "Deutschland",
     "city": "Lemgo",
-    "street": "Kühnertplatz 14-50",
+    "street": "Kühnertplatz 15-50",
     "postal_code": "56673",
     "tax_number": null,
     "email": null,
     "phone": "+49(0)7940732319",
     "currency": "EUR",
-    "created_date": "20130107"
+    "created_date": "20130201"
   },
   {
     "legacy_vendor_id": "V100119",
@@ -1821,16 +1821,16 @@
   },
   {
     "legacy_vendor_id": "V100082D",
-    "vendor_name": "Steuer Kunststoff GmbH ",
+    "vendor_name": "Setuer Kuntstofv GmbH ",
     "country": "GER",
-    "city": "Ahaus",
-    "street": "Edit-Kabus-Ring 61",
-    "postal_code": "94788",
+    "city": "Ahajs",
+    "street": "Edit-Kabus-Ring 69",
+    "postal_code": "94748",
     "tax_number": "DE161220319",
-    "email": "info@steuer-kunststoff.de",
-    "phone": "0308484100",
+    "email": null,
+    "phone": "0308464100",
     "currency": "EUR",
-    "created_date": "20111012"
+    "created_date": "20130928"
   },
   {
     "legacy_vendor_id": "V100058",
@@ -1886,26 +1886,26 @@
   },
   {
     "legacy_vendor_id": "V100035D2",
-    "vendor_name": " Rodriguez Industrial Inc   ",
+    "vendor_name": " Rodriguez Industria1 Inc   ",
     "country": "United States",
     "city": "Port Joanntown",
-    "street": "88359 Barnett Center Suite 402",
+    "street": "88459 Barnett Center Ste. 402",
     "postal_code": "17404",
     "tax_number": "48-1639888",
     "email": "info@rodriguez-industrial.net",
     "phone": "(411)854-6579",
     "currency": "USD",
-    "created_date": "20150420"
+    "created_date": "20160423"
   },
   {
     "legacy_vendor_id": "V100025D2",
     "vendor_name": "yoshida  kogyo co ltd",
     "country": "JPN",
     "city": "千代田区",
-    "street": "戸塚町29丁目9番14号",
+    "street": "戸塚町29丁目9番44号",
     "postal_code": "707-9890",
     "tax_number": "7666803595616",
-    "email": "info@yoshida-kogyo.jp",
+    "email": "vertrieb@yoshida-kogyo.jp",
     "phone": "56-8668-9057",
     "currency": "JPY",
     "created_date": "20080509"
@@ -1925,16 +1925,16 @@
   },
   {
     "legacy_vendor_id": "V100048D",
-    "vendor_name": "  döhn chemie gmbh",
+    "vendor_name": "  dhön chernis gmbh",
     "country": "Germany",
     "city": "Parsberg",
-    "street": "Vinzenz-Schäfer-Platz 801",
-    "postal_code": "46156",
-    "tax_number": "DE849372766",
+    "street": "Vinzenz-Schäfer-Pl. 801",
+    "postal_code": "66156",
+    "tax_number": "DE 849372766",
     "email": null,
-    "phone": "04922 38390",
+    "phone": "04952 38390",
     "currency": "EUR",
-    "created_date": "20151231"
+    "created_date": "20190921"
   },
   {
     "legacy_vendor_id": "V100143",
@@ -2003,16 +2003,16 @@
   },
   {
     "legacy_vendor_id": "V100017D",
-    "vendor_name": "  Dietz Stahlhandel GmbH und Co. KG",
+    "vendor_name": "  Dietz 5Stahlhsndel GmbH und Co. KG",
     "country": "Germany",
     "city": "Marienberg",
-    "street": "Elfi-Köster-Straße 85/72",
+    "street": "Elfi-Köster-Str. 89/72",
     "postal_code": "62693",
     "tax_number": "DE511550449",
     "email": "info@dietz-stahlhandel.com",
     "phone": null,
     "currency": "EUR",
-    "created_date": "20160608"
+    "created_date": "20180105"
   },
   {
     "legacy_vendor_id": "V100033",
@@ -2034,37 +2034,37 @@
     "city": "鴨川市",
     "street": "北青山31丁目18番14号",
     "postal_code": "736-6699",
-    "tax_number": null,
+    "tax_number": "8803754496765",
     "email": null,
-    "phone": null,
+    "phone": "070-7318-7746",
     "currency": "JPY",
     "created_date": "20060629"
   },
   {
     "legacy_vendor_id": "V100005D2",
-    "vendor_name": "Barron  Supply Corp",
+    "vendor_name": "Barron  Sppuplyy Corp",
     "country": "us",
     "city": "Phillipsfort",
-    "street": "036 Medina Gateway Suite 526",
-    "postal_code": "69138",
-    "tax_number": "12-5346539",
-    "email": "info@barron-supply.com",
-    "phone": "585-603-6838",
+    "street": "036 Medina Gateway Ste. 526",
+    "postal_code": null,
+    "tax_number": "12 5346539",
+    "email": "sales@barron-supply.com",
+    "phone": "585-653-6838",
     "currency": "USD",
     "created_date": "20110511"
   },
   {
     "legacy_vendor_id": "V100088D",
-    "vendor_name": "RING  LOGISTIK GMBH ",
+    "vendor_name": "RING  LOISTIJ GMBH ",
     "country": "GER",
     "city": "Regen",
-    "street": "Ljudmila-Ziegert-Gasse 0",
-    "postal_code": "48141",
+    "street": "Ljudmila-Ziegert-Gasse 7",
+    "postal_code": "48146",
     "tax_number": "DE898850122",
-    "email": "info@ring-logistik.de",
+    "email": null,
     "phone": "+49(0) 973406202",
     "currency": "EUR",
-    "created_date": "20150116"
+    "created_date": "20171210"
   },
   {
     "legacy_vendor_id": "V100133",
@@ -2094,14 +2094,14 @@
   },
   {
     "legacy_vendor_id": "V100090D",
-    "vendor_name": "HALE TECHNOLOGIES CORP.",
+    "vendor_name": "HALE TECHNOOLGIES CORP.",
     "country": "United States",
     "city": "West Jasonland",
     "street": "04985 Joanna Street",
     "postal_code": "08813",
     "tax_number": "50-7785115",
-    "email": "info@hale-technologies.net",
-    "phone": "904.242.7435",
+    "email": "contact@hale-technologies.net",
+    "phone": "004.242.7435",
     "currency": "USD",
     "created_date": "20190205"
   },
@@ -2133,7 +2133,7 @@
   },
   {
     "legacy_vendor_id": "V100072D",
-    "vendor_name": "RÖRRICHT  MASCHINENBAU GMBH",
+    "vendor_name": "RÖRRICHT  MASCHNENBAU GMBH",
     "country": "DE",
     "city": "Leipziger Land",
     "street": "Walther-Eckbauer-Platz 614",
@@ -2302,7 +2302,7 @@
   },
   {
     "legacy_vendor_id": "V100127D",
-    "vendor_name": "Jacob  Automation AG",
+    "vendor_name": "Jacob  Automatino AG",
     "country": "Deutschland",
     "city": "Waren",
     "street": "Insa-Scholtz-Weg 91/23",
@@ -2311,7 +2311,7 @@
     "email": "info@jacob-automation.de",
     "phone": "+49(0)7476896346",
     "currency": "EUR",
-    "created_date": "20081019"
+    "created_date": "20090714"
   },
   {
     "legacy_vendor_id": "V100062",
@@ -2367,16 +2367,16 @@
   },
   {
     "legacy_vendor_id": "V100005D",
-    "vendor_name": "Barron Supply Corp.   ",
+    "vendor_name": "Barron Suppyl Corp.   ",
     "country": "US",
     "city": "Phillipsfort",
-    "street": "036 Medina Gateway Suite 526",
+    "street": "736 Medina Gateway Ste. 526",
     "postal_code": "69138",
     "tax_number": null,
     "email": null,
-    "phone": "585-603-6838",
+    "phone": "585-603-6830",
     "currency": "USD",
-    "created_date": "20110511"
+    "created_date": "20150129"
   },
   {
     "legacy_vendor_id": "V100102",
@@ -2614,29 +2614,29 @@
   },
   {
     "legacy_vendor_id": "V100137D2",
-    "vendor_name": "Fischer  Automation GmbH.",
+    "vendor_name": "Ficsher  Aitomtaion GmbH.",
     "country": "GER",
-    "city": "Aue",
-    "street": "Weihmanngasse 726",
+    "city": "Que",
+    "street": "Weihmanng. 724",
     "postal_code": "69790",
-    "tax_number": "DE764920829",
+    "tax_number": "DE 764920829",
     "email": null,
     "phone": "07518 30269",
     "currency": "EUR",
-    "created_date": "20060125"
+    "created_date": "20071216"
   },
   {
     "legacy_vendor_id": "V100052D2",
-    "vendor_name": "  FRANCIS MATERIALS INC.",
+    "vendor_name": "  FRANCIS MATWRIALS INC.",
     "country": "US",
     "city": "Clarkland",
-    "street": "99192 Carter Mills Suite 000",
-    "postal_code": "18316",
+    "street": "99192 Carter Mills Ste. 000",
+    "postal_code": "18312",
     "tax_number": null,
-    "email": "info@francis-materials.com",
-    "phone": "(270)416-2550",
+    "email": "contact@francis-materials.com",
+    "phone": "(270)416-2590",
     "currency": "USD",
-    "created_date": "20080714"
+    "created_date": "20101214"
   },
   {
     "legacy_vendor_id": "V100018D2",
@@ -2666,16 +2666,16 @@
   },
   {
     "legacy_vendor_id": "V100077D",
-    "vendor_name": "KREBS STAHLHANDEL GMBH",
+    "vendor_name": "KEBS SATHLHANDEL GMBH",
     "country": "Germany",
     "city": "Norden",
-    "street": "Schleichgasse 62-58",
+    "street": "Schleichg. 69-58",
     "postal_code": "38927",
-    "tax_number": "DE022181741",
+    "tax_number": "DE 022181741",
     "email": "info@krebs-stahlhandel.de",
     "phone": "+49(0) 755261207",
     "currency": "EUR",
-    "created_date": "20030525"
+    "created_date": "20051030"
   },
   {
     "legacy_vendor_id": "V100071",
@@ -2744,11 +2744,11 @@
   },
   {
     "legacy_vendor_id": "V100028D",
-    "vendor_name": " YOSHIDA SHOJI CO., LTD.   ",
+    "vendor_name": " TOSHIDA SHOJI CO., LTD.   ",
     "country": "JAPAN",
     "city": "荒川区",
     "street": "天神島40丁目7番20号",
-    "postal_code": "122-0486",
+    "postal_code": "122-2486",
     "tax_number": "3934506752082",
     "email": "info@yoshida-shoji.co.jp",
     "phone": "090-6528-0032",
@@ -2809,16 +2809,16 @@
   },
   {
     "legacy_vendor_id": "V100148D",
-    "vendor_name": "TAYLOR INDUSTRIAL LLC",
+    "vendor_name": "TAYLOR INDUSTRIAP LLC",
     "country": "US",
-    "city": "South James",
-    "street": "27868 Johnson Camp",
+    "city": "South Jarnes",
+    "street": "27864 Johnson Camp",
     "postal_code": "07267",
     "tax_number": null,
     "email": "info@taylor-industrial.net",
     "phone": "(295)436-6109",
     "currency": "USD",
-    "created_date": "20100706"
+    "created_date": "20111210"
   },
   {
     "legacy_vendor_id": "V100049X",
@@ -2835,7 +2835,7 @@
   },
   {
     "legacy_vendor_id": "V100145D",
-    "vendor_name": "Franke Elektrotechnik GmbH&Co.KG",
+    "vendor_name": "Franke Elektrotechhnik GmbH&Co.KG",
     "country": "DE",
     "city": "Mühldorf am Inn",
     "street": "Kallertring 866",
@@ -2844,7 +2844,7 @@
     "email": "info@franke-elektrotechnik.de",
     "phone": "0595818475",
     "currency": "EUR",
-    "created_date": "20130802"
+    "created_date": "20140508"
   },
   {
     "legacy_vendor_id": "V100132",
@@ -2879,7 +2879,7 @@
     "city": "印旛郡印旛村",
     "street": "北上野34丁目10番9号",
     "postal_code": "539-0700",
-    "tax_number": null,
+    "tax_number": "7864479596252",
     "email": "info@suzuki-kagaku.jp",
     "phone": "080-8119-4729",
     "currency": "JPY",

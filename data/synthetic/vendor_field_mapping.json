@@ -1,8 +1,8 @@
 {
   "_run_info": {
-    "content_sha256": "5f3514f54ce10614fa96985e8a221cd51fb316219baf0b359b07868f8480c044",
+    "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-09T06:53:00+00:00"
+    "generated_at": "2026-07-10T07:38:36+00:00"
   },
   "_meta": {
     "disclaimer": "本表全部为映射【建议】，不构成已确定的映射；任何非 high 置信度的条目都必须人工确认。",
@@ -336,7 +336,7 @@
       "legacy_field": "city",
       "legacy_profile": {
         "observed_max_length": 17,
-        "distinct_ratio": 0.625,
+        "distinct_ratio": 0.6562,
         "is_free_text": false,
         "inferred_kind": "string",
         "samples": [
@@ -436,7 +436,7 @@
       "legacy_field": "street",
       "legacy_profile": {
         "observed_max_length": 32,
-        "distinct_ratio": 0.6696,
+        "distinct_ratio": 0.7812,
         "is_free_text": true,
         "inferred_kind": "string",
         "samples": [
@@ -536,7 +536,7 @@
       "legacy_field": "postal_code",
       "legacy_profile": {
         "observed_max_length": 8,
-        "distinct_ratio": 0.6696,
+        "distinct_ratio": 0.7285,
         "is_free_text": false,
         "inferred_kind": "string",
         "samples": [
@@ -637,8 +637,8 @@
     {
       "legacy_field": "tax_number",
       "legacy_profile": {
-        "observed_max_length": 13,
-        "distinct_ratio": 0.7074,
+        "observed_max_length": 14,
+        "distinct_ratio": 0.7539,
         "is_free_text": false,
         "inferred_kind": "string",
         "samples": [
@@ -738,14 +738,14 @@
     {
       "legacy_field": "email",
       "legacy_profile": {
-        "observed_max_length": 32,
-        "distinct_ratio": 0.7287,
+        "observed_max_length": 33,
+        "distinct_ratio": 0.7672,
         "is_free_text": true,
         "inferred_kind": "string",
         "samples": [
           "info@tucker-technologies.net",
-          "info@shimizu-seizo.co.jp",
-          "info@hood-solutions.com"
+          "info@hande-stahlhandel.com",
+          "info@shimizu-seizo.co.jp"
         ]
       },
       "recommendation": null,
@@ -778,7 +778,7 @@
             "与目标字段名零共享词元，匹配仅由 embedding 支撑"
           ],
           "warnings": [
-            "截断风险：观测到的最大长度 32 超过目标字段上限 10"
+            "截断风险：观测到的最大长度 33 超过目标字段上限 10"
           ]
         },
         {
@@ -828,7 +828,7 @@
             "与目标字段名零共享词元，匹配仅由 embedding 支撑"
           ],
           "warnings": [
-            "截断风险：观测到的最大长度 32 超过目标字段上限 10"
+            "截断风险：观测到的最大长度 33 超过目标字段上限 10"
           ]
         }
       ]
@@ -837,7 +837,7 @@
       "legacy_field": "phone",
       "legacy_profile": {
         "observed_max_length": 22,
-        "distinct_ratio": 0.7015,
+        "distinct_ratio": 0.7647,
         "is_free_text": false,
         "inferred_kind": "string",
         "samples": [
@@ -1029,7 +1029,7 @@
       "legacy_field": "created_date",
       "legacy_profile": {
         "observed_max_length": 8,
-        "distinct_ratio": 0.6607,
+        "distinct_ratio": 0.7723,
         "is_free_text": false,
         "inferred_kind": "date",
         "samples": [

@@ -73,7 +73,7 @@ REPORTS: dict[str, ReportSpec] = {
         filename="vendor_duplicate_report.json",
         title="实体解析 · 重复供应商",
         module="模块一 · 数据迁移映射",
-        generated_by="（尚未实现：Splink 实体解析组件）",
+        generated_by="python src/tools/entity_resolution.py",
     ),
     "gap_analysis_report": ReportSpec(
         filename="gap_analysis_report.json",
