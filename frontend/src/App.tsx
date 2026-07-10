@@ -1,144 +1,167 @@
 /**
- * 第 1 步：三层管道连通性验证页。
+ * 应用外壳：侧边栏导航 + 视图切换。
  *
- * 目的只有一个 —— 证明 React ↔ FastAPI ↔ 现有 JSON 报告 这条链路通了。
- * 页面刻意不做数据可视化：那是第 2 步的事，现在把原始 JSON 显示出来即可。
+ * 侧边栏用 /api/health 返回的报告目录驱动——未生成的报告在导航里就标出来，
+ * 不用点进去才发现是空的。
  */
 
 import { useEffect, useState } from 'react'
-import { API_BASE, ApiError, getHealth, getReport, type Health } from './api'
+import {
+  AppShell,
+  Badge,
+  Box,
+  Burger,
+  Code,
+  Group,
+  NavLink,
+  ScrollArea,
+  Stack,
+  Text,
+  Title,
+  Tooltip,
+} from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
+import { getHealth, type Health } from './api'
+import { DuplicateView } from './views/DuplicateView'
+import { MappingView } from './views/MappingView'
+import { ProfileView } from './views/ProfileView'
+import { ValidationView } from './views/ValidationView'
+import { STATUS } from './lib/theme'
 
-type Status = 'loading' | 'ok' | 'error'
-
-const REPORT_TO_SHOW = 'vendor_profile_report'
-
-function ErrorDetail({ error }: { error: ApiError }) {
-  return (
-    <div className="panel panel--error">
-      <p className="panel__message">{error.message}</p>
-      <pre className="code">{JSON.stringify(error.detail, null, 2)}</pre>
-    </div>
-  )
+interface NavItem {
+  key: string
+  label: string
+  /** 对应的报告名，用于查 /api/health 里的 available */
+  report: string
+  element: React.ReactNode
 }
 
-export default function App() {
-  const [healthStatus, setHealthStatus] = useState<Status>('loading')
-  const [health, setHealth] = useState<Health | null>(null)
-  const [healthError, setHealthError] = useState<ApiError | null>(null)
+const MODULE_ONE: NavItem[] = [
+  { key: 'profile', label: '数据质量画像', report: 'vendor_profile_report', element: <ProfileView /> },
+  { key: 'duplicate', label: '实体解析', report: 'vendor_duplicate_report', element: <DuplicateView /> },
+  { key: 'mapping', label: '字段映射建议', report: 'vendor_field_mapping', element: <MappingView /> },
+  { key: 'validation', label: '迁移前校验', report: 'vendor_validation_report', element: <ValidationView /> },
+]
 
-  const [reportStatus, setReportStatus] = useState<Status>('loading')
-  const [report, setReport] = useState<unknown>(null)
-  const [reportError, setReportError] = useState<ApiError | null>(null)
+export default function App() {
+  const [opened, { toggle }] = useDisclosure()
+  const [active, setActive] = useState('profile')
+  const [health, setHealth] = useState<Health | null>(null)
+  const [offline, setOffline] = useState(false)
 
   useEffect(() => {
     getHealth()
-      .then((data) => {
-        setHealth(data)
-        setHealthStatus('ok')
-      })
-      .catch((error: ApiError) => {
-        setHealthError(error)
-        setHealthStatus('error')
-      })
-
-    getReport(REPORT_TO_SHOW)
-      .then((data) => {
-        setReport(data)
-        setReportStatus('ok')
-      })
-      .catch((error: ApiError) => {
-        setReportError(error)
-        setReportStatus('error')
-      })
+      .then(setHealth)
+      .catch(() => setOffline(true))
   }, [])
 
+  const availability = new Map(health?.reports.map((r) => [r.name, r.available]) ?? [])
+  const current = MODULE_ONE.find((item) => item.key === active) ?? MODULE_ONE[0]
+
   return (
-    <main className="page">
-      <header className="page__header">
-        <h1>CarveOps Copilot</h1>
-        <p className="page__subtitle">
-          第 1 步 · 管道连通性验证 —— React ↔ FastAPI ↔ 现有 JSON 报告
-        </p>
-      </header>
+    <AppShell
+      header={{ height: 56 }}
+      navbar={{ width: 264, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      padding="lg"
+    >
+      <AppShell.Header>
+        <Group h="100%" px="md" justify="space-between">
+          <Group gap="sm">
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Title order={1} size="h5" fw={600}>
+              CarveOps Copilot
+            </Title>
+            <Text size="xs" c="dimmed" visibleFrom="sm">
+              SAP 并购剥离辅助
+            </Text>
+          </Group>
 
-      <section className="section">
-        <h2>
-          后端连通性
-          <span className={`badge badge--${healthStatus}`}>
-            {healthStatus === 'loading' && '检查中…'}
-            {healthStatus === 'ok' && '后端已连接'}
-            {healthStatus === 'error' && '后端未连接'}
-          </span>
-        </h2>
-        <p className="muted">
-          API 基址 <code className="code--inline">{API_BASE}</code>
-        </p>
+          <Group gap="sm">
+            {offline ? (
+              <Badge size="sm" variant="light" color="red">
+                后端未连接
+              </Badge>
+            ) : health ? (
+              <Tooltip label={`${health.service} v${health.version}`}>
+                <Badge
+                  size="sm"
+                  variant="light"
+                  style={{ backgroundColor: `${STATUS.good}22`, color: STATUS.good }}
+                >
+                  后端已连接 · 报告 {health.reports_available}/{health.reports_total}
+                </Badge>
+              </Tooltip>
+            ) : (
+              <Badge size="sm" variant="light" color="gray">
+                连接中…
+              </Badge>
+            )}
+          </Group>
+        </Group>
+      </AppShell.Header>
 
-        {healthStatus === 'error' && healthError && <ErrorDetail error={healthError} />}
+      <AppShell.Navbar p="md">
+        <AppShell.Section grow component={ScrollArea}>
+          <Text size="xs" c="dimmed" tt="uppercase" fw={500} mb="xs" style={{ letterSpacing: '0.05em' }}>
+            模块一 · 数据迁移映射
+          </Text>
+          <Stack gap={2}>
+            {MODULE_ONE.map((item) => {
+              const available = availability.get(item.report)
+              return (
+                <NavLink
+                  key={item.key}
+                  active={item.key === active}
+                  label={item.label}
+                  onClick={() => setActive(item.key)}
+                  rightSection={
+                    available === false ? (
+                      <Badge size="xs" variant="outline" color="gray">
+                        未生成
+                      </Badge>
+                    ) : null
+                  }
+                />
+              )
+            })}
+          </Stack>
 
-        {healthStatus === 'ok' && health && (
-          <>
-            <p className="muted">
-              {health.service} v{health.version} · 已生成报告{' '}
-              <strong>
-                {health.reports_available}/{health.reports_total}
-              </strong>
-            </p>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>报告</th>
-                  <th>模块</th>
-                  <th>状态</th>
-                  <th>生成方式</th>
-                </tr>
-              </thead>
-              <tbody>
-                {health.reports.map((item) => (
-                  <tr key={item.name}>
-                    <td>
-                      <code className="code--inline">{item.name}</code>
-                      <div className="muted">{item.title}</div>
-                    </td>
-                    <td className="muted">{item.module}</td>
-                    <td>
-                      {item.available ? (
-                        <span className="badge badge--ok">已生成</span>
-                      ) : (
-                        <span className="badge badge--pending">未生成</span>
-                      )}
-                    </td>
-                    <td>
-                      <code className="code--inline">{item.generated_by}</code>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
-      </section>
+          <Text
+            size="xs"
+            c="dimmed"
+            tt="uppercase"
+            fw={500}
+            mt="lg"
+            mb="xs"
+            style={{ letterSpacing: '0.05em' }}
+          >
+            模块二 · Fit-to-Standard
+          </Text>
+          <NavLink label="Fit/Gap 判定" disabled rightSection={<Badge size="xs" variant="outline" color="gray">第 3 步</Badge>} />
+        </AppShell.Section>
 
-      <section className="section">
-        <h2>
-          报告读取
-          <span className={`badge badge--${reportStatus}`}>
-            {reportStatus === 'loading' && '读取中…'}
-            {reportStatus === 'ok' && '读取成功'}
-            {reportStatus === 'error' && '读取失败'}
-          </span>
-        </h2>
-        <p className="muted">
-          <code className="code--inline">GET /api/reports/{REPORT_TO_SHOW}</code> ——
-          原始 JSON，第 2 步再做可视化
-        </p>
+        <AppShell.Section>
+          <Box pt="sm" style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}>
+            <Text size="xs" c="dimmed">
+              全部为合成数据
+            </Text>
+            <Text size="xs" c="dimmed" mt={2}>
+              不接触任何真实 SAP 系统
+            </Text>
+            {health && (
+              <Text size="xs" c="dimmed" mt={6}>
+                <Code>{health.version}</Code>
+              </Text>
+            )}
+          </Box>
+        </AppShell.Section>
+      </AppShell.Navbar>
 
-        {reportStatus === 'error' && reportError && <ErrorDetail error={reportError} />}
-
-        {reportStatus === 'ok' && (
-          <pre className="code code--scroll">{JSON.stringify(report, null, 2)}</pre>
-        )}
-      </section>
-    </main>
+      <AppShell.Main>
+        <Box maw={1180} mx="auto">
+          {current.element}
+        </Box>
+      </AppShell.Main>
+    </AppShell>
   )
 }

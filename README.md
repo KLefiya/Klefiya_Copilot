@@ -197,6 +197,44 @@ bash scripts/dev.sh
 
 报告未生成时返回 404，`detail` 里带 `generated_by` 告诉你该跑哪个脚本——而不是假装它存在。
 
+### 前端
+
+React 19 + Vite 6 + [Mantine](https://mantine.dev) + recharts。组件按职责分层：
+
+```
+frontend/src/
+├── api.ts                        # 客户端，结构化错误原样透传
+├── lib/
+│   ├── theme.ts                  # 主题 + 状态色（已过色盲/对比度校验）
+│   ├── reports.ts                # 三份报告的类型，逐字段对照真实 JSON 核对
+│   └── useReport.ts              # 拉取 hook，区分「未生成」与「出错」
+├── components/
+│   ├── ReportGate.tsx            # 加载中 / 未生成 / 出错 三态门
+│   ├── StatCard.tsx              # 摘要数字卡
+│   └── CountryVariantsChart.tsx  # country 写法分布（唯一的图表）
+└── views/
+    ├── ProfileView.tsx           # 数据质量画像
+    ├── MappingView.tsx           # 字段映射建议
+    ├── ValidationView.tsx        # 迁移前校验
+    └── DuplicateView.tsx         # 实体解析（占位，等 Splink）
+```
+
+**图表配色是算出来的，不是挑出来的。** `country` 的 14 种写法用状态三色（合法 / 长度合格但值非法 / 非法且溢出），不是 14 个身份色。三色取自一份参考调色板的 status palette，并用其校验脚本对照本项目画布 `#171a21` 实测：对比度全部 ≥3:1，最差相邻对色盲区分度 ΔE 16.9（目标线 12）。状态色一律配文字标签，绝不单靠颜色传意。
+
+### 前端测试
+
+```bash
+cd frontend && npm test
+```
+
+7 个用例，拿 `data/synthetic/` 下**真实的报告 JSON** 喂给 fetch mock，把每个视图完整渲染一遍——`tsc` 通过只说明类型对得上，不说明运行时不炸。报告的字段名一旦漂移，测试立刻红。
+
+其中三个是纯函数测试，钉住 `country` 的三态分类，并断言**溢出记录数（100）与迁移前校验报告的 `max_length_overflow` 计数一致**——两份独立生成的报告在这个数字上必须对得上。
+
+测试环境用 happy-dom 而非 jsdom：jsdom 新版的 `@csstools/css-calc` 依赖链是 ESM，而 `require()` 加载 ESM 需要 Node ≥ 20.19，本机 20.17 会抛 `ERR_REQUIRE_ESM`（与前面 Vite 8 是同一个根因）。
+
+图表本身断言不到条形与轴刻度——recharts 的 `ResponsiveContainer` 在无头 DOM 里宽高为 0，不渲染任何 mark。所以分类逻辑抽成了纯函数 `classify()` 单独测，DOM 层只断言图例（它在容器之外）。
+
 ## 可复现性
 
 合成数据用固定随机种子（`SEED`），报告内容跨次运行**字节一致**。
