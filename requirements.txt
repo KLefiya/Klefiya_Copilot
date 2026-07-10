@@ -39,6 +39,28 @@ torch==2.13.0
 rapidfuzz==3.14.5
 
 # ---------------------------------------------------------------------------
+# Knowledge base (RAG retrieval substrate). Chroma is a local persistent store;
+# it makes no outbound network calls. Embeddings are computed explicitly with
+# sentence-transformers above and handed to Chroma, so its default embedding
+# function never downloads its own ONNX model.
+# ---------------------------------------------------------------------------
+chromadb==1.5.9
+
+# ---------------------------------------------------------------------------
+# Fit/Gap judgement (module 2). Needs ANTHROPIC_API_KEY on the FIRST run only:
+# every LLM call is cached to data/synthetic/llm_cache/ (committed to git), so
+# later runs are fully offline and byte-identical. See README "LLM judgement".
+#
+# Model is claude-sonnet-5 and temperature is NOT set. claude-sonnet-5 rejects
+# non-default temperature/top_p/top_k with a 400; claude-sonnet-4-6 accepts
+# temperature but does not support structured outputs, which the judgement
+# schema depends on. Reproducibility comes from the disk cache, not from
+# temperature=0 (which never guaranteed identical output on any model).
+# ---------------------------------------------------------------------------
+anthropic==0.116.0
+pydantic==2.13.4
+
+# ---------------------------------------------------------------------------
 # Synthetic data and data processing
 # ---------------------------------------------------------------------------
 Faker==40.28.1
@@ -51,4 +73,3 @@ numpy==2.3.1
 # ---------------------------------------------------------------------------
 # langgraph
 # mcp
-# chromadb

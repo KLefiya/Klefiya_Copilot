@@ -15,7 +15,26 @@
 - **不连接任何真实 SAP 系统。** 代码里没有任何 SAP 系统的连接串、主机名、客户端号或凭据。
 - **不调用任何真实 SAP API。** `schemas/` 下的字段结构参考是**人工整理**自 api.sap.com 的公开接口文档，不是从任何 SAP 实例导出的，运行时也不会去请求 SAP 的服务。
 - **不接触任何真实客户数据。** `data/legacy/` 下的全部数据由 `src/tools/generate_legacy_vendors.py` 用 Faker 合成，公司名、地址、税号、银行账号均为伪造值，不对应任何真实实体。
-- **不外传任何数据。** 所有工具读写本地文件，不向任何外部服务发送项目数据、数据画像结果或映射建议。
+- **不外传任何真实数据。** 项目里根本不存在真实数据可供外传。模块一的全部工具读写本地文件，不向任何外部服务发送任何内容。模块二的 Fit/Gap 判定环节会调用 Anthropic API——发出去的是**合成访谈文本与自撰知识库片段**，详见下面的说明。
+
+**LLM 判定环节的数据边界（模块二）：**
+
+`src/tools/gap_analysis.py` 用 Claude 判定需求属于 Fit / Configuration / Enhancement / Development。首次运行会把两类内容发送给 Anthropic API：
+
+1. `data/synthetic/interview_notes.json` 里的合成访谈笔记——虚构的 NewCo 剥离场景，虚构的人名与外部系统名，不对应任何真实公司、项目或人；
+2. `data/knowledge/standard_processes.json` 里我自己撰写的 SAP 标准流程知识条目。
+
+红线保护的是**真实客户数据**，而这里处理的是纯合成数据，因此不违反红线初衷。但"不外传任何数据"这句话字面上不再成立，所以上面改成了"不外传任何真实数据"——这不是文字游戏，是把承诺收窄到它实际能兑现的范围。
+
+**这次调用只发生一次。** 每次 LLM 调用按请求指纹 sha256 缓存进 `data/synthetic/llm_cache/`，该目录**提交进 git**。缓存填充后，重跑完全离线且字节一致：
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...        # 仅首次需要
+python src/tools/gap_analysis.py           # 抽取 + 判定，写入缓存
+python src/tools/gap_analysis.py --offline # 只读缓存；缓存缺失即报错，绝不静默联网
+```
+
+模型是 `claude-sonnet-5`，**不传 `temperature`**。该模型已移除采样参数，非默认的 `temperature` / `top_p` / `top_k` 会返回 400；退回 `claude-sonnet-4-6` 又不支持结构化输出，而判定结果的 `category` / `confidence` / `evidence` / `rationale` 四件套依赖它。可复现性由磁盘缓存承担——`temperature=0` 在任何模型上都从未保证过逐字一致，它只是降低方差。
 
 **一个需要说清楚的例外——embedding 模型的一次性下载：**
 
