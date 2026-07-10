@@ -110,6 +110,25 @@ python src/tools/pre_migration_validation.py
 
 迁移前校验把两个**正交**维度分开表达，不混为一谈：`semantic_match`（映射语义是否正确，沿用 field_mapping 的结论）与 `loadable`（目标字段是否可写入，取 `is_creatable or is_updatable`）。典型情形是 `created_date → CreationDate`：语义完全正确，但该字段 `sap:creatable` 与 `sap:updatable` 均为 false，只能作 lineage / 参考，不能记为"通过"。
 
+## SAP 标准流程知识库（模块二的 RAG 检索底座）
+
+`data/knowledge/standard_processes.json` 是 26 条**自行撰写**的合成知识条目，覆盖 P2P、O2C、R2R、master_data 四个业务域，外加一组 `cross_cutting` 条目承载"配置 / 应用内扩展 / 定制开发"的判定框架本身。每条描述标准流程是怎样的、标准覆盖哪些能力点、常见配置点是什么、什么情况通常超出标准。
+
+**合规**：全部 26 条 `authorship` 均为 `self_authored`，没有从 SAP 官方文档批量抓取，没有整段照抄。`source` 字段全为 null——不引用未经核实的链接。字段结构保留了 `paraphrased_public_doc` 这个取值，供将来确有转述时标注来源。知识条目里不含任何"某需求 = Configuration"之类的判定结论，也不出现访谈笔记里的虚构外部系统名，判定留给下游组件。
+
+**离线**：向量化复用模块一已有的 `all-MiniLM-L6-v2`（首次联网下载约 80MB，之后本地缓存，见上文"离线的准确定义"）。脚本显式编码后把向量交给 Chroma，避免 Chroma 默认的 embedding function 去下载它自己的 ONNX 模型。Chroma 是纯本地持久化，不外联。
+
+```bash
+python src/tools/build_knowledge_base.py                       # 建库 + 跑内置检索测试
+python src/tools/build_knowledge_base.py --no-rebuild --query "..."   # 只检索
+```
+
+条目正文（`standard_process` / 三个列表字段）是英文，因为检索 query 和 MiniLM 都是英文；中文只出现在 `title_zh` 和说明字段，不参与编码。
+
+**切分与检索**：每条条目切成 4 个 chunk（`overview` / `capabilities` / `configuration` / `beyond_standard`），26 × 4 = 104 个 chunk。整条编码会稀释信号——`"approval threshold"` 打中的是 configuration 段，`"external system interface"` 打中的是 beyond_standard 段。但按 chunk 检索会让同一条目的 4 个 section 包揽 top-3，因此检索默认**按条目去重**（`--no-dedupe` 可关闭对比）。
+
+**产物**：`data/knowledge/knowledge_index_manifest.json` 记录条目数、chunk 数、模型、以及 `_run_info.content_sha256`（当前 `312ef55c4e81f3ba`，跨次运行稳定）。Chroma 持久化目录 `data/knowledge/chroma/` 是派生物，已加入 `.gitignore`；知识条目源文件进 git。
+
 ## 可复现性
 
 合成数据用固定随机种子（`SEED`），报告内容跨次运行**字节一致**。

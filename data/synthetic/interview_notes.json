@@ -1,0 +1,118 @@
+{
+  "_run_info": {
+    "content_sha256": "7bc9f42e383e3b4d5002d39c3300bff523a4e59ad55c567b253d7013e22dc06e",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-09T07:22:22+00:00"
+  },
+  "_meta": {
+    "dataset_name": "synthetic_fit_to_standard_interview_notes",
+    "module": "module_2_fit_to_standard_gap_analysis",
+    "scenario": "fictional manufacturing carve-out for NewCo",
+    "record_type": "unstructured_interview_notes",
+    "requirement_count": 23,
+    "note_count": 6,
+    "domains_covered": [
+      "P2P",
+      "O2C",
+      "R2R",
+      "master_data"
+    ],
+    "compliance_note": "Synthetic workshop notes written for this educational project. They are not copied from SAP documentation and contain no real customer, project, or system data.",
+    "ground_truth_file": "data/synthetic/interview_notes_ground_truth.json"
+  },
+  "sessions": [
+    {
+      "note_id": "INT-001",
+      "session_title": "Procurement workshop - buying direct and indirect materials",
+      "domain_focus": [
+        "P2P",
+        "master_data"
+      ],
+      "participants": [
+        "NewCo procurement lead",
+        "plant buyer",
+        "AP accountant",
+        "data migration analyst"
+      ],
+      "text": "The procurement team said they want the basic flow to stay boring: a planner raises a purchase requisition, the buyer converts it into a purchase order, goods receipt happens at the plant, and invoice verification follows after that. They were clear that this should not be reinvented just because NewCo is splitting from the old group. The messy part is approval. Below 10k EUR they are fine with one manager, between 10k and 100k they want the plant controller involved, and anything above that should go to the carve-out procurement board. Someone also mentioned that rush orders for safety-critical spare parts need a mandatory justification field before the PO is released; the buyer called it 'that little field auditors always ask for later'. There was a side complaint that the old group had a tiny tool called OrivaBuy that still receives emergency repair orders from one plant, and the team wants NewCo to keep sending those orders there every night until the transition service agreement ends."
+    },
+    {
+      "note_id": "INT-002",
+      "session_title": "Procurement and supplier onboarding follow-up",
+      "domain_focus": [
+        "P2P",
+        "master_data"
+      ],
+      "participants": [
+        "supplier manager",
+        "quality lead",
+        "compliance analyst",
+        "IT integration owner"
+      ],
+      "text": "Supplier onboarding came up again, mostly because the plant people do not trust the inherited vendor list. They want a standard vendor record with name, address, tax number, bank details, and purchasing data, and they expect duplicates to be reviewed before go-live. That sounded straightforward, but then the quality lead added that suppliers for regulated components must carry an internal supplier risk band, and a purchase order should warn the buyer if the band is high and the latest quality certificate is missing. The compliance analyst said countries need to be cleaned into normal ISO-style codes because the old extract has DE, Germany, Deutschland, and sometimes just lower-case values. Toward the end, someone asked whether we can copy supplier risk scores from a carve-out-only spreadsheet called Nivora Risk Hub. It is not a corporate standard system; it belongs to the separation team and will probably disappear after Day 1, but they still want an automated load."
+    },
+    {
+      "note_id": "INT-003",
+      "session_title": "Sales order and billing workshop",
+      "domain_focus": [
+        "O2C",
+        "master_data"
+      ],
+      "participants": [
+        "sales operations lead",
+        "customer service manager",
+        "billing specialist",
+        "cutover lead"
+      ],
+      "text": "Sales operations mainly wants the usual order-to-cash path to work: customer order entry, availability check, delivery, goods issue, billing, and the receivable posted for finance. They kept saying that the first release should not be clever. There are still commercial details though. NewCo will have its own sales organizations and distribution channels, so pricing condition records and customer account groups need to reflect the separated company structure. The customer service manager also wants an extra check on export orders: if a customer is flagged as distributor and the ship-to country is outside the home market, the order should ask for an export-control review reference before delivery is released. One awkward request was about the old portal. Some strategic customers still place orders through the legacy Virello customer portal, and the business wants those portal orders to become NewCo sales orders without manual re-keying during the first six months."
+    },
+    {
+      "note_id": "INT-004",
+      "session_title": "Returns, credit, and customer master discussion",
+      "domain_focus": [
+        "O2C",
+        "R2R",
+        "master_data"
+      ],
+      "participants": [
+        "credit manager",
+        "returns coordinator",
+        "AR lead",
+        "master data steward"
+      ],
+      "text": "The credit manager said they are comfortable with ordinary credit checks and blocked order handling, as long as the limits are separate for NewCo and not accidentally inherited from the former parent. Credit limits need different thresholds for domestic distributors, export distributors, and intercompany customers. The returns coordinator described the return flow in a very practical way: customer complains, return order is created, goods come back, inspection happens, then a credit memo may follow. They do not want a separate returns tool. What they do want is a small extra rule: when a return reason says 'carve-out packaging defect', the system should force a packaging batch reference because the separation team is tracking those issues for the first year. The AR lead also complained that the old customer numbers are inconsistent, and NewCo wants the legacy customer ID retained for search and reconciliation."
+    },
+    {
+      "note_id": "INT-005",
+      "session_title": "Record-to-report workshop",
+      "domain_focus": [
+        "R2R",
+        "master_data"
+      ],
+      "participants": [
+        "NewCo finance controller",
+        "GL accountant",
+        "tax lead",
+        "reporting analyst"
+      ],
+      "text": "Finance opened with the basics: they need a clean general ledger, journal posting, period close, open item clearing, and financial statements for the new legal entities. The controller said this is a standard finance setup, but the chart of accounts must be NewCo-specific because the former group chart is too detailed for the smaller operating model. Company codes and posting periods also need to follow the new legal entity structure. Then the tax lead added a carve-out wrinkle: certain manual journals must carry a separation reason code when they relate to transition service costs; without that code, the journal should not be posted. Finally the reporting analyst asked for a nightly custom file to be sent to the fictional Auralis Separation Ledger, because the treasury separation team uses it to reconcile Day-1 balances outside the ERP for the first two quarters."
+    },
+    {
+      "note_id": "INT-006",
+      "session_title": "Master data cleanup and governance wrap-up",
+      "domain_focus": [
+        "master_data",
+        "P2P",
+        "O2C",
+        "R2R"
+      ],
+      "participants": [
+        "master data lead",
+        "business process owner",
+        "data migration lead",
+        "program manager"
+      ],
+      "text": "The wrap-up was less tidy. Everyone agrees product master data has to be created with material type, base unit, product group, plant views, and valuation data before open orders are migrated. The data lead asked for number ranges to be separated for NewCo so that new records are easy to spot after go-live. For materials that move to the new plants, planners want MRP type, procurement type, and safety stock copied where the plant is in scope. A master data steward added that hazardous components need an internal carve-out handling class, and sales orders should not ship those products unless the class has been reviewed. Near the end, the program manager mentioned a one-off technical ask: they want an upload from the fictional SeltraBridge archive that brings over product drawings and links them to product records, because the old document repository will not be part of NewCo. Nobody was sure who owns that after Day 1."
+    }
+  ]
+}

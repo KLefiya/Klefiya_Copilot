@@ -1,0 +1,212 @@
+{
+  "_run_info": {
+    "content_sha256": "28ba8ced2fc8da338ad901902da3dacaa651ec9628cf5e2895a5031e3f59e103",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-09T07:22:22+00:00"
+  },
+  "_meta": {
+    "dataset_name": "synthetic_fit_to_standard_interview_notes_ground_truth",
+    "module": "module_2_fit_to_standard_gap_analysis",
+    "source_notes_file": "data/synthetic/interview_notes.json",
+    "requirement_count": 23,
+    "expected_categories": [
+      "Fit",
+      "Configuration",
+      "Enhancement",
+      "Development"
+    ],
+    "category_counts": {
+      "Fit": 6,
+      "Configuration": 6,
+      "Enhancement": 6,
+      "Development": 5
+    },
+    "compliance_note": "Ground truth is synthetic and separate from the interview text so later extraction and classification components cannot read labels from the input notes."
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-P2P-001",
+      "source_note_id": "INT-001",
+      "domain": "P2P",
+      "expected_category": "Fit",
+      "expected_need": "Run the standard purchase requisition to purchase order to goods receipt to invoice verification flow.",
+      "reason": "The requested P2P backbone follows a common standard procurement flow without special behavior."
+    },
+    {
+      "requirement_id": "REQ-P2P-002",
+      "source_note_id": "INT-001",
+      "domain": "P2P",
+      "expected_category": "Configuration",
+      "expected_need": "Set approval thresholds for purchase orders at 10k EUR and 100k EUR with different approvers.",
+      "reason": "Approval levels and release strategy thresholds are standard concepts, but the values and approver groups are company-specific configuration."
+    },
+    {
+      "requirement_id": "REQ-P2P-003",
+      "source_note_id": "INT-001",
+      "domain": "P2P",
+      "expected_category": "Enhancement",
+      "expected_need": "Require a justification field before releasing safety-critical spare-part rush orders.",
+      "reason": "The base PO release process exists, but the additional mandatory carve-out-specific field and validation is an extension to standard behavior."
+    },
+    {
+      "requirement_id": "REQ-P2P-004",
+      "source_note_id": "INT-001",
+      "domain": "P2P",
+      "expected_category": "Development",
+      "expected_need": "Send emergency repair orders nightly to the fictional OrivaBuy legacy tool during the transition period.",
+      "reason": "A custom outbound integration to a fictional carve-out legacy tool is not standard process configuration."
+    },
+    {
+      "requirement_id": "REQ-MD-001",
+      "source_note_id": "INT-002",
+      "domain": "master_data",
+      "expected_category": "Fit",
+      "expected_need": "Create supplier master records with name, address, tax number, bank details, and purchasing data.",
+      "reason": "Supplier master maintenance with core identification, address, bank, tax, and purchasing attributes is a standard master data capability."
+    },
+    {
+      "requirement_id": "REQ-MD-002",
+      "source_note_id": "INT-002",
+      "domain": "master_data",
+      "expected_category": "Enhancement",
+      "expected_need": "Warn buyers when high-risk regulated-component suppliers lack a current quality certificate.",
+      "reason": "Supplier and PO processing exist, but the risk-band/certificate warning adds a specific business validation."
+    },
+    {
+      "requirement_id": "REQ-MD-003",
+      "source_note_id": "INT-002",
+      "domain": "master_data",
+      "expected_category": "Configuration",
+      "expected_need": "Normalize country values into ISO-style country codes during migration and governance.",
+      "reason": "Country code standardization uses standard field semantics and value mapping, with project-specific conversion rules."
+    },
+    {
+      "requirement_id": "REQ-MD-004",
+      "source_note_id": "INT-002",
+      "domain": "master_data",
+      "expected_category": "Development",
+      "expected_need": "Automatically load supplier risk scores from the fictional Nivora Risk Hub spreadsheet.",
+      "reason": "A custom load from a carve-out-only external spreadsheet repository is outside standard process support."
+    },
+    {
+      "requirement_id": "REQ-O2C-001",
+      "source_note_id": "INT-003",
+      "domain": "O2C",
+      "expected_category": "Fit",
+      "expected_need": "Run sales order entry, availability check, delivery, goods issue, billing, and receivables posting.",
+      "reason": "The requested O2C backbone matches a standard sales fulfillment and billing flow."
+    },
+    {
+      "requirement_id": "REQ-O2C-002",
+      "source_note_id": "INT-003",
+      "domain": "O2C",
+      "expected_category": "Configuration",
+      "expected_need": "Configure NewCo sales organizations, distribution channels, pricing records, and customer account groups.",
+      "reason": "Sales org structures, pricing records, and account groups are standard capabilities configured to the NewCo design."
+    },
+    {
+      "requirement_id": "REQ-O2C-003",
+      "source_note_id": "INT-003",
+      "domain": "O2C",
+      "expected_category": "Enhancement",
+      "expected_need": "Require an export-control review reference before delivery release for distributor export orders.",
+      "reason": "Order and delivery processing are standard, but the specific distributor/country validation adds custom control logic."
+    },
+    {
+      "requirement_id": "REQ-O2C-004",
+      "source_note_id": "INT-003",
+      "domain": "O2C",
+      "expected_category": "Development",
+      "expected_need": "Convert orders from the fictional Virello customer portal into NewCo sales orders without manual re-keying.",
+      "reason": "A custom inbound integration from a fictional legacy portal requires development beyond standard configuration."
+    },
+    {
+      "requirement_id": "REQ-O2C-005",
+      "source_note_id": "INT-004",
+      "domain": "O2C",
+      "expected_category": "Configuration",
+      "expected_need": "Set separate NewCo credit-limit thresholds for domestic distributors, export distributors, and intercompany customers.",
+      "reason": "Credit management is standard, while thresholds and customer segment rules are project-specific configuration."
+    },
+    {
+      "requirement_id": "REQ-O2C-006",
+      "source_note_id": "INT-004",
+      "domain": "O2C",
+      "expected_category": "Fit",
+      "expected_need": "Use standard customer returns with return order, inbound receipt, inspection, and credit memo where appropriate.",
+      "reason": "The described return and credit memo flow is a standard returns process pattern."
+    },
+    {
+      "requirement_id": "REQ-O2C-007",
+      "source_note_id": "INT-004",
+      "domain": "O2C",
+      "expected_category": "Enhancement",
+      "expected_need": "Force a packaging batch reference when the return reason is carve-out packaging defect.",
+      "reason": "Returns are standard, but the conditional field requirement for a special return reason is custom validation."
+    },
+    {
+      "requirement_id": "REQ-R2R-001",
+      "source_note_id": "INT-005",
+      "domain": "R2R",
+      "expected_category": "Fit",
+      "expected_need": "Run general ledger, journal posting, period close, open item clearing, and financial statements for NewCo legal entities.",
+      "reason": "These are standard record-to-report capabilities and do not imply a custom extension."
+    },
+    {
+      "requirement_id": "REQ-R2R-002",
+      "source_note_id": "INT-005",
+      "domain": "R2R",
+      "expected_category": "Configuration",
+      "expected_need": "Define NewCo-specific chart of accounts, company codes, and posting periods.",
+      "reason": "The finance structures are standard but must be configured to the separated legal entity model."
+    },
+    {
+      "requirement_id": "REQ-R2R-003",
+      "source_note_id": "INT-005",
+      "domain": "R2R",
+      "expected_category": "Enhancement",
+      "expected_need": "Require a separation reason code for manual journals related to transition service costs.",
+      "reason": "Manual journal posting is standard, but the extra posting validation for transition service costs is an enhancement."
+    },
+    {
+      "requirement_id": "REQ-R2R-004",
+      "source_note_id": "INT-005",
+      "domain": "R2R",
+      "expected_category": "Development",
+      "expected_need": "Send a nightly custom file to the fictional Auralis Separation Ledger for Day-1 balance reconciliation.",
+      "reason": "A bespoke outbound file to a fictional carve-out ledger is a custom integration and should feed the later development backlog."
+    },
+    {
+      "requirement_id": "REQ-MD-005",
+      "source_note_id": "INT-006",
+      "domain": "master_data",
+      "expected_category": "Fit",
+      "expected_need": "Create product master data with material type, base unit, product group, plant views, and valuation data before open order migration.",
+      "reason": "Core product/material master maintenance across basic, plant, and valuation views is standard master data scope."
+    },
+    {
+      "requirement_id": "REQ-MD-006",
+      "source_note_id": "INT-006",
+      "domain": "master_data",
+      "expected_category": "Configuration",
+      "expected_need": "Separate NewCo number ranges for new master data records.",
+      "reason": "Number ranges are a standard configuration object adapted to the NewCo operating model."
+    },
+    {
+      "requirement_id": "REQ-MD-007",
+      "source_note_id": "INT-006",
+      "domain": "master_data",
+      "expected_category": "Enhancement",
+      "expected_need": "Prevent shipment of hazardous components until the internal carve-out handling class has been reviewed.",
+      "reason": "Product and sales processing are standard, but this handling-class gate is a custom cross-process validation."
+    },
+    {
+      "requirement_id": "REQ-MD-008",
+      "source_note_id": "INT-006",
+      "domain": "master_data",
+      "expected_category": "Development",
+      "expected_need": "Upload product drawings from the fictional SeltraBridge archive and link them to product records.",
+      "reason": "A one-off integration with a fictional archive and document-linking load is custom development."
+    }
+  ]
+}

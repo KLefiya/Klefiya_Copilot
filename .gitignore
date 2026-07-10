@@ -7,3 +7,6 @@ venv/
 .claude/
 .codex/
 .agents/
+
+# 向量库是派生物，可由 build_knowledge_base.py 重建，不进 git
+data/knowledge/chroma/

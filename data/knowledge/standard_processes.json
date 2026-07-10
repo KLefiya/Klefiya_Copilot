@@ -1,0 +1,694 @@
+{
+  "_source_note": {
+    "zh": "本文件是为本教学项目【自行撰写】的合成『SAP 标准流程知识条目』。全部 26 条均为原创措辞，未从 SAP 官方文档批量抓取，也未整段照抄任何来源。内容描述的是业界广泛知晓的 SAP 流程与扩展性概念，用于支撑 Fit-to-Standard 判定组件的检索。",
+    "en": "Hand-written synthetic knowledge entries about SAP standard processes, authored for this educational project. No SAP documentation was scraped, and no passage is copied verbatim from any source.",
+    "authorship_policy_zh": "每条带 authorship 字段：self_authored = 自撰；paraphrased_public_doc = 转述公开文档（须在 source 里给出标题与链接，且用自己的话）。当前 26 条全部为 self_authored，因此 source 均为 null——不引用未经核实的链接。",
+    "no_answer_leakage_zh": "知识库只描述『标准是什么样』，不包含任何需求到 Fit/Configuration/Enhancement/Development 的判定结论，也不出现访谈笔记中的虚构外部系统名。判定由下游组件完成。",
+    "sap_trademark_notice": "SAP, S/4HANA and other SAP product names are trademarks of SAP SE. This project is an independent, educational implementation and is not affiliated with or endorsed by SAP SE.",
+    "data_classification": "synthetic-only",
+    "language_note_zh": "正文（standard_process / capabilities / configuration / beyond_standard）为英文，因为检索 query 与 all-MiniLM-L6-v2 模型均为英文；中文仅出现在 title_zh 与说明字段，不参与向量编码。",
+    "curated_on": "2026-07-10"
+  },
+
+  "_meta": {
+    "domains": ["P2P", "O2C", "R2R", "master_data", "cross_cutting"],
+    "taxonomy_note_zh": "cross_cutting 域承载『配置 vs 扩展 vs 开发』的判定框架本身，是判定组件最重要的检索目标；其余四域承载具体流程知识。",
+    "embedded_fields": [
+      "title",
+      "standard_process",
+      "standard_capabilities",
+      "common_configuration_points",
+      "typically_beyond_standard"
+    ]
+  },
+
+  "entries": [
+    {
+      "id": "KB-XC-001",
+      "domain": "cross_cutting",
+      "title": "Four delivery tiers: delivered standard, configuration, in-app extension, custom development",
+      "title_zh": "四个交付层级：标准交付 / 配置 / 应用内扩展 / 定制开发",
+      "standard_process": "Every requirement raised in a Fit-to-Standard workshop lands in one of four tiers. A requirement is met by delivered standard when the shipped process already performs the requested behaviour once baseline organizational structures exist, with no project-specific setup. It is met by configuration when the behaviour exists in the delivered code but is driven by values maintained in customizing activities: thresholds, code lists, organizational units, number ranges, determination rules, document types, and blocking reasons. No code is written and no new object is created. It is met by an in-app extension when the standard process still drives the flow, but the delivered object must carry an extra custom field, or extra logic must run at an extension point that the standard exposes for exactly that purpose. It requires custom development when the standard provides no object, no process, and no extension point covering the request, so a new program, new interface, or new persistence must be constructed and maintained by the project.",
+      "standard_capabilities": [
+        "Baseline processes run end to end after organizational structures are set up.",
+        "Customizing activities expose parameters of the delivered logic without code changes.",
+        "Extension points are published by the standard for adding fields and validations to delivered objects.",
+        "Public APIs are published for reading and writing delivered business objects."
+      ],
+      "common_configuration_points": [
+        "Value limits, tolerance groups, and threshold tables.",
+        "Code lists such as reason codes, blocking reasons, and document types.",
+        "Organizational structures and their assignments.",
+        "Number range intervals and their assignment to groupings or types.",
+        "Determination and derivation rules driven by lookup tables."
+      ],
+      "typically_beyond_standard": [
+        "Adding a field that does not exist on the delivered object, and making the process depend on it.",
+        "Enforcing a check whose triggering condition is not modelled anywhere in the delivered data model.",
+        "Constructing a project-specific interface, file feed, or scheduled extract to an application outside the ERP system.",
+        "Replacing the sequence of a delivered process with a different sequence."
+      ],
+      "keywords": ["fit to standard", "customizing", "extensibility", "BAdI", "custom field", "gap"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-XC-002",
+      "domain": "cross_cutting",
+      "title": "Integration with non-SAP, legacy, and third-party systems",
+      "title_zh": "与非 SAP / 遗留 / 第三方系统的集成",
+      "standard_process": "The ERP publishes released APIs and message interfaces for its business objects, and these are part of the delivered standard. What the standard does not deliver is the interface itself. A project-specific connection to a named external application always has to be built: somebody must design the payload mapping, decide the trigger and schedule, implement error handling and retry, provide monitoring and reprocessing, and own the interface for its lifetime. This remains true even when both endpoints are entirely standard and even when the data being moved is standard data. Recurring extracts, nightly file drops, spreadsheet imports, portal order intake, and pushes into an external ledger or archive all share this property: the transport, the mapping, and the operational surface are project deliverables, not shipped content.",
+      "standard_capabilities": [
+        "Released OData and A2X services for reading and writing master data and documents.",
+        "Message-based interfaces for common document exchange patterns.",
+        "Standard inbound processing for widely adopted electronic document formats.",
+        "Application logs and monitoring for delivered interface frameworks."
+      ],
+      "common_configuration_points": [
+        "Communication arrangements, partner profiles, and endpoint destinations.",
+        "Message types and their assignment to partners.",
+        "Output determination that decides when a document triggers an outbound message."
+      ],
+      "typically_beyond_standard": [
+        "Any bespoke interface to a specifically named external or legacy application.",
+        "Scheduled extracts whose file layout is defined by the receiving system.",
+        "Converting an external portal's payload into ERP documents when the payload is not a standard format.",
+        "Importing values maintained in an external spreadsheet or archive into ERP records."
+      ],
+      "keywords": ["interface", "integration", "external system", "legacy system", "file feed", "nightly extract", "API"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-XC-003",
+      "domain": "cross_cutting",
+      "title": "Thresholds, approver assignment, code lists, and number ranges are customizing content",
+      "title_zh": "阈值、审批人分配、代码表、编号范围属于配置内容",
+      "standard_process": "A large share of the behaviour that business users perceive as bespoke is in fact table-driven. Monetary limits that decide whether an approval step is required, the number of approval levels, which role approves at which level, the intervals from which document numbers are drawn, and the sets of permitted reason or status codes are all maintained as customizing values. Changing them alters behaviour without touching code, and the delivered logic reads them at runtime. The correct question to ask about such a requirement is not whether the value is unusual, but whether the delivered logic already reads a value of that kind from a table.",
+      "standard_capabilities": [
+        "Delivered release and approval logic evaluates limits and characteristics maintained in customizing.",
+        "Number assignment reads intervals from number range objects.",
+        "Permitted values for coded fields are maintained as check tables."
+      ],
+      "common_configuration_points": [
+        "Value limits per approval level and the assignment of approvers to levels.",
+        "Number range intervals, internal versus external assignment, and their assignment to groupings.",
+        "Reason codes, blocking reasons, status profiles, and document types.",
+        "Field status controls that make a delivered field required, optional, or suppressed."
+      ],
+      "typically_beyond_standard": [
+        "Approval routing that depends on an attribute the delivered logic cannot read as a characteristic.",
+        "Making a field mandatory when that field is not part of the delivered object."
+      ],
+      "keywords": ["threshold", "approval level", "value limit", "number range", "reason code", "field status"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-XC-004",
+      "domain": "cross_cutting",
+      "title": "Mandatory fields and conditional validations: where the boundary sits",
+      "title_zh": "必填字段与条件校验：边界在哪里",
+      "standard_process": "Requiring an entry in a field is not automatically a configuration task, and not automatically an extension. The distinguishing question is whether the field exists on the delivered object and whether the condition that triggers the requirement is expressible in delivered controls. Making an existing, delivered field required for a given document type or transaction is field status configuration. Requiring an entry in a field that the standard object does not have, or refusing to release a document unless a check passes whose trigger depends on a business attribute the standard does not model, needs logic placed at an extension point together with a custom field to hold the value. The process is still the standard process; it is being extended, not replaced.",
+      "standard_capabilities": [
+        "Field status groups control whether delivered fields are required, optional, displayed, or suppressed.",
+        "Delivered validation and substitution frameworks evaluate rules against delivered fields.",
+        "Extension points are exposed at save and release of major documents."
+      ],
+      "common_configuration_points": [
+        "Field status per document type, transaction, or account group.",
+        "Rule-based validations built on delivered fields."
+      ],
+      "typically_beyond_standard": [
+        "Adding a custom field to a delivered document and making it mandatory under a business condition.",
+        "Blocking a delivered process step based on a classification the standard data model does not carry.",
+        "Validations that must read a value maintained outside the ERP system."
+      ],
+      "keywords": ["mandatory field", "validation", "field status", "extension point", "custom field", "block"],
+      "authorship": "self_authored",
+      "source": null
+    },
+
+    {
+      "id": "KB-P2P-001",
+      "domain": "P2P",
+      "title": "Procure-to-pay end-to-end standard flow",
+      "title_zh": "采购到付款（P2P）端到端标准流程",
+      "standard_process": "The delivered procurement flow begins with a purchase requisition that captures demand, either entered manually or generated by material requirements planning. The requisition is converted into a purchase order against a supplier and, where one exists, a source of supply such as a contract or info record. Goods receipt records the physical arrival and posts inventory and a goods-receipt/invoice-receipt clearing entry. Supplier invoice verification matches the invoice against the purchase order and the goods receipt, applying tolerance checks, and releases the invoice for payment. The three-way match between order, receipt, and invoice is delivered behaviour and does not need to be built.",
+      "standard_capabilities": [
+        "Purchase requisition creation, conversion, and item categories.",
+        "Purchase order with header and item data, delivery schedules, and account assignment.",
+        "Goods receipt posting with movement types and inventory update.",
+        "Supplier invoice verification with three-way match and tolerance handling.",
+        "Payment proposal and outgoing payment processing."
+      ],
+      "common_configuration_points": [
+        "Document types for requisitions and purchase orders.",
+        "Tolerance keys and limits for price and quantity variance at invoice verification.",
+        "Account determination for goods receipt and invoice receipt postings.",
+        "Purchasing groups and purchasing organizations and their assignments."
+      ],
+      "typically_beyond_standard": [
+        "Replacing the three-way match with a different matching rule.",
+        "Feeding requisitions or orders to an application outside the ERP system on a schedule."
+      ],
+      "keywords": ["purchase requisition", "purchase order", "goods receipt", "invoice verification", "three-way match", "procurement"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-P2P-002",
+      "domain": "P2P",
+      "title": "Purchase order release (approval) strategies",
+      "title_zh": "采购订单审批（释放）策略",
+      "standard_process": "Purchasing documents can be blocked from further processing until approvers release them. The delivered release framework evaluates characteristics of the document, most commonly the total net order value, but also plant, purchasing group, document type, and account assignment category. A release strategy groups a sequence of release codes, each assigned to a role, and the strategy that applies to a given document is determined from the characteristic values. Multiple release levels with different approvers and different value limits are the normal shape of this framework, and setting them up means maintaining release groups, release codes, characteristics, classes, and strategies as customizing content. No code is involved in changing which value triggers which approver.",
+      "standard_capabilities": [
+        "Multi-level release with sequential or parallel approvers.",
+        "Release determined from document characteristics including total value and currency.",
+        "Release blocks that prevent goods receipt or invoice processing until released.",
+        "Release indicator behaviour on document change, including re-triggering approval."
+      ],
+      "common_configuration_points": [
+        "Release groups, release codes, release indicators, and release strategies.",
+        "Characteristics and classes used to select the strategy, such as value bands.",
+        "Value limits per release level and assignment of approvers to release codes.",
+        "Whether a document change resets an already granted release."
+      ],
+      "typically_beyond_standard": [
+        "Release routing that depends on an attribute not available as a delivered characteristic.",
+        "Requiring an entry in a field that the purchasing document does not deliver before release is permitted."
+      ],
+      "keywords": ["purchase order approval", "release strategy", "approval threshold", "value limit", "approver", "release code"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-P2P-003",
+      "domain": "P2P",
+      "title": "Extending purchasing documents with custom fields and checks",
+      "title_zh": "为采购单据增加自定义字段与检查",
+      "standard_process": "The purchasing document carries a defined set of header and item fields. When a project needs to capture information the delivered document does not hold, the document can be extended with custom fields that are added to the persistence, the user interface, and where relevant the released APIs. Logic that must run when the document is saved, checked, or released is placed at published extension points rather than by modifying delivered code. A requirement that says a buyer must enter a reason, a justification, or a reference before a document may proceed, where the field to hold that text does not exist on the delivered document, is an extension of the standard process rather than a change to it: the release framework itself continues to work exactly as delivered.",
+      "standard_capabilities": [
+        "Custom fields can be added to purchasing document header and item and surfaced on the user interface.",
+        "Extension points run at save, at check, and at release of purchasing documents.",
+        "Custom fields can be exposed on released APIs and in analytical views."
+      ],
+      "common_configuration_points": [
+        "Field status control over delivered purchasing fields.",
+        "Screen layout per document type and per transaction."
+      ],
+      "typically_beyond_standard": [
+        "A mandatory custom text or reference field enforced before release, keyed to a business classification.",
+        "Conditional checks that depend on a material or supplier attribute the standard document does not carry.",
+        "Cross-document checks reaching into data the delivered check cannot reach."
+      ],
+      "keywords": ["custom field", "purchase order extension", "justification", "BAdI", "release check", "mandatory entry"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-P2P-004",
+      "domain": "P2P",
+      "title": "Sourcing, contracts, and info records",
+      "title_zh": "货源、合同与采购信息记录",
+      "standard_process": "The delivered sourcing content determines where a requisition is sourced from. Purchasing info records hold the supplier-material relationship and its conditions, outline agreements hold negotiated terms and release quantities, and the source list can restrict or fix which supplier may be used for a material at a plant. Quota arrangements distribute demand across several suppliers by percentage. Source determination during requisition and order creation reads this content and proposes or fixes the supplier. All of it is master data and customizing; none of it requires code.",
+      "standard_capabilities": [
+        "Purchasing info records with price conditions and planned delivery time.",
+        "Outline agreements including quantity and value contracts and scheduling agreements.",
+        "Source list and quota arrangement driven source determination.",
+        "Automatic supplier proposal during requisition conversion."
+      ],
+      "common_configuration_points": [
+        "Whether a source list is mandatory for a plant.",
+        "Condition types and pricing procedures used in purchasing.",
+        "Document types for outline agreements."
+      ],
+      "typically_beyond_standard": [
+        "Source determination driven by a score or rating maintained outside the ERP system.",
+        "Sourcing rules that cannot be expressed as source list, quota, or contract content."
+      ],
+      "keywords": ["source of supply", "info record", "contract", "outline agreement", "source list", "quota arrangement"],
+      "authorship": "self_authored",
+      "source": null
+    },
+
+    {
+      "id": "KB-MD-001",
+      "domain": "master_data",
+      "title": "Business partner master for suppliers and customers",
+      "title_zh": "业务伙伴主数据（供应商与客户）",
+      "standard_process": "Suppliers and customers are maintained as business partners. A business partner carries general data such as names, addresses, communication data, tax numbers, and bank details, and it takes on roles that add role-specific views. The supplier role adds company code data such as reconciliation account and payment terms, and purchasing organization data such as order currency and incoterms. The customer role adds sales area data. Creating a supplier with name, address, tax number, bank details, and purchasing data is entirely delivered behaviour; the fields exist on the delivered object and the maintenance transaction ships with the product.",
+      "standard_capabilities": [
+        "General data: names, multiple time-dependent addresses, tax numbers by tax type, bank details.",
+        "Roles that switch on supplier, customer, and financial services views.",
+        "Company code and purchasing organization segments for suppliers.",
+        "Central blocking and deletion indicators, and duplicate check during creation."
+      ],
+      "common_configuration_points": [
+        "Business partner groupings and their number ranges.",
+        "Business partner roles permitted per grouping.",
+        "Field status per role and per grouping.",
+        "Account groups and reconciliation account determination."
+      ],
+      "typically_beyond_standard": [
+        "Attributes the delivered partner object does not carry, such as project-specific scores or certificate registries.",
+        "Loading partner attributes on a schedule from an application outside the ERP system."
+      ],
+      "keywords": ["business partner", "supplier master", "vendor master", "tax number", "bank details", "purchasing organization data"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-002",
+      "domain": "master_data",
+      "title": "Number ranges and groupings for master data",
+      "title_zh": "主数据的编号范围与分组",
+      "standard_process": "Master data objects draw their keys from number range intervals. An interval is either internal, meaning the system assigns the next number, or external, meaning the user or a loading program supplies the key. Intervals are assigned to a grouping or type, so different categories of the same object can be numbered separately. When a new legal entity is stood up, giving it its own intervals so that its records do not collide with those of the parent is a matter of defining intervals and assigning them to the relevant groupings. This is customizing content and needs no code.",
+      "standard_capabilities": [
+        "Internal and external number assignment per object.",
+        "Multiple intervals per object, assigned by grouping, account group, or type.",
+        "Buffering and gap behaviour for high-volume assignment."
+      ],
+      "common_configuration_points": [
+        "Number range object intervals, including from-number, to-number, and external flag.",
+        "Assignment of intervals to business partner groupings, material types, and document types.",
+        "Separate intervals per company code or per organizational unit where the object supports it."
+      ],
+      "typically_beyond_standard": [
+        "Key formats that encode business meaning the number range object cannot express.",
+        "Renumbering existing records while preserving references, which is a migration build."
+      ],
+      "keywords": ["number range", "internal number assignment", "external number", "grouping", "account group", "key"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-003",
+      "domain": "master_data",
+      "title": "Country, region, currency, and unit code lists",
+      "title_zh": "国家、地区、货币与计量单位代码表",
+      "standard_process": "The system ships check tables for countries, regions, currencies, and units of measure, and the delivered country key is a short code aligned with the international standard rather than a country name. Every field that stores a country expects that short code, and the check table rejects anything else. Where an inbound source represents the same country in several ways, the reconciliation between the external representation and the internal key is maintained as conversion content: the system provides tables that map an external representation to the internal key per external system or per format. Nothing about this requires code; it requires that the mapping be maintained before the data is loaded.",
+      "standard_capabilities": [
+        "Delivered check tables for country keys, regions, currencies, and units of measure.",
+        "Conversion tables that map external representations of a code to the internal key.",
+        "Validation against the check table on entry and on load.",
+        "ISO code fields alongside internal keys for currencies and units."
+      ],
+      "common_configuration_points": [
+        "Country keys and their properties, including the address and tax layout per country.",
+        "External-to-internal conversion entries per external system or format.",
+        "Unit of measure definitions and their ISO code assignments.",
+        "Currency keys and decimal place settings."
+      ],
+      "typically_beyond_standard": [
+        "Guessing the intended code from free text at load time using fuzzy logic.",
+        "Maintaining the mapping in an application outside the ERP system and reading it at runtime."
+      ],
+      "keywords": ["country code", "ISO code", "check table", "conversion", "currency", "unit of measure", "normalization"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-004",
+      "domain": "master_data",
+      "title": "Product master standard views",
+      "title_zh": "产品主数据的标准视图",
+      "standard_process": "The product master is organized as a set of views layered over organizational levels. Client-level data carries the product number, product type, base unit of measure, product group, weights, and dimensions. Plant-level views carry planning, procurement, and quality attributes. Valuation views carry the price control indicator, the valuation class, and the standard or moving average price. Sales and storage views carry the remaining organizational attributes. Creating a product with product type, base unit, product group, plant views, and valuation views is delivered behaviour and requires only that the organizational levels exist.",
+      "standard_capabilities": [
+        "Client-level attributes including product type, base unit, product group, and old product number.",
+        "Plant-level views for planning, procurement, and quality management.",
+        "Valuation views with price control, valuation class, and price.",
+        "Language-dependent product descriptions and alternative units of measure."
+      ],
+      "common_configuration_points": [
+        "Product types and the views they permit.",
+        "Number ranges per product type, internal or external.",
+        "Field selection per product type, plant, and transaction.",
+        "Valuation classes and their account determination."
+      ],
+      "typically_beyond_standard": [
+        "Attributes that no delivered view carries, such as project-specific handling classifications.",
+        "Attaching externally sourced documents to products in bulk according to a project's linkage rules."
+      ],
+      "keywords": ["product master", "material master", "material type", "base unit", "product group", "plant view", "valuation"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-005",
+      "domain": "master_data",
+      "title": "Extending master data objects with custom fields and checks",
+      "title_zh": "为主数据对象增加自定义字段与检查",
+      "standard_process": "Master data objects expose extension points for adding custom fields and for running logic when a record is saved. A requirement to track an attribute the delivered object does not carry, and then to warn or block a downstream process when that attribute has a particular state, is met by adding the field and placing the check at an extension point. The delivered maintenance process, its authorizations, and its change documents continue to work. This is materially different from configuration, because a table entry cannot create a field that does not exist, and materially different from custom development, because no new object or interface is created.",
+      "standard_capabilities": [
+        "Custom fields can be added to business partner and product master and surfaced on the maintenance user interface.",
+        "Save-time and check-time extension points run project logic.",
+        "Custom fields can be exposed on released APIs, in analytics, and in change documents.",
+        "Delivered classification allows attributes to be attached without changing the object."
+      ],
+      "common_configuration_points": [
+        "Field status for delivered fields per role, grouping, or type.",
+        "Classification: class types, characteristics, and allowed values."
+      ],
+      "typically_beyond_standard": [
+        "Warning or blocking a transaction based on the expiry state of a certificate the object does not deliver a field for.",
+        "Checks that depend on data held only in an application outside the ERP system.",
+        "Cross-object checks whose trigger is not modelled in the delivered data model."
+      ],
+      "keywords": ["master data extension", "custom field", "certificate", "warning", "save check", "classification"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-006",
+      "domain": "master_data",
+      "title": "Hazardous materials and dangerous goods handling",
+      "title_zh": "危险品与危险货物处理",
+      "standard_process": "The delivered product master carries indicators that flag a product as relevant for hazardous substances, and dedicated environment, health, and safety content maintains substance data, dangerous goods classifications, and the checks that stop a delivery when the classification is missing or not released. Where a project invents its own classification scheme that does not correspond to the delivered dangerous goods regulations and their released statuses, the delivered check cannot read it: the scheme has to be held in a custom field or classification and the block has to be raised from an extension point in the delivery process.",
+      "standard_capabilities": [
+        "Hazardous substance relevance indicator on the product master.",
+        "Dangerous goods master with regulation-specific classifications and release status.",
+        "Delivery and shipment checks against dangerous goods classification.",
+        "Documents and phrases generated from substance data."
+      ],
+      "common_configuration_points": [
+        "Dangerous goods regulations and their check profiles.",
+        "Which document types and delivery types trigger a dangerous goods check.",
+        "Classification class types and characteristics."
+      ],
+      "typically_beyond_standard": [
+        "A project-defined internal handling class that the delivered dangerous goods check does not recognize.",
+        "Blocking shipment until a bespoke internal review has been recorded."
+      ],
+      "keywords": ["hazardous", "dangerous goods", "EHS", "shipment block", "handling class", "classification"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-007",
+      "domain": "master_data",
+      "title": "Supplier evaluation and externally sourced attributes",
+      "title_zh": "供应商评估与外部来源属性",
+      "standard_process": "Supplier evaluation is delivered: the system scores suppliers on criteria such as price, quality, and delivery reliability, computed from transactional data already inside the ERP system, and the scores are visible on the supplier and usable in sourcing. What the standard does not do is subscribe to an outside opinion. When a rating, risk score, or watchlist status originates in an application outside the ERP system, there is no delivered field fed by that source and no delivered mechanism that fetches it. Holding the value requires a custom field or classification, and populating it on a recurring basis requires a built interface with its own scheduling, error handling, and monitoring.",
+      "standard_capabilities": [
+        "Supplier evaluation scoring from internal transactional data.",
+        "Weighting of evaluation criteria and periodic recomputation.",
+        "Evaluation scores available for source determination and reporting."
+      ],
+      "common_configuration_points": [
+        "Evaluation criteria, subcriteria, and their weights.",
+        "Scoring scales and the purchasing organizations in scope."
+      ],
+      "typically_beyond_standard": [
+        "Loading a risk or credit score maintained by an outside provider into supplier records.",
+        "Recurring imports of externally maintained attributes from a spreadsheet or a data hub."
+      ],
+      "keywords": ["supplier evaluation", "risk score", "external provider", "spreadsheet import", "rating"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-MD-008",
+      "domain": "master_data",
+      "title": "Documents, drawings, and attachments on master records",
+      "title_zh": "主数据记录上的文档、图纸与附件",
+      "standard_process": "The delivered attachment service lets users attach files and links to master records, and the document management content models controlled documents with document types, statuses, versions, and object links that bind a document to a product or a partner. Attaching a drawing to a product by hand is delivered behaviour. Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.",
+      "standard_capabilities": [
+        "Attachment service for files and links on business objects.",
+        "Document info records with types, versions, statuses, and originals.",
+        "Object links binding documents to products, partners, and documents.",
+        "Authorization and status-driven access to originals."
+      ],
+      "common_configuration_points": [
+        "Document types, number ranges, and status networks.",
+        "Object link definitions and the storage categories for originals."
+      ],
+      "typically_beyond_standard": [
+        "Bulk extraction of originals from an external archive with project-defined matching rules.",
+        "Recurring synchronization between an outside document repository and the ERP system."
+      ],
+      "keywords": ["attachment", "document management", "drawing", "object link", "archive", "bulk upload"],
+      "authorship": "self_authored",
+      "source": null
+    },
+
+    {
+      "id": "KB-O2C-001",
+      "domain": "O2C",
+      "title": "Order-to-cash end-to-end standard flow",
+      "title_zh": "订单到收款（O2C）端到端标准流程",
+      "standard_process": "The delivered sales flow starts with a sales order that determines the customer, materials, quantities, dates, and prices. An availability check confirms whether the requested quantity can be delivered on the requested date. An outbound delivery is created, goods are picked and packed, and goods issue posts the inventory movement and the cost of goods sold. Billing creates the invoice and posts the receivable to accounting, where it is cleared when payment arrives. Each handover between these steps is delivered, and document flow links the documents so the chain is traceable in both directions.",
+      "standard_capabilities": [
+        "Sales order entry with pricing, dates, and item categories.",
+        "Availability check against stock and planned receipts.",
+        "Outbound delivery, picking, packing, and goods issue.",
+        "Billing document creation and the resulting accounts receivable posting.",
+        "Document flow across the whole chain."
+      ],
+      "common_configuration_points": [
+        "Sales document types, item categories, and schedule line categories.",
+        "Availability checking groups and checking rules.",
+        "Delivery types, picking, and packing controls.",
+        "Billing types and copy control between documents."
+      ],
+      "typically_beyond_standard": [
+        "Replacing the delivered document flow with a different chain of documents.",
+        "Creating sales orders from a payload format the standard inbound processing does not recognize."
+      ],
+      "keywords": ["sales order", "availability check", "ATP", "delivery", "goods issue", "billing", "receivables"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-O2C-002",
+      "domain": "O2C",
+      "title": "Sales organizational structure, pricing, and account determination",
+      "title_zh": "销售组织结构、定价与科目确定",
+      "standard_process": "Selling requires an organizational skeleton: sales organizations, distribution channels, and divisions combine into sales areas, and customers and materials are extended to the sales areas in which they trade. Pricing is driven by a pricing procedure assigned to the combination of sales area, document type, and customer pricing group; the procedure lists condition types, and condition records hold the actual prices, discounts, and surcharges. Account determination decides which general ledger accounts the billing document posts to. Standing up a new legal entity means creating these organizational units, extending master data to them, and maintaining condition records and account determination. All of it is customizing and master data.",
+      "standard_capabilities": [
+        "Sales area structure and its assignment to company codes and plants.",
+        "Pricing procedures, condition types, access sequences, and condition records.",
+        "Customer account groups and partner determination.",
+        "Revenue account determination from billing documents."
+      ],
+      "common_configuration_points": [
+        "Sales organizations, distribution channels, divisions, and their assignments.",
+        "Pricing procedure determination and condition record maintenance.",
+        "Customer account groups, number ranges, and field status.",
+        "Account determination tables for revenue and deductions."
+      ],
+      "typically_beyond_standard": [
+        "Pricing formulas that cannot be expressed as condition types with access sequences.",
+        "Deriving the sales area from data held outside the ERP system."
+      ],
+      "keywords": ["sales organization", "distribution channel", "pricing", "condition record", "account determination", "customer account group"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-O2C-003",
+      "domain": "O2C",
+      "title": "Credit management limits and checks",
+      "title_zh": "信用管理的额度与检查",
+      "standard_process": "Credit management assigns each customer to a credit segment and gives that customer a credit limit within the segment. The delivered credit check runs when a sales order is saved and again at delivery, comparing exposure from open orders, deliveries, and receivables against the limit, and blocking the document when the limit is exceeded. Different limits for different groups of customers are achieved either by different limits per customer or by separate credit segments with their own rules; risk classes group customers whose checks should behave alike. Defining the segments, the risk classes, the checking rules, and the limits themselves is customizing and master data maintenance.",
+      "standard_capabilities": [
+        "Credit segments with separate exposure and limits.",
+        "Credit limit per customer per segment, with risk classes and check rules.",
+        "Automatic credit block on sales order or delivery when the limit is exceeded.",
+        "Release workflow for blocked documents."
+      ],
+      "common_configuration_points": [
+        "Credit segments and their assignment to sales areas.",
+        "Risk classes, check rules, and which documents trigger a check.",
+        "Credit limits per customer and per segment.",
+        "Blocking behaviour and the roles permitted to release."
+      ],
+      "typically_beyond_standard": [
+        "Credit checks that read exposure from a system outside the ERP.",
+        "Limit determination logic that no combination of segment and risk class can express."
+      ],
+      "keywords": ["credit limit", "credit management", "credit segment", "risk class", "credit block", "exposure"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-O2C-004",
+      "domain": "O2C",
+      "title": "Delivery blocks, export control, and trade compliance",
+      "title_zh": "交货冻结、出口管制与贸易合规",
+      "standard_process": "A sales order or a delivery can be blocked, and the delivered blocking reasons are customizing entries assigned per document type and per customer. Trade compliance is delivered as dedicated content that screens business partners against denied party lists, classifies products against export control regulations, and checks whether a licence exists before a delivery may be released. Where a project instead requires that a human review has taken place and that its reference number is recorded on the document before release, the delivered compliance check has nothing to read: the reference field does not exist on the delivered document, so the field must be added and the release must be gated from an extension point.",
+      "standard_capabilities": [
+        "Delivery and billing blocks with configurable reasons.",
+        "Denied party screening and product classification against export regulations.",
+        "Licence determination and licence-based release of deliveries.",
+        "Blocking documents until compliance checks pass."
+      ],
+      "common_configuration_points": [
+        "Delivery block reasons and their effect on subsequent documents.",
+        "Which document types and delivery types are subject to compliance checks.",
+        "Legal regulations, licence types, and screening parameters."
+      ],
+      "typically_beyond_standard": [
+        "Requiring a bespoke review reference on the order before delivery release is permitted.",
+        "Compliance decisions recorded in an application outside the ERP system and read at release time."
+      ],
+      "keywords": ["delivery block", "export control", "trade compliance", "licence", "review reference", "release"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-O2C-005",
+      "domain": "O2C",
+      "title": "Customer returns processing",
+      "title_zh": "客户退货处理",
+      "standard_process": "The delivered returns flow starts with a return order that references the original sales or billing document. An inbound delivery receives the goods, an inspection decides the follow-up activity, and depending on the outcome the goods are moved to unrestricted stock, scrapped, or sent for repair. A credit memo request is created and, once approved, a credit memo settles the customer's claim. Return reasons are coded values maintained as customizing, and the follow-up activity can be derived from the reason. Running returns this way, with a return order, an inbound receipt, an inspection, and a credit memo, is delivered behaviour end to end.",
+      "standard_capabilities": [
+        "Return order with reference to the original document.",
+        "Inbound delivery, receipt, and inspection with follow-up activities.",
+        "Credit memo request and credit memo, with approval blocks.",
+        "Return reason codes driving follow-up and reporting."
+      ],
+      "common_configuration_points": [
+        "Return order types, item categories, and copy control from the original document.",
+        "Return reason codes and their assignment to follow-up activities.",
+        "Inspection types and the stock types goods are received into.",
+        "Billing blocks on credit memo requests and who may release them."
+      ],
+      "typically_beyond_standard": [
+        "Requiring a reference to an object the return document does not carry when a particular reason code is chosen.",
+        "Follow-up activities that the delivered inspection outcomes cannot express."
+      ],
+      "keywords": ["customer returns", "return order", "inbound delivery", "inspection", "credit memo", "return reason"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-O2C-006",
+      "domain": "O2C",
+      "title": "Sales order intake channels",
+      "title_zh": "销售订单的进单渠道",
+      "standard_process": "Orders reach the system through several delivered channels: manual entry, released APIs, and standard inbound message processing for widely adopted electronic document formats. When the sending side is a portal, marketplace, or customer application whose payload is not one of those formats, the standard has no way to interpret it. Converting that payload into sales orders means building the receiving endpoint or the polling job, the mapping from the external structure to order fields, the determination of customer and material from external identifiers, the error handling for records that cannot be mapped, and the monitoring that tells operations what failed overnight.",
+      "standard_capabilities": [
+        "Released APIs for creating and changing sales orders.",
+        "Inbound processing for standard electronic document formats.",
+        "Duplicate detection on the customer's reference number.",
+        "Incompletion procedures that hold orders until required data is present."
+      ],
+      "common_configuration_points": [
+        "Partner profiles and message types for electronic document exchange.",
+        "Incompletion procedures per sales document type.",
+        "Customer material info records mapping external material identifiers."
+      ],
+      "typically_beyond_standard": [
+        "Converting a portal-specific payload into sales orders without manual re-entry.",
+        "Scheduled polling of an external order source and the operational surface around it."
+      ],
+      "keywords": ["order intake", "portal", "EDI", "inbound", "order conversion", "customer material info record"],
+      "authorship": "self_authored",
+      "source": null
+    },
+
+    {
+      "id": "KB-R2R-001",
+      "domain": "R2R",
+      "title": "Record-to-report end-to-end standard flow",
+      "title_zh": "记录到报告（R2R）端到端标准流程",
+      "standard_process": "Financial accounting posts journal entries to the general ledger, either automatically from operational documents or manually. Documents carry a document type, a posting date, and a period, and the delivered period control decides whether a period is open for a given account type. Open items on customer, supplier, and general ledger accounts are cleared against each other. Period close runs recurring entries, accruals, revaluation, and reconciliation, and financial statements are produced from a financial statement version that arranges accounts into the required hierarchy. Running the ledger, posting journals, closing periods, clearing open items, and producing statements is delivered behaviour.",
+      "standard_capabilities": [
+        "General ledger posting from operational documents and manual journals.",
+        "Open item management and automatic clearing.",
+        "Period open and close control per account type and per company code.",
+        "Financial statement versions and the reports built on them.",
+        "Parallel ledgers and currencies."
+      ],
+      "common_configuration_points": [
+        "Document types and their number ranges.",
+        "Posting period variants and which periods are open for which account types.",
+        "Automatic clearing rules and tolerance groups.",
+        "Financial statement version hierarchies."
+      ],
+      "typically_beyond_standard": [
+        "Statement structures that the financial statement version cannot express.",
+        "Recurring bespoke extracts whose layout is defined by a receiving system."
+      ],
+      "keywords": ["general ledger", "journal entry", "period close", "open item clearing", "financial statements", "posting period"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-R2R-002",
+      "domain": "R2R",
+      "title": "Financial organizational structures and the chart of accounts",
+      "title_zh": "财务组织结构与科目表",
+      "standard_process": "A company code is the legal entity for which a balance sheet and profit and loss statement are produced. It is assigned an operating chart of accounts, a fiscal year variant, and a posting period variant. General ledger accounts exist at chart of accounts level and are extended to each company code that uses them. Standing up a new legal entity therefore means creating the company code, deciding whether it shares or gets its own chart of accounts, extending or creating the accounts, and setting up the fiscal year and posting period variants. These are customizing activities and master data maintenance; they do not involve code.",
+      "standard_capabilities": [
+        "Company codes with their own currency, chart of accounts, and fiscal year variant.",
+        "Operating, group, and country chart of accounts layered on the same accounts.",
+        "General ledger account master at chart of accounts and company code level.",
+        "Fiscal year variants including non-calendar years and special periods."
+      ],
+      "common_configuration_points": [
+        "Company code definition and global parameters.",
+        "Chart of accounts definition and account groups.",
+        "Fiscal year variant and posting period variant, and their assignment.",
+        "Retained earnings account and account determination."
+      ],
+      "typically_beyond_standard": [
+        "Ledger structures that the delivered parallel ledger model cannot represent.",
+        "Deriving the company code from data held outside the ERP system."
+      ],
+      "keywords": ["chart of accounts", "company code", "posting period", "fiscal year variant", "general ledger account"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-R2R-003",
+      "domain": "R2R",
+      "title": "Journal entry validation, substitution, and additional fields",
+      "title_zh": "凭证校验、替代与附加字段",
+      "standard_process": "The delivered validation framework evaluates rules when a document is posted and refuses the posting when a rule is violated; the substitution framework derives a field value from other values on the document. Both operate on fields that exist on the delivered document. A requirement to capture a reason, a category, or a reference that the journal entry header does not deliver a field for cannot be met by a validation rule alone: the field has to be added to the document, surfaced on the entry screen, and then a rule or an extension point makes it mandatory under the intended condition. The posting process itself remains the delivered posting process.",
+      "standard_capabilities": [
+        "Validation rules that block postings violating a condition on delivered fields.",
+        "Substitution rules that derive delivered field values at posting time.",
+        "Delivered header fields for reference, header text, and assignment.",
+        "Custom fields can be added to the journal entry and exposed in reporting."
+      ],
+      "common_configuration_points": [
+        "Validation and substitution rules and the callup points at which they run.",
+        "Field status per document type, posting key, and account group.",
+        "Document types reserved for particular posting categories."
+      ],
+      "typically_beyond_standard": [
+        "A mandatory coded reason on manual journals where the code set and the field are both project-defined.",
+        "Rules that must read data from an application outside the ERP system."
+      ],
+      "keywords": ["journal entry", "validation", "substitution", "reason code", "custom field", "manual posting"],
+      "authorship": "self_authored",
+      "source": null
+    },
+    {
+      "id": "KB-R2R-004",
+      "domain": "R2R",
+      "title": "Financial reporting, extraction, and reconciliation feeds",
+      "title_zh": "财务报告、数据抽取与对账数据流",
+      "standard_process": "Financial data is exposed for reporting through delivered analytical views and released APIs, and standard reports and statements are produced from the ledger without any build. What is not delivered is a recurring file whose layout, naming, delivery window, and reconciliation semantics are dictated by a receiving application. Producing such a file means selecting and aggregating the data, formatting it to the receiving system's contract, scheduling the job, handling partial and failed runs, and providing the audit trail that shows what was sent and when. The ledger data itself is standard; the feed is a build.",
+      "standard_capabilities": [
+        "Delivered analytical views over the ledger and released APIs for extraction.",
+        "Standard financial statements, trial balance, and line item reports.",
+        "Reconciliation between subledgers and the general ledger.",
+        "Scheduling framework for delivered background jobs."
+      ],
+      "common_configuration_points": [
+        "Financial statement versions and report variants.",
+        "Job scheduling for delivered close activities."
+      ],
+      "typically_beyond_standard": [
+        "A nightly file in a layout defined by an external ledger or consolidation tool.",
+        "Reconciliation logic that compares ERP balances against balances held outside the ERP system."
+      ],
+      "keywords": ["financial reporting", "extraction", "nightly file", "reconciliation", "balance", "external ledger"],
+      "authorship": "self_authored",
+      "source": null
+    }
+  ]
+}
