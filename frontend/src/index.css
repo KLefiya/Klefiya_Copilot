@@ -1,0 +1,79 @@
+/* 第 1 步只需要一层克制的基础样式：能读、不丑。设计系统留到第 2 步。 */
+
+:root {
+  --bg: #0f1115;
+  --surface: #171a21;
+  --border: #262b36;
+  --text: #e6e9ef;
+  --muted: #8b93a3;
+  --accent: #4f8cff;
+  --ok: #2fbf71;
+  --pending: #b7862b;
+  --error: #e5484d;
+
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.page__header { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+.page__header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+.page__subtitle { margin: 6px 0 0; color: var(--muted); }
+
+.section { margin-top: 36px; }
+.section h2 {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 8px; font-size: 17px; font-weight: 600;
+}
+
+.muted { color: var(--muted); margin: 4px 0; }
+
+.badge {
+  font-size: 12px; font-weight: 500;
+  padding: 2px 9px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+}
+.badge--ok      { color: var(--ok);      border-color: color-mix(in srgb, var(--ok) 40%, var(--border)); }
+.badge--pending { color: var(--pending); border-color: color-mix(in srgb, var(--pending) 40%, var(--border)); }
+.badge--error   { color: var(--error);   border-color: color-mix(in srgb, var(--error) 40%, var(--border)); }
+
+.table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+.table th, .table td {
+  text-align: left; padding: 10px 12px;
+  border-bottom: 1px solid var(--border); vertical-align: top;
+}
+.table th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.table .muted { font-size: 13px; }
+
+.code {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px; font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 12.5px; margin: 12px 0 0; overflow-x: auto;
+}
+.code--scroll { max-height: 480px; overflow-y: auto; }
+.code--inline {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  padding: 1px 6px; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px;
+}
+
+.panel { border-radius: 8px; padding: 14px 16px; margin-top: 12px; }
+.panel--error {
+  background: color-mix(in srgb, var(--error) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--error) 35%, var(--border));
+}
+.panel__message { margin: 0; font-weight: 500; }

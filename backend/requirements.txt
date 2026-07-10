@@ -1,0 +1,17 @@
+# CarveOps Copilot - backend (read-only report API)
+#
+#   pip install -r backend/requirements.txt
+#
+# Kept separate from the project's top-level requirements.txt on purpose: the
+# analysis tools must stay runnable without dragging in a web framework, and the
+# API must stay runnable without dragging in torch. Neither list imports the
+# other.
+#
+# The backend only reads JSON files that the analysis tools already wrote. It
+# does not import those tools and does not trigger analysis.
+#
+# ASCII-only comments: pip reads requirements files with the system locale
+# encoding, not UTF-8, so CJK comments break `pip install -r` on a GBK console.
+
+fastapi==0.139.0
+uvicorn==0.49.0
