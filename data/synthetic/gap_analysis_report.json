@@ -1,0 +1,1016 @@
+{
+  "_run_info": {
+    "content_sha256": "89f42052d64117b49a70a19dc3adb751bfdd5da7a12eedb435e4eecfb02c1ae3",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-27T06:38:37+00:00",
+    "llm_cache": {
+      "hits": 30,
+      "misses": 0
+    }
+  },
+  "_meta": {
+    "module": "module_2_fit_to_standard_gap_analysis",
+    "component": "requirement_extraction_and_fit_gap_judgement",
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "thinking": "enabled",
+    "reasoning_effort": "high",
+    "sampling_note_zh": "本组件不传 temperature。可复现性由磁盘缓存承担，而非 temperature=0（后者从不保证逐字一致）。",
+    "separation_note_zh": "抽取阶段不读 ground truth；判定阶段不读 ground truth；评估在 evaluate_gap_analysis.py 中独立进行。",
+    "knowledge_base": "data\\knowledge\\standard_processes.json",
+    "retrieval_top_k": 4,
+    "low_confidence_threshold": 0.7,
+    "baseline_rules_zh": [
+      "top-3 条目中出现 KB-XC-002（外部系统集成）→ Development",
+      "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+      "否则 top-1 chunk 的 section 为 configuration → Configuration",
+      "否则 → Fit"
+    ],
+    "baseline_purpose_zh": "无 LLM 的检索基线是【对照组】：它只能读到命中了哪个条目/哪个 section，读不懂条目内容，因此只能靠表面特征。若 LLM 准确率与基线相当，说明 LLM 也在靠表面特征；显著超出才说明推理带来了价值。",
+    "llm_cache": {
+      "dir": "data\\synthetic\\llm_cache",
+      "note_zh": "缓存进 git；填充后重跑完全离线且字节一致。"
+    },
+    "extracted_requirement_count": 24
+  },
+  "requirements": [
+    {
+      "extracted_id": "EX-001",
+      "source_note_id": "INT-001",
+      "requirement_description": "The procure-to-pay process must remain the standard flow: a planner raises a purchase requisition, the buyer converts it into a purchase order, goods receipt happens at the plant, and invoice verification follows after that.",
+      "domain": "P2P",
+      "source_quote": "a planner raises a purchase requisition, the buyer converts it into a purchase order, goods receipt happens at the plant, and invoice verification follows after that.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-P2P-001",
+          "KB-O2C-001",
+          "KB-O2C-005"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-P2P-001",
+          "section": "overview",
+          "similarity": 0.8088
+        }
+      },
+      "llm": {
+        "category": "Fit",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-P2P-001"
+        ],
+        "rationale": "KB-P2P-001 states that the standard procurement flow covers purchase requisition, conversion to purchase order, goods receipt, and invoice verification with three-way match as delivered behaviour. The requirement exactly matches this without any modification or configuration, placing it fully within standard fit.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-001",
+          "KB-O2C-005",
+          "KB-P2P-001",
+          "KB-P2P-002"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-002",
+      "source_note_id": "INT-001",
+      "requirement_description": "Purchase order approvals follow value thresholds: below €10,000 requires one manager approval, €10,000–€100,000 requires plant controller approval, and above €100,000 requires carve-out procurement board approval.",
+      "domain": "P2P",
+      "source_quote": "Below 10k EUR they are fine with one manager, between 10k and 100k they want the plant controller involved, and anything above that should go to the carve-out procurement board.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-P2P-002",
+          "KB-O2C-004",
+          "KB-P2P-001"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-P2P-002",
+          "section": "capabilities",
+          "similarity": 0.442
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 1.0,
+        "evidence": [
+          "KB-P2P-002",
+          "KB-XC-003"
+        ],
+        "rationale": "KB-P2P-002 explicitly states that the standard release framework supports multiple value-based approval levels with different approvers, entirely configurable through release groups, codes, and strategies. KB-XC-003 confirms that monetary limits and approver assignments are maintained as customizing values. The requirement’s three value thresholds mapping to manager, plant controller, and procurement board fit directly into this configuration paradigm with no need for code or extensions.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-004",
+          "KB-P2P-001",
+          "KB-P2P-002",
+          "KB-XC-003"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-003",
+      "source_note_id": "INT-001",
+      "requirement_description": "Rush orders for safety-critical spare parts must include a mandatory justification field before the purchase order is released.",
+      "domain": "P2P",
+      "source_quote": "rush orders for safety-critical spare parts need a mandatory justification field before the PO is released",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-XC-004",
+          "KB-O2C-004",
+          "KB-P2P-003"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-XC-004",
+          "section": "overview",
+          "similarity": 0.4946
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-P2P-003",
+          "KB-XC-004"
+        ],
+        "rationale": "The requirement is for a mandatory justification field on rush orders for safety-critical spare parts before PO release. The standard purchasing document does not include a justification field (KB-P2P-003 states 'the field to hold that text does not exist on the delivered document'). Adding such a field and enforcing it at release requires a custom field and logic placed at extension points, which is an enhancement (KB-P2P-003: 'is an extension of the standard process'). KB-XC-004 confirms that requiring a field the standard object does not have and gating release on a condition the standard data model does not carry is an extension. The standard release framework remains unchanged.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-006",
+          "KB-O2C-004",
+          "KB-P2P-003",
+          "KB-XC-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-004",
+      "source_note_id": "INT-001",
+      "requirement_description": "Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "domain": "P2P",
+      "source_quote": "the team wants NewCo to keep sending those orders there every night until the transition service agreement ends.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-O2C-005",
+          "KB-O2C-001",
+          "KB-P2P-001"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-005",
+          "section": "overview",
+          "similarity": 0.2852
+        }
+      },
+      "llm": {
+        "category": "Development",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-P2P-001"
+        ],
+        "rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-001",
+          "KB-O2C-005",
+          "KB-O2C-006",
+          "KB-P2P-001"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-005",
+      "source_note_id": "INT-002",
+      "requirement_description": "Set up standard vendor records including name, address, tax number, bank details, and purchasing data, and review duplicate entries before go-live.",
+      "domain": "master_data",
+      "source_quote": "They want a standard vendor record with name, address, tax number, bank details, and purchasing data, and they expect duplicates to be reviewed before go-live.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-P2P-004",
+          "KB-P2P-003",
+          "KB-O2C-001"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-P2P-004",
+          "section": "capabilities",
+          "similarity": 0.4226
+        }
+      },
+      "llm": {
+        "category": "Fit",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-MD-001"
+        ],
+        "rationale": "KB-MD-001 states that creating a supplier with name, address, tax number, bank details, and purchasing data is entirely delivered behaviour; the fields exist on the delivered object and the maintenance transaction ships with the product. It also includes duplicate check during creation. Therefore, the requirement fits the standard without configuration, enhancement, or development.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-001",
+          "KB-O2C-001",
+          "KB-P2P-003",
+          "KB-P2P-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-006",
+      "source_note_id": "INT-002",
+      "requirement_description": "For regulated component suppliers, require an internal supplier risk band, and warn the buyer on the purchase order if the risk band is high and the latest quality certificate is missing.",
+      "domain": "P2P",
+      "source_quote": "the quality lead added that suppliers for regulated components must carry an internal supplier risk band, and a purchase order should warn the buyer if the band is high and the latest quality certificate is missing.",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-O2C-004",
+          "KB-MD-007",
+          "KB-MD-006"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-004",
+          "section": "beyond_standard",
+          "similarity": 0.5117
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-MD-007",
+          "KB-O2C-004"
+        ],
+        "rationale": "KB-MD-007 states that the standard supplier evaluation only scores from internal transactional data and does not provide a delivered field for an external risk score or rating. The requirement for an internal supplier risk band is a custom attribute not covered by the standard evaluation model. Holding the value requires a custom field on the supplier, which is an enhancement. KB-O2C-004 illustrates that when a check needs to read a custom field (like a bespoke review reference), the field must be added and the process gated from an extension point. Similarly, warning on the purchase order based on a custom risk band and a missing quality certificate (not a standard check) requires custom logic at a delivered extension point. The standard purchase order process still drives the flow, so this is Enhancement.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-006",
+          "KB-MD-007",
+          "KB-O2C-004",
+          "KB-P2P-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-007",
+      "source_note_id": "INT-002",
+      "requirement_description": "Clean country data to use standardized ISO codes, replacing inconsistent values like 'DE', 'Germany', 'Deutschland', and lower-case variations.",
+      "domain": "master_data",
+      "source_quote": "the compliance analyst said countries need to be cleaned into normal ISO-style codes because the old extract has DE, Germany, Deutschland, and sometimes just lower-case values.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-MD-003",
+          "KB-MD-002",
+          "KB-R2R-002"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-MD-003",
+          "section": "capabilities",
+          "similarity": 0.5771
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-MD-003"
+        ],
+        "rationale": "KB-MD-003 states that the system provides conversion tables mapping external representations of a country to the internal key, and that maintaining these mapping entries is a configuration activity. The requirement to replace inconsistent country values like 'DE', 'Germany', 'Deutschland' with standardized ISO codes is achieved by populating these conversion entries. No code is needed, as the mapping is maintained before data is loaded.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-002",
+          "KB-MD-003",
+          "KB-O2C-004",
+          "KB-R2R-002"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-008",
+      "source_note_id": "INT-002",
+      "requirement_description": "Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "domain": "master_data",
+      "source_quote": "someone asked whether we can copy supplier risk scores from a carve-out-only spreadsheet called Nivora Risk Hub. It is not a corporate standard system; it belongs to the separation team and will probably disappear after Day 1, but they still want an automated load.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-MD-007",
+          "KB-MD-006",
+          "KB-P2P-004"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-MD-007",
+          "section": "overview",
+          "similarity": 0.5097
+        }
+      },
+      "llm": {
+        "category": "Development",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-MD-007",
+          "KB-MD-001"
+        ],
+        "rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development).",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-001",
+          "KB-MD-006",
+          "KB-MD-007",
+          "KB-P2P-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-009",
+      "source_note_id": "INT-003",
+      "requirement_description": "The standard order-to-cash path must work: customer order entry, availability check, delivery, goods issue, billing, and posting the receivable.",
+      "domain": "O2C",
+      "source_quote": "Sales operations mainly wants the usual order-to-cash path to work: customer order entry, availability check, delivery, goods issue, billing, and the receivable posted for finance.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-O2C-001",
+          "KB-P2P-001",
+          "KB-O2C-005"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-001",
+          "section": "overview",
+          "similarity": 0.7157
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-O2C-001"
+        ],
+        "rationale": "The standard order-to-cash flow, from sales order entry through accounts receivable posting, is entirely covered by delivered SAP functionality (KB-O2C-001). The knowledge entry lists the exact steps as capabilities (sales order entry, availability check, delivery, goods issue, billing, receivable posting) and states that document flow across the chain is delivered. However, making this standard flow operational requires configuration of objects such as document types, item categories, schedule line categories, availability check controls, delivery types, and billing copy control, which are explicitly listed as common configuration points in the entry. No custom code is needed, and the standard logic drives the process once these customizing values are maintained.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-001",
+          "KB-O2C-005",
+          "KB-O2C-006",
+          "KB-P2P-001"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-010",
+      "source_note_id": "INT-003",
+      "requirement_description": "Pricing condition records and customer account groups must reflect NewCo's separated company structure with its own sales organizations and distribution channels.",
+      "domain": "master_data",
+      "source_quote": "NewCo will have its own sales organizations and distribution channels, so pricing condition records and customer account groups need to reflect the separated company structure.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-O2C-002",
+          "KB-R2R-002",
+          "KB-P2P-004"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-002",
+          "section": "overview",
+          "similarity": 0.5944
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-O2C-002"
+        ],
+        "rationale": "KB-O2C-002 states that setting up a new legal entity requires creating sales organizations and distribution channels, maintaining condition records, and configuring customer account groups, all of which are customizing and master data activities. The standard delivers the objects and logic; they only need to be populated with values for NewCo.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-002",
+          "KB-P2P-004",
+          "KB-R2R-001",
+          "KB-R2R-002"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-011",
+      "source_note_id": "INT-003",
+      "requirement_description": "Export orders for customers flagged as distributor with a ship-to country outside the home market must require an export-control review reference before delivery is released.",
+      "domain": "O2C",
+      "source_quote": "if a customer is flagged as distributor and the ship-to country is outside the home market, the order should ask for an export-control review reference before delivery is released.",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-O2C-004",
+          "KB-P2P-002",
+          "KB-MD-007"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-004",
+          "section": "beyond_standard",
+          "similarity": 0.6567
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-O2C-004"
+        ],
+        "rationale": "The requirement demands an export-control review reference field that does not exist on the delivered document. KB-O2C-004 explicitly states that 'the reference field does not exist on the delivered document, so the field must be added and the release must be gated from an extension point', which places it as an Enhancement where the standard process still drives the flow but a custom field and extension logic are required.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-007",
+          "KB-O2C-004",
+          "KB-P2P-002",
+          "KB-P2P-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-012",
+      "source_note_id": "INT-003",
+      "requirement_description": "Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "domain": "O2C",
+      "source_quote": "Some strategic customers still place orders through the legacy Virello customer portal, and the business wants those portal orders to become NewCo sales orders without manual re-keying during the first six months.",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-O2C-001",
+          "KB-O2C-006",
+          "KB-P2P-002"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-001",
+          "section": "beyond_standard",
+          "similarity": 0.4037
+        }
+      },
+      "llm": {
+        "category": "Development",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-O2C-006",
+          "KB-O2C-001"
+        ],
+        "rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-001",
+          "KB-O2C-006",
+          "KB-P2P-002",
+          "KB-P2P-003"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-013",
+      "source_note_id": "INT-004",
+      "requirement_description": "Credit limits must be set up separately for NewCo with different thresholds for domestic distributors, export distributors, and intercompany customers, and they should not be inherited from the former parent.",
+      "domain": "O2C",
+      "source_quote": "as long as the limits are separate for NewCo and not accidentally inherited from the former parent. Credit limits need different thresholds for domestic distributors, export distributors, and intercompany customers.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-O2C-003",
+          "KB-P2P-003",
+          "KB-O2C-004"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-003",
+          "section": "capabilities",
+          "similarity": 0.5065
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-O2C-003"
+        ],
+        "rationale": "The standard credit management process (KB-O2C-003) provides credit segments, risk classes, and per-customer credit limits that are entirely defined through customizing and master data. Different thresholds for domestic distributors, export distributors, and intercompany customers can be achieved either by assigning different limits per customer or by creating separate credit segments with their own rules. Setting up separate credit structures for a new legal entity (NewCo) is a configuration activity: defining the company code, its credit segments, risk classes, and assigning them to sales areas. No code, custom field, or extension point is required. The standard ensures limits are not inherited from another company code because each company code has independent credit master data.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-003",
+          "KB-O2C-004",
+          "KB-P2P-003",
+          "KB-R2R-002"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-014",
+      "source_note_id": "INT-004",
+      "requirement_description": "The returns process must include creating a return order upon customer complaint, receiving the returned goods, inspecting them, and issuing a credit memo when applicable.",
+      "domain": "O2C",
+      "source_quote": "customer complains, return order is created, goods come back, inspection happens, then a credit memo may follow.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-O2C-005",
+          "KB-O2C-001",
+          "KB-P2P-001"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-005",
+          "section": "overview",
+          "similarity": 0.8095
+        }
+      },
+      "llm": {
+        "category": "Fit",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-O2C-005"
+        ],
+        "rationale": "KB-O2C-005 states that the delivered returns flow includes a return order, inbound receipt, inspection, and credit memo, and that 'Running returns this way ... is delivered behaviour end to end.' The requirement exactly asks for these steps, so the standard already covers it once baseline org structures exist.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-001",
+          "KB-O2C-004",
+          "KB-O2C-005",
+          "KB-P2P-001"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-015",
+      "source_note_id": "INT-004",
+      "requirement_description": "When a return reason is 'carve-out packaging defect', the system must require a packaging batch reference.",
+      "domain": "O2C",
+      "source_quote": "when a return reason says 'carve-out packaging defect', the system should force a packaging batch reference",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-O2C-005",
+          "KB-O2C-004",
+          "KB-MD-006"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-O2C-005",
+          "section": "beyond_standard",
+          "similarity": 0.5001
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-O2C-005"
+        ],
+        "rationale": "KB-O2C-005 states that 'Requiring a reference to an object the return document does not carry when a particular reason code is chosen' is typically beyond the standard. The standard returns process provides the return order and reason codes, but the document does not carry a packaging batch reference. Adding this field and enforcing it based on a reason code requires a custom field and logic at an extension point, fitting the Enhancement tier.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-006",
+          "KB-O2C-004",
+          "KB-O2C-005",
+          "KB-P2P-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-016",
+      "source_note_id": "INT-004",
+      "requirement_description": "The legacy customer ID must be retained in NewCo's system for search and reconciliation.",
+      "domain": "master_data",
+      "source_quote": "NewCo wants the legacy customer ID retained for search and reconciliation.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-P2P-003",
+          "KB-O2C-002",
+          "KB-XC-004"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-P2P-003",
+          "section": "overview",
+          "similarity": 0.2361
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.5,
+        "evidence": [
+          "KB-XC-004",
+          "KB-P2P-003"
+        ],
+        "rationale": "The standard customer master does not inherently carry a field for legacy customer ID according to the provided entries. KB-XC-004 states that requiring an entry in a field the standard object does not have requires a custom field and logic at an extension point. KB-P2P-003 confirms that delivered objects can be extended with custom fields. To retain the legacy customer ID, a custom field must be added to the customer master, making this an enhancement. Confidence is low because no entry directly addresses the existence or absence of a legacy ID field in the standard customer master.",
+        "needs_review": true,
+        "needs_review_reasons": [
+          "置信度 0.50 < 0.7"
+        ],
+        "retrieved_entry_ids": [
+          "KB-O2C-002",
+          "KB-O2C-005",
+          "KB-P2P-003",
+          "KB-XC-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-017",
+      "source_note_id": "INT-005",
+      "requirement_description": "Configure the chart of accounts, company codes, and posting periods for the new legal entities, ensuring the chart of accounts is NewCo-specific and less detailed than the former group chart.",
+      "domain": "master_data",
+      "source_quote": "the chart of accounts must be NewCo-specific because the former group chart is too detailed for the smaller operating model. Company codes and posting periods also need to follow the new legal entity structure.",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-R2R-002",
+          "KB-R2R-001",
+          "KB-O2C-002"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-R2R-002",
+          "section": "overview",
+          "similarity": 0.6496
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-R2R-002",
+          "KB-R2R-001"
+        ],
+        "rationale": "The requirement is to configure a NewCo-specific chart of accounts, company codes, and posting periods. According to KB-R2R-002, defining a chart of accounts, creating company codes with their own chart of accounts and fiscal year variant, and setting up posting period variants are customizing activities and master data maintenance that do not involve code. KB-R2R-001 also lists posting period variants as a common configuration point. The standard delivered logic supports these activities through configuration, placing the requirement in the Configuration tier.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-002",
+          "KB-R2R-001",
+          "KB-R2R-002",
+          "KB-R2R-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-018",
+      "source_note_id": "INT-005",
+      "requirement_description": "Manual journals related to transition service costs must include a separation reason code, and posting must be blocked if the code is missing.",
+      "domain": "R2R",
+      "source_quote": "certain manual journals must carry a separation reason code when they relate to transition service costs; without that code, the journal should not be posted.",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-R2R-003",
+          "KB-O2C-004",
+          "KB-XC-004"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-R2R-003",
+          "section": "beyond_standard",
+          "similarity": 0.4377
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-R2R-003",
+          "KB-XC-004"
+        ],
+        "rationale": "The standard manual journal does not include a 'separation reason code' field. KB-R2R-003 states that a requirement to capture a reason that the journal entry header does not deliver a field for cannot be met by a validation rule alone; the field must be added, and then a rule or extension point makes it mandatory. KB-XC-004 clarifies that requiring a field the standard object does not have, or gating a process on a business attribute not modeled, is an extension. Adding the custom field and making it conditionally mandatory falls under Enhancement, as the standard posting process still drives the flow.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-O2C-004",
+          "KB-O2C-005",
+          "KB-R2R-003",
+          "KB-XC-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-019",
+      "source_note_id": "INT-005",
+      "requirement_description": "Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "domain": "R2R",
+      "source_quote": "the reporting analyst asked for a nightly custom file to be sent to the fictional Auralis Separation Ledger, because the treasury separation team uses it to reconcile Day-1 balances outside the ERP for the first two quarters.",
+      "baseline": {
+        "category": "Development",
+        "rule_fired_zh": "top-3 条目中出现 KB-XC-002（外部系统集成）→ Development",
+        "top_entry_ids": [
+          "KB-R2R-004",
+          "KB-R2R-001",
+          "KB-XC-002"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-R2R-004",
+          "section": "beyond_standard",
+          "similarity": 0.4939
+        }
+      },
+      "llm": {
+        "category": "Development",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-R2R-004",
+          "KB-XC-002",
+          "KB-R2R-001"
+        ],
+        "rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-P2P-001",
+          "KB-R2R-001",
+          "KB-R2R-004",
+          "KB-XC-002"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-020",
+      "source_note_id": "INT-006",
+      "requirement_description": "Product master data must be created with material type, base unit, product group, plant views, and valuation data before open orders are migrated.",
+      "domain": "master_data",
+      "source_quote": "product master data has to be created with material type, base unit, product group, plant views, and valuation data before open orders are migrated",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-MD-004",
+          "KB-MD-005",
+          "KB-MD-001"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-MD-004",
+          "section": "overview",
+          "similarity": 0.5802
+        }
+      },
+      "llm": {
+        "category": "Fit",
+        "confidence": 1.0,
+        "evidence": [
+          "KB-MD-004"
+        ],
+        "rationale": "Standard process KB-MD-004 states: 'Creating a product with product type, base unit, product group, plant views, and valuation views is delivered behaviour and requires only that the organizational levels exist.' Thus, the requirement is covered by the standard without configuration or enhancement.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-001",
+          "KB-MD-002",
+          "KB-MD-004",
+          "KB-MD-005"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-021",
+      "source_note_id": "INT-006",
+      "requirement_description": "Number ranges must be separated for NewCo so that new records are easy to spot after go-live.",
+      "domain": "master_data",
+      "source_quote": "number ranges to be separated for NewCo so that new records are easy to spot after go-live",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-MD-002",
+          "KB-XC-003",
+          "KB-R2R-001"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-MD-002",
+          "section": "beyond_standard",
+          "similarity": 0.4499
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.98,
+        "evidence": [
+          "KB-MD-002",
+          "KB-XC-003"
+        ],
+        "rationale": "KB-MD-002 explicitly states: 'When a new legal entity is stood up, giving it its own intervals ... is a matter of defining intervals and assigning them to the relevant groupings. This is customizing content and needs no code.' KB-XC-003 confirms number range intervals are customizing content. Separating number ranges for NewCo is therefore a configuration activity requiring no code.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-002",
+          "KB-P2P-004",
+          "KB-R2R-001",
+          "KB-XC-003"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-022",
+      "source_note_id": "INT-006",
+      "requirement_description": "For materials that move to the new plants, MRP type, procurement type, and safety stock must be copied where the plant is in scope.",
+      "domain": "master_data",
+      "source_quote": "MRP type, procurement type, and safety stock copied where the plant is in scope",
+      "baseline": {
+        "category": "Configuration",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 configuration → Configuration",
+        "top_entry_ids": [
+          "KB-P2P-004",
+          "KB-O2C-004",
+          "KB-MD-006"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-P2P-004",
+          "section": "configuration",
+          "similarity": 0.4638
+        }
+      },
+      "llm": {
+        "category": "Configuration",
+        "confidence": 0.6,
+        "evidence": [],
+        "rationale": "The requirement concerns copying MRP type, procurement type, and safety stock when materials are extended to new plants. SAP standard material master functionality supports this through configuration-driven field copying from a reference plant, without requiring code. None of the provided knowledge entries directly address material master data copying, resulting in low confidence.",
+        "needs_review": true,
+        "needs_review_reasons": [
+          "置信度 0.60 < 0.7",
+          "未给出任何证据条目"
+        ],
+        "retrieved_entry_ids": [
+          "KB-MD-006",
+          "KB-MD-007",
+          "KB-O2C-004",
+          "KB-P2P-004"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-023",
+      "source_note_id": "INT-006",
+      "requirement_description": "Hazardous components must have an internal carve-out handling class, and sales orders must not ship those products unless the class has been reviewed.",
+      "domain": "O2C",
+      "source_quote": "hazardous components need an internal carve-out handling class, and sales orders should not ship those products unless the class has been reviewed",
+      "baseline": {
+        "category": "Enhancement",
+        "rule_fired_zh": "否则 top-1 chunk 的 section 为 beyond_standard → Enhancement",
+        "top_entry_ids": [
+          "KB-MD-006",
+          "KB-O2C-004",
+          "KB-O2C-005"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-MD-006",
+          "section": "beyond_standard",
+          "similarity": 0.6896
+        }
+      },
+      "llm": {
+        "category": "Enhancement",
+        "confidence": 0.9,
+        "evidence": [
+          "KB-MD-006"
+        ],
+        "rationale": "The requirement introduces a project-defined internal carve-out handling class and blocks shipment until it is reviewed. KB-MD-006 states that the standard dangerous goods check cannot read a project-invented classification scheme; such a scheme must be held in a custom field or classification and the block raised from an extension point in the delivery process. This places the request in the Enhancement tier, as it uses a published extension point rather than building from scratch.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-006",
+          "KB-O2C-004",
+          "KB-O2C-005",
+          "KB-P2P-002"
+        ]
+      }
+    },
+    {
+      "extracted_id": "EX-024",
+      "source_note_id": "INT-006",
+      "requirement_description": "An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "domain": "master_data",
+      "source_quote": "an upload from the fictional SeltraBridge archive that brings over product drawings and links them to product records",
+      "baseline": {
+        "category": "Fit",
+        "rule_fired_zh": "否则 → Fit",
+        "top_entry_ids": [
+          "KB-MD-008",
+          "KB-P2P-004",
+          "KB-MD-004"
+        ],
+        "top_chunk": {
+          "entry_id": "KB-MD-008",
+          "section": "overview",
+          "similarity": 0.4816
+        }
+      },
+      "llm": {
+        "category": "Development",
+        "confidence": 0.95,
+        "evidence": [
+          "KB-MD-008",
+          "KB-MD-004",
+          "KB-XC-002"
+        ],
+        "rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching.",
+        "needs_review": false,
+        "needs_review_reasons": [],
+        "retrieved_entry_ids": [
+          "KB-MD-004",
+          "KB-MD-008",
+          "KB-P2P-004",
+          "KB-XC-002"
+        ]
+      }
+    }
+  ],
+  "dev_backlog": [
+    {
+      "backlog_id": "DEV-001",
+      "requirement_id": "EX-004",
+      "source_note_id": "INT-001",
+      "description": "Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "domain": "P2P",
+      "rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier.",
+      "evidence": [
+        "KB-P2P-001"
+      ],
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "backlog_id": "DEV-002",
+      "requirement_id": "EX-008",
+      "source_note_id": "INT-002",
+      "description": "Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "domain": "master_data",
+      "rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development).",
+      "evidence": [
+        "KB-MD-007",
+        "KB-MD-001"
+      ],
+      "confidence": 0.95,
+      "needs_review": false
+    },
+    {
+      "backlog_id": "DEV-003",
+      "requirement_id": "EX-012",
+      "source_note_id": "INT-003",
+      "description": "Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "domain": "O2C",
+      "rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development.",
+      "evidence": [
+        "KB-O2C-006",
+        "KB-O2C-001"
+      ],
+      "confidence": 0.95,
+      "needs_review": false
+    },
+    {
+      "backlog_id": "DEV-004",
+      "requirement_id": "EX-019",
+      "source_note_id": "INT-005",
+      "description": "Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "domain": "R2R",
+      "rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development.",
+      "evidence": [
+        "KB-R2R-004",
+        "KB-XC-002",
+        "KB-R2R-001"
+      ],
+      "confidence": 0.95,
+      "needs_review": false
+    },
+    {
+      "backlog_id": "DEV-005",
+      "requirement_id": "EX-024",
+      "source_note_id": "INT-006",
+      "description": "An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "domain": "master_data",
+      "rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching.",
+      "evidence": [
+        "KB-MD-008",
+        "KB-MD-004",
+        "KB-XC-002"
+      ],
+      "confidence": 0.95,
+      "needs_review": false
+    }
+  ],
+  "dev_backlog_note_zh": "本表是给模块三 RAID 治理消费的接口：判定为 Development 的需求，每条带需求 id、描述、领域、判定理由与证据。模块三直接读本字段。"
+}

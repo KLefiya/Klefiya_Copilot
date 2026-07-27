@@ -1,0 +1,39 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "_request": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "system": "You extract requirements from messy ERP workshop interview notes for a carve-out project.\n\nThe notes are transcribed speech: people ramble, complain, and bury real requirements inside side remarks. A single paragraph may contain several distinct requirements, and some paragraphs contain none at all.\n\nRules:\n- A requirement represents one coherent business objective or system behavior.\n- Keep related details together when they describe the same objective, including:\n  approval thresholds or approver tiers; steps of one standard business process;\n  fields or configuration values maintained for one organizational setup; multiple attributes\n  copied or migrated as part of one master-data requirement; a custom field together with\n  the rule that consumes that field; and interface frequency, source, destination, and\n  purpose when they describe one interface.\n- Do not split a single business objective merely because it contains several thresholds,\n  lists several process steps, names several fields, contains several configuration objects,\n  or contains both a required attribute and the control that uses it.\n- Create separate requirements only when the items have materially different system behavior,\n  delivery object, integration, business purpose, lifecycle, or implementation ownership.\n- When uncertain, prefer one coherent requirement over several fragments.\n- Do not merge genuinely independent requirements.\n- Do not invent requirements. Complaints about the old system, scheduling chatter, and   small talk are not requirements.\n- Restate each requirement in one clear sentence, in the business's own terms.\n- source_quote must be copied verbatim from the note so a human can check the extraction.\n- Do not classify the requirement. Do not say whether it is standard, configuration, or custom.   Classification happens in a separate step.\n\nExamples:\n- \"Below 5,000 one approver, from 5,000 to 50,000 two approvers, above 50,000 CFO approval\"\n  -> one approval-matrix requirement.\n- \"Create the return order, receive the goods, inspect them, then issue a credit memo\"\n  -> one standard returns-process requirement.\n- \"Maintain material type, base unit, product group, plant data and valuation data\"\n  -> one product-master setup requirement.\n- \"Configure approval thresholds, and send approved orders nightly to an external system\"\n  -> two requirements because configuration and integration are separate delivery objects.",
+    "user": "Interview note INT-002 — Procurement and supplier onboarding follow-up\nDomain focus: ['P2P', 'master_data']\nParticipants: supplier manager, quality lead, compliance analyst, IT integration owner\n\nSupplier onboarding came up again, mostly because the plant people do not trust the inherited vendor list. They want a standard vendor record with name, address, tax number, bank details, and purchasing data, and they expect duplicates to be reviewed before go-live. That sounded straightforward, but then the quality lead added that suppliers for regulated components must carry an internal supplier risk band, and a purchase order should warn the buyer if the band is high and the latest quality certificate is missing. The compliance analyst said countries need to be cleaned into normal ISO-style codes because the old extract has DE, Germany, Deutschland, and sometimes just lower-case values. Toward the end, someone asked whether we can copy supplier risk scores from a carve-out-only spreadsheet called Nivora Risk Hub. It is not a corporate standard system; it belongs to the separation team and will probably disappear after Day 1, but they still want an automated load.",
+    "thinking": "enabled",
+    "reasoning_effort": "high"
+  },
+  "_schema_name": "ExtractionResult",
+  "parsed": {
+    "requirements": [
+      {
+        "requirement_description": "Set up standard vendor records including name, address, tax number, bank details, and purchasing data, and review duplicate entries before go-live.",
+        "domain": "master_data",
+        "source_quote": "They want a standard vendor record with name, address, tax number, bank details, and purchasing data, and they expect duplicates to be reviewed before go-live."
+      },
+      {
+        "requirement_description": "For regulated component suppliers, require an internal supplier risk band, and warn the buyer on the purchase order if the risk band is high and the latest quality certificate is missing.",
+        "domain": "P2P",
+        "source_quote": "the quality lead added that suppliers for regulated components must carry an internal supplier risk band, and a purchase order should warn the buyer if the band is high and the latest quality certificate is missing."
+      },
+      {
+        "requirement_description": "Clean country data to use standardized ISO codes, replacing inconsistent values like 'DE', 'Germany', 'Deutschland', and lower-case variations.",
+        "domain": "master_data",
+        "source_quote": "the compliance analyst said countries need to be cleaned into normal ISO-style codes because the old extract has DE, Germany, Deutschland, and sometimes just lower-case values."
+      },
+      {
+        "requirement_description": "Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+        "domain": "master_data",
+        "source_quote": "someone asked whether we can copy supplier risk scores from a carve-out-only spreadsheet called Nivora Risk Hub. It is not a corporate standard system; it belongs to the separation team and will probably disappear after Day 1, but they still want an automated load."
+      }
+    ]
+  },
+  "thinking": "enabled",
+  "reasoning_effort": "high"
+}

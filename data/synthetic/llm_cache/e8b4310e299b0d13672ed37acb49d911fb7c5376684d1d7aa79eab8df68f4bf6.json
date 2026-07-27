@@ -1,0 +1,39 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "_request": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "system": "You extract requirements from messy ERP workshop interview notes for a carve-out project.\n\nThe notes are transcribed speech: people ramble, complain, and bury real requirements inside side remarks. A single paragraph may contain several distinct requirements, and some paragraphs contain none at all.\n\nRules:\n- A requirement represents one coherent business objective or system behavior.\n- Keep related details together when they describe the same objective, including:\n  approval thresholds or approver tiers; steps of one standard business process;\n  fields or configuration values maintained for one organizational setup; multiple attributes\n  copied or migrated as part of one master-data requirement; a custom field together with\n  the rule that consumes that field; and interface frequency, source, destination, and\n  purpose when they describe one interface.\n- Do not split a single business objective merely because it contains several thresholds,\n  lists several process steps, names several fields, contains several configuration objects,\n  or contains both a required attribute and the control that uses it.\n- Create separate requirements only when the items have materially different system behavior,\n  delivery object, integration, business purpose, lifecycle, or implementation ownership.\n- When uncertain, prefer one coherent requirement over several fragments.\n- Do not merge genuinely independent requirements.\n- Do not invent requirements. Complaints about the old system, scheduling chatter, and   small talk are not requirements.\n- Restate each requirement in one clear sentence, in the business's own terms.\n- source_quote must be copied verbatim from the note so a human can check the extraction.\n- Do not classify the requirement. Do not say whether it is standard, configuration, or custom.   Classification happens in a separate step.\n\nExamples:\n- \"Below 5,000 one approver, from 5,000 to 50,000 two approvers, above 50,000 CFO approval\"\n  -> one approval-matrix requirement.\n- \"Create the return order, receive the goods, inspect them, then issue a credit memo\"\n  -> one standard returns-process requirement.\n- \"Maintain material type, base unit, product group, plant data and valuation data\"\n  -> one product-master setup requirement.\n- \"Configure approval thresholds, and send approved orders nightly to an external system\"\n  -> two requirements because configuration and integration are separate delivery objects.",
+    "user": "Interview note INT-001 — Procurement workshop - buying direct and indirect materials\nDomain focus: ['P2P', 'master_data']\nParticipants: NewCo procurement lead, plant buyer, AP accountant, data migration analyst\n\nThe procurement team said they want the basic flow to stay boring: a planner raises a purchase requisition, the buyer converts it into a purchase order, goods receipt happens at the plant, and invoice verification follows after that. They were clear that this should not be reinvented just because NewCo is splitting from the old group. The messy part is approval. Below 10k EUR they are fine with one manager, between 10k and 100k they want the plant controller involved, and anything above that should go to the carve-out procurement board. Someone also mentioned that rush orders for safety-critical spare parts need a mandatory justification field before the PO is released; the buyer called it 'that little field auditors always ask for later'. There was a side complaint that the old group had a tiny tool called OrivaBuy that still receives emergency repair orders from one plant, and the team wants NewCo to keep sending those orders there every night until the transition service agreement ends.",
+    "thinking": "enabled",
+    "reasoning_effort": "high"
+  },
+  "_schema_name": "ExtractionResult",
+  "parsed": {
+    "requirements": [
+      {
+        "requirement_description": "The procure-to-pay process must remain the standard flow: a planner raises a purchase requisition, the buyer converts it into a purchase order, goods receipt happens at the plant, and invoice verification follows after that.",
+        "domain": "P2P",
+        "source_quote": "a planner raises a purchase requisition, the buyer converts it into a purchase order, goods receipt happens at the plant, and invoice verification follows after that."
+      },
+      {
+        "requirement_description": "Purchase order approvals follow value thresholds: below €10,000 requires one manager approval, €10,000–€100,000 requires plant controller approval, and above €100,000 requires carve-out procurement board approval.",
+        "domain": "P2P",
+        "source_quote": "Below 10k EUR they are fine with one manager, between 10k and 100k they want the plant controller involved, and anything above that should go to the carve-out procurement board."
+      },
+      {
+        "requirement_description": "Rush orders for safety-critical spare parts must include a mandatory justification field before the purchase order is released.",
+        "domain": "P2P",
+        "source_quote": "rush orders for safety-critical spare parts need a mandatory justification field before the PO is released"
+      },
+      {
+        "requirement_description": "Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+        "domain": "P2P",
+        "source_quote": "the team wants NewCo to keep sending those orders there every night until the transition service agreement ends."
+      }
+    ]
+  },
+  "thinking": "enabled",
+  "reasoning_effort": "high"
+}

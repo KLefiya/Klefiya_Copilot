@@ -1,0 +1,34 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "_request": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "system": "You extract requirements from messy ERP workshop interview notes for a carve-out project.\n\nThe notes are transcribed speech: people ramble, complain, and bury real requirements inside side remarks. A single paragraph may contain several distinct requirements, and some paragraphs contain none at all.\n\nRules:\n- A requirement represents one coherent business objective or system behavior.\n- Keep related details together when they describe the same objective, including:\n  approval thresholds or approver tiers; steps of one standard business process;\n  fields or configuration values maintained for one organizational setup; multiple attributes\n  copied or migrated as part of one master-data requirement; a custom field together with\n  the rule that consumes that field; and interface frequency, source, destination, and\n  purpose when they describe one interface.\n- Do not split a single business objective merely because it contains several thresholds,\n  lists several process steps, names several fields, contains several configuration objects,\n  or contains both a required attribute and the control that uses it.\n- Create separate requirements only when the items have materially different system behavior,\n  delivery object, integration, business purpose, lifecycle, or implementation ownership.\n- When uncertain, prefer one coherent requirement over several fragments.\n- Do not merge genuinely independent requirements.\n- Do not invent requirements. Complaints about the old system, scheduling chatter, and   small talk are not requirements.\n- Restate each requirement in one clear sentence, in the business's own terms.\n- source_quote must be copied verbatim from the note so a human can check the extraction.\n- Do not classify the requirement. Do not say whether it is standard, configuration, or custom.   Classification happens in a separate step.\n\nExamples:\n- \"Below 5,000 one approver, from 5,000 to 50,000 two approvers, above 50,000 CFO approval\"\n  -> one approval-matrix requirement.\n- \"Create the return order, receive the goods, inspect them, then issue a credit memo\"\n  -> one standard returns-process requirement.\n- \"Maintain material type, base unit, product group, plant data and valuation data\"\n  -> one product-master setup requirement.\n- \"Configure approval thresholds, and send approved orders nightly to an external system\"\n  -> two requirements because configuration and integration are separate delivery objects.",
+    "user": "Interview note INT-005 — Record-to-report workshop\nDomain focus: ['R2R', 'master_data']\nParticipants: NewCo finance controller, GL accountant, tax lead, reporting analyst\n\nFinance opened with the basics: they need a clean general ledger, journal posting, period close, open item clearing, and financial statements for the new legal entities. The controller said this is a standard finance setup, but the chart of accounts must be NewCo-specific because the former group chart is too detailed for the smaller operating model. Company codes and posting periods also need to follow the new legal entity structure. Then the tax lead added a carve-out wrinkle: certain manual journals must carry a separation reason code when they relate to transition service costs; without that code, the journal should not be posted. Finally the reporting analyst asked for a nightly custom file to be sent to the fictional Auralis Separation Ledger, because the treasury separation team uses it to reconcile Day-1 balances outside the ERP for the first two quarters.",
+    "thinking": "enabled",
+    "reasoning_effort": "high"
+  },
+  "_schema_name": "ExtractionResult",
+  "parsed": {
+    "requirements": [
+      {
+        "requirement_description": "Configure the chart of accounts, company codes, and posting periods for the new legal entities, ensuring the chart of accounts is NewCo-specific and less detailed than the former group chart.",
+        "domain": "master_data",
+        "source_quote": "the chart of accounts must be NewCo-specific because the former group chart is too detailed for the smaller operating model. Company codes and posting periods also need to follow the new legal entity structure."
+      },
+      {
+        "requirement_description": "Manual journals related to transition service costs must include a separation reason code, and posting must be blocked if the code is missing.",
+        "domain": "R2R",
+        "source_quote": "certain manual journals must carry a separation reason code when they relate to transition service costs; without that code, the journal should not be posted."
+      },
+      {
+        "requirement_description": "Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+        "domain": "R2R",
+        "source_quote": "the reporting analyst asked for a nightly custom file to be sent to the fictional Auralis Separation Ledger, because the treasury separation team uses it to reconcile Day-1 balances outside the ERP for the first two quarters."
+      }
+    ]
+  },
+  "thinking": "enabled",
+  "reasoning_effort": "high"
+}

@@ -1,0 +1,279 @@
+{
+  "_run_info": {
+    "content_sha256": "5c616cc1d315f0e30f3909ff615ebc60d643a1cc46d7e37122b3a71100165f79",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-27T06:38:40+00:00"
+  },
+  "_meta": {
+    "separation_note_zh": "本文件是唯一读取 ground truth 的地方。gap_analysis.py 的抽取与判定阶段均未读取它，评估在判定完成后独立进行。",
+    "alignment_note_zh": "抽取结果与 ground truth 不一一对应，先按 source_note_id + 描述词元 Jaccard 做贪心一对一匹配（阈值 0.18）；未匹配的分别记为 spurious / missed。",
+    "report_content_sha256": "89f42052d64117b49a70a19dc3adb751bfdd5da7a12eedb435e4eecfb02c1ae3",
+    "model": "deepseek-v4-pro",
+    "extracted": 24,
+    "ground_truth": 23,
+    "matched": 21,
+    "spurious": 3,
+    "missed": 2
+  },
+  "extraction_quality": {
+    "matched": 21,
+    "spurious_extractions": [
+      {
+        "extracted_id": "EX-002",
+        "description": "Purchase order approvals follow value thresholds: below €10,000 requires one manager approval, €10,000–€100,000 requires plant controller approval, and above €100,000 requires carve-out procurement board approval."
+      },
+      {
+        "extracted_id": "EX-016",
+        "description": "The legacy customer ID must be retained in NewCo's system for search and reconciliation."
+      },
+      {
+        "extracted_id": "EX-022",
+        "description": "For materials that move to the new plants, MRP type, procurement type, and safety stock must be copied where the plant is in scope."
+      }
+    ],
+    "missed_requirements": [
+      {
+        "requirement_id": "REQ-P2P-002",
+        "expected_need": "Set approval thresholds for purchase orders at 10k EUR and 100k EUR with different approvers."
+      },
+      {
+        "requirement_id": "REQ-R2R-001",
+        "expected_need": "Run general ledger, journal posting, period close, open item clearing, and financial statements for NewCo legal entities."
+      }
+    ]
+  },
+  "baseline_no_llm": {
+    "n": 21,
+    "accuracy": 0.5238,
+    "confusion_matrix": {
+      "Fit": {
+        "Fit": 5,
+        "Configuration": 0,
+        "Enhancement": 0,
+        "Development": 0
+      },
+      "Configuration": {
+        "Fit": 4,
+        "Configuration": 0,
+        "Enhancement": 1,
+        "Development": 0
+      },
+      "Enhancement": {
+        "Fit": 1,
+        "Configuration": 0,
+        "Enhancement": 5,
+        "Development": 0
+      },
+      "Development": {
+        "Fit": 3,
+        "Configuration": 0,
+        "Enhancement": 1,
+        "Development": 1
+      }
+    },
+    "per_class": {
+      "Fit": {
+        "support": 5,
+        "correct": 5,
+        "recall": 1.0,
+        "precision": 0.3846
+      },
+      "Configuration": {
+        "support": 5,
+        "correct": 0,
+        "recall": 0.0,
+        "precision": null
+      },
+      "Enhancement": {
+        "support": 6,
+        "correct": 5,
+        "recall": 0.8333,
+        "precision": 0.7143
+      },
+      "Development": {
+        "support": 5,
+        "correct": 1,
+        "recall": 0.2,
+        "precision": 1.0
+      }
+    },
+    "config_vs_enhancement": {
+      "Configuration_judged_Enhancement": 1,
+      "Enhancement_judged_Configuration": 0,
+      "total_confusions_on_this_boundary": 1
+    }
+  },
+  "llm": {
+    "n": 21,
+    "accuracy": 0.9524,
+    "confusion_matrix": {
+      "Fit": {
+        "Fit": 4,
+        "Configuration": 1,
+        "Enhancement": 0,
+        "Development": 0
+      },
+      "Configuration": {
+        "Fit": 0,
+        "Configuration": 5,
+        "Enhancement": 0,
+        "Development": 0
+      },
+      "Enhancement": {
+        "Fit": 0,
+        "Configuration": 0,
+        "Enhancement": 6,
+        "Development": 0
+      },
+      "Development": {
+        "Fit": 0,
+        "Configuration": 0,
+        "Enhancement": 0,
+        "Development": 5
+      }
+    },
+    "per_class": {
+      "Fit": {
+        "support": 5,
+        "correct": 4,
+        "recall": 0.8,
+        "precision": 1.0
+      },
+      "Configuration": {
+        "support": 5,
+        "correct": 5,
+        "recall": 1.0,
+        "precision": 0.8333
+      },
+      "Enhancement": {
+        "support": 6,
+        "correct": 6,
+        "recall": 1.0,
+        "precision": 1.0
+      },
+      "Development": {
+        "support": 5,
+        "correct": 5,
+        "recall": 1.0,
+        "precision": 1.0
+      }
+    },
+    "config_vs_enhancement": {
+      "Configuration_judged_Enhancement": 0,
+      "Enhancement_judged_Configuration": 0,
+      "total_confusions_on_this_boundary": 0
+    }
+  },
+  "llm_vs_baseline": {
+    "accuracy_delta": 0.4286,
+    "config_enhancement_confusions_llm": 0,
+    "config_enhancement_confusions_baseline": 1,
+    "interpretation_zh": "准确率相当 → LLM 很可能也在靠表面特征；显著超出（尤其在 Configuration/Enhancement 边界上）→ 推理带来了真实价值。"
+  },
+  "development_rationale_audit": [
+    {
+      "requirement_id": "REQ-MD-004",
+      "extracted_id": "EX-008",
+      "description": "Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "llm_category": "Development",
+      "correct": true,
+      "evidence": [
+        "KB-MD-007",
+        "KB-MD-001"
+      ],
+      "reasoning_markers_found": [
+        "beyond the standard",
+        "no delivered"
+      ],
+      "surface_markers_found": [
+        "outside the erp"
+      ],
+      "verdict_zh": "真推理：引用了『标准无覆盖/无扩展点/需自建』的判据",
+      "rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development)."
+    },
+    {
+      "requirement_id": "REQ-MD-008",
+      "extracted_id": "EX-024",
+      "description": "An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "llm_category": "Development",
+      "correct": true,
+      "evidence": [
+        "KB-MD-008",
+        "KB-MD-004",
+        "KB-XC-002"
+      ],
+      "reasoning_markers_found": [
+        "beyond the standard",
+        "project deliverable",
+        "standard provides no"
+      ],
+      "surface_markers_found": [],
+      "verdict_zh": "真推理：引用了『标准无覆盖/无扩展点/需自建』的判据",
+      "rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching."
+    },
+    {
+      "requirement_id": "REQ-O2C-004",
+      "extracted_id": "EX-012",
+      "description": "Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "llm_category": "Development",
+      "correct": true,
+      "evidence": [
+        "KB-O2C-006",
+        "KB-O2C-001"
+      ],
+      "reasoning_markers_found": [
+        "beyond the standard"
+      ],
+      "surface_markers_found": [
+        "legacy"
+      ],
+      "verdict_zh": "真推理：引用了『标准无覆盖/无扩展点/需自建』的判据",
+      "rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development."
+    },
+    {
+      "requirement_id": "REQ-P2P-004",
+      "extracted_id": "EX-004",
+      "description": "Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "llm_category": "Development",
+      "correct": true,
+      "evidence": [
+        "KB-P2P-001"
+      ],
+      "reasoning_markers_found": [
+        "beyond the standard",
+        "must be built",
+        "no object",
+        "standard provides no"
+      ],
+      "surface_markers_found": [
+        "outside the erp"
+      ],
+      "verdict_zh": "真推理：引用了『标准无覆盖/无扩展点/需自建』的判据",
+      "rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier."
+    },
+    {
+      "requirement_id": "REQ-R2R-004",
+      "extracted_id": "EX-019",
+      "description": "Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "llm_category": "Development",
+      "correct": true,
+      "evidence": [
+        "KB-R2R-004",
+        "KB-XC-002",
+        "KB-R2R-001"
+      ],
+      "reasoning_markers_found": [
+        "beyond the standard",
+        "no object",
+        "not delivered",
+        "project deliverable",
+        "standard provides no"
+      ],
+      "surface_markers_found": [
+        "external system"
+      ],
+      "verdict_zh": "真推理：引用了『标准无覆盖/无扩展点/需自建』的判据",
+      "rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development."
+    }
+  ]
+}

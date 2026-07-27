@@ -1,0 +1,39 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "_request": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "system": "You extract requirements from messy ERP workshop interview notes for a carve-out project.\n\nThe notes are transcribed speech: people ramble, complain, and bury real requirements inside side remarks. A single paragraph may contain several distinct requirements, and some paragraphs contain none at all.\n\nRules:\n- A requirement represents one coherent business objective or system behavior.\n- Keep related details together when they describe the same objective, including:\n  approval thresholds or approver tiers; steps of one standard business process;\n  fields or configuration values maintained for one organizational setup; multiple attributes\n  copied or migrated as part of one master-data requirement; a custom field together with\n  the rule that consumes that field; and interface frequency, source, destination, and\n  purpose when they describe one interface.\n- Do not split a single business objective merely because it contains several thresholds,\n  lists several process steps, names several fields, contains several configuration objects,\n  or contains both a required attribute and the control that uses it.\n- Create separate requirements only when the items have materially different system behavior,\n  delivery object, integration, business purpose, lifecycle, or implementation ownership.\n- When uncertain, prefer one coherent requirement over several fragments.\n- Do not merge genuinely independent requirements.\n- Do not invent requirements. Complaints about the old system, scheduling chatter, and   small talk are not requirements.\n- Restate each requirement in one clear sentence, in the business's own terms.\n- source_quote must be copied verbatim from the note so a human can check the extraction.\n- Do not classify the requirement. Do not say whether it is standard, configuration, or custom.   Classification happens in a separate step.\n\nExamples:\n- \"Below 5,000 one approver, from 5,000 to 50,000 two approvers, above 50,000 CFO approval\"\n  -> one approval-matrix requirement.\n- \"Create the return order, receive the goods, inspect them, then issue a credit memo\"\n  -> one standard returns-process requirement.\n- \"Maintain material type, base unit, product group, plant data and valuation data\"\n  -> one product-master setup requirement.\n- \"Configure approval thresholds, and send approved orders nightly to an external system\"\n  -> two requirements because configuration and integration are separate delivery objects.",
+    "user": "Interview note INT-003 — Sales order and billing workshop\nDomain focus: ['O2C', 'master_data']\nParticipants: sales operations lead, customer service manager, billing specialist, cutover lead\n\nSales operations mainly wants the usual order-to-cash path to work: customer order entry, availability check, delivery, goods issue, billing, and the receivable posted for finance. They kept saying that the first release should not be clever. There are still commercial details though. NewCo will have its own sales organizations and distribution channels, so pricing condition records and customer account groups need to reflect the separated company structure. The customer service manager also wants an extra check on export orders: if a customer is flagged as distributor and the ship-to country is outside the home market, the order should ask for an export-control review reference before delivery is released. One awkward request was about the old portal. Some strategic customers still place orders through the legacy Virello customer portal, and the business wants those portal orders to become NewCo sales orders without manual re-keying during the first six months.",
+    "thinking": "enabled",
+    "reasoning_effort": "high"
+  },
+  "_schema_name": "ExtractionResult",
+  "parsed": {
+    "requirements": [
+      {
+        "requirement_description": "The standard order-to-cash path must work: customer order entry, availability check, delivery, goods issue, billing, and posting the receivable.",
+        "domain": "O2C",
+        "source_quote": "Sales operations mainly wants the usual order-to-cash path to work: customer order entry, availability check, delivery, goods issue, billing, and the receivable posted for finance."
+      },
+      {
+        "requirement_description": "Pricing condition records and customer account groups must reflect NewCo's separated company structure with its own sales organizations and distribution channels.",
+        "domain": "master_data",
+        "source_quote": "NewCo will have its own sales organizations and distribution channels, so pricing condition records and customer account groups need to reflect the separated company structure."
+      },
+      {
+        "requirement_description": "Export orders for customers flagged as distributor with a ship-to country outside the home market must require an export-control review reference before delivery is released.",
+        "domain": "O2C",
+        "source_quote": "if a customer is flagged as distributor and the ship-to country is outside the home market, the order should ask for an export-control review reference before delivery is released."
+      },
+      {
+        "requirement_description": "Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+        "domain": "O2C",
+        "source_quote": "Some strategic customers still place orders through the legacy Virello customer portal, and the business wants those portal orders to become NewCo sales orders without manual re-keying during the first six months."
+      }
+    ]
+  },
+  "thinking": "enabled",
+  "reasoning_effort": "high"
+}
