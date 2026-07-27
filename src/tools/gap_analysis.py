@@ -454,13 +454,36 @@ side remarks. A single paragraph may contain several distinct requirements, and 
 contain none at all.
 
 Rules:
-- Extract each distinct requirement separately. Do not merge two requirements into one sentence.
+- A requirement represents one coherent business objective or system behavior.
+- Keep related details together when they describe the same objective, including:
+  approval thresholds or approver tiers; steps of one standard business process;
+  fields or configuration values maintained for one organizational setup; multiple attributes
+  copied or migrated as part of one master-data requirement; a custom field together with
+  the rule that consumes that field; and interface frequency, source, destination, and
+  purpose when they describe one interface.
+- Do not split a single business objective merely because it contains several thresholds,
+  lists several process steps, names several fields, contains several configuration objects,
+  or contains both a required attribute and the control that uses it.
+- Create separate requirements only when the items have materially different system behavior,
+  delivery object, integration, business purpose, lifecycle, or implementation ownership.
+- When uncertain, prefer one coherent requirement over several fragments.
+- Do not merge genuinely independent requirements.
 - Do not invent requirements. Complaints about the old system, scheduling chatter, and \
   small talk are not requirements.
 - Restate each requirement in one clear sentence, in the business's own terms.
 - source_quote must be copied verbatim from the note so a human can check the extraction.
 - Do not classify the requirement. Do not say whether it is standard, configuration, or custom. \
-  Classification happens in a separate step."""
+  Classification happens in a separate step.
+
+Examples:
+- "Below 5,000 one approver, from 5,000 to 50,000 two approvers, above 50,000 CFO approval"
+  -> one approval-matrix requirement.
+- "Create the return order, receive the goods, inspect them, then issue a credit memo"
+  -> one standard returns-process requirement.
+- "Maintain material type, base unit, product group, plant data and valuation data"
+  -> one product-master setup requirement.
+- "Configure approval thresholds, and send approved orders nightly to an external system"
+  -> two requirements because configuration and integration are separate delivery objects."""
 
 
 def extract_requirements(llm: CachedLLM, notes: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -675,8 +698,6 @@ def build_report(llm: CachedLLM, baseline_only: bool) -> dict[str, Any]:
             ),
             "llm_cache": {
                 "dir": str(CACHE_DIR.relative_to(PROJECT_ROOT)),
-                "hits": llm.stats["hit"],
-                "misses": llm.stats["miss"],
                 "note_zh": "缓存进 git；填充后重跑完全离线且字节一致。",
             },
             "extracted_requirement_count": len(extracted),
@@ -688,6 +709,15 @@ def build_report(llm: CachedLLM, baseline_only: bool) -> dict[str, Any]:
             "每条带需求 id、描述、领域、判定理由与证据。模块三直接读本字段。"
         ),
     }
+
+
+def attach_gap_analysis_run_info(report: dict[str, Any], llm: CachedLLM) -> dict[str, Any]:
+    report_with_run_info = attach_run_info(report)
+    report_with_run_info["_run_info"]["llm_cache"] = {
+        "hits": llm.stats["hit"],
+        "misses": llm.stats["miss"],
+    }
+    return report_with_run_info
 
 
 def main() -> None:
@@ -715,7 +745,7 @@ def main() -> None:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     llm = CachedLLM(offline=args.offline, provider=args.provider, model=args.model)
-    report = attach_run_info(build_report(llm, args.baseline_only))
+    report = attach_gap_analysis_run_info(build_report(llm, args.baseline_only), llm)
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(

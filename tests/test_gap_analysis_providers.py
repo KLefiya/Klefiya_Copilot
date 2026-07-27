@@ -139,6 +139,24 @@ class ProviderSelectionTests(EnvCase):
                 ga.CachedLLM(provider="deepseek", cache_dir=self.make_cache_dir())
 
 
+class ExtractionPromptTests(unittest.TestCase):
+    def test_extraction_prompt_defines_coherent_requirement_granularity(self) -> None:
+        prompt = ga.EXTRACTION_SYSTEM
+        self.assertIn("coherent business objective", prompt)
+        self.assertIn("approval thresholds or approver tiers", prompt)
+        self.assertIn("steps of one standard business process", prompt)
+        self.assertIn("names several fields", prompt)
+        self.assertIn("Do not merge genuinely independent requirements", prompt)
+        self.assertNotRegex(prompt, r"REQ-[A-Z0-9]+-\d+")
+
+        schema = ga.ExtractionResult.model_json_schema()
+        baseline = ga._fingerprint("deepseek", "deepseek-v4-pro", prompt, USER, schema)
+        self.assertEqual(
+            baseline,
+            ga._fingerprint("deepseek", "deepseek-v4-pro", prompt, USER, schema),
+        )
+
+
 class ApiKeyBoundaryTests(EnvCase):
     def test_missing_provider_keys_report_the_correct_variable(self) -> None:
         cases = [
@@ -584,6 +602,50 @@ class OfflineAndMetadataTests(EnvCase):
         self.assertEqual(report["_meta"]["model"], "deepseek-v4-pro")
         self.assertEqual(report["_meta"]["thinking"], "enabled")
         self.assertEqual(report["_meta"]["reasoning_effort"], "high")
+
+    def test_cache_stats_do_not_affect_gap_report_content_sha(self) -> None:
+        report = {
+            "_meta": {
+                "module": "module_2_fit_to_standard_gap_analysis",
+                "llm_cache": {
+                    "dir": "data/synthetic/llm_cache",
+                    "note_zh": "缓存进 git；填充后重跑完全离线且字节一致。",
+                },
+            },
+            "requirements": [
+                {
+                    "extracted_id": "EX-001",
+                    "requirement_description": "Use configurable thresholds.",
+                    "llm": {"category": "Configuration"},
+                }
+            ],
+            "dev_backlog": [],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            online = ga.CachedLLM(provider="deepseek", cache_dir=Path(tmp))
+            offline = ga.CachedLLM(provider="deepseek", offline=True, cache_dir=Path(tmp))
+        online.stats = {"hit": 0, "miss": 44}
+        offline.stats = {"hit": 44, "miss": 0}
+
+        online_report = ga.attach_gap_analysis_run_info(report, online)
+        offline_report = ga.attach_gap_analysis_run_info(report, offline)
+
+        self.assertEqual(
+            online_report["_run_info"]["content_sha256"],
+            offline_report["_run_info"]["content_sha256"],
+        )
+        self.assertEqual(online_report["_run_info"]["llm_cache"], {"hits": 0, "misses": 44})
+        self.assertEqual(offline_report["_run_info"]["llm_cache"], {"hits": 44, "misses": 0})
+        self.assertNotIn("hits", online_report["_meta"]["llm_cache"])
+        self.assertNotIn("misses", online_report["_meta"]["llm_cache"])
+
+        changed = json.loads(json.dumps(report))
+        changed["requirements"][0]["llm"]["category"] = "Fit"
+        changed_report = ga.attach_gap_analysis_run_info(changed, online)
+        self.assertNotEqual(
+            online_report["_run_info"]["content_sha256"],
+            changed_report["_run_info"]["content_sha256"],
+        )
 
 
 if __name__ == "__main__":
