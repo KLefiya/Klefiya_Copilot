@@ -12,26 +12,30 @@
 判定与评估严格分离：本工具不读 ground truth。评估在 evaluate_gap_analysis.py。
 
 【模型与参数】
-  默认 provider = anthropic，model = claude-sonnet-5，不传 temperature。
-  可通过 CARVEOPS_LLM_PROVIDER / --provider 切换到 openai 或 deepseek，并通过
-  CARVEOPS_LLM_MODEL / --model 指定模型。OpenAI 走 OpenAI SDK 的 Chat Completions
-  json_schema 结构化输出；DeepSeek 复用 OpenAI SDK 的 OpenAI-compatible Chat
-  Completions JSON mode，并在本地
+  默认 provider = deepseek，model = deepseek-v4-pro，不传 temperature。
+  DeepSeek V4 Pro 默认显式启用 thinking，reasoning_effort = high。
+  可通过 CARVEOPS_LLM_PROVIDER / --provider 切换到 anthropic 或 openai，并通过
+  CARVEOPS_LLM_MODEL / --model 指定模型。DeepSeek thinking 可通过
+  CARVEOPS_DEEPSEEK_THINKING=enabled|disabled 与
+  CARVEOPS_DEEPSEEK_REASONING_EFFORT=high|max 配置。OpenAI 走 OpenAI SDK 的
+  Chat Completions json_schema 结构化输出；DeepSeek 复用 OpenAI SDK 的
+  OpenAI-compatible Chat Completions JSON mode，并在本地
   用 Pydantic schema 校验。可复现性不依赖 temperature（它从来就不保证逐字一致），
   而由磁盘缓存承担。
 
 【磁盘缓存】
-  每次 LLM 调用按 provider + model + prompt + schema 的请求指纹 sha256 缓存到
-  data/synthetic/llm_cache/（进 git）。API key 永远不进入缓存指纹或缓存文件。
+  每次 LLM 调用按 provider + model + prompt + schema 生成请求指纹；DeepSeek
+  还会把 thinking 与 reasoning_effort 纳入指纹，确保不同思考模式不共用缓存。
+  缓存写入 data/synthetic/llm_cache/（进 git）。API key 永远不进入缓存指纹或缓存文件。
   首次运行需要对应 provider 的 API key 与联网；之后重跑完全离线且字节一致。
   --offline 强制只读缓存，缓存缺失即报错，绝不静默联网。
 
 用法：
-    export ANTHROPIC_API_KEY=sk-ant-...
+    export DEEPSEEK_API_KEY=...
     python src/tools/build_knowledge_base.py      # 先建库
     python src/tools/gap_analysis.py              # 抽取 + 判定 + 基线
+    CARVEOPS_LLM_PROVIDER=anthropic ANTHROPIC_API_KEY=... python src/tools/gap_analysis.py
     CARVEOPS_LLM_PROVIDER=openai OPENAI_API_KEY=... python src/tools/gap_analysis.py
-    CARVEOPS_LLM_PROVIDER=deepseek DEEPSEEK_API_KEY=... python src/tools/gap_analysis.py
     python src/tools/gap_analysis.py --offline    # 只读缓存重跑
     python src/tools/gap_analysis.py --baseline-only   # 只跑基线（仍需抽取缓存）
 """
@@ -58,11 +62,11 @@ KNOWLEDGE_PATH = PROJECT_ROOT / "data" / "knowledge" / "standard_processes.json"
 OUTPUT_PATH = PROJECT_ROOT / "data" / "synthetic" / "gap_analysis_report.json"
 CACHE_DIR = PROJECT_ROOT / "data" / "synthetic" / "llm_cache"
 
-DEFAULT_PROVIDER = "anthropic"
+DEFAULT_PROVIDER = "deepseek"
 DEFAULT_MODELS = {
     "anthropic": "claude-sonnet-5",
     "openai": "gpt-4.1-mini",
-    "deepseek": "deepseek-chat",
+    "deepseek": "deepseek-v4-pro",
 }
 PROVIDER_KEY_ENV = {
     "anthropic": "ANTHROPIC_API_KEY",
@@ -72,6 +76,10 @@ PROVIDER_KEY_ENV = {
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 MAX_TOKENS = 16000
+DEFAULT_DEEPSEEK_THINKING = "enabled"
+DEFAULT_DEEPSEEK_REASONING_EFFORT = "high"
+DEEPSEEK_THINKING_VALUES = ("enabled", "disabled")
+DEEPSEEK_REASONING_EFFORT_VALUES = ("high", "max")
 
 RETRIEVAL_TOP_K = 4          # 判定时喂给 LLM 的知识条目数（按条目去重后）
 BASELINE_FETCH = 12          # 基线检索的 chunk 数
@@ -118,21 +126,33 @@ class Judgement(BaseModel):
 # 磁盘缓存的 LLM 调用
 # --------------------------------------------------------------------------
 def _fingerprint(
-    provider: str, model: str, system: str, user: str, schema: dict[str, Any]
+    provider: str,
+    model: str,
+    system: str,
+    user: str,
+    schema: dict[str, Any],
+    thinking: str | None = None,
+    reasoning_effort: str | None = None,
 ) -> str:
-    payload = json.dumps(
-        {
-            "provider": provider,
-            "model": model,
-            "system": system,
-            "user": user,
-            "schema": schema,
-        },
+    payload: dict[str, Any] = {
+        "provider": provider,
+        "model": model,
+        "system": system,
+        "user": user,
+        "schema": schema,
+    }
+    if thinking is not None:
+        payload["thinking"] = thinking
+    if reasoning_effort is not None:
+        payload["reasoning_effort"] = reasoning_effort
+
+    encoded = json.dumps(
+        payload,
         sort_keys=True,
         ensure_ascii=False,
         separators=(",", ":"),
     )
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 def _json_schema_response_format(output_format: type[BaseModel]) -> dict[str, Any]:
@@ -178,6 +198,31 @@ def _safe_base_url(provider: str) -> str:
     raise ValueError(f"Provider {provider} does not use an OpenAI-compatible base URL")
 
 
+def _env_choice(name: str, default: str, allowed: tuple[str, ...]) -> str:
+    value = (os.environ.get(name) or default).strip().lower()
+    if value not in allowed:
+        raise RuntimeError(
+            f"Invalid {name}={value!r}. Expected one of {list(allowed)}."
+        )
+    return value
+
+
+def _deepseek_config_from_env() -> tuple[str, str | None]:
+    thinking = _env_choice(
+        "CARVEOPS_DEEPSEEK_THINKING",
+        DEFAULT_DEEPSEEK_THINKING,
+        DEEPSEEK_THINKING_VALUES,
+    )
+    reasoning_effort = _env_choice(
+        "CARVEOPS_DEEPSEEK_REASONING_EFFORT",
+        DEFAULT_DEEPSEEK_REASONING_EFFORT,
+        DEEPSEEK_REASONING_EFFORT_VALUES,
+    )
+    if thinking == "disabled":
+        return thinking, None
+    return thinking, reasoning_effort
+
+
 class CachedLLM:
     """按请求指纹缓存 LLM 响应。缓存命中即离线；未命中才调用 API。"""
 
@@ -196,6 +241,11 @@ class CachedLLM:
                 f"Expected one of {sorted(DEFAULT_MODELS)}, got {self.provider!r}."
             )
         self.model = model or os.environ.get("CARVEOPS_LLM_MODEL") or DEFAULT_MODELS[self.provider]
+        if self.provider == "deepseek":
+            self.thinking, self.reasoning_effort = _deepseek_config_from_env()
+        else:
+            self.thinking = None
+            self.reasoning_effort = None
         self.cache_dir = cache_dir or CACHE_DIR
         self._client = None
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -263,6 +313,10 @@ class CachedLLM:
             payload["max_completion_tokens"] = MAX_TOKENS
         else:
             payload["max_tokens"] = MAX_TOKENS
+            if self.provider == "deepseek":
+                payload["extra_body"] = {"thinking": {"type": self.thinking}}
+                if self.reasoning_effort is not None:
+                    payload["reasoning_effort"] = self.reasoning_effort
 
         response = self._lazy_openai_compatible_client().chat.completions.create(**payload)
         choices = getattr(response, "choices", None) or []
@@ -276,7 +330,15 @@ class CachedLLM:
 
     def parse(self, system: str, user: str, output_format: type[BaseModel]) -> BaseModel:
         schema = output_format.model_json_schema()
-        digest = _fingerprint(self.provider, self.model, system, user, schema)
+        digest = _fingerprint(
+            self.provider,
+            self.model,
+            system,
+            user,
+            schema,
+            thinking=self.thinking,
+            reasoning_effort=self.reasoning_effort,
+        )
         cache_file = self.cache_dir / f"{digest}.json"
 
         if cache_file.exists():
@@ -308,20 +370,27 @@ class CachedLLM:
         else:
             parsed = self._openai_compatible_parse(system, user, output_format)
 
+        cache_payload: dict[str, Any] = {
+            "provider": self.provider,
+            "model": self.model,
+            "_request": {
+                "provider": self.provider,
+                "model": self.model,
+                "system": system,
+                "user": user,
+            },
+            "_schema_name": output_format.__name__,
+            "parsed": parsed.model_dump(),
+        }
+        if self.provider == "deepseek":
+            cache_payload["thinking"] = self.thinking
+            cache_payload["reasoning_effort"] = self.reasoning_effort
+            cache_payload["_request"]["thinking"] = self.thinking
+            cache_payload["_request"]["reasoning_effort"] = self.reasoning_effort
+
         cache_file.write_text(
             json.dumps(
-                {
-                    "provider": self.provider,
-                    "model": self.model,
-                    "_request": {
-                        "provider": self.provider,
-                        "model": self.model,
-                        "system": system,
-                        "user": user,
-                    },
-                    "_schema_name": output_format.__name__,
-                    "parsed": parsed.model_dump(),
-                },
+                cache_payload,
                 ensure_ascii=False,
                 indent=2,
             ),
@@ -579,6 +648,14 @@ def build_report(llm: CachedLLM, baseline_only: bool) -> dict[str, Any]:
             "component": "requirement_extraction_and_fit_gap_judgement",
             "provider": llm.provider,
             "model": llm.model,
+            **(
+                {
+                    "thinking": llm.thinking,
+                    "reasoning_effort": llm.reasoning_effort,
+                }
+                if llm.provider == "deepseek"
+                else {}
+            ),
             "sampling_note_zh": (
                 "本组件不传 temperature。可复现性由磁盘缓存承担，而非 temperature=0"
                 "（后者从不保证逐字一致）。"
@@ -621,7 +698,7 @@ def main() -> None:
         "--provider",
         choices=sorted(DEFAULT_MODELS),
         help=(
-            "LLM provider. Defaults to CARVEOPS_LLM_PROVIDER or anthropic. "
+            "LLM provider. Defaults to CARVEOPS_LLM_PROVIDER or deepseek. "
             "Supported: anthropic, openai, deepseek."
         ),
     )
@@ -629,7 +706,7 @@ def main() -> None:
         "--model",
         help=(
             "LLM model. Defaults to CARVEOPS_LLM_MODEL or the provider default "
-            "(anthropic=claude-sonnet-5, openai=gpt-4.1-mini, deepseek=deepseek-chat)."
+            "(deepseek=deepseek-v4-pro, anthropic=claude-sonnet-5, openai=gpt-4.1-mini)."
         ),
     )
     args = parser.parse_args()

@@ -81,10 +81,13 @@ class EnvCase(unittest.TestCase):
 
 
 class ProviderSelectionTests(EnvCase):
-    def test_default_provider_is_anthropic(self) -> None:
+    def test_default_provider_is_deepseek(self) -> None:
         llm = ga.CachedLLM(cache_dir=self.make_cache_dir())
-        self.assertEqual(llm.provider, "anthropic")
-        self.assertEqual(llm.model, ga.DEFAULT_MODELS["anthropic"])
+        self.assertEqual(llm.provider, "deepseek")
+        self.assertEqual(llm.model, "deepseek-v4-pro")
+        self.assertEqual(llm.model, ga.DEFAULT_MODELS["deepseek"])
+        self.assertEqual(llm.thinking, "enabled")
+        self.assertEqual(llm.reasoning_effort, "high")
 
     def test_environment_selects_provider_and_model(self) -> None:
         for provider in ("anthropic", "openai", "deepseek"):
@@ -118,6 +121,22 @@ class ProviderSelectionTests(EnvCase):
     def test_invalid_provider_fails_with_allowed_values(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "anthropic.*deepseek.*openai"):
             ga.CachedLLM(provider="unknown", cache_dir=self.make_cache_dir())
+
+    def test_invalid_deepseek_thinking_fails(self) -> None:
+        with mock.patch.dict(
+            os.environ, {"CARVEOPS_DEEPSEEK_THINKING": "auto"}, clear=True
+        ):
+            with self.assertRaisesRegex(RuntimeError, "CARVEOPS_DEEPSEEK_THINKING"):
+                ga.CachedLLM(provider="deepseek", cache_dir=self.make_cache_dir())
+
+    def test_invalid_deepseek_reasoning_effort_fails(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {"CARVEOPS_DEEPSEEK_REASONING_EFFORT": "medium"},
+            clear=True,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "CARVEOPS_DEEPSEEK_REASONING_EFFORT"):
+                ga.CachedLLM(provider="deepseek", cache_dir=self.make_cache_dir())
 
 
 class ApiKeyBoundaryTests(EnvCase):
@@ -158,6 +177,50 @@ class CacheFingerprintTests(unittest.TestCase):
             same,
             ga._fingerprint("openai", "other-model", SYSTEM, USER, schema),
         )
+
+    def test_deepseek_thinking_is_part_of_fingerprint(self) -> None:
+        schema = ga.Judgement.model_json_schema()
+        enabled = ga._fingerprint(
+            "deepseek",
+            "deepseek-v4-pro",
+            SYSTEM,
+            USER,
+            schema,
+            thinking="enabled",
+            reasoning_effort="high",
+        )
+        disabled = ga._fingerprint(
+            "deepseek",
+            "deepseek-v4-pro",
+            SYSTEM,
+            USER,
+            schema,
+            thinking="disabled",
+            reasoning_effort=None,
+        )
+        self.assertNotEqual(enabled, disabled)
+
+    def test_deepseek_reasoning_effort_is_part_of_fingerprint(self) -> None:
+        schema = ga.Judgement.model_json_schema()
+        high = ga._fingerprint(
+            "deepseek",
+            "deepseek-v4-pro",
+            SYSTEM,
+            USER,
+            schema,
+            thinking="enabled",
+            reasoning_effort="high",
+        )
+        max_effort = ga._fingerprint(
+            "deepseek",
+            "deepseek-v4-pro",
+            SYSTEM,
+            USER,
+            schema,
+            thinking="enabled",
+            reasoning_effort="max",
+        )
+        self.assertNotEqual(high, max_effort)
 
     def test_cache_hit_does_not_create_client_or_increment_miss(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -221,6 +284,37 @@ class CacheFingerprintTests(unittest.TestCase):
             self.assertNotIn(fake_key("openai"), cache_text)
             self.assertNotIn("Authorization", cache_text)
 
+    def test_deepseek_cache_records_thinking_and_reasoning_effort(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp)
+            fake_client = types.SimpleNamespace(
+                chat=types.SimpleNamespace(
+                    completions=types.SimpleNamespace(
+                        create=mock.Mock(return_value=openai_response(judgement_payload()))
+                    )
+                )
+            )
+            with mock.patch.dict(
+                os.environ,
+                {"DEEPSEEK_API_KEY": fake_key("deepseek")},
+                clear=True,
+            ), mock.patch.dict(sys.modules, {"openai": openai_module(fake_client)}):
+                llm = ga.CachedLLM(provider="deepseek", cache_dir=cache_dir)
+                result = llm.parse(SYSTEM, USER, ga.Judgement)
+            self.assertIsInstance(result, ga.Judgement)
+            cache_files = list(cache_dir.glob("*.json"))
+            self.assertEqual(len(cache_files), 1)
+            cache_text = cache_files[0].read_text(encoding="utf-8")
+            cache = json.loads(cache_text)
+            self.assertEqual(cache["provider"], "deepseek")
+            self.assertEqual(cache["model"], "deepseek-v4-pro")
+            self.assertEqual(cache["thinking"], "enabled")
+            self.assertEqual(cache["reasoning_effort"], "high")
+            self.assertEqual(cache["_request"]["thinking"], "enabled")
+            self.assertEqual(cache["_request"]["reasoning_effort"], "high")
+            self.assertNotIn(fake_key("deepseek"), cache_text)
+            self.assertNotIn("Authorization", cache_text)
+
 
 class ProviderRequestContractTests(EnvCase):
     def test_anthropic_contract_parses_extraction_and_judgement(self) -> None:
@@ -252,6 +346,8 @@ class ProviderRequestContractTests(EnvCase):
                 self.assertEqual(kwargs["messages"], [{"role": "user", "content": USER}])
                 self.assertEqual(kwargs["max_tokens"], ga.MAX_TOKENS)
                 self.assertIs(kwargs["output_format"], output_format)
+                self.assertNotIn("extra_body", kwargs)
+                self.assertNotIn("reasoning_effort", kwargs)
 
     def test_openai_contract_parses_extraction_and_judgement(self) -> None:
         for output_format, payload in (
@@ -280,6 +376,8 @@ class ProviderRequestContractTests(EnvCase):
                 self.assertEqual(kwargs["messages"][0], {"role": "system", "content": SYSTEM})
                 self.assertEqual(kwargs["messages"][1], {"role": "user", "content": USER})
                 self.assertEqual(kwargs["max_completion_tokens"], ga.MAX_TOKENS)
+                self.assertNotIn("extra_body", kwargs)
+                self.assertNotIn("reasoning_effort", kwargs)
                 response_format = kwargs["response_format"]
                 self.assertEqual(response_format["type"], "json_schema")
                 self.assertEqual(response_format["json_schema"]["name"], output_format.__name__)
@@ -319,6 +417,34 @@ class ProviderRequestContractTests(EnvCase):
                 self.assertIn("JSON Schema", kwargs["messages"][0]["content"])
                 self.assertEqual(kwargs["messages"][1], {"role": "user", "content": USER})
                 self.assertEqual(kwargs["max_tokens"], ga.MAX_TOKENS)
+                self.assertEqual(kwargs["extra_body"], {"thinking": {"type": "enabled"}})
+                self.assertEqual(kwargs["reasoning_effort"], "high")
+
+    def test_deepseek_disabled_thinking_omits_reasoning_effort(self) -> None:
+        fake_create = mock.Mock(return_value=openai_response(judgement_payload()))
+        fake_client = types.SimpleNamespace(
+            chat=types.SimpleNamespace(
+                completions=types.SimpleNamespace(create=fake_create)
+            )
+        )
+        fake_module = openai_module(fake_client)
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "DEEPSEEK_API_KEY": fake_key("deepseek"),
+                "CARVEOPS_DEEPSEEK_THINKING": "disabled",
+                "CARVEOPS_DEEPSEEK_REASONING_EFFORT": "max",
+            },
+            clear=True,
+        ), mock.patch.dict(sys.modules, {"openai": fake_module}):
+            llm = ga.CachedLLM(provider="deepseek", cache_dir=Path(tmp))
+            result = llm.parse(SYSTEM, USER, ga.Judgement)
+        self.assertIsInstance(result, ga.Judgement)
+        self.assertEqual(llm.thinking, "disabled")
+        self.assertIsNone(llm.reasoning_effort)
+        kwargs = fake_create.call_args.kwargs
+        self.assertEqual(kwargs["extra_body"], {"thinking": {"type": "disabled"}})
+        self.assertNotIn("reasoning_effort", kwargs)
 
 
 class InvalidResponseTests(EnvCase):
@@ -370,6 +496,8 @@ class OfflineAndMetadataTests(EnvCase):
                 SYSTEM,
                 USER,
                 ga.Judgement.model_json_schema(),
+                thinking=ga.DEFAULT_DEEPSEEK_THINKING,
+                reasoning_effort=ga.DEFAULT_DEEPSEEK_REASONING_EFFORT,
             )
             (cache_dir / f"{digest}.json").write_text(
                 json.dumps({"parsed": judgement_payload()}), encoding="utf-8"
@@ -422,6 +550,40 @@ class OfflineAndMetadataTests(EnvCase):
             report = ga.build_report(llm, baseline_only=True)
         self.assertEqual(report["_meta"]["provider"], "openai")
         self.assertEqual(report["_meta"]["model"], "openai-meta")
+        self.assertNotIn("thinking", report["_meta"])
+        self.assertNotIn("reasoning_effort", report["_meta"])
+
+    def test_build_report_meta_records_deepseek_thinking_config(self) -> None:
+        class FakeRetriever:
+            def query(self, text: str, n: int = ga.BASELINE_FETCH) -> list[dict]:
+                return [
+                    {
+                        "entry_id": "KB-XC-003",
+                        "section": "configuration",
+                        "domain": "cross_cutting",
+                        "similarity": 0.9,
+                    }
+                ]
+
+            def top_entries(self, hits: list[dict], k: int) -> list[dict]:
+                return hits[:k]
+
+        fake_requirement = {
+            "extracted_id": "EX-001",
+            "source_note_id": "N-001",
+            "requirement_description": "Use configurable thresholds.",
+            "domain": "P2P",
+            "source_quote": "Use configurable thresholds.",
+        }
+        with mock.patch.object(ga, "Retriever", return_value=FakeRetriever()), mock.patch.object(
+            ga, "extract_requirements", return_value=[fake_requirement]
+        ):
+            llm = ga.CachedLLM(provider="deepseek", cache_dir=self.make_cache_dir())
+            report = ga.build_report(llm, baseline_only=True)
+        self.assertEqual(report["_meta"]["provider"], "deepseek")
+        self.assertEqual(report["_meta"]["model"], "deepseek-v4-pro")
+        self.assertEqual(report["_meta"]["thinking"], "enabled")
+        self.assertEqual(report["_meta"]["reasoning_effort"], "high")
 
 
 if __name__ == "__main__":

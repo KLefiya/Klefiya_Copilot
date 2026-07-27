@@ -56,18 +56,18 @@ rapidfuzz==3.14.5
 chromadb==1.5.9
 
 # ---------------------------------------------------------------------------
-# Fit/Gap judgement (module 2). Defaults to Anthropic, but gap_analysis.py can
-# also use OpenAI or DeepSeek via CARVEOPS_LLM_PROVIDER. The FIRST uncached run
+# Fit/Gap judgement (module 2). Defaults to DeepSeek, but gap_analysis.py can
+# also use Anthropic or OpenAI via CARVEOPS_LLM_PROVIDER. The FIRST uncached run
 # needs the matching API key (ANTHROPIC_API_KEY, OPENAI_API_KEY, or
 # DEEPSEEK_API_KEY); every LLM call is cached to data/synthetic/llm_cache/
 # (committed to git), so later runs are fully offline and byte-identical.
 # See README "LLM judgement".
 #
-# Model is claude-sonnet-5 and temperature is NOT set. claude-sonnet-5 rejects
-# non-default temperature/top_p/top_k with a 400; claude-sonnet-4-6 accepts
-# temperature but does not support structured outputs, which the judgement
-# schema depends on. Reproducibility comes from the disk cache, not from
-# temperature=0 (which never guaranteed identical output on any model).
+# Defaults: provider=DeepSeek, model=deepseek-v4-pro, thinking=enabled,
+# reasoning_effort=high. DeepSeek thinking and reasoning_effort are explicit
+# request parameters and part of the cache fingerprint/report metadata. No
+# provider path sets temperature. Reproducibility comes from the disk cache, not
+# from temperature=0 (which never guaranteed identical output on any model).
 # ---------------------------------------------------------------------------
 anthropic==0.116.0
 openai==2.48.0
