@@ -12,21 +12,26 @@
 判定与评估严格分离：本工具不读 ground truth。评估在 evaluate_gap_analysis.py。
 
 【模型与参数】
-  model = claude-sonnet-5，不传 temperature。
-  claude-sonnet-5 已移除采样参数，非默认的 temperature/top_p/top_k 会返回 400；
-  而 claude-sonnet-4-6 虽接受 temperature，却不支持结构化输出（output_config.format），
-  没有结构化输出就无法强约束 category/confidence/evidence/rationale 四件套。
-  可复现性不依赖 temperature（它从来就不保证逐字一致），而由磁盘缓存承担。
+  默认 provider = anthropic，model = claude-sonnet-5，不传 temperature。
+  可通过 CARVEOPS_LLM_PROVIDER / --provider 切换到 openai 或 deepseek，并通过
+  CARVEOPS_LLM_MODEL / --model 指定模型。OpenAI 走 OpenAI SDK 的 Chat Completions
+  json_schema 结构化输出；DeepSeek 复用 OpenAI SDK 的 OpenAI-compatible Chat
+  Completions JSON mode，并在本地
+  用 Pydantic schema 校验。可复现性不依赖 temperature（它从来就不保证逐字一致），
+  而由磁盘缓存承担。
 
 【磁盘缓存】
-  每次 LLM 调用按请求指纹 sha256 缓存到 data/synthetic/llm_cache/（进 git）。
-  首次运行需要 ANTHROPIC_API_KEY 与联网；之后重跑完全离线且字节一致。
+  每次 LLM 调用按 provider + model + prompt + schema 的请求指纹 sha256 缓存到
+  data/synthetic/llm_cache/（进 git）。API key 永远不进入缓存指纹或缓存文件。
+  首次运行需要对应 provider 的 API key 与联网；之后重跑完全离线且字节一致。
   --offline 强制只读缓存，缓存缺失即报错，绝不静默联网。
 
 用法：
     export ANTHROPIC_API_KEY=sk-ant-...
     python src/tools/build_knowledge_base.py      # 先建库
     python src/tools/gap_analysis.py              # 抽取 + 判定 + 基线
+    CARVEOPS_LLM_PROVIDER=openai OPENAI_API_KEY=... python src/tools/gap_analysis.py
+    CARVEOPS_LLM_PROVIDER=deepseek DEEPSEEK_API_KEY=... python src/tools/gap_analysis.py
     python src/tools/gap_analysis.py --offline    # 只读缓存重跑
     python src/tools/gap_analysis.py --baseline-only   # 只跑基线（仍需抽取缓存）
 """
@@ -53,7 +58,19 @@ KNOWLEDGE_PATH = PROJECT_ROOT / "data" / "knowledge" / "standard_processes.json"
 OUTPUT_PATH = PROJECT_ROOT / "data" / "synthetic" / "gap_analysis_report.json"
 CACHE_DIR = PROJECT_ROOT / "data" / "synthetic" / "llm_cache"
 
-MODEL = "claude-sonnet-5"
+DEFAULT_PROVIDER = "anthropic"
+DEFAULT_MODELS = {
+    "anthropic": "claude-sonnet-5",
+    "openai": "gpt-4.1-mini",
+    "deepseek": "deepseek-chat",
+}
+PROVIDER_KEY_ENV = {
+    "anthropic": "ANTHROPIC_API_KEY",
+    "openai": "OPENAI_API_KEY",
+    "deepseek": "DEEPSEEK_API_KEY",
+}
+OPENAI_BASE_URL = "https://api.openai.com/v1"
+DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 MAX_TOKENS = 16000
 
 RETRIEVAL_TOP_K = 4          # 判定时喂给 LLM 的知识条目数（按条目去重后）
@@ -100,9 +117,17 @@ class Judgement(BaseModel):
 # --------------------------------------------------------------------------
 # 磁盘缓存的 LLM 调用
 # --------------------------------------------------------------------------
-def _fingerprint(model: str, system: str, user: str, schema: dict[str, Any]) -> str:
+def _fingerprint(
+    provider: str, model: str, system: str, user: str, schema: dict[str, Any]
+) -> str:
     payload = json.dumps(
-        {"model": model, "system": system, "user": user, "schema": schema},
+        {
+            "provider": provider,
+            "model": model,
+            "system": system,
+            "user": user,
+            "schema": schema,
+        },
         sort_keys=True,
         ensure_ascii=False,
         separators=(",", ":"),
@@ -110,32 +135,149 @@ def _fingerprint(model: str, system: str, user: str, schema: dict[str, Any]) -> 
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _json_schema_response_format(output_format: type[BaseModel]) -> dict[str, Any]:
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": output_format.__name__,
+            "schema": output_format.model_json_schema(),
+            "strict": False,
+        },
+    }
+
+
+def _json_mode_system_prompt(system: str, output_format: type[BaseModel]) -> str:
+    schema = json.dumps(
+        output_format.model_json_schema(), ensure_ascii=False, separators=(",", ":")
+    )
+    return (
+        f"{system}\n\n"
+        "Return only one valid JSON object. Do not wrap it in Markdown fences. "
+        "The JSON object must validate against this JSON Schema:\n"
+        f"{schema}"
+    )
+
+
+def _parse_json_object(text: str) -> dict[str, Any]:
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        lines = stripped.splitlines()
+        if lines and lines[0].lstrip().startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        stripped = "\n".join(lines).strip()
+    return json.loads(stripped)
+
+
+def _safe_base_url(provider: str) -> str:
+    if provider == "openai":
+        return os.environ.get("CARVEOPS_OPENAI_BASE_URL", OPENAI_BASE_URL).rstrip("/")
+    if provider == "deepseek":
+        return os.environ.get("CARVEOPS_DEEPSEEK_BASE_URL", DEEPSEEK_BASE_URL).rstrip("/")
+    raise ValueError(f"Provider {provider} does not use an OpenAI-compatible base URL")
+
+
 class CachedLLM:
     """按请求指纹缓存 LLM 响应。缓存命中即离线；未命中才调用 API。"""
 
-    def __init__(self, offline: bool = False) -> None:
+    def __init__(
+        self,
+        offline: bool = False,
+        provider: str | None = None,
+        model: str | None = None,
+        cache_dir: Path | None = None,
+    ) -> None:
         self.offline = offline
+        self.provider = (provider or os.environ.get("CARVEOPS_LLM_PROVIDER") or DEFAULT_PROVIDER).lower()
+        if self.provider not in DEFAULT_MODELS:
+            raise RuntimeError(
+                "Unsupported CARVEOPS_LLM_PROVIDER. "
+                f"Expected one of {sorted(DEFAULT_MODELS)}, got {self.provider!r}."
+            )
+        self.model = model or os.environ.get("CARVEOPS_LLM_MODEL") or DEFAULT_MODELS[self.provider]
+        self.cache_dir = cache_dir or CACHE_DIR
         self._client = None
-        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.stats = {"hit": 0, "miss": 0}
 
-    def _lazy_client(self):
+    def _lazy_anthropic_client(self):
         if self._client is None:
             import anthropic
 
-            if not os.environ.get("ANTHROPIC_API_KEY"):
+            key_env = PROVIDER_KEY_ENV["anthropic"]
+            if not os.environ.get(key_env):
                 raise RuntimeError(
-                    "缓存未命中且未设置 ANTHROPIC_API_KEY。\n"
-                    "  设置密钥后重跑：export ANTHROPIC_API_KEY=sk-ant-...\n"
+                    f"缓存未命中且未设置 {key_env}。\n"
+                    f"  设置密钥后重跑：export {key_env}=...\n"
                     "  或用 --offline 只读已有缓存。"
                 )
             self._client = anthropic.Anthropic()
         return self._client
 
+    def _lazy_openai_compatible_client(self):
+        if self._client is None:
+            from openai import OpenAI
+
+            key_env = PROVIDER_KEY_ENV[self.provider]
+            api_key = os.environ.get(key_env)
+            if not api_key:
+                raise RuntimeError(
+                    f"缓存未命中且未设置 {key_env}。\n"
+                    f"  设置密钥后重跑：export {key_env}=...\n"
+                    "  或用 --offline 只读已有缓存。"
+                )
+            self._client = OpenAI(api_key=api_key, base_url=_safe_base_url(self.provider))
+        return self._client
+
+    def _openai_compatible_parse(
+        self,
+        system: str,
+        user: str,
+        output_format: type[BaseModel],
+    ) -> BaseModel:
+        key_env = PROVIDER_KEY_ENV[self.provider]
+        if not os.environ.get(key_env):
+            raise RuntimeError(
+                f"缓存未命中且未设置 {key_env}。\n"
+                f"  设置密钥后重跑：export {key_env}=...\n"
+                "  或用 --offline 只读已有缓存。"
+            )
+
+        if self.provider == "openai":
+            response_format = _json_schema_response_format(output_format)
+            system_prompt = system
+        else:
+            response_format = {"type": "json_object"}
+            system_prompt = _json_mode_system_prompt(system, output_format)
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user},
+            ],
+            "response_format": response_format,
+        }
+        if self.provider == "openai":
+            payload["max_completion_tokens"] = MAX_TOKENS
+        else:
+            payload["max_tokens"] = MAX_TOKENS
+
+        response = self._lazy_openai_compatible_client().chat.completions.create(**payload)
+        choices = getattr(response, "choices", None) or []
+        if not choices:
+            raise RuntimeError(f"{self.provider} API returned no choices")
+        message = getattr(choices[0], "message", None)
+        content = getattr(message, "content", None)
+        if not content:
+            raise RuntimeError(f"{self.provider} API returned empty message content")
+        return output_format.model_validate(_parse_json_object(content))
+
     def parse(self, system: str, user: str, output_format: type[BaseModel]) -> BaseModel:
         schema = output_format.model_json_schema()
-        digest = _fingerprint(MODEL, system, user, schema)
-        cache_file = CACHE_DIR / f"{digest}.json"
+        digest = _fingerprint(self.provider, self.model, system, user, schema)
+        cache_file = self.cache_dir / f"{digest}.json"
 
         if cache_file.exists():
             self.stats["hit"] += 1
@@ -149,22 +291,34 @@ class CachedLLM:
             )
 
         self.stats["miss"] += 1
-        # 不传 temperature：claude-sonnet-5 拒绝非默认采样参数（400）。
-        response = self._lazy_client().messages.parse(
-            model=MODEL,
-            max_tokens=MAX_TOKENS,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-            output_format=output_format,
-        )
-        parsed = response.parsed_output
-        if parsed is None:
-            raise RuntimeError(f"结构化输出解析失败，stop_reason={response.stop_reason}")
+        if self.provider == "anthropic":
+            # 不传 temperature：claude-sonnet-5 拒绝非默认采样参数（400）。
+            response = self._lazy_anthropic_client().messages.parse(
+                model=self.model,
+                max_tokens=MAX_TOKENS,
+                system=system,
+                messages=[{"role": "user", "content": user}],
+                output_format=output_format,
+            )
+            parsed = response.parsed_output
+            if parsed is None:
+                raise RuntimeError(
+                    f"结构化输出解析失败，stop_reason={response.stop_reason}"
+                )
+        else:
+            parsed = self._openai_compatible_parse(system, user, output_format)
 
         cache_file.write_text(
             json.dumps(
                 {
-                    "_request": {"model": MODEL, "system": system, "user": user},
+                    "provider": self.provider,
+                    "model": self.model,
+                    "_request": {
+                        "provider": self.provider,
+                        "model": self.model,
+                        "system": system,
+                        "user": user,
+                    },
                     "_schema_name": output_format.__name__,
                     "parsed": parsed.model_dump(),
                 },
@@ -423,10 +577,11 @@ def build_report(llm: CachedLLM, baseline_only: bool) -> dict[str, Any]:
         "_meta": {
             "module": "module_2_fit_to_standard_gap_analysis",
             "component": "requirement_extraction_and_fit_gap_judgement",
-            "model": MODEL,
+            "provider": llm.provider,
+            "model": llm.model,
             "sampling_note_zh": (
-                "未传 temperature：claude-sonnet-5 已移除采样参数，非默认值返回 400。"
-                "可复现性由磁盘缓存承担，而非 temperature=0（后者从不保证逐字一致）。"
+                "本组件不传 temperature。可复现性由磁盘缓存承担，而非 temperature=0"
+                "（后者从不保证逐字一致）。"
             ),
             "separation_note_zh": (
                 "抽取阶段不读 ground truth；判定阶段不读 ground truth；"
@@ -462,12 +617,27 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="只读缓存，缺失即报错")
     parser.add_argument("--baseline-only", action="store_true", help="跳过 LLM 判定，只跑基线")
+    parser.add_argument(
+        "--provider",
+        choices=sorted(DEFAULT_MODELS),
+        help=(
+            "LLM provider. Defaults to CARVEOPS_LLM_PROVIDER or anthropic. "
+            "Supported: anthropic, openai, deepseek."
+        ),
+    )
+    parser.add_argument(
+        "--model",
+        help=(
+            "LLM model. Defaults to CARVEOPS_LLM_MODEL or the provider default "
+            "(anthropic=claude-sonnet-5, openai=gpt-4.1-mini, deepseek=deepseek-chat)."
+        ),
+    )
     args = parser.parse_args()
 
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-    llm = CachedLLM(offline=args.offline)
+    llm = CachedLLM(offline=args.offline, provider=args.provider, model=args.model)
     report = attach_run_info(build_report(llm, args.baseline_only))
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -476,6 +646,7 @@ def main() -> None:
     )
 
     meta = report["_meta"]
+    print(f"Provider         : {meta['provider']}")
     print(f"Model            : {meta['model']}")
     print(f"Extracted reqs   : {meta['extracted_requirement_count']}")
     print(f"LLM cache        : {llm.stats['hit']} hit / {llm.stats['miss']} miss")
