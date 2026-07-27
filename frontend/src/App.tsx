@@ -23,6 +23,7 @@ import {
 import { useDisclosure } from '@mantine/hooks'
 import { getHealth, type Health } from './api'
 import { DuplicateView } from './views/DuplicateView'
+import { FitGapView } from './views/FitGapView'
 import { MappingView } from './views/MappingView'
 import { ProfileView } from './views/ProfileView'
 import { ValidationView } from './views/ValidationView'
@@ -43,6 +44,10 @@ const MODULE_ONE: NavItem[] = [
   { key: 'validation', label: '迁移前校验', report: 'vendor_validation_report', element: <ValidationView /> },
 ]
 
+const MODULE_TWO: NavItem[] = [
+  { key: 'fit-gap', label: 'Fit/Gap 判定', report: 'gap_analysis_report', element: <FitGapView /> },
+]
+
 export default function App() {
   const [opened, { toggle }] = useDisclosure()
   const [active, setActive] = useState('profile')
@@ -56,7 +61,8 @@ export default function App() {
   }, [])
 
   const availability = new Map(health?.reports.map((r) => [r.name, r.available]) ?? [])
-  const current = MODULE_ONE.find((item) => item.key === active) ?? MODULE_ONE[0]
+  const navigation = [...MODULE_ONE, ...MODULE_TWO]
+  const current = navigation.find((item) => item.key === active) ?? MODULE_ONE[0]
 
   return (
     <AppShell
@@ -137,7 +143,26 @@ export default function App() {
           >
             模块二 · Fit-to-Standard
           </Text>
-          <NavLink label="Fit/Gap 判定" disabled rightSection={<Badge size="xs" variant="outline" color="gray">第 3 步</Badge>} />
+          <Stack gap={2}>
+            {MODULE_TWO.map((item) => {
+              const available = availability.get(item.report)
+              return (
+                <NavLink
+                  key={item.key}
+                  active={item.key === active}
+                  label={item.label}
+                  onClick={() => setActive(item.key)}
+                  rightSection={
+                    available === false ? (
+                      <Badge size="xs" variant="outline" color="gray">
+                        未生成
+                      </Badge>
+                    ) : null
+                  }
+                />
+              )
+            })}
+          </Stack>
         </AppShell.Section>
 
         <AppShell.Section>

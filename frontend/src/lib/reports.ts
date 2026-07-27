@@ -226,6 +226,117 @@ export interface ValidationReport {
   deferred_checks: DeferredCheck[]
 }
 
+// ---------------------------------------------------------------- Fit-to-Standard gap analysis
+export type GapCategory = 'Fit' | 'Configuration' | 'Enhancement' | 'Development'
+export type GapDomain = 'P2P' | 'O2C' | 'R2R' | 'master_data'
+
+export interface GapBaseline {
+  category: GapCategory
+  rule_fired_zh: string
+  top_entry_ids: string[]
+  top_chunk: {
+    entry_id: string
+    section: string
+    similarity: number
+  }
+}
+
+export interface GapLLMJudgement {
+  category: GapCategory
+  confidence: number
+  evidence: string[]
+  rationale: string
+  needs_review: boolean
+  needs_review_reasons: string[]
+  retrieved_entry_ids: string[]
+}
+
+export interface GapRequirement {
+  extracted_id: string
+  source_note_id: string
+  requirement_description: string
+  domain: GapDomain
+  source_quote: string
+  baseline: GapBaseline
+  llm: GapLLMJudgement
+}
+
+export interface DevelopmentBacklogItem {
+  backlog_id: string
+  requirement_id: string
+  source_note_id: string
+  description: string
+  domain: GapDomain
+  rationale: string
+  evidence: string[]
+  confidence: number
+  needs_review: boolean
+}
+
+export interface GapAnalysisReport {
+  _run_info: RunInfo & {
+    llm_cache?: {
+      hits: number
+      misses: number
+    }
+  }
+  _meta: {
+    provider: string
+    model: string
+    thinking?: string | null
+    reasoning_effort?: string | null
+    extracted_requirement_count: number
+  }
+  requirements: GapRequirement[]
+  dev_backlog: DevelopmentBacklogItem[]
+  dev_backlog_note_zh?: string
+}
+
+export interface ClassMetrics {
+  support: number
+  correct: number
+  recall: number | null
+  precision: number | null
+}
+
+export interface EvaluationModelMetrics {
+  n: number
+  accuracy: number
+  per_class: Record<GapCategory, ClassMetrics>
+}
+
+export interface DevelopmentRationaleAuditItem {
+  requirement_id: string
+  extracted_id: string
+  description: string
+  llm_category: GapCategory
+  correct: boolean
+  evidence: string[]
+  reasoning_markers_found: string[]
+  surface_markers_found: string[]
+  verdict_zh: string
+  rationale: string
+}
+
+export interface GapAnalysisEvaluation {
+  _run_info: RunInfo
+  _meta: {
+    ground_truth: number
+    extracted: number
+    matched: number
+    spurious: number
+    missed: number
+    report_content_sha256: string
+    model: string
+  }
+  baseline_no_llm: EvaluationModelMetrics
+  llm: EvaluationModelMetrics
+  llm_vs_baseline: {
+    accuracy_delta: number
+  }
+  development_rationale_audit: DevelopmentRationaleAuditItem[]
+}
+
 // ---------------------------------------------------------------- 问题类型的中文名
 export const ISSUE_TYPE_LABEL: Record<string, string> = {
   max_length_overflow: '长度溢出',

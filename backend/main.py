@@ -79,7 +79,13 @@ REPORTS: dict[str, ReportSpec] = {
         filename="gap_analysis_report.json",
         title="Fit/Gap 判定",
         module="模块二 · Fit-to-Standard 差异分析",
-        generated_by="ANTHROPIC_API_KEY=... python src/tools/gap_analysis.py",
+        generated_by="DEEPSEEK_API_KEY=... python src/tools/gap_analysis.py --provider deepseek --model deepseek-v4-pro",
+    ),
+    "gap_analysis_evaluation": ReportSpec(
+        filename="gap_analysis_evaluation.json",
+        title="Fit/Gap 独立评估",
+        module="模块二 · Fit-to-Standard 差异分析",
+        generated_by="python src/tools/evaluate_gap_analysis.py",
     ),
 }
 

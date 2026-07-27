@@ -11,13 +11,14 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { MantineProvider } from '@mantine/core'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProfileView } from '../views/ProfileView'
 import { MappingView } from '../views/MappingView'
 import { ValidationView } from '../views/ValidationView'
 import { DuplicateView } from '../views/DuplicateView'
+import { FitGapView } from '../views/FitGapView'
 import { theme } from '../lib/theme'
 import { classify } from '../components/CountryVariantsChart'
 
@@ -80,6 +81,35 @@ describe('数据质量画像', () => {
 
     // 自由文本字段标注为「不适用」，不是 0 种签名
     expect(screen.getAllByText('自由文本 · 不适用').length).toBeGreaterThan(0)
+  })
+})
+
+describe('Fit-to-Standard gap analysis', () => {
+  it('renders the formal report, evaluation metrics, and development backlog', async () => {
+    renderView(<FitGapView />)
+
+    await waitFor(() => expect(screen.getByText('Fit-to-Standard 差异分析')).toBeDefined())
+
+    expect(screen.getByText('deepseek-v4-pro')).toBeDefined()
+    expect(screen.getByText('89f42052d641...2c1ae3')).toBeDefined()
+    expect(screen.getByText('Development Backlog · 5')).toBeDefined()
+    expect(screen.getByText('需要人工确认 · 2')).toBeDefined()
+    expect(screen.getByText('Strict Precision')).toBeDefined()
+    expect(screen.getByText('87.50%')).toBeDefined()
+    expect(screen.getByText('DeepSeek matched accuracy')).toBeDefined()
+    expect(screen.getByText('95.24%')).toBeDefined()
+  })
+
+  it('shows an explicit empty state when filters match no requirements', async () => {
+    renderView(<FitGapView />)
+
+    await waitFor(() => expect(screen.getByText('Fit-to-Standard 差异分析')).toBeDefined())
+
+    fireEvent.change(screen.getByPlaceholderText('ID / 描述 / 来源'), {
+      target: { value: 'NO-SUCH-REQUIREMENT' },
+    })
+
+    expect(screen.getByText('没有符合当前筛选条件的需求。')).toBeDefined()
   })
 })
 
