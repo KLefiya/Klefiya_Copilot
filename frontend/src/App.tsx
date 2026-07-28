@@ -22,6 +22,7 @@ import {
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { getHealth, type Health } from './api'
+import { CutoverView } from './views/CutoverView'
 import { DuplicateView } from './views/DuplicateView'
 import { FitGapView } from './views/FitGapView'
 import { MappingView } from './views/MappingView'
@@ -48,8 +49,12 @@ const MODULE_TWO: NavItem[] = [
   { key: 'fit-gap', label: 'Fit/Gap 判定', report: 'gap_analysis_report', element: <FitGapView /> },
 ]
 
+const MODULE_THREE: NavItem[] = [
+  { key: 'cutover', label: 'Cutover / RAID 治理', report: 'cutover_daily_report', element: <CutoverView /> },
+]
+
 export default function App() {
-  const [opened, { toggle }] = useDisclosure()
+  const [opened, { toggle, close }] = useDisclosure()
   const [active, setActive] = useState('profile')
   const [health, setHealth] = useState<Health | null>(null)
   const [offline, setOffline] = useState(false)
@@ -61,8 +66,12 @@ export default function App() {
   }, [])
 
   const availability = new Map(health?.reports.map((r) => [r.name, r.available]) ?? [])
-  const navigation = [...MODULE_ONE, ...MODULE_TWO]
+  const navigation = [...MODULE_ONE, ...MODULE_TWO, ...MODULE_THREE]
   const current = navigation.find((item) => item.key === active) ?? MODULE_ONE[0]
+  const selectView = (key: string) => {
+    setActive(key)
+    close()
+  }
 
   return (
     <AppShell
@@ -73,7 +82,7 @@ export default function App() {
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group gap="sm">
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" aria-label="Toggle navigation" />
             <Title order={1} size="h5" fw={600}>
               CarveOps Copilot
             </Title>
@@ -119,7 +128,7 @@ export default function App() {
                   key={item.key}
                   active={item.key === active}
                   label={item.label}
-                  onClick={() => setActive(item.key)}
+                  onClick={() => selectView(item.key)}
                   rightSection={
                     available === false ? (
                       <Badge size="xs" variant="outline" color="gray">
@@ -151,7 +160,39 @@ export default function App() {
                   key={item.key}
                   active={item.key === active}
                   label={item.label}
-                  onClick={() => setActive(item.key)}
+                  onClick={() => selectView(item.key)}
+                  rightSection={
+                    available === false ? (
+                      <Badge size="xs" variant="outline" color="gray">
+                        未生成
+                      </Badge>
+                    ) : null
+                  }
+                />
+              )
+            })}
+          </Stack>
+
+          <Text
+            size="xs"
+            c="dimmed"
+            tt="uppercase"
+            fw={500}
+            mt="lg"
+            mb="xs"
+            style={{ letterSpacing: '0.05em' }}
+          >
+            模块三 · Cutover / RAID 治理
+          </Text>
+          <Stack gap={2}>
+            {MODULE_THREE.map((item) => {
+              const available = availability.get(item.report)
+              return (
+                <NavLink
+                  key={item.key}
+                  active={item.key === active}
+                  label={item.label}
+                  onClick={() => selectView(item.key)}
                   rightSection={
                     available === false ? (
                       <Badge size="xs" variant="outline" color="gray">

@@ -19,6 +19,7 @@ import { MappingView } from '../views/MappingView'
 import { ValidationView } from '../views/ValidationView'
 import { DuplicateView } from '../views/DuplicateView'
 import { FitGapView } from '../views/FitGapView'
+import { CutoverView } from '../views/CutoverView'
 import { theme } from '../lib/theme'
 import { classify } from '../components/CountryVariantsChart'
 
@@ -37,12 +38,13 @@ const NOT_GENERATED = {
   },
 }
 
-function mockFetch() {
+function mockFetch(missingReports?: Set<string>) {
+  const missing = missingReports instanceof Set ? missingReports : new Set<string>(['vendor_duplicate_report'])
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string) => {
       const name = url.split('/api/reports/')[1]
-      if (name === 'vendor_duplicate_report') {
+      if (missing.has(name)) {
         return new Response(JSON.stringify(NOT_GENERATED), { status: 404 })
       }
       return new Response(JSON.stringify(loadReport(name)), { status: 200 })
@@ -110,6 +112,89 @@ describe('Fit-to-Standard gap analysis', () => {
     })
 
     expect(screen.getByText('没有符合当前筛选条件的需求。')).toBeDefined()
+  })
+})
+
+describe('Cutover / RAID governance', () => {
+  it('renders the complete module three dashboard', async () => {
+    renderView(<CutoverView />)
+
+    await waitFor(() => expect(screen.getByText('Cutover / RAID 治理')).toBeDefined())
+
+    expect(screen.getAllByText('Red').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('T-7').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('30').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('17').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('2').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('11').length).toBeGreaterThan(0)
+    expect(screen.getByText('关键阻塞 · 2')).toBeDefined()
+    expect(screen.getByText('管理行动 · 4')).toBeDefined()
+    expect(screen.getByText('工作包 · 5')).toBeDefined()
+    expect(screen.getByText('RAID · 7')).toBeDefined()
+    expect(screen.getByText('审批门 · 4')).toBeDefined()
+    expect(screen.getByText('冻结窗口 · 3')).toBeDefined()
+  })
+
+  it('renders the agent trace without sensitive reasoning fields', async () => {
+    renderView(<CutoverView />)
+
+    await waitFor(() => expect(screen.getByText('Cutover Copilot · 示例审计轨迹')).toBeDefined())
+
+    expect(screen.getByText('combined_brief')).toBeDefined()
+    expect(screen.getByText('get_cutover_status_summary')).toBeDefined()
+    expect(screen.getByText('get_cutover_daily_brief')).toBeDefined()
+    expect(screen.getAllByText('688342f8cd89...a619419').length).toBeGreaterThan(0)
+    expect(screen.queryByText('reasoning_content')).toBeNull()
+    expect(screen.queryByText('chain-of-thought')).toBeNull()
+    expect(screen.queryByText('Authorization')).toBeNull()
+  })
+
+  it('filters activities by blocked status, critical path, and empty search', async () => {
+    renderView(<CutoverView />)
+
+    await waitFor(() => expect(screen.getByText('活动状态 · 30')).toBeDefined())
+
+    fireEvent.change(screen.getAllByLabelText('Status')[0], { target: { value: 'Blocked' } })
+    expect(screen.getAllByTestId('activity-row')).toHaveLength(2)
+
+    fireEvent.click(screen.getByLabelText('Critical only'))
+    expect(screen.getAllByTestId('activity-row')).toHaveLength(2)
+
+    fireEvent.change(screen.getByPlaceholderText('Activity / title / blocker'), {
+      target: { value: 'NO-SUCH-ACTIVITY' },
+    })
+    expect(screen.queryAllByTestId('activity-row')).toHaveLength(0)
+    expect(screen.getByText('没有符合当前筛选条件的 Cutover 活动。')).toBeDefined()
+  })
+
+  it('filters RAID by type without merging dependencies into risks', async () => {
+    renderView(<CutoverView />)
+
+    await waitFor(() => expect(screen.getByText('RAID · 7')).toBeDefined())
+
+    fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'Risk' } })
+    expect(screen.getAllByTestId('raid-row')).toHaveLength(2)
+
+    fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'Dependency' } })
+    expect(screen.getAllByTestId('raid-row')).toHaveLength(5)
+  })
+
+  it('degrades when the agent trace report is missing', async () => {
+    mockFetch(new Set(['vendor_duplicate_report', 'cutover_agent_trace']))
+    renderView(<CutoverView />)
+
+    await waitFor(() => expect(screen.getByText('Agent 示例 trace 尚未生成。')).toBeDefined())
+    expect(screen.getByText('活动状态 · 30')).toBeDefined()
+    expect(screen.queryByText('reasoning_content')).toBeNull()
+  })
+
+  it('degrades when the daily report is missing', async () => {
+    mockFetch(new Set(['vendor_duplicate_report', 'cutover_daily_report']))
+    renderView(<CutoverView />)
+
+    await waitFor(() => expect(screen.getByText('管理总览尚不可用')).toBeDefined())
+    expect(screen.getByText('活动状态 · 30')).toBeDefined()
+    expect(screen.getByText('冻结窗口 · 3')).toBeDefined()
   })
 })
 

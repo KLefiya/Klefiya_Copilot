@@ -359,3 +359,362 @@ export const SEVERITY_LABEL: Record<string, string> = {
   medium: '中',
   low: '低',
 }
+// ---------------------------------------------------------------- Cutover / RAID governance
+export type CutoverActivityStatus = 'Not Started' | 'In Progress' | 'Blocked' | 'Completed' | 'Cancelled'
+export type CutoverWorkPackageStatus = CutoverActivityStatus
+export type CutoverGateStatus = 'Pending' | 'Ready' | 'Approved' | 'Rejected' | 'Blocked'
+export type CutoverRaidStatus = 'Open' | 'Mitigating' | 'Accepted' | 'Resolved' | 'Closed'
+export type CutoverRaidType = 'Dependency' | 'Risk' | 'Assumption' | 'Issue' | 'Decision'
+
+export interface CutoverFreezeWindow {
+  freeze_id: string
+  name: string
+  start_offset: string
+  end_offset: string
+  owner_role: string
+  exception_approval_role: string
+  description: string
+}
+
+export interface CutoverPlanApprovalGate {
+  gate_id: string
+  name: string
+  due_offset: string
+  approver_roles: string[]
+  entry_criteria: string[]
+}
+
+export interface CutoverPlanWorkPackage {
+  work_package_id: string
+  source_requirement_id: string
+  source_note_id: string
+  source_domain: string
+  title: string
+  description: string
+  owner_role: string
+  business_owner_role: string
+  status: CutoverWorkPackageStatus
+}
+
+export interface CutoverPlanActivity {
+  activity_id: string
+  work_package_id: string | null
+  title: string
+  description: string
+  workstream: string
+  owner_role: string
+  start_offset: string
+  end_offset: string
+  depends_on: string[]
+  source_requirement_id: string | null
+  source_note_id: string | null
+  source_domain: string | null
+  source_evidence?: string[]
+  source_rationale?: string
+  approval_gate: string | null
+  rollback_required: boolean
+  rollback_action: string
+  status: CutoverActivityStatus
+  milestone_id: string | null
+}
+
+export interface CutoverPlanRaidItem {
+  raid_id: string
+  type: CutoverRaidType
+  title: string
+  description: string
+  owner_role: string
+  probability: string
+  impact: string
+  severity: string
+  status: CutoverRaidStatus
+  mitigation: string
+  trigger: string
+  linked_requirement_ids: string[]
+  linked_activity_ids: string[]
+  source: string
+}
+
+export interface CutoverPlanReport {
+  _run_info: RunInfo
+  _meta: {
+    module: string
+    component: string
+    source_report: string
+    constraints_file: string
+    source_report_content_sha256: string
+    development_backlog_count: number
+    needs_review_count: number
+    work_package_count: number
+    activity_count: number
+    shared_activity_count: number
+    raid_count: number
+    time_basis: string
+    synthetic: boolean
+    owner_role_rules: Record<string, unknown>
+    raid_severity_rules: Record<string, unknown>
+  }
+  milestones: { milestone_id: string; offset: string; name: string }[]
+  freeze_windows: CutoverFreezeWindow[]
+  approval_gates: CutoverPlanApprovalGate[]
+  work_packages: CutoverPlanWorkPackage[]
+  activities: CutoverPlanActivity[]
+  raid_register: CutoverPlanRaidItem[]
+  validation: {
+    valid: boolean
+    errors: string[]
+    warnings: string[]
+    dependency_graph_acyclic: boolean
+    uncovered_development_requirements: string[]
+    deployments_without_rollback: string[]
+    unknown_owner_roles: string[]
+    missing_dependency_references: string[]
+  }
+}
+
+export interface CutoverStatusEvent {
+  event_id: string
+  sequence: number
+  effective_offset: string
+  entity_type: string
+  entity_id: string
+  new_status: string
+  progress_percent?: number | null
+  updated_by_role: string
+  note: string
+  blocker?: string
+  evidence?: string
+}
+
+export interface CutoverStatusActivity {
+  activity_id: string
+  work_package_id: string | null
+  title: string
+  workstream: string
+  owner_role: string
+  start_offset: string
+  end_offset: string
+  depends_on: string[]
+  approval_gate: string | null
+  current_status: CutoverActivityStatus
+  progress_percent: number
+  is_critical_to_day1: boolean
+  last_event_id: string | null
+  last_update_offset: string | null
+  last_note: string
+  blocker: string
+}
+
+export interface CutoverStatusWorkPackage extends CutoverPlanWorkPackage {
+  current_status: CutoverWorkPackageStatus
+  progress_percent: number
+  activity_status_counts: Record<CutoverActivityStatus, number>
+  next_activity_id: string | null
+}
+
+export interface CutoverStatusRaidItem {
+  raid_id: string
+  type: CutoverRaidType
+  severity: string
+  description: string
+  owner_role: string
+  source_requirement_id: string | null
+  current_status: CutoverRaidStatus
+  last_event_id: string | null
+  last_update_offset: string | null
+  last_note: string
+}
+
+export interface CutoverStatusApprovalGate extends CutoverPlanApprovalGate {
+  current_status: CutoverGateStatus
+  readiness: boolean
+  missing_readiness_criteria: string[]
+  last_event_id: string | null
+  last_update_offset: string | null
+  last_note: string
+  blocker: string
+}
+
+export interface CutoverCriticalBlocker {
+  activity_id: string
+  title: string
+  blocker: string
+  owner_role: string
+  end_offset: string
+  source_requirement_id?: string | null
+}
+
+export interface CutoverRaidCounts {
+  by_status: Record<CutoverRaidStatus, number>
+  by_type: Record<string, Record<CutoverRaidStatus, number>>
+}
+
+export interface CutoverStatusReport {
+  _run_info: RunInfo
+  _meta: {
+    tool: string
+    source_plan: string
+    source_plan_content_sha256: string
+    source_constraints: string
+    source_status_updates: string
+    as_of_offset: string
+    event_ordering: string
+    validation_scope: string
+  }
+  as_of_offset: string
+  source_plan_content_sha256: string
+  events_applied_count: number
+  events_applied: CutoverStatusEvent[]
+  activity_status_counts: Record<CutoverActivityStatus, number>
+  work_package_status_counts: Record<CutoverWorkPackageStatus, number>
+  raid_status_counts: CutoverRaidCounts
+  approval_gate_status_counts: Record<CutoverGateStatus, number>
+  activities: CutoverStatusActivity[]
+  work_packages: CutoverStatusWorkPackage[]
+  raid_register: CutoverStatusRaidItem[]
+  approval_gates: CutoverStatusApprovalGate[]
+  critical_blockers: CutoverCriticalBlocker[]
+  validation: {
+    status: string
+    source_plan_sha_matches: boolean
+    event_ids_unique: boolean
+    sequences_unique: boolean
+    all_entities_resolved: boolean
+    transitions_valid: boolean
+    dependencies_valid: boolean
+    gate_readiness_valid: boolean
+    future_events: string[]
+    error_count: number
+  }
+}
+
+export interface CutoverDueItem {
+  activity_id: string
+  title: string
+  owner_role: string
+  end_offset: string
+  current_status: CutoverActivityStatus
+  blocker: string
+  is_critical_to_day1: boolean
+}
+
+export interface CutoverManagementAction {
+  priority: number
+  source_type: string
+  source_id: string
+  owner_role: string
+  action: string
+}
+
+export interface CutoverDailyReport {
+  _run_info: RunInfo
+  _meta: {
+    tool: string
+    source_status_report: string
+    source_status_report_content_sha256: string
+    as_of_offset: string
+    rag_rules: Record<string, unknown>
+  }
+  headline: {
+    overall_rag: 'Red' | 'Amber' | 'Green'
+    as_of_offset: string
+    completed_activity_count: number
+    blocked_activity_count: number
+    not_started_activity_count: number
+    work_packages_blocked: number
+    open_high_risks_or_issues: number
+    next_gate: {
+      gate_id: string
+      name: string
+      due_offset: string
+      current_status: CutoverGateStatus
+      readiness: boolean
+      missing_readiness_criteria: string[]
+    }
+  }
+  rag_reasons: string[]
+  progress_summary: {
+    activities_total: number
+    activity_status_counts: Record<CutoverActivityStatus, number>
+    activity_completion_percent: number
+    work_packages_total: number
+    work_package_status_counts: Record<CutoverWorkPackageStatus, number>
+    raid_total: number
+    raid_status_counts: CutoverRaidCounts
+    approval_gate_total: number
+    approval_gate_status_counts: Record<CutoverGateStatus, number>
+  }
+  due_now: CutoverDueItem[]
+  overdue: CutoverDueItem[]
+  due_next: CutoverDueItem[]
+  critical_blockers: CutoverCriticalBlocker[]
+  management_actions: CutoverManagementAction[]
+  validation: {
+    status: string
+    source_status_report_sha: string
+    source_status_report_valid: boolean
+  }
+}
+
+export interface ToolRequestTrace {
+  tool_name: string
+  arguments: Record<string, unknown>
+  reason: string
+}
+
+export interface CutoverToolCallTrace {
+  tool_name: string
+  arguments: Record<string, unknown>
+  ok: boolean
+  data: Record<string, unknown> | null
+  error: Record<string, unknown> | null
+  source_content_sha256: string | null
+}
+
+export interface CutoverAgentTrace {
+  _run_info: RunInfo & {
+    offline?: boolean
+    planner_cache?: {
+      hit: number
+      miss: number
+    }
+    trace_events?: unknown[]
+  }
+  _meta: {
+    component: string
+    graph: string
+    provider: string
+    model: string
+    allow_rebuild: boolean
+  }
+  request: {
+    request_id: string
+    user_query: string
+  }
+  plan: {
+    intent: string
+    tools: string[]
+    activity_filters: Record<string, string | boolean | null>
+    raid_filters: Record<string, string | boolean | null>
+    rebuild_plan: boolean
+    answer_focus: string
+    confidence: number
+    needs_clarification: boolean
+    clarification_question: string
+    tool_requests: ToolRequestTrace[]
+  }
+  policy: {
+    allowed: boolean
+    denied_reason: string
+    validated_tool_requests: ToolRequestTrace[]
+  }
+  tool_calls: CutoverToolCallTrace[]
+  final_answer: string
+  validation: {
+    valid: boolean
+    reasons: string[]
+  }
+  mcp_sessions: number
+  graph_path: string[]
+  errors: string[]
+}

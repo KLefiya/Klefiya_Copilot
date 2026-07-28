@@ -87,6 +87,30 @@ REPORTS: dict[str, ReportSpec] = {
         module="模块二 · Fit-to-Standard 差异分析",
         generated_by="python src/tools/evaluate_gap_analysis.py",
     ),
+    "cutover_plan_report": ReportSpec(
+        filename="cutover_plan_report.json",
+        title="Cutover 计划基线",
+        module="模块三 · Cutover / RAID 治理",
+        generated_by="python src/tools/build_cutover_plan.py",
+    ),
+    "cutover_status_report": ReportSpec(
+        filename="cutover_status_report.json",
+        title="Cutover 执行状态",
+        module="模块三 · Cutover / RAID 治理",
+        generated_by="python src/tools/build_cutover_status.py",
+    ),
+    "cutover_daily_report": ReportSpec(
+        filename="cutover_daily_report.json",
+        title="Cutover 管理日报",
+        module="模块三 · Cutover / RAID 治理",
+        generated_by="python src/tools/build_cutover_status.py",
+    ),
+    "cutover_agent_trace": ReportSpec(
+        filename="cutover_agent_trace.json",
+        title="Cutover Agent 审计轨迹",
+        module="模块三 · Cutover / RAID 治理",
+        generated_by='python -m src.agents.cutover_agent --query "当前 Cutover 总体状态怎么样？" --offline',
+    ),
 }
 
 # 明确排除、且写下来防止后人手滑加回去的文件。
