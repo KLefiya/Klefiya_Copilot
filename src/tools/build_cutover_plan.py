@@ -564,6 +564,18 @@ def write_report(report: dict[str, Any], output_path: Path = OUTPUT_PATH) -> dic
             + "\n".join(f"- {error}" for error in report["validation"]["errors"])
         )
     report_with_run_info = attach_run_info(report)
+    if output_path.is_file():
+        try:
+            existing = json.loads(output_path.read_text(encoding="utf-8"))
+            existing_run = existing.get("_run_info", {})
+            new_run = report_with_run_info.get("_run_info", {})
+            if (
+                existing_run.get("content_sha256") == new_run.get("content_sha256")
+                and existing_run.get("generated_at")
+            ):
+                report_with_run_info["_run_info"]["generated_at"] = existing_run["generated_at"]
+        except json.JSONDecodeError:
+            pass
     output_path.write_text(json.dumps(report_with_run_info, ensure_ascii=False, indent=2), encoding="utf-8")
     return report_with_run_info
 

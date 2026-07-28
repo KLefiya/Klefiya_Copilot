@@ -85,4 +85,4 @@ numpy==2.3.1
 # lands and has actually been run, rather than locking unverified versions.
 # ---------------------------------------------------------------------------
 # langgraph
-# mcp
+mcp==1.27.2

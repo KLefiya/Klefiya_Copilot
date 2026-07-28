@@ -104,6 +104,18 @@ def load_json(path: Path) -> Any:
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
+    if path.is_file() and isinstance(payload.get("_run_info"), dict):
+        try:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            existing_run = existing.get("_run_info", {})
+            new_run = payload.get("_run_info", {})
+            if (
+                existing_run.get("content_sha256") == new_run.get("content_sha256")
+                and existing_run.get("generated_at")
+            ):
+                payload["_run_info"]["generated_at"] = existing_run["generated_at"]
+        except json.JSONDecodeError:
+            pass
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
