@@ -1,0 +1,97 @@
+profile: tabular-data-package
+name: generic-customer
+title: Generic Customer Migration Contract
+version: 1.0.0
+description: Synthetic generic customer migration package contract.
+carveops:
+  contract_id: generic-customer-v1
+  adapter: generic_csv
+  domain: customer_master
+  synthetic: true
+  authoritative: false
+  source_note: Synthetic generic customer migration example.
+resources:
+  - profile: tabular-data-resource
+    name: customer
+    path: customer.csv
+    schema:
+      primaryKey:
+        - customer_id
+      fields:
+        - name: customer_id
+          type: string
+          constraints:
+            required: true
+            unique: true
+            maxLength: 12
+        - name: customer_name
+          type: string
+          constraints:
+            required: true
+            maxLength: 80
+        - name: country
+          type: string
+          constraints:
+            required: true
+            enum:
+              - DE
+              - GB
+              - US
+            pattern: ^[A-Z]{2}$
+        - name: email
+          type: string
+          constraints:
+            pattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+        - name: phone
+          type: string
+          constraints:
+            maxLength: 24
+        - name: tax_number
+          type: string
+          constraints:
+            maxLength: 24
+        - name: payment_terms
+          type: string
+          constraints:
+            required: true
+            enum:
+              - NET15
+              - NET30
+              - NET45
+              - PREPAID
+  - profile: tabular-data-resource
+    name: customer_bank
+    path: customer_bank.csv
+    schema:
+      primaryKey:
+        - bank_id
+      foreignKeys:
+        - fields:
+            - customer_id
+          reference:
+            resource: customer
+            fields:
+              - customer_id
+      fields:
+        - name: bank_id
+          type: string
+          constraints:
+            required: true
+            unique: true
+        - name: customer_id
+          type: string
+          constraints:
+            required: true
+        - name: iban
+          type: string
+          constraints:
+            required: true
+            maxLength: 34
+        - name: currency
+          type: string
+          constraints:
+            required: true
+            enum:
+              - EUR
+              - GBP
+              - USD

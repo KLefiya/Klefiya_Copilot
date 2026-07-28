@@ -1,0 +1,7 @@
+customer_id,customer_name,country,email,phone,tax_number,payment_terms
+CUST001,Synthetic Alpha Customer,DE,alpha.customer@example.test,+49-1000,SYN-DE-001,NET30
+CUST002,Synthetic Beta Customer,US,beta.customer@example.test,+1-1000,SYN-US-002,NET15
+CUST002,Synthetic Duplicate Customer,GB,duplicate.customer@example.test,+44-1000,SYN-GB-003,NET45
+CUST004,,DE,missing.name@example.test,+49-1004,SYN-DE-004,NET30
+CUST005,Synthetic Customer With Name That Is Intentionally Longer Than Eighty Characters For Validation,GB,long.customer@example.test,+44-1005,SYN-GB-005,PREPAID
+CUST006,Synthetic Gamma Customer,FRA,invalid-email,+33-1006,SYN-FR-006,NET99

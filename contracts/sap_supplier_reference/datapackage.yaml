@@ -1,0 +1,91 @@
+profile: tabular-data-package
+name: sap-supplier-reference
+title: SAP Supplier Reference Migration Contract
+version: 1.0.0
+description: Synthetic SAP supplier reference migration package contract.
+carveops:
+  contract_id: sap-supplier-reference-v1
+  adapter: sap_supplier_reference
+  domain: supplier_master
+  synthetic: true
+  authoritative: false
+  source_note: Synthetic reference adapter example; not authoritative for any live SAP system.
+resources:
+  - profile: tabular-data-resource
+    name: supplier_general
+    path: supplier_general.csv
+    schema:
+      primaryKey:
+        - supplier_id
+      fields:
+        - name: supplier_id
+          type: string
+          constraints:
+            required: true
+            unique: true
+            maxLength: 10
+        - name: organization_name
+          type: string
+          constraints:
+            required: true
+            maxLength: 40
+        - name: business_partner_category
+          type: string
+          constraints:
+            required: true
+            enum:
+              - "2"
+        - name: country_code
+          type: string
+          constraints:
+            required: true
+            pattern: ^[A-Z]{2}$
+        - name: language_code
+          type: string
+          constraints:
+            pattern: ^[A-Z]{2}$
+        - name: tax_number
+          type: string
+          constraints:
+            maxLength: 20
+  - profile: tabular-data-resource
+    name: supplier_company
+    path: supplier_company.csv
+    schema:
+      primaryKey:
+        - assignment_id
+      foreignKeys:
+        - fields:
+            - supplier_id
+          reference:
+            resource: supplier_general
+            fields:
+              - supplier_id
+      fields:
+        - name: assignment_id
+          type: string
+          constraints:
+            required: true
+            unique: true
+        - name: supplier_id
+          type: string
+          constraints:
+            required: true
+        - name: company_code
+          type: string
+          constraints:
+            required: true
+            pattern: ^[A-Z0-9]{4}$
+        - name: reconciliation_account
+          type: string
+          constraints:
+            required: true
+            maxLength: 10
+        - name: payment_terms
+          type: string
+          constraints:
+            required: true
+            enum:
+              - Z001
+              - Z002
+              - Z003

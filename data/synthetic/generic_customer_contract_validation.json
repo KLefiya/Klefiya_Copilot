@@ -1,0 +1,203 @@
+{
+  "_run_info": {
+    "content_sha256": "cb12fd313d4f29d6fb2006e9efa160de5a6952ef66bb402f015c22dc08969188",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T06:44:08+00:00"
+  },
+  "_meta": {
+    "component": "migration_contract_validation",
+    "engine": "frictionless",
+    "engine_version": "5.19.0",
+    "contract_id": "generic-customer-v1",
+    "contract_name": "generic-customer",
+    "contract_version": "1.0.0",
+    "adapter": "generic_csv",
+    "domain": "customer_master",
+    "synthetic": true,
+    "authoritative": false,
+    "contract_path": "contracts/generic_customer/datapackage.yaml",
+    "contract_sha256": "25f7daa2b8e5f6d13dad405ccbc4d0c0fc1f5d1b8b6c1af5087884c98fca0f39",
+    "data_root": "data/examples/generic_customer",
+    "resource_count": 2,
+    "row_count": 10,
+    "read_only": true
+  },
+  "summary": {
+    "valid": false,
+    "finding_count": 10,
+    "by_category": {
+      "enum": 3,
+      "foreign_key": 1,
+      "max_length": 1,
+      "pattern": 2,
+      "primary_key": 1,
+      "required": 1,
+      "unique": 1
+    },
+    "by_resource": {
+      "customer": 8,
+      "customer_bank": 2
+    },
+    "by_severity": {
+      "high": 4,
+      "medium": 6
+    }
+  },
+  "resources": [
+    {
+      "name": "customer",
+      "path": "data/examples/generic_customer/customer.csv",
+      "row_count": 6,
+      "valid": false,
+      "finding_count": 8
+    },
+    {
+      "name": "customer_bank",
+      "path": "data/examples/generic_customer/customer_bank.csv",
+      "row_count": 4,
+      "valid": false,
+      "finding_count": 2
+    }
+  ],
+  "findings": [
+    {
+      "resource": "customer",
+      "row_number": 4,
+      "field": null,
+      "category": "primary_key",
+      "raw_code": "primary-key",
+      "severity": "high",
+      "message": "Row at position \"4\" violates the primary key: the same as in the row at position 3",
+      "note": "the same as in the row at position 3",
+      "cells": [
+        "CUST002",
+        "Synthetic Duplicate Customer",
+        "GB",
+        "duplicate.customer@example.test",
+        "+44-1000",
+        "SYN-GB-003",
+        "NET45"
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 4,
+      "field": "customer_id",
+      "category": "unique",
+      "raw_code": "unique-error",
+      "severity": "high",
+      "message": "Row at position \"4\" has unique constraint violation in field \"customer_id\" at position \"1\": the same as in the row at position 3",
+      "note": "the same as in the row at position 3",
+      "cells": [
+        "CUST002"
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 5,
+      "field": "customer_name",
+      "category": "required",
+      "raw_code": "constraint-error",
+      "severity": "high",
+      "message": "The cell \"\" in row at position \"5\" and field \"customer_name\" at position \"2\" does not conform to a constraint: constraint \"required\" is \"True\"",
+      "note": "constraint \"required\" is \"True\"",
+      "cells": [
+        ""
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 6,
+      "field": "customer_name",
+      "category": "max_length",
+      "raw_code": "constraint-error",
+      "severity": "medium",
+      "message": "The cell \"Synthetic Customer With Name That Is Intentionally Longer Than Eighty Characters For Validation\" in row at position \"6\" and field \"customer_name\" at position \"2\" does not conform to a constraint: constraint \"maxLength\" is \"80\"",
+      "note": "constraint \"maxLength\" is \"80\"",
+      "cells": [
+        "Synthetic Customer With Name That Is Intentionally Longer Than Eighty Characters For Validation"
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 7,
+      "field": "country",
+      "category": "enum",
+      "raw_code": "constraint-error",
+      "severity": "medium",
+      "message": "The cell \"FRA\" in row at position \"7\" and field \"country\" at position \"3\" does not conform to a constraint: constraint \"enum\" is \"['DE', 'GB', 'US']\"",
+      "note": "constraint \"enum\" is \"['DE', 'GB', 'US']\"",
+      "cells": [
+        "FRA"
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 7,
+      "field": "country",
+      "category": "pattern",
+      "raw_code": "constraint-error",
+      "severity": "medium",
+      "message": "The cell \"FRA\" in row at position \"7\" and field \"country\" at position \"3\" does not conform to a constraint: constraint \"pattern\" is \"^[A-Z]{2}$\"",
+      "note": "constraint \"pattern\" is \"^[A-Z]{2}$\"",
+      "cells": [
+        "FRA"
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 7,
+      "field": "email",
+      "category": "pattern",
+      "raw_code": "constraint-error",
+      "severity": "medium",
+      "message": "The cell \"invalid-email\" in row at position \"7\" and field \"email\" at position \"4\" does not conform to a constraint: constraint \"pattern\" is \"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$\"",
+      "note": "constraint \"pattern\" is \"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$\"",
+      "cells": [
+        "invalid-email"
+      ]
+    },
+    {
+      "resource": "customer",
+      "row_number": 7,
+      "field": "payment_terms",
+      "category": "enum",
+      "raw_code": "constraint-error",
+      "severity": "medium",
+      "message": "The cell \"NET99\" in row at position \"7\" and field \"payment_terms\" at position \"7\" does not conform to a constraint: constraint \"enum\" is \"['NET15', 'NET30', 'NET45', 'PREPAID']\"",
+      "note": "constraint \"enum\" is \"['NET15', 'NET30', 'NET45', 'PREPAID']\"",
+      "cells": [
+        "NET99"
+      ]
+    },
+    {
+      "resource": "customer_bank",
+      "row_number": 3,
+      "field": "customer_id",
+      "category": "foreign_key",
+      "raw_code": "foreign-key",
+      "severity": "high",
+      "message": "Row at position \"3\" violates the foreign key: for \"customer_id\": values \"CUST999\" not found in the lookup table \"customer\" as \"customer_id\"",
+      "note": "for \"customer_id\": values \"CUST999\" not found in the lookup table \"customer\" as \"customer_id\"",
+      "cells": [
+        "CUST999"
+      ]
+    },
+    {
+      "resource": "customer_bank",
+      "row_number": 4,
+      "field": "currency",
+      "category": "enum",
+      "raw_code": "constraint-error",
+      "severity": "medium",
+      "message": "The cell \"AUD\" in row at position \"4\" and field \"currency\" at position \"4\" does not conform to a constraint: constraint \"enum\" is \"['EUR', 'GBP', 'USD']\"",
+      "note": "constraint \"enum\" is \"['EUR', 'GBP', 'USD']\"",
+      "cells": [
+        "AUD"
+      ]
+    }
+  ],
+  "validation": {
+    "valid": false
+  }
+}

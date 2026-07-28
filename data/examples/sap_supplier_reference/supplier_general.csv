@@ -1,0 +1,7 @@
+supplier_id,organization_name,business_partner_category,country_code,language_code,tax_number
+SUP000001,Synthetic Supplier Alpha,2,DE,DE,SYN-DE-001
+SUP000002,Synthetic Supplier Beta,2,US,EN,SYN-US-002
+SUP000002,Synthetic Supplier Duplicate,2,GB,EN,SYN-GB-003
+SUP000004,,2,DE,DE,SYN-DE-004
+SUP000005,Synthetic Supplier Name That Is Deliberately Longer Than Forty Characters,2,GB,EN,SYN-GB-005
+SUP000006,Synthetic Supplier Gamma,1,USA,E,SYN-US-006
