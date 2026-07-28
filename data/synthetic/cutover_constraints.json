@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "scenario": "synthetic_newco_day1_cutover",
+    "time_basis": "relative_to_day_1",
+    "synthetic": true
+  },
+  "owner_roles": [
+    "Cutover Manager",
+    "Data Migration Lead",
+    "Integration Lead",
+    "Finance Lead",
+    "Business Process Owner",
+    "Technical Lead"
+  ],
+  "shared_milestones": [
+    {
+      "milestone_id": "MS-CUT-SCOPE-BASELINE",
+      "offset": "T-30",
+      "name": "Cutover scope baseline"
+    },
+    {
+      "milestone_id": "MS-MOCK-CUTOVER",
+      "offset": "T-21",
+      "name": "Mock cutover"
+    },
+    {
+      "milestone_id": "MS-INTEGRATION-READINESS",
+      "offset": "T-14",
+      "name": "Integration readiness review"
+    },
+    {
+      "milestone_id": "MS-CUTOVER-READINESS",
+      "offset": "T-7",
+      "name": "Cutover readiness review"
+    },
+    {
+      "milestone_id": "MS-CODE-FREEZE",
+      "offset": "T-5",
+      "name": "Code freeze"
+    },
+    {
+      "milestone_id": "MS-DATA-FREEZE",
+      "offset": "T-2",
+      "name": "Data freeze"
+    },
+    {
+      "milestone_id": "MS-GO-NOGO",
+      "offset": "T-1",
+      "name": "Go / No-Go decision"
+    },
+    {
+      "milestone_id": "MS-DAY1",
+      "offset": "T0",
+      "name": "Day-1 execution and validation"
+    },
+    {
+      "milestone_id": "MS-RECONCILIATION",
+      "offset": "T+1",
+      "name": "Financial and interface reconciliation"
+    },
+    {
+      "milestone_id": "MS-HYPERCARE-HANDOVER",
+      "offset": "T+5",
+      "name": "Hypercare handover"
+    }
+  ],
+  "freeze_windows": [
+    {
+      "freeze_id": "FRZ-CODE",
+      "name": "Code Freeze",
+      "start_offset": "T-5",
+      "end_offset": "T0",
+      "owner_role": "Technical Lead",
+      "exception_approval_role": "Cutover Manager",
+      "description": "Only emergency changes approved by the cutover manager may enter the Day-1 release scope."
+    },
+    {
+      "freeze_id": "FRZ-DATA",
+      "name": "Data Freeze",
+      "start_offset": "T-2",
+      "end_offset": "T0",
+      "owner_role": "Data Migration Lead",
+      "exception_approval_role": "Business Process Owner",
+      "description": "Transactional and master data deltas are frozen except for approved critical corrections."
+    },
+    {
+      "freeze_id": "FRZ-INTERFACE-CONFIG",
+      "name": "Interface Configuration Freeze",
+      "start_offset": "T-5",
+      "end_offset": "T0",
+      "owner_role": "Integration Lead",
+      "exception_approval_role": "Technical Lead",
+      "description": "Interface endpoints, schedules, and file layouts remain stable for final cutover testing and execution."
+    }
+  ],
+  "approval_gates": [
+    {
+      "gate_id": "GATE-DESIGN-SIGNOFF",
+      "name": "Design Sign-off",
+      "due_offset": "T-30",
+      "approver_roles": [
+        "Business Process Owner",
+        "Technical Lead"
+      ],
+      "entry_criteria": [
+        "Development requirement has an agreed implementation approach.",
+        "Rollback and validation responsibilities are identified."
+      ]
+    },
+    {
+      "gate_id": "GATE-CUTOVER-READINESS",
+      "name": "Cutover Readiness",
+      "due_offset": "T-7",
+      "approver_roles": [
+        "Cutover Manager",
+        "Business Process Owner",
+        "Technical Lead"
+      ],
+      "entry_criteria": [
+        "Build and test activities are complete.",
+        "Open RAID items have owners and mitigation plans."
+      ]
+    },
+    {
+      "gate_id": "GATE-GO-NOGO",
+      "name": "Go / No-Go",
+      "due_offset": "T-1",
+      "approver_roles": [
+        "Cutover Manager",
+        "Finance Lead",
+        "Business Process Owner"
+      ],
+      "entry_criteria": [
+        "Cutover readiness is approved.",
+        "Freeze windows are active and exceptions are controlled.",
+        "Deployment rollback actions are confirmed."
+      ]
+    },
+    {
+      "gate_id": "GATE-HYPERCARE-HANDOVER",
+      "name": "Hypercare Handover",
+      "due_offset": "T+5",
+      "approver_roles": [
+        "Cutover Manager",
+        "Business Process Owner"
+      ],
+      "entry_criteria": [
+        "Day-1 validation and reconciliation are complete.",
+        "Open support items are transferred to hypercare ownership."
+      ]
+    }
+  ]
+}

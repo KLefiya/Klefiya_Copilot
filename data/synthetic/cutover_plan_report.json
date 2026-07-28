@@ -1,0 +1,1227 @@
+{
+  "_run_info": {
+    "content_sha256": "c4a88a3cb0923d2ed28356f72c037ace313ee73bee961ae8212265e4de2a0a8d",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T01:02:00+00:00"
+  },
+  "_meta": {
+    "module": "module_3_cutover_raid_governance",
+    "component": "deterministic_cutover_plan_builder",
+    "source_report": "data/synthetic/gap_analysis_report.json",
+    "constraints_file": "data/synthetic/cutover_constraints.json",
+    "source_report_content_sha256": "89f42052d64117b49a70a19dc3adb751bfdd5da7a12eedb435e4eecfb02c1ae3",
+    "development_backlog_count": 5,
+    "needs_review_count": 2,
+    "work_package_count": 5,
+    "activity_count": 30,
+    "shared_activity_count": 10,
+    "raid_count": 7,
+    "time_basis": "relative_to_day_1",
+    "synthetic": true,
+    "owner_role_rules": {
+      "domain_owner_roles": {
+        "P2P": "Business Process Owner",
+        "O2C": "Business Process Owner",
+        "R2R": "Finance Lead",
+        "master_data": "Data Migration Lead"
+      },
+      "development_delivery_default": "Technical Lead",
+      "integration_delivery_owner": "Integration Lead",
+      "integration_keyword_rule": {
+        "keywords": [
+          "api",
+          "archive",
+          "endpoint",
+          "external",
+          "feed",
+          "file",
+          "interface",
+          "layout",
+          "ledger",
+          "legacy",
+          "load",
+          "mapping",
+          "nightly",
+          "portal",
+          "schedule",
+          "send",
+          "spreadsheet",
+          "synchronization",
+          "upload"
+        ],
+        "matched_by_requirement_id": {
+          "EX-004": [
+            "external",
+            "feed",
+            "mapping",
+            "nightly",
+            "schedule",
+            "send"
+          ],
+          "EX-008": [
+            "external",
+            "interface",
+            "load",
+            "schedule",
+            "spreadsheet"
+          ],
+          "EX-012": [
+            "endpoint",
+            "legacy",
+            "load",
+            "mapping",
+            "portal",
+            "send"
+          ],
+          "EX-019": [
+            "external",
+            "feed",
+            "file",
+            "interface",
+            "layout",
+            "ledger",
+            "nightly",
+            "schedule",
+            "send"
+          ],
+          "EX-024": [
+            "archive",
+            "external",
+            "file",
+            "interface",
+            "load",
+            "upload"
+          ]
+        }
+      }
+    },
+    "raid_severity_rules": {
+      "needs_review_confidence_below_0_50": "High",
+      "needs_review_confidence_0_50_to_below_0_70": "Medium",
+      "other_needs_review_reasons": "Medium"
+    }
+  },
+  "milestones": [
+    {
+      "milestone_id": "MS-CUT-SCOPE-BASELINE",
+      "offset": "T-30",
+      "name": "Cutover scope baseline"
+    },
+    {
+      "milestone_id": "MS-MOCK-CUTOVER",
+      "offset": "T-21",
+      "name": "Mock cutover"
+    },
+    {
+      "milestone_id": "MS-INTEGRATION-READINESS",
+      "offset": "T-14",
+      "name": "Integration readiness review"
+    },
+    {
+      "milestone_id": "MS-CUTOVER-READINESS",
+      "offset": "T-7",
+      "name": "Cutover readiness review"
+    },
+    {
+      "milestone_id": "MS-CODE-FREEZE",
+      "offset": "T-5",
+      "name": "Code freeze"
+    },
+    {
+      "milestone_id": "MS-DATA-FREEZE",
+      "offset": "T-2",
+      "name": "Data freeze"
+    },
+    {
+      "milestone_id": "MS-GO-NOGO",
+      "offset": "T-1",
+      "name": "Go / No-Go decision"
+    },
+    {
+      "milestone_id": "MS-DAY1",
+      "offset": "T0",
+      "name": "Day-1 execution and validation"
+    },
+    {
+      "milestone_id": "MS-RECONCILIATION",
+      "offset": "T+1",
+      "name": "Financial and interface reconciliation"
+    },
+    {
+      "milestone_id": "MS-HYPERCARE-HANDOVER",
+      "offset": "T+5",
+      "name": "Hypercare handover"
+    }
+  ],
+  "freeze_windows": [
+    {
+      "freeze_id": "FRZ-CODE",
+      "name": "Code Freeze",
+      "start_offset": "T-5",
+      "end_offset": "T0",
+      "owner_role": "Technical Lead",
+      "exception_approval_role": "Cutover Manager",
+      "description": "Only emergency changes approved by the cutover manager may enter the Day-1 release scope."
+    },
+    {
+      "freeze_id": "FRZ-DATA",
+      "name": "Data Freeze",
+      "start_offset": "T-2",
+      "end_offset": "T0",
+      "owner_role": "Data Migration Lead",
+      "exception_approval_role": "Business Process Owner",
+      "description": "Transactional and master data deltas are frozen except for approved critical corrections."
+    },
+    {
+      "freeze_id": "FRZ-INTERFACE-CONFIG",
+      "name": "Interface Configuration Freeze",
+      "start_offset": "T-5",
+      "end_offset": "T0",
+      "owner_role": "Integration Lead",
+      "exception_approval_role": "Technical Lead",
+      "description": "Interface endpoints, schedules, and file layouts remain stable for final cutover testing and execution."
+    }
+  ],
+  "approval_gates": [
+    {
+      "gate_id": "GATE-CUTOVER-READINESS",
+      "name": "Cutover Readiness",
+      "due_offset": "T-7",
+      "approver_roles": [
+        "Cutover Manager",
+        "Business Process Owner",
+        "Technical Lead"
+      ],
+      "entry_criteria": [
+        "Build and test activities are complete.",
+        "Open RAID items have owners and mitigation plans."
+      ]
+    },
+    {
+      "gate_id": "GATE-DESIGN-SIGNOFF",
+      "name": "Design Sign-off",
+      "due_offset": "T-30",
+      "approver_roles": [
+        "Business Process Owner",
+        "Technical Lead"
+      ],
+      "entry_criteria": [
+        "Development requirement has an agreed implementation approach.",
+        "Rollback and validation responsibilities are identified."
+      ]
+    },
+    {
+      "gate_id": "GATE-GO-NOGO",
+      "name": "Go / No-Go",
+      "due_offset": "T-1",
+      "approver_roles": [
+        "Cutover Manager",
+        "Finance Lead",
+        "Business Process Owner"
+      ],
+      "entry_criteria": [
+        "Cutover readiness is approved.",
+        "Freeze windows are active and exceptions are controlled.",
+        "Deployment rollback actions are confirmed."
+      ]
+    },
+    {
+      "gate_id": "GATE-HYPERCARE-HANDOVER",
+      "name": "Hypercare Handover",
+      "due_offset": "T+5",
+      "approver_roles": [
+        "Cutover Manager",
+        "Business Process Owner"
+      ],
+      "entry_criteria": [
+        "Day-1 validation and reconciliation are complete.",
+        "Open support items are transferred to hypercare ownership."
+      ]
+    }
+  ],
+  "work_packages": [
+    {
+      "work_package_id": "WP-EX-004",
+      "source_requirement_id": "EX-004",
+      "source_note_id": "INT-001",
+      "source_domain": "P2P",
+      "title": "Deliver development requirement EX-004",
+      "description": "Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "owner_role": "Integration Lead",
+      "business_owner_role": "Business Process Owner",
+      "status": "Not Started"
+    },
+    {
+      "work_package_id": "WP-EX-008",
+      "source_requirement_id": "EX-008",
+      "source_note_id": "INT-002",
+      "source_domain": "master_data",
+      "title": "Deliver development requirement EX-008",
+      "description": "Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "owner_role": "Integration Lead",
+      "business_owner_role": "Data Migration Lead",
+      "status": "Not Started"
+    },
+    {
+      "work_package_id": "WP-EX-012",
+      "source_requirement_id": "EX-012",
+      "source_note_id": "INT-003",
+      "source_domain": "O2C",
+      "title": "Deliver development requirement EX-012",
+      "description": "Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "owner_role": "Integration Lead",
+      "business_owner_role": "Business Process Owner",
+      "status": "Not Started"
+    },
+    {
+      "work_package_id": "WP-EX-019",
+      "source_requirement_id": "EX-019",
+      "source_note_id": "INT-005",
+      "source_domain": "R2R",
+      "title": "Deliver development requirement EX-019",
+      "description": "Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "owner_role": "Integration Lead",
+      "business_owner_role": "Finance Lead",
+      "status": "Not Started"
+    },
+    {
+      "work_package_id": "WP-EX-024",
+      "source_requirement_id": "EX-024",
+      "source_note_id": "INT-006",
+      "source_domain": "master_data",
+      "title": "Deliver development requirement EX-024",
+      "description": "An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "owner_role": "Integration Lead",
+      "business_owner_role": "Data Migration Lead",
+      "status": "Not Started"
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "ACT-EX-004-BUILD",
+      "work_package_id": "WP-EX-004",
+      "title": "Build EX-004",
+      "description": "Build activity for: Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "workstream": "P2P",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-24",
+      "end_offset": "T-15",
+      "depends_on": [
+        "ACT-EX-004-DESIGN"
+      ],
+      "source_requirement_id": "EX-004",
+      "source_note_id": "INT-001",
+      "source_domain": "P2P",
+      "source_evidence": [
+        "KB-P2P-001"
+      ],
+      "source_rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-004-DEPLOY",
+      "work_package_id": "WP-EX-004",
+      "title": "Deploy EX-004",
+      "description": "Deploy activity for: Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "workstream": "P2P",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-1",
+      "end_offset": "T0",
+      "depends_on": [
+        "ACT-EX-004-TEST"
+      ],
+      "source_requirement_id": "EX-004",
+      "source_note_id": "INT-001",
+      "source_domain": "P2P",
+      "source_evidence": [
+        "KB-P2P-001"
+      ],
+      "source_rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier.",
+      "approval_gate": "GATE-GO-NOGO",
+      "rollback_required": true,
+      "rollback_action": "Back out deployment for EX-004 and restore the last validated Day-1 configuration or interface package.",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-004-DESIGN",
+      "work_package_id": "WP-EX-004",
+      "title": "Design EX-004",
+      "description": "Design activity for: Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "workstream": "P2P",
+      "owner_role": "Business Process Owner",
+      "start_offset": "T-30",
+      "end_offset": "T-25",
+      "depends_on": [],
+      "source_requirement_id": "EX-004",
+      "source_note_id": "INT-001",
+      "source_domain": "P2P",
+      "source_evidence": [
+        "KB-P2P-001"
+      ],
+      "source_rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier.",
+      "approval_gate": "GATE-DESIGN-SIGNOFF",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-004-TEST",
+      "work_package_id": "WP-EX-004",
+      "title": "Test EX-004",
+      "description": "Test activity for: Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends.",
+      "workstream": "P2P",
+      "owner_role": "Business Process Owner",
+      "start_offset": "T-14",
+      "end_offset": "T-7",
+      "depends_on": [
+        "ACT-EX-004-BUILD"
+      ],
+      "source_requirement_id": "EX-004",
+      "source_note_id": "INT-001",
+      "source_domain": "P2P",
+      "source_evidence": [
+        "KB-P2P-001"
+      ],
+      "source_rationale": "KB-P2P-001 explicitly states that 'Feeding requisitions or orders to an application outside the ERP system on a schedule' is typically beyond the standard. The requirement is to send emergency repair orders nightly to OrivaBuy, which constitutes feeding orders to an external application on a schedule. The standard provides no object, process, or extension point for this scheduled outbound transmission, so the entire transport mechanism, mapping, scheduling, and error handling must be built, placing it in the Development tier.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-008-BUILD",
+      "work_package_id": "WP-EX-008",
+      "title": "Build EX-008",
+      "description": "Build activity for: Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "workstream": "master_data",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-24",
+      "end_offset": "T-15",
+      "depends_on": [
+        "ACT-EX-008-DESIGN"
+      ],
+      "source_requirement_id": "EX-008",
+      "source_note_id": "INT-002",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-001",
+        "KB-MD-007"
+      ],
+      "source_rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development).",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-008-DEPLOY",
+      "work_package_id": "WP-EX-008",
+      "title": "Deploy EX-008",
+      "description": "Deploy activity for: Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "workstream": "master_data",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-1",
+      "end_offset": "T0",
+      "depends_on": [
+        "ACT-EX-008-TEST"
+      ],
+      "source_requirement_id": "EX-008",
+      "source_note_id": "INT-002",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-001",
+        "KB-MD-007"
+      ],
+      "source_rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development).",
+      "approval_gate": "GATE-GO-NOGO",
+      "rollback_required": true,
+      "rollback_action": "Back out deployment for EX-008 and restore the last validated Day-1 configuration or interface package.",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-008-DESIGN",
+      "work_package_id": "WP-EX-008",
+      "title": "Design EX-008",
+      "description": "Design activity for: Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-30",
+      "end_offset": "T-25",
+      "depends_on": [],
+      "source_requirement_id": "EX-008",
+      "source_note_id": "INT-002",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-001",
+        "KB-MD-007"
+      ],
+      "source_rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development).",
+      "approval_gate": "GATE-DESIGN-SIGNOFF",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-008-TEST",
+      "work_package_id": "WP-EX-008",
+      "title": "Test EX-008",
+      "description": "Test activity for: Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system.",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-14",
+      "end_offset": "T-7",
+      "depends_on": [
+        "ACT-EX-008-BUILD"
+      ],
+      "source_requirement_id": "EX-008",
+      "source_note_id": "INT-002",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-001",
+        "KB-MD-007"
+      ],
+      "source_rationale": "The standard does not provide a field or mechanism to load externally maintained risk scores (KB-MD-007: 'no delivered field fed by that source ... requires a built interface with its own scheduling, error handling, and monitoring'). Loading partner attributes on a schedule from an outside application is beyond the standard (KB-MD-001: 'Loading partner attributes on a schedule from an application outside the ERP system'). Therefore, building an automated load from the Nivora Risk Hub spreadsheet requires new development (Development).",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-012-BUILD",
+      "work_package_id": "WP-EX-012",
+      "title": "Build EX-012",
+      "description": "Build activity for: Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "workstream": "O2C",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-24",
+      "end_offset": "T-15",
+      "depends_on": [
+        "ACT-EX-012-DESIGN"
+      ],
+      "source_requirement_id": "EX-012",
+      "source_note_id": "INT-003",
+      "source_domain": "O2C",
+      "source_evidence": [
+        "KB-O2C-001",
+        "KB-O2C-006"
+      ],
+      "source_rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-012-DEPLOY",
+      "work_package_id": "WP-EX-012",
+      "title": "Deploy EX-012",
+      "description": "Deploy activity for: Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "workstream": "O2C",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-1",
+      "end_offset": "T0",
+      "depends_on": [
+        "ACT-EX-012-TEST"
+      ],
+      "source_requirement_id": "EX-012",
+      "source_note_id": "INT-003",
+      "source_domain": "O2C",
+      "source_evidence": [
+        "KB-O2C-001",
+        "KB-O2C-006"
+      ],
+      "source_rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development.",
+      "approval_gate": "GATE-GO-NOGO",
+      "rollback_required": true,
+      "rollback_action": "Back out deployment for EX-012 and restore the last validated Day-1 configuration or interface package.",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-012-DESIGN",
+      "work_package_id": "WP-EX-012",
+      "title": "Design EX-012",
+      "description": "Design activity for: Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "workstream": "O2C",
+      "owner_role": "Business Process Owner",
+      "start_offset": "T-30",
+      "end_offset": "T-25",
+      "depends_on": [],
+      "source_requirement_id": "EX-012",
+      "source_note_id": "INT-003",
+      "source_domain": "O2C",
+      "source_evidence": [
+        "KB-O2C-001",
+        "KB-O2C-006"
+      ],
+      "source_rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development.",
+      "approval_gate": "GATE-DESIGN-SIGNOFF",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-012-TEST",
+      "work_package_id": "WP-EX-012",
+      "title": "Test EX-012",
+      "description": "Test activity for: Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months.",
+      "workstream": "O2C",
+      "owner_role": "Business Process Owner",
+      "start_offset": "T-14",
+      "end_offset": "T-7",
+      "depends_on": [
+        "ACT-EX-012-BUILD"
+      ],
+      "source_requirement_id": "EX-012",
+      "source_note_id": "INT-003",
+      "source_domain": "O2C",
+      "source_evidence": [
+        "KB-O2C-001",
+        "KB-O2C-006"
+      ],
+      "source_rationale": "The requirement is to automatically convert orders from a legacy portal into sales orders without manual re-keying. KB-O2C-006 states that when a sending portal uses a payload not in a standard format, 'the standard has no way to interpret it' and that 'Converting a portal-specific payload into sales orders without manual re-entry' is typically beyond the standard. KB-O2C-001 also confirms that creating sales orders from an unrecognized payload format is beyond the standard. Therefore, this requires building the receiving endpoint, mapping, error handling, and monitoring—new development.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-019-BUILD",
+      "work_package_id": "WP-EX-019",
+      "title": "Build EX-019",
+      "description": "Build activity for: Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "workstream": "R2R",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-24",
+      "end_offset": "T-15",
+      "depends_on": [
+        "ACT-EX-019-DESIGN"
+      ],
+      "source_requirement_id": "EX-019",
+      "source_note_id": "INT-005",
+      "source_domain": "R2R",
+      "source_evidence": [
+        "KB-R2R-001",
+        "KB-R2R-004",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-019-DEPLOY",
+      "work_package_id": "WP-EX-019",
+      "title": "Deploy EX-019",
+      "description": "Deploy activity for: Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "workstream": "R2R",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-1",
+      "end_offset": "T0",
+      "depends_on": [
+        "ACT-EX-019-TEST"
+      ],
+      "source_requirement_id": "EX-019",
+      "source_note_id": "INT-005",
+      "source_domain": "R2R",
+      "source_evidence": [
+        "KB-R2R-001",
+        "KB-R2R-004",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development.",
+      "approval_gate": "GATE-GO-NOGO",
+      "rollback_required": true,
+      "rollback_action": "Back out deployment for EX-019 and restore the last validated Day-1 configuration or interface package.",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-019-DESIGN",
+      "work_package_id": "WP-EX-019",
+      "title": "Design EX-019",
+      "description": "Design activity for: Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "workstream": "R2R",
+      "owner_role": "Finance Lead",
+      "start_offset": "T-30",
+      "end_offset": "T-25",
+      "depends_on": [],
+      "source_requirement_id": "EX-019",
+      "source_note_id": "INT-005",
+      "source_domain": "R2R",
+      "source_evidence": [
+        "KB-R2R-001",
+        "KB-R2R-004",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development.",
+      "approval_gate": "GATE-DESIGN-SIGNOFF",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-019-TEST",
+      "work_package_id": "WP-EX-019",
+      "title": "Test EX-019",
+      "description": "Test activity for: Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters.",
+      "workstream": "R2R",
+      "owner_role": "Finance Lead",
+      "start_offset": "T-14",
+      "end_offset": "T-7",
+      "depends_on": [
+        "ACT-EX-019-BUILD"
+      ],
+      "source_requirement_id": "EX-019",
+      "source_note_id": "INT-005",
+      "source_domain": "R2R",
+      "source_evidence": [
+        "KB-R2R-001",
+        "KB-R2R-004",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is to build a recurring custom file for an external system (Auralis Separation Ledger) with a specific layout for Day-1 balances. According to KB-R2R-004, a nightly file whose layout, naming, and delivery are dictated by a receiving application is not delivered; producing it is a build. KB-XC-002 states that any bespoke interface to a named external application is a project deliverable, including scheduled extracts with custom formats. KB-R2R-001 lists recurring bespoke extracts as beyond the standard. The standard provides no object, process, or extension point for this end-to-end feed; therefore, it requires development.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-024-BUILD",
+      "work_package_id": "WP-EX-024",
+      "title": "Build EX-024",
+      "description": "Build activity for: An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "workstream": "master_data",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-24",
+      "end_offset": "T-15",
+      "depends_on": [
+        "ACT-EX-024-DESIGN"
+      ],
+      "source_requirement_id": "EX-024",
+      "source_note_id": "INT-006",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-004",
+        "KB-MD-008",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-024-DEPLOY",
+      "work_package_id": "WP-EX-024",
+      "title": "Deploy EX-024",
+      "description": "Deploy activity for: An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "workstream": "master_data",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-1",
+      "end_offset": "T0",
+      "depends_on": [
+        "ACT-EX-024-TEST"
+      ],
+      "source_requirement_id": "EX-024",
+      "source_note_id": "INT-006",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-004",
+        "KB-MD-008",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching.",
+      "approval_gate": "GATE-GO-NOGO",
+      "rollback_required": true,
+      "rollback_action": "Back out deployment for EX-024 and restore the last validated Day-1 configuration or interface package.",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-024-DESIGN",
+      "work_package_id": "WP-EX-024",
+      "title": "Design EX-024",
+      "description": "Design activity for: An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-30",
+      "end_offset": "T-25",
+      "depends_on": [],
+      "source_requirement_id": "EX-024",
+      "source_note_id": "INT-006",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-004",
+        "KB-MD-008",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching.",
+      "approval_gate": "GATE-DESIGN-SIGNOFF",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "ACT-EX-024-TEST",
+      "work_package_id": "WP-EX-024",
+      "title": "Test EX-024",
+      "description": "Test activity for: An upload from the SeltraBridge archive must bring over product drawings and link them to product records.",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-14",
+      "end_offset": "T-7",
+      "depends_on": [
+        "ACT-EX-024-BUILD"
+      ],
+      "source_requirement_id": "EX-024",
+      "source_note_id": "INT-006",
+      "source_domain": "master_data",
+      "source_evidence": [
+        "KB-MD-004",
+        "KB-MD-008",
+        "KB-XC-002"
+      ],
+      "source_rationale": "The requirement is for an upload from an external archive (SeltraBridge) to bring product drawings and link them to products in bulk. According to KB-MD-008, the standard delivers attachment service and document management with object links, but 'Moving a large body of drawings out of an external archive, deciding from the archive's metadata which product each drawing belongs to, and creating the object links in bulk is a build: the reading of the archive, the matching rule, the error handling for unmatched files, and the rerun behaviour are all project deliverables.' KB-MD-004 also states that attaching externally sourced documents to products in bulk according to project linkage rules is beyond the standard. Furthermore, KB-XC-002 confirms that a project-specific connection to a named external application is a build. Therefore, the requirement falls into Development because the standard provides no pre-built interface for this specific archive extraction and bulk linking with project-defined matching.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": null
+    },
+    {
+      "activity_id": "CUT-CODE-FREEZE",
+      "work_package_id": null,
+      "title": "Code freeze",
+      "description": "Activate code freeze for the approved cutover scope.",
+      "workstream": "shared_cutover",
+      "owner_role": "Technical Lead",
+      "start_offset": "T-5",
+      "end_offset": "T-5",
+      "depends_on": [
+        "CUT-CUTOVER-READINESS"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-CODE-FREEZE"
+    },
+    {
+      "activity_id": "CUT-CUTOVER-READINESS",
+      "work_package_id": null,
+      "title": "Cutover readiness review",
+      "description": "Confirm testing is complete and the cutover plan can enter freeze controls.",
+      "workstream": "shared_cutover",
+      "owner_role": "Cutover Manager",
+      "start_offset": "T-7",
+      "end_offset": "T-7",
+      "depends_on": [
+        "ACT-EX-004-TEST",
+        "ACT-EX-008-TEST",
+        "ACT-EX-012-TEST",
+        "ACT-EX-019-TEST",
+        "ACT-EX-024-TEST",
+        "CUT-INTEGRATION-READINESS"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-CUTOVER-READINESS"
+    },
+    {
+      "activity_id": "CUT-DATA-FREEZE",
+      "work_package_id": null,
+      "title": "Data freeze",
+      "description": "Activate data freeze for final Day-1 execution.",
+      "workstream": "shared_cutover",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-2",
+      "end_offset": "T-2",
+      "depends_on": [
+        "CUT-CODE-FREEZE"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-DATA-FREEZE"
+    },
+    {
+      "activity_id": "CUT-DAY1-VALIDATION",
+      "work_package_id": null,
+      "title": "Day-1 execution and validation",
+      "description": "Validate all development deployments after Day-1 execution.",
+      "workstream": "shared_cutover",
+      "owner_role": "Cutover Manager",
+      "start_offset": "T0",
+      "end_offset": "T0",
+      "depends_on": [
+        "ACT-EX-004-DEPLOY",
+        "ACT-EX-008-DEPLOY",
+        "ACT-EX-012-DEPLOY",
+        "ACT-EX-019-DEPLOY",
+        "ACT-EX-024-DEPLOY",
+        "CUT-GO-NOGO"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-DAY1"
+    },
+    {
+      "activity_id": "CUT-GO-NOGO",
+      "work_package_id": null,
+      "title": "Go / No-Go decision",
+      "description": "Approve or stop Day-1 execution based on readiness, freeze controls, and open RAID items.",
+      "workstream": "shared_cutover",
+      "owner_role": "Cutover Manager",
+      "start_offset": "T-1",
+      "end_offset": "T-1",
+      "depends_on": [
+        "CUT-DATA-FREEZE"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": "GATE-GO-NOGO",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-GO-NOGO"
+    },
+    {
+      "activity_id": "CUT-HYPERCARE-HANDOVER",
+      "work_package_id": null,
+      "title": "Hypercare handover",
+      "description": "Transfer remaining support items and ownership into hypercare.",
+      "workstream": "shared_cutover",
+      "owner_role": "Cutover Manager",
+      "start_offset": "T+5",
+      "end_offset": "T+5",
+      "depends_on": [
+        "CUT-RECONCILIATION"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": "GATE-HYPERCARE-HANDOVER",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-HYPERCARE-HANDOVER"
+    },
+    {
+      "activity_id": "CUT-INTEGRATION-READINESS",
+      "work_package_id": null,
+      "title": "Integration readiness review",
+      "description": "Confirm builds and interface/configuration readiness before final testing.",
+      "workstream": "shared_cutover",
+      "owner_role": "Integration Lead",
+      "start_offset": "T-14",
+      "end_offset": "T-14",
+      "depends_on": [
+        "ACT-EX-004-BUILD",
+        "ACT-EX-008-BUILD",
+        "ACT-EX-012-BUILD",
+        "ACT-EX-019-BUILD",
+        "ACT-EX-024-BUILD",
+        "CUT-MOCK-EXECUTION"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-INTEGRATION-READINESS"
+    },
+    {
+      "activity_id": "CUT-MOCK-EXECUTION",
+      "work_package_id": null,
+      "title": "Mock cutover",
+      "description": "Execute a synthetic mock cutover for the development backlog scope.",
+      "workstream": "shared_cutover",
+      "owner_role": "Cutover Manager",
+      "start_offset": "T-21",
+      "end_offset": "T-21",
+      "depends_on": [
+        "CUT-SCOPE-BASELINE"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-MOCK-CUTOVER"
+    },
+    {
+      "activity_id": "CUT-RECONCILIATION",
+      "work_package_id": null,
+      "title": "Financial and interface reconciliation",
+      "description": "Reconcile finance-critical postings and interface handoffs after Day-1 validation.",
+      "workstream": "shared_cutover",
+      "owner_role": "Finance Lead",
+      "start_offset": "T+1",
+      "end_offset": "T+1",
+      "depends_on": [
+        "CUT-DAY1-VALIDATION"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": null,
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-RECONCILIATION"
+    },
+    {
+      "activity_id": "CUT-SCOPE-BASELINE",
+      "work_package_id": null,
+      "title": "Cutover scope baseline",
+      "description": "Baseline cutover scope after development designs are complete.",
+      "workstream": "shared_cutover",
+      "owner_role": "Cutover Manager",
+      "start_offset": "T-30",
+      "end_offset": "T-30",
+      "depends_on": [
+        "ACT-EX-004-DESIGN",
+        "ACT-EX-008-DESIGN",
+        "ACT-EX-012-DESIGN",
+        "ACT-EX-019-DESIGN",
+        "ACT-EX-024-DESIGN"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": null,
+      "source_evidence": [],
+      "source_rationale": "Shared deterministic cutover governance activity.",
+      "approval_gate": "GATE-DESIGN-SIGNOFF",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Not Started",
+      "milestone_id": "MS-CUT-SCOPE-BASELINE"
+    }
+  ],
+  "raid_register": [
+    {
+      "raid_id": "RAID-DEP-EX-004",
+      "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-004",
+      "description": "The development delivery for Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends. must be complete before Go / No-Go.",
+      "owner_role": "Integration Lead",
+      "probability": "Certain",
+      "impact": "High",
+      "severity": "High",
+      "status": "Open",
+      "mitigation": "Track DESIGN, BUILD, TEST, and DEPLOY completion in the cutover plan before the Go / No-Go gate.",
+      "trigger": "Any linked activity remains Not Started or incomplete at T-1.",
+      "linked_requirement_ids": [
+        "EX-004"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-004-DESIGN",
+        "ACT-EX-004-BUILD",
+        "ACT-EX-004-TEST",
+        "ACT-EX-004-DEPLOY"
+      ],
+      "source": "development_backlog"
+    },
+    {
+      "raid_id": "RAID-DEP-EX-008",
+      "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-008",
+      "description": "The development delivery for Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system. must be complete before Go / No-Go.",
+      "owner_role": "Integration Lead",
+      "probability": "Certain",
+      "impact": "High",
+      "severity": "High",
+      "status": "Open",
+      "mitigation": "Track DESIGN, BUILD, TEST, and DEPLOY completion in the cutover plan before the Go / No-Go gate.",
+      "trigger": "Any linked activity remains Not Started or incomplete at T-1.",
+      "linked_requirement_ids": [
+        "EX-008"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-008-DESIGN",
+        "ACT-EX-008-BUILD",
+        "ACT-EX-008-TEST",
+        "ACT-EX-008-DEPLOY"
+      ],
+      "source": "development_backlog"
+    },
+    {
+      "raid_id": "RAID-DEP-EX-012",
+      "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-012",
+      "description": "The development delivery for Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months. must be complete before Go / No-Go.",
+      "owner_role": "Integration Lead",
+      "probability": "Certain",
+      "impact": "High",
+      "severity": "High",
+      "status": "Open",
+      "mitigation": "Track DESIGN, BUILD, TEST, and DEPLOY completion in the cutover plan before the Go / No-Go gate.",
+      "trigger": "Any linked activity remains Not Started or incomplete at T-1.",
+      "linked_requirement_ids": [
+        "EX-012"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-012-DESIGN",
+        "ACT-EX-012-BUILD",
+        "ACT-EX-012-TEST",
+        "ACT-EX-012-DEPLOY"
+      ],
+      "source": "development_backlog"
+    },
+    {
+      "raid_id": "RAID-DEP-EX-019",
+      "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-019",
+      "description": "The development delivery for Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters. must be complete before Go / No-Go.",
+      "owner_role": "Integration Lead",
+      "probability": "Certain",
+      "impact": "High",
+      "severity": "High",
+      "status": "Open",
+      "mitigation": "Track DESIGN, BUILD, TEST, and DEPLOY completion in the cutover plan before the Go / No-Go gate.",
+      "trigger": "Any linked activity remains Not Started or incomplete at T-1.",
+      "linked_requirement_ids": [
+        "EX-019"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-019-DESIGN",
+        "ACT-EX-019-BUILD",
+        "ACT-EX-019-TEST",
+        "ACT-EX-019-DEPLOY"
+      ],
+      "source": "development_backlog"
+    },
+    {
+      "raid_id": "RAID-DEP-EX-024",
+      "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-024",
+      "description": "The development delivery for An upload from the SeltraBridge archive must bring over product drawings and link them to product records. must be complete before Go / No-Go.",
+      "owner_role": "Integration Lead",
+      "probability": "Certain",
+      "impact": "High",
+      "severity": "High",
+      "status": "Open",
+      "mitigation": "Track DESIGN, BUILD, TEST, and DEPLOY completion in the cutover plan before the Go / No-Go gate.",
+      "trigger": "Any linked activity remains Not Started or incomplete at T-1.",
+      "linked_requirement_ids": [
+        "EX-024"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-024-DESIGN",
+        "ACT-EX-024-BUILD",
+        "ACT-EX-024-TEST",
+        "ACT-EX-024-DEPLOY"
+      ],
+      "source": "development_backlog"
+    },
+    {
+      "raid_id": "RAID-RISK-EX-016",
+      "type": "Risk",
+      "title": "Fit/Gap judgement requires review for EX-016",
+      "description": "needs_review reason(s): 置信度 0.50 < 0.7. confidence=0.50. evidence=KB-XC-004, KB-P2P-003.",
+      "owner_role": "Data Migration Lead",
+      "probability": "Possible",
+      "impact": "Medium",
+      "severity": "Medium",
+      "status": "Open",
+      "mitigation": "Review the classification and confirm whether cutover scope or RAID treatment must change.",
+      "trigger": "Business owner does not confirm the judgement before Cutover Readiness.",
+      "linked_requirement_ids": [
+        "EX-016"
+      ],
+      "linked_activity_ids": [],
+      "source": "needs_review"
+    },
+    {
+      "raid_id": "RAID-RISK-EX-022",
+      "type": "Risk",
+      "title": "Fit/Gap judgement requires review for EX-022",
+      "description": "needs_review reason(s): 置信度 0.60 < 0.7; 未给出任何证据条目. confidence=0.60. evidence=no evidence entries.",
+      "owner_role": "Data Migration Lead",
+      "probability": "Possible",
+      "impact": "Medium",
+      "severity": "Medium",
+      "status": "Open",
+      "mitigation": "Review the classification and confirm whether cutover scope or RAID treatment must change.",
+      "trigger": "Business owner does not confirm the judgement before Cutover Readiness.",
+      "linked_requirement_ids": [
+        "EX-022"
+      ],
+      "linked_activity_ids": [],
+      "source": "needs_review"
+    }
+  ],
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "dependency_graph_acyclic": true,
+    "uncovered_development_requirements": [],
+    "deployments_without_rollback": [],
+    "unknown_owner_roles": [],
+    "missing_dependency_references": []
+  }
+}
