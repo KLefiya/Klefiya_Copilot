@@ -1,0 +1,253 @@
+{
+  "_run_info": {
+    "content_sha256": "d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T01:27:00+00:00"
+  },
+  "_meta": {
+    "tool": "src/tools/build_cutover_status.py",
+    "source_status_report": "data/synthetic/cutover_status_report.json",
+    "source_status_report_content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+    "as_of_offset": "T-7",
+    "rag_rules": [
+      "Red if a Day-1 critical activity is blocked.",
+      "Red if a due approval gate is blocked.",
+      "Red if a high Risk or Issue is Open or Mitigating.",
+      "Red if any incomplete activity is overdue.",
+      "Amber if due work or non-high Risk/Issue items require attention.",
+      "Green otherwise."
+    ]
+  },
+  "headline": {
+    "overall_rag": "Red",
+    "as_of_offset": "T-7",
+    "completed_activity_count": 17,
+    "blocked_activity_count": 2,
+    "not_started_activity_count": 11,
+    "work_packages_blocked": 1,
+    "open_high_risks_or_issues": 0,
+    "next_gate": {
+      "gate_id": "GATE-CUTOVER-READINESS",
+      "name": "Cutover Readiness",
+      "due_offset": "T-7",
+      "current_status": "Blocked",
+      "readiness": false,
+      "missing_readiness_criteria": [
+        "TEST activities incomplete: ACT-EX-024-TEST",
+        "Readiness milestones incomplete: CUT-CUTOVER-READINESS"
+      ]
+    }
+  },
+  "rag_reasons": [
+    "One or more Day-1 critical activities are blocked.",
+    "Due approval gate is blocked: GATE-CUTOVER-READINESS."
+  ],
+  "progress_summary": {
+    "activities_total": 30,
+    "activity_status_counts": {
+      "Not Started": 11,
+      "In Progress": 0,
+      "Blocked": 2,
+      "Completed": 17,
+      "Cancelled": 0
+    },
+    "activity_completion_percent": 56.67,
+    "work_packages_total": 5,
+    "work_package_status_counts": {
+      "Not Started": 0,
+      "In Progress": 4,
+      "Blocked": 1,
+      "Completed": 0,
+      "Cancelled": 0
+    },
+    "raid_total": 7,
+    "raid_status_counts": {
+      "by_status": {
+        "Open": 1,
+        "Mitigating": 5,
+        "Accepted": 0,
+        "Resolved": 1,
+        "Closed": 0
+      },
+      "by_type": {
+        "Dependency": {
+          "Open": 0,
+          "Mitigating": 5,
+          "Accepted": 0,
+          "Resolved": 0,
+          "Closed": 0
+        },
+        "Risk": {
+          "Open": 1,
+          "Mitigating": 0,
+          "Accepted": 0,
+          "Resolved": 1,
+          "Closed": 0
+        }
+      }
+    },
+    "approval_gate_total": 4,
+    "approval_gate_status_counts": {
+      "Pending": 2,
+      "Ready": 0,
+      "Approved": 1,
+      "Rejected": 0,
+      "Blocked": 1
+    }
+  },
+  "due_now": [
+    {
+      "activity_id": "ACT-EX-024-TEST",
+      "title": "Test EX-024",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-7",
+      "current_status": "Blocked",
+      "blocker": "SeltraBridge archive sample files do not preserve product drawing link identifiers for EX-024.",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-CUTOVER-READINESS",
+      "title": "Cutover readiness review",
+      "owner_role": "Cutover Manager",
+      "end_offset": "T-7",
+      "current_status": "Blocked",
+      "blocker": "ACT-EX-024-TEST remains blocked and prevents readiness approval.",
+      "is_critical_to_day1": true
+    }
+  ],
+  "overdue": [],
+  "due_next": [
+    {
+      "activity_id": "CUT-CODE-FREEZE",
+      "title": "Code freeze",
+      "owner_role": "Technical Lead",
+      "end_offset": "T-5",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-DATA-FREEZE",
+      "title": "Data freeze",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-2",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-GO-NOGO",
+      "title": "Go / No-Go decision",
+      "owner_role": "Cutover Manager",
+      "end_offset": "T-1",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "ACT-EX-004-DEPLOY",
+      "title": "Deploy EX-004",
+      "owner_role": "Integration Lead",
+      "end_offset": "T0",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "ACT-EX-008-DEPLOY",
+      "title": "Deploy EX-008",
+      "owner_role": "Integration Lead",
+      "end_offset": "T0",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "ACT-EX-012-DEPLOY",
+      "title": "Deploy EX-012",
+      "owner_role": "Integration Lead",
+      "end_offset": "T0",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "ACT-EX-019-DEPLOY",
+      "title": "Deploy EX-019",
+      "owner_role": "Integration Lead",
+      "end_offset": "T0",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "ACT-EX-024-DEPLOY",
+      "title": "Deploy EX-024",
+      "owner_role": "Integration Lead",
+      "end_offset": "T0",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-DAY1-VALIDATION",
+      "title": "Day-1 execution and validation",
+      "owner_role": "Cutover Manager",
+      "end_offset": "T0",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    }
+  ],
+  "critical_blockers": [
+    {
+      "activity_id": "ACT-EX-024-TEST",
+      "title": "Test EX-024",
+      "blocker": "SeltraBridge archive sample files do not preserve product drawing link identifiers for EX-024.",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-7"
+    },
+    {
+      "activity_id": "CUT-CUTOVER-READINESS",
+      "title": "Cutover readiness review",
+      "blocker": "ACT-EX-024-TEST remains blocked and prevents readiness approval.",
+      "owner_role": "Cutover Manager",
+      "end_offset": "T-7"
+    }
+  ],
+  "management_actions": [
+    {
+      "priority": 1,
+      "source_type": "Activity",
+      "source_id": "ACT-EX-024-TEST",
+      "owner_role": "Data Migration Lead",
+      "action": "Resolve ACT-EX-024-TEST blocker and capture closure evidence before the Cutover Readiness gate is revisited."
+    },
+    {
+      "priority": 1,
+      "source_type": "Activity",
+      "source_id": "CUT-CUTOVER-READINESS",
+      "owner_role": "Cutover Manager",
+      "action": "Resolve CUT-CUTOVER-READINESS blocker and capture closure evidence before the Cutover Readiness gate is revisited."
+    },
+    {
+      "priority": 2,
+      "source_type": "ApprovalGate",
+      "source_id": "GATE-CUTOVER-READINESS",
+      "owner_role": "Cutover Manager",
+      "action": "Reassess GATE-CUTOVER-READINESS after missing readiness criteria are cleared."
+    },
+    {
+      "priority": 3,
+      "source_type": "RAID",
+      "source_id": "RAID-RISK-EX-022",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-RISK-EX-022."
+    }
+  ],
+  "validation": {
+    "status": "valid",
+    "source_status_report_sha": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+    "source_status_report_valid": true
+  }
+}
