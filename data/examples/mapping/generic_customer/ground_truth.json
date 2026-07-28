@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "purpose": "evaluation_only",
+    "synthetic": true,
+    "must_not_be_read_by_mapping_engine": true
+  },
+  "mappings": [
+    {"source_field": "legacy_client_id", "expected_target": "customer.customer_id", "evaluation_group": "alias_backed"},
+    {"source_field": "client_name", "expected_target": "customer.customer_name", "evaluation_group": "alias_backed"},
+    {"source_field": "nation", "expected_target": "customer.country", "evaluation_group": "semantic_only"},
+    {"source_field": "contact_email", "expected_target": "customer.email", "evaluation_group": "alias_backed"},
+    {"source_field": "telephone_number", "expected_target": "customer.phone", "evaluation_group": "semantic_only"},
+    {"source_field": "vat_registration_number", "expected_target": "customer.tax_number", "evaluation_group": "alias_backed"},
+    {"source_field": "terms_code", "expected_target": "customer.payment_terms", "evaluation_group": "semantic_only"},
+    {"source_field": "bank_record_key", "expected_target": "customer_bank.bank_id", "evaluation_group": "alias_backed"},
+    {"source_field": "bank_customer_reference", "expected_target": "customer_bank.customer_id", "evaluation_group": "semantic_only"},
+    {"source_field": "bank_account_iban", "expected_target": "customer_bank.iban", "evaluation_group": "semantic_only"},
+    {"source_field": "account_currency", "expected_target": "customer_bank.currency", "evaluation_group": "alias_backed"},
+    {"source_field": "marketing_opt_in", "expected_target": null, "evaluation_group": "no_target"}
+  ]
+}

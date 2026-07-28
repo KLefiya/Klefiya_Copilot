@@ -1,0 +1,829 @@
+{
+  "_run_info": {
+    "content_sha256": "67ab0cbece2c538df6a8e63147e0123ad36bb60cbd74297b60da795a83418b60",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T07:18:44+00:00"
+  },
+  "_meta": {
+    "component": "contract_field_mapping",
+    "contract_id": "generic-customer-v1",
+    "contract_version": "1.0.0",
+    "contract_sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792",
+    "adapter": "generic_csv",
+    "domain": "customer_master",
+    "source_path": "data/examples/mapping/generic_customer/source_customer.csv",
+    "source_sha256": "19d66f2d5c87f8ebad74223a0182a0993f31fd5630980d49f682be457d2db33d",
+    "source_row_count": 6,
+    "source_field_count": 12,
+    "target_field_count": 11,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "thresholds": {
+      "high_confidence": 0.7,
+      "medium_confidence": 0.45,
+      "no_match_threshold": 0.4,
+      "alias_confidence_floor": 0.9,
+      "type_gate_floor": 0.6,
+      "top_n_candidates": 3
+    },
+    "read_only": true,
+    "ground_truth_used": false
+  },
+  "summary": {
+    "suggested": 8,
+    "needs_review": 3,
+    "possible_false_friend": 0,
+    "no_confident_target": 1,
+    "alias_based": 6,
+    "semantic_based": 1,
+    "target_coverage": 1.0
+  },
+  "mappings": [
+    {
+      "source_field": "legacy_client_id",
+      "status": "suggested",
+      "recommendation": "customer.customer_id",
+      "confidence": 0.9,
+      "band": "high",
+      "mapping_basis": "alias",
+      "source_profile": {
+        "name": "legacy_client_id",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 7,
+        "samples": [
+          "LC-1001",
+          "LC-1002",
+          "LC-1003",
+          "LC-1004",
+          "LC-1005"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer.customer_id",
+          "rank": 1,
+          "score": 0.9,
+          "semantic_score": 0.6249,
+          "fuzzy_score": 0.6222,
+          "alias_hit": true,
+          "alias_source": "legacy_client_id",
+          "lexical_overlap": 0.1667,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.customer_id",
+          "rank": 2,
+          "score": 0.5128,
+          "semantic_score": 0.5526,
+          "fuzzy_score": 0.6111,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1818,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.bank_id",
+          "rank": 3,
+          "score": 0.4372,
+          "semantic_score": 0.4389,
+          "fuzzy_score": 0.5652,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.2,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "client_name",
+      "status": "suggested",
+      "recommendation": "customer.customer_name",
+      "confidence": 0.9,
+      "band": "high",
+      "mapping_basis": "alias",
+      "source_profile": {
+        "name": "client_name",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 25,
+        "samples": [
+          "Synthetic Aurora Stores",
+          "Synthetic Beacon Trading",
+          "Synthetic Cedar Retail",
+          "Synthetic Delta Markets",
+          "Synthetic Ember Wholesale"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer.customer_name",
+          "rank": 1,
+          "score": 0.9,
+          "semantic_score": 0.6143,
+          "fuzzy_score": 0.7879,
+          "alias_hit": true,
+          "alias_source": "client_name",
+          "lexical_overlap": 0.2,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.customer_id",
+          "rank": 2,
+          "score": 0.432,
+          "semantic_score": 0.4509,
+          "fuzzy_score": 0.5806,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0909,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.tax_number",
+          "rank": 3,
+          "score": 0.4307,
+          "semantic_score": 0.4325,
+          "fuzzy_score": 0.6154,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0909,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "nation",
+      "status": "needs_review",
+      "recommendation": "customer.country",
+      "confidence": 0.4905,
+      "band": "medium",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "nation",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 3,
+        "distinct_ratio": 0.5,
+        "observed_max_length": 2,
+        "samples": [
+          "DE",
+          "US",
+          "GB"
+        ]
+      },
+      "review_reasons": [
+        "medium_confidence"
+      ],
+      "top_candidates": [
+        {
+          "target": "customer.country",
+          "rank": 1,
+          "score": 0.4905,
+          "semantic_score": 0.5067,
+          "fuzzy_score": 0.6667,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1111,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.iban",
+          "rank": 2,
+          "score": 0.2262,
+          "semantic_score": 0.1036,
+          "fuzzy_score": 0.6154,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.currency",
+          "rank": 3,
+          "score": 0.1965,
+          "semantic_score": 0.1577,
+          "fuzzy_score": 0.3889,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "contact_email",
+      "status": "suggested",
+      "recommendation": "customer.email",
+      "confidence": 0.9,
+      "band": "high",
+      "mapping_basis": "alias",
+      "source_profile": {
+        "name": "contact_email",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 19,
+        "samples": [
+          "aurora@example.test",
+          "beacon@example.test",
+          "cedar@example.test",
+          "delta@example.test",
+          "ember@example.test"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer.email",
+          "rank": 1,
+          "score": 0.9,
+          "semantic_score": 0.6675,
+          "fuzzy_score": 0.5926,
+          "alias_hit": true,
+          "alias_source": "contact_email",
+          "lexical_overlap": 0.2857,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.phone",
+          "rank": 2,
+          "score": 0.4288,
+          "semantic_score": 0.5494,
+          "fuzzy_score": 0.3385,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.125,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.iban",
+          "rank": 3,
+          "score": 0.2521,
+          "semantic_score": 0.2112,
+          "fuzzy_score": 0.48,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "telephone_number",
+      "status": "needs_review",
+      "recommendation": "customer.phone",
+      "confidence": 0.6715,
+      "band": "medium",
+      "mapping_basis": "semantic",
+      "source_profile": {
+        "name": "telephone_number",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 8,
+        "samples": [
+          "+49-1001",
+          "+1-1002",
+          "+44-1003",
+          "+49-1004",
+          "+1-1005"
+        ]
+      },
+      "review_reasons": [
+        "medium_confidence"
+      ],
+      "top_candidates": [
+        {
+          "target": "customer.phone",
+          "rank": 1,
+          "score": 0.6715,
+          "semantic_score": 0.7702,
+          "fuzzy_score": 0.5946,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.4286,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.iban",
+          "rank": 2,
+          "score": 0.2729,
+          "semantic_score": 0.2894,
+          "fuzzy_score": 0.3333,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.tax_number",
+          "rank": 3,
+          "score": 0.2619,
+          "semantic_score": 0.1953,
+          "fuzzy_score": 0.5,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0909,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "vat_registration_number",
+      "status": "suggested",
+      "recommendation": "customer.tax_number",
+      "confidence": 0.9,
+      "band": "high",
+      "mapping_basis": "alias",
+      "source_profile": {
+        "name": "vat_registration_number",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 15,
+        "samples": [
+          "SYN-VAT-DE-1001",
+          "SYN-VAT-US-1002",
+          "SYN-VAT-GB-1003",
+          "SYN-VAT-DE-1004",
+          "SYN-VAT-US-1005"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer.tax_number",
+          "rank": 1,
+          "score": 0.9,
+          "semantic_score": 0.7968,
+          "fuzzy_score": 0.6098,
+          "alias_hit": true,
+          "alias_source": "vat_registration_number",
+          "lexical_overlap": 0.4444,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.phone",
+          "rank": 2,
+          "score": 0.2633,
+          "semantic_score": 0.263,
+          "fuzzy_score": 0.3544,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.customer_name",
+          "rank": 3,
+          "score": 0.2457,
+          "semantic_score": 0.1697,
+          "fuzzy_score": 0.5455,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "terms_code",
+      "status": "suggested",
+      "recommendation": "customer.payment_terms",
+      "confidence": 0.7873,
+      "band": "high",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "terms_code",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 4,
+        "distinct_ratio": 0.6667,
+        "observed_max_length": 7,
+        "samples": [
+          "NET30",
+          "NET15",
+          "PREPAID",
+          "NET45"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer.payment_terms",
+          "rank": 1,
+          "score": 0.7873,
+          "semantic_score": 0.8633,
+          "fuzzy_score": 0.8235,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.4286,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.currency",
+          "rank": 2,
+          "score": 0.4094,
+          "semantic_score": 0.4665,
+          "fuzzy_score": 0.4348,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1429,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.country",
+          "rank": 3,
+          "score": 0.2829,
+          "semantic_score": 0.2523,
+          "fuzzy_score": 0.45,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "bank_record_key",
+      "status": "suggested",
+      "recommendation": "customer_bank.bank_id",
+      "confidence": 0.9,
+      "band": "high",
+      "mapping_basis": "alias",
+      "source_profile": {
+        "name": "bank_record_key",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 7,
+        "samples": [
+          "BK-9001",
+          "BK-9002",
+          "BK-9003",
+          "BK-9004",
+          "BK-9005"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer_bank.bank_id",
+          "rank": 1,
+          "score": 0.9,
+          "semantic_score": 0.6266,
+          "fuzzy_score": 0.6111,
+          "alias_hit": true,
+          "alias_source": "bank_record_key",
+          "lexical_overlap": 0.2222,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.customer_id",
+          "rank": 2,
+          "score": 0.4643,
+          "semantic_score": 0.521,
+          "fuzzy_score": 0.55,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0909,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.iban",
+          "rank": 3,
+          "score": 0.3635,
+          "semantic_score": 0.3985,
+          "fuzzy_score": 0.4348,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "bank_customer_reference",
+      "status": "needs_review",
+      "recommendation": "customer_bank.customer_id",
+      "confidence": 0.621,
+      "band": "medium",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "bank_customer_reference",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 7,
+        "samples": [
+          "LC-1001",
+          "LC-1002",
+          "LC-1003",
+          "LC-1004",
+          "LC-1005"
+        ]
+      },
+      "review_reasons": [
+        "medium_confidence"
+      ],
+      "top_candidates": [
+        {
+          "target": "customer_bank.customer_id",
+          "rank": 1,
+          "score": 0.621,
+          "semantic_score": 0.7087,
+          "fuzzy_score": 0.6667,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.2,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.bank_id",
+          "rank": 2,
+          "score": 0.5922,
+          "semantic_score": 0.6579,
+          "fuzzy_score": 0.6567,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.2222,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.iban",
+          "rank": 3,
+          "score": 0.4301,
+          "semantic_score": 0.4571,
+          "fuzzy_score": 0.5556,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "bank_account_iban",
+      "status": "suggested",
+      "recommendation": "customer_bank.iban",
+      "confidence": 0.741,
+      "band": "high",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "bank_account_iban",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 6,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 22,
+        "samples": [
+          "DE00123456789000000001",
+          "US00123456789000000002",
+          "GB00123456789000000003",
+          "DE00123456789000000004",
+          "US00123456789000000005"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer_bank.iban",
+          "rank": 1,
+          "score": 0.741,
+          "semantic_score": 0.8438,
+          "fuzzy_score": 0.7234,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.375,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.bank_id",
+          "rank": 2,
+          "score": 0.4343,
+          "semantic_score": 0.5222,
+          "fuzzy_score": 0.4314,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.customer_id",
+          "rank": 3,
+          "score": 0.4309,
+          "semantic_score": 0.5027,
+          "fuzzy_score": 0.4048,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.2,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "account_currency",
+      "status": "suggested",
+      "recommendation": "customer_bank.currency",
+      "confidence": 0.9,
+      "band": "high",
+      "mapping_basis": "alias",
+      "source_profile": {
+        "name": "account_currency",
+        "inferred_kind": "string",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 3,
+        "distinct_ratio": 0.5,
+        "observed_max_length": 3,
+        "samples": [
+          "EUR",
+          "USD",
+          "GBP"
+        ]
+      },
+      "review_reasons": [],
+      "top_candidates": [
+        {
+          "target": "customer_bank.currency",
+          "rank": 1,
+          "score": 0.9,
+          "semantic_score": 0.8471,
+          "fuzzy_score": 0.8772,
+          "alias_hit": true,
+          "alias_source": "account_currency",
+          "lexical_overlap": 0.6,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer_bank.iban",
+          "rank": 2,
+          "score": 0.4244,
+          "semantic_score": 0.4769,
+          "fuzzy_score": 0.4918,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "customer.country",
+          "rank": 3,
+          "score": 0.3775,
+          "semantic_score": 0.4023,
+          "fuzzy_score": 0.4783,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "marketing_opt_in",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "marketing_opt_in",
+        "inferred_kind": "boolean",
+        "row_count": 6,
+        "present_count": 6,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 2,
+        "distinct_ratio": 0.3333,
+        "observed_max_length": 5,
+        "samples": [
+          "true",
+          "false"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "customer.customer_name",
+          "rank": 1,
+          "score": 0.1514,
+          "semantic_score": 0.2658,
+          "fuzzy_score": 0.3636,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.6,
+          "warnings": [
+            "boolean_source_for_text_target"
+          ]
+        },
+        {
+          "target": "customer.customer_id",
+          "rank": 2,
+          "score": 0.1123,
+          "semantic_score": 0.1793,
+          "fuzzy_score": 0.3077,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.6,
+          "warnings": [
+            "boolean_source_for_text_target"
+          ]
+        },
+        {
+          "target": "customer.phone",
+          "rank": 3,
+          "score": 0.1098,
+          "semantic_score": 0.1915,
+          "fuzzy_score": 0.2667,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.6,
+          "warnings": [
+            "boolean_source_for_text_target"
+          ]
+        }
+      ]
+    }
+  ],
+  "unmapped_target_fields": []
+}

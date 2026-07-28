@@ -1,0 +1,182 @@
+{
+  "_run_info": {
+    "content_sha256": "9cb450eb7b9d1323d7c7f1b563228b72a49612322f2e67dbf11753098bdd3525",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T07:19:06+00:00"
+  },
+  "_meta": {
+    "component": "contract_field_mapping_evaluation",
+    "mapping_report": "data/synthetic/generic_customer_contract_mapping.json",
+    "mapping_report_sha256": "67ab0cbece2c538df6a8e63147e0123ad36bb60cbd74297b60da795a83418b60",
+    "ground_truth": "data/examples/mapping/generic_customer/ground_truth.json",
+    "ground_truth_used_for_evaluation_only": true,
+    "mapping_report_ground_truth_used": false,
+    "synthetic": true
+  },
+  "summary": {
+    "evaluated_fields": 12,
+    "mapped_ground_truth_fields": 11,
+    "no_target_ground_truth_fields": 1,
+    "top1_correct": 11,
+    "top1_accuracy": 1.0,
+    "top3_correct": 11,
+    "top3_recall": 1.0,
+    "high_confidence_predictions": 8,
+    "high_confidence_correct": 8,
+    "high_confidence_precision": 1.0,
+    "no_target_correct": 1,
+    "no_target_accuracy": 1.0,
+    "false_positive_no_target": 0
+  },
+  "by_evaluation_group": {
+    "alias_backed": {
+      "fields": 6,
+      "top1_correct": 6,
+      "top3_correct": 6,
+      "no_target_correct": 0,
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "no_target_accuracy": 0.0
+    },
+    "semantic_only": {
+      "fields": 5,
+      "top1_correct": 5,
+      "top3_correct": 5,
+      "no_target_correct": 0,
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "no_target_accuracy": 0.0
+    },
+    "no_target": {
+      "fields": 1,
+      "top1_correct": 0,
+      "top3_correct": 0,
+      "no_target_correct": 1,
+      "top1_accuracy": 0.0,
+      "top3_recall": 0.0,
+      "no_target_accuracy": 1.0
+    }
+  },
+  "details": [
+    {
+      "source_field": "legacy_client_id",
+      "expected_target": "customer.customer_id",
+      "recommendation": "customer.customer_id",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "client_name",
+      "expected_target": "customer.customer_name",
+      "recommendation": "customer.customer_name",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "nation",
+      "expected_target": "customer.country",
+      "recommendation": "customer.country",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "contact_email",
+      "expected_target": "customer.email",
+      "recommendation": "customer.email",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "telephone_number",
+      "expected_target": "customer.phone",
+      "recommendation": "customer.phone",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "vat_registration_number",
+      "expected_target": "customer.tax_number",
+      "recommendation": "customer.tax_number",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "terms_code",
+      "expected_target": "customer.payment_terms",
+      "recommendation": "customer.payment_terms",
+      "status": "suggested",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "bank_record_key",
+      "expected_target": "customer_bank.bank_id",
+      "recommendation": "customer_bank.bank_id",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "bank_customer_reference",
+      "expected_target": "customer_bank.customer_id",
+      "recommendation": "customer_bank.customer_id",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "bank_account_iban",
+      "expected_target": "customer_bank.iban",
+      "recommendation": "customer_bank.iban",
+      "status": "suggested",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "account_currency",
+      "expected_target": "customer_bank.currency",
+      "recommendation": "customer_bank.currency",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "marketing_opt_in",
+      "expected_target": null,
+      "recommendation": null,
+      "status": "no_confident_target",
+      "evaluation_group": "no_target",
+      "top1_correct": false,
+      "top3_correct": false,
+      "no_target_correct": true
+    }
+  ]
+}

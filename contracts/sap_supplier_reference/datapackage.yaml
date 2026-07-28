@@ -2,14 +2,14 @@ profile: tabular-data-package
 name: sap-supplier-reference
 title: SAP Supplier Reference Migration Contract
 version: 1.0.0
-description: Synthetic SAP supplier reference migration package contract.
+description: Educational subset for supplier migration practice; not authoritative for any product release. Validate real work against the target system's own template or metadata.
 carveops:
   contract_id: sap-supplier-reference-v1
   adapter: sap_supplier_reference
   domain: supplier_master
   synthetic: true
   authoritative: false
-  source_note: Synthetic reference adapter example; not authoritative for any live SAP system.
+  source_note: Synthetic reference adapter example; educational subset only and not authoritative for any live target system.
 resources:
   - profile: tabular-data-resource
     name: supplier_general
@@ -24,30 +24,63 @@ resources:
             required: true
             unique: true
             maxLength: 10
+          carveops:
+            description: Stable supplier identifier used by the source migration package.
+            aliases:
+              - old_vendor_number
+              - vendor_identifier
+            semantic_type: identifier
         - name: organization_name
           type: string
           constraints:
             required: true
             maxLength: 40
+          carveops:
+            description: Legal or trading name of the supplier organization.
+            aliases:
+              - vendor_legal_name
+              - supplier_name
+            semantic_type: organization_name
         - name: business_partner_category
           type: string
           constraints:
             required: true
             enum:
               - "2"
+          carveops:
+            description: Supplier partner category code used by the target package.
+            aliases:
+              - category_code
+            semantic_type: category_code
         - name: country_code
           type: string
           constraints:
             required: true
             pattern: ^[A-Z]{2}$
+          carveops:
+            description: Two-letter country code for the supplier.
+            aliases:
+              - country
+            semantic_type: country_code
         - name: language_code
           type: string
           constraints:
             pattern: ^[A-Z]{2}$
+          carveops:
+            description: Preferred two-letter language code for communication.
+            aliases:
+              - language
+            semantic_type: language_code
         - name: tax_number
           type: string
           constraints:
             maxLength: 20
+          carveops:
+            description: Tax or VAT registration identifier for the supplier.
+            aliases:
+              - vat_number
+              - tax_identifier
+            semantic_type: tax_identifier
   - profile: tabular-data-resource
     name: supplier_company
     path: supplier_company.csv
@@ -67,20 +100,41 @@ resources:
           constraints:
             required: true
             unique: true
+          carveops:
+            description: Stable identifier for a supplier company assignment row.
+            aliases:
+              - company_assignment_key
+            semantic_type: identifier
         - name: supplier_id
           type: string
           constraints:
             required: true
+          carveops:
+            description: Supplier identifier referenced by the company assignment.
+            aliases:
+              - vendor_reference
+            semantic_type: identifier
         - name: company_code
           type: string
           constraints:
             required: true
             pattern: ^[A-Z0-9]{4}$
+          carveops:
+            description: Legal entity or company code for the supplier assignment.
+            aliases:
+              - company_code
+            semantic_type: company_code
         - name: reconciliation_account
           type: string
           constraints:
             required: true
             maxLength: 10
+          carveops:
+            description: Reconciliation general ledger account for supplier postings.
+            aliases:
+              - recon_gl_account
+              - general_ledger_account
+            semantic_type: general_ledger_account
         - name: payment_terms
           type: string
           constraints:
@@ -89,3 +143,8 @@ resources:
               - Z001
               - Z002
               - Z003
+          carveops:
+            description: Payment terms code agreed with the supplier.
+            aliases:
+              - payment_terms_code
+            semantic_type: payment_terms

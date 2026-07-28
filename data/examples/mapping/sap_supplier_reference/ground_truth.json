@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "purpose": "evaluation_only",
+    "synthetic": true,
+    "must_not_be_read_by_mapping_engine": true
+  },
+  "mappings": [
+    {"source_field": "old_vendor_number", "expected_target": "supplier_general.supplier_id", "evaluation_group": "alias_backed"},
+    {"source_field": "vendor_legal_name", "expected_target": "supplier_general.organization_name", "evaluation_group": "alias_backed"},
+    {"source_field": "partner_type", "expected_target": "supplier_general.business_partner_category", "evaluation_group": "semantic_only"},
+    {"source_field": "vendor_country", "expected_target": "supplier_general.country_code", "evaluation_group": "semantic_only"},
+    {"source_field": "preferred_language", "expected_target": "supplier_general.language_code", "evaluation_group": "semantic_only"},
+    {"source_field": "vat_number", "expected_target": "supplier_general.tax_number", "evaluation_group": "alias_backed"},
+    {"source_field": "company_assignment_key", "expected_target": "supplier_company.assignment_id", "evaluation_group": "alias_backed"},
+    {"source_field": "company_vendor_reference", "expected_target": "supplier_company.supplier_id", "evaluation_group": "semantic_only"},
+    {"source_field": "legal_entity_code", "expected_target": "supplier_company.company_code", "evaluation_group": "semantic_only"},
+    {"source_field": "recon_gl_account", "expected_target": "supplier_company.reconciliation_account", "evaluation_group": "alias_backed"},
+    {"source_field": "payment_condition", "expected_target": "supplier_company.payment_terms", "evaluation_group": "semantic_only"},
+    {"source_field": "legacy_created_by", "expected_target": null, "evaluation_group": "no_target"}
+  ]
+}

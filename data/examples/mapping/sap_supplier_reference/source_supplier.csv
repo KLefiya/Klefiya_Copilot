@@ -1,0 +1,7 @@
+old_vendor_number,vendor_legal_name,partner_type,vendor_country,preferred_language,vat_number,company_assignment_key,company_vendor_reference,legal_entity_code,recon_gl_account,payment_condition,legacy_created_by
+V-2001,Synthetic Meridian Parts,2,DE,DE,SYN-VAT-DE-2001,CA-7001,V-2001,DE01,140000,Z001,synthetic_user_a
+V-2002,Synthetic Northwind Supply,2,US,EN,SYN-VAT-US-2002,CA-7002,V-2002,US01,160000,Z002,synthetic_user_b
+V-2003,Synthetic Orchard Materials,2,GB,EN,SYN-VAT-GB-2003,CA-7003,V-2003,GB01,170000,Z003,synthetic_user_c
+V-2004,Synthetic Prairie Components,2,DE,DE,SYN-VAT-DE-2004,CA-7004,V-2004,DE02,180000,Z001,synthetic_user_d
+V-2005,Synthetic Quartz Services,2,US,EN,SYN-VAT-US-2005,CA-7005,V-2005,US02,190000,Z002,synthetic_user_e
+V-2006,Synthetic Rowan Logistics,2,GB,EN,SYN-VAT-GB-2006,CA-7006,V-2006,GB02,200000,Z003,synthetic_user_f

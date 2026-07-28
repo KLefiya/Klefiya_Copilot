@@ -1,0 +1,182 @@
+{
+  "_run_info": {
+    "content_sha256": "d8ae0500a5639ba9385c03c6aeaae84abe8915894677798f23773c59164abf3e",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T07:19:06+00:00"
+  },
+  "_meta": {
+    "component": "contract_field_mapping_evaluation",
+    "mapping_report": "data/synthetic/sap_supplier_reference_contract_mapping.json",
+    "mapping_report_sha256": "76fd39cc1338061fe2672bb1f03172522560452515c10597071deec8ed975cb2",
+    "ground_truth": "data/examples/mapping/sap_supplier_reference/ground_truth.json",
+    "ground_truth_used_for_evaluation_only": true,
+    "mapping_report_ground_truth_used": false,
+    "synthetic": true
+  },
+  "summary": {
+    "evaluated_fields": 12,
+    "mapped_ground_truth_fields": 11,
+    "no_target_ground_truth_fields": 1,
+    "top1_correct": 11,
+    "top1_accuracy": 1.0,
+    "top3_correct": 11,
+    "top3_recall": 1.0,
+    "high_confidence_predictions": 6,
+    "high_confidence_correct": 6,
+    "high_confidence_precision": 1.0,
+    "no_target_correct": 1,
+    "no_target_accuracy": 1.0,
+    "false_positive_no_target": 0
+  },
+  "by_evaluation_group": {
+    "alias_backed": {
+      "fields": 5,
+      "top1_correct": 5,
+      "top3_correct": 5,
+      "no_target_correct": 0,
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "no_target_accuracy": 0.0
+    },
+    "semantic_only": {
+      "fields": 6,
+      "top1_correct": 6,
+      "top3_correct": 6,
+      "no_target_correct": 0,
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "no_target_accuracy": 0.0
+    },
+    "no_target": {
+      "fields": 1,
+      "top1_correct": 0,
+      "top3_correct": 0,
+      "no_target_correct": 1,
+      "top1_accuracy": 0.0,
+      "top3_recall": 0.0,
+      "no_target_accuracy": 1.0
+    }
+  },
+  "details": [
+    {
+      "source_field": "old_vendor_number",
+      "expected_target": "supplier_general.supplier_id",
+      "recommendation": "supplier_general.supplier_id",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "vendor_legal_name",
+      "expected_target": "supplier_general.organization_name",
+      "recommendation": "supplier_general.organization_name",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "partner_type",
+      "expected_target": "supplier_general.business_partner_category",
+      "recommendation": "supplier_general.business_partner_category",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "vendor_country",
+      "expected_target": "supplier_general.country_code",
+      "recommendation": "supplier_general.country_code",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "preferred_language",
+      "expected_target": "supplier_general.language_code",
+      "recommendation": "supplier_general.language_code",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "vat_number",
+      "expected_target": "supplier_general.tax_number",
+      "recommendation": "supplier_general.tax_number",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "company_assignment_key",
+      "expected_target": "supplier_company.assignment_id",
+      "recommendation": "supplier_company.assignment_id",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "company_vendor_reference",
+      "expected_target": "supplier_company.supplier_id",
+      "recommendation": "supplier_company.supplier_id",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "legal_entity_code",
+      "expected_target": "supplier_company.company_code",
+      "recommendation": "supplier_company.company_code",
+      "status": "suggested",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "recon_gl_account",
+      "expected_target": "supplier_company.reconciliation_account",
+      "recommendation": "supplier_company.reconciliation_account",
+      "status": "suggested",
+      "evaluation_group": "alias_backed",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "payment_condition",
+      "expected_target": "supplier_company.payment_terms",
+      "recommendation": "supplier_company.payment_terms",
+      "status": "needs_review",
+      "evaluation_group": "semantic_only",
+      "top1_correct": true,
+      "top3_correct": true,
+      "no_target_correct": false
+    },
+    {
+      "source_field": "legacy_created_by",
+      "expected_target": null,
+      "recommendation": null,
+      "status": "no_confident_target",
+      "evaluation_group": "no_target",
+      "top1_correct": false,
+      "top3_correct": false,
+      "no_target_correct": true
+    }
+  ]
+}

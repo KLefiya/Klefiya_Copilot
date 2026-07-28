@@ -1,8 +1,8 @@
 {
   "_run_info": {
-    "content_sha256": "cb12fd313d4f29d6fb2006e9efa160de5a6952ef66bb402f015c22dc08969188",
+    "content_sha256": "d70b2592cbe53a33520ebe6ef8f7fd7672582ef0fce7f6750ec717611b3c4ea1",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T06:44:08+00:00"
+    "generated_at": "2026-07-28T07:18:16+00:00"
   },
   "_meta": {
     "component": "migration_contract_validation",
@@ -16,7 +16,7 @@
     "synthetic": true,
     "authoritative": false,
     "contract_path": "contracts/generic_customer/datapackage.yaml",
-    "contract_sha256": "25f7daa2b8e5f6d13dad405ccbc4d0c0fc1f5d1b8b6c1af5087884c98fca0f39",
+    "contract_sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792",
     "data_root": "data/examples/generic_customer",
     "resource_count": 2,
     "row_count": 10,

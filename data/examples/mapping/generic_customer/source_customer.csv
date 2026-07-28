@@ -1,0 +1,7 @@
+legacy_client_id,client_name,nation,contact_email,telephone_number,vat_registration_number,terms_code,bank_record_key,bank_customer_reference,bank_account_iban,account_currency,marketing_opt_in
+LC-1001,Synthetic Aurora Stores,DE,aurora@example.test,+49-1001,SYN-VAT-DE-1001,NET30,BK-9001,LC-1001,DE00123456789000000001,EUR,true
+LC-1002,Synthetic Beacon Trading,US,beacon@example.test,+1-1002,SYN-VAT-US-1002,NET15,BK-9002,LC-1002,US00123456789000000002,USD,false
+LC-1003,Synthetic Cedar Retail,GB,cedar@example.test,+44-1003,SYN-VAT-GB-1003,PREPAID,BK-9003,LC-1003,GB00123456789000000003,GBP,true
+LC-1004,Synthetic Delta Markets,DE,delta@example.test,+49-1004,SYN-VAT-DE-1004,NET45,BK-9004,LC-1004,DE00123456789000000004,EUR,false
+LC-1005,Synthetic Ember Wholesale,US,ember@example.test,+1-1005,SYN-VAT-US-1005,NET30,BK-9005,LC-1005,US00123456789000000005,USD,true
+LC-1006,Synthetic Finch Supply,GB,finch@example.test,+44-1006,SYN-VAT-GB-1006,NET15,BK-9006,LC-1006,GB00123456789000000006,GBP,false

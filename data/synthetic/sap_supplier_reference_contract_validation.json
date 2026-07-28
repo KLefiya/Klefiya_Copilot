@@ -1,8 +1,8 @@
 {
   "_run_info": {
-    "content_sha256": "96aa887dede4d689f7c3f96fa05f9bd9a62a581ddbe8e733af1ad32a7089ec8b",
+    "content_sha256": "d8314cfbc4823d71a14edb0dc96934acd19037c04e4020dd05877b895f42c16f",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T06:44:08+00:00"
+    "generated_at": "2026-07-28T07:18:16+00:00"
   },
   "_meta": {
     "component": "migration_contract_validation",
@@ -16,7 +16,7 @@
     "synthetic": true,
     "authoritative": false,
     "contract_path": "contracts/sap_supplier_reference/datapackage.yaml",
-    "contract_sha256": "a20833266530bdc4e32a0ec0af49e67d6bc93773812176fbb98f7d784f43dcc9",
+    "contract_sha256": "ac5eb12dd4d5f36f2172149650badb368595c67b6bc34cdab06582d1d6c718f4",
     "data_root": "data/examples/sap_supplier_reference",
     "resource_count": 2,
     "row_count": 10,

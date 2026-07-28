@@ -24,11 +24,24 @@ resources:
             required: true
             unique: true
             maxLength: 12
+          carveops:
+            description: Stable customer identifier used by the source migration package.
+            aliases:
+              - legacy_client_id
+              - client_identifier
+            semantic_type: identifier
         - name: customer_name
           type: string
           constraints:
             required: true
             maxLength: 80
+          carveops:
+            description: Legal or trading name of the customer organization.
+            aliases:
+              - client_name
+              - account_name
+              - company_name
+            semantic_type: organization_name
         - name: country
           type: string
           constraints:
@@ -38,18 +51,40 @@ resources:
               - GB
               - US
             pattern: ^[A-Z]{2}$
+          carveops:
+            description: Two-letter country code for the customer address.
+            aliases:
+              - country_code
+            semantic_type: country_code
         - name: email
           type: string
           constraints:
             pattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+          carveops:
+            description: Email address used for customer contact communication.
+            aliases:
+              - contact_email
+              - email_address
+            semantic_type: email
         - name: phone
           type: string
           constraints:
             maxLength: 24
+          carveops:
+            description: Telephone or phone number for customer contact.
+            aliases:
+              - phone_number
+            semantic_type: phone
         - name: tax_number
           type: string
           constraints:
             maxLength: 24
+          carveops:
+            description: Tax or VAT registration identifier for the customer.
+            aliases:
+              - vat_registration_number
+              - tax_identifier
+            semantic_type: tax_identifier
         - name: payment_terms
           type: string
           constraints:
@@ -59,6 +94,11 @@ resources:
               - NET30
               - NET45
               - PREPAID
+          carveops:
+            description: Payment terms code agreed with the customer.
+            aliases:
+              - payment_terms_code
+            semantic_type: payment_terms
   - profile: tabular-data-resource
     name: customer_bank
     path: customer_bank.csv
@@ -78,15 +118,31 @@ resources:
           constraints:
             required: true
             unique: true
+          carveops:
+            description: Stable identifier for a customer bank record.
+            aliases:
+              - bank_record_key
+              - bank_identifier
+            semantic_type: bank_identifier
         - name: customer_id
           type: string
           constraints:
             required: true
+          carveops:
+            description: Customer identifier referenced by the bank account row.
+            aliases:
+              - customer_reference
+            semantic_type: identifier
         - name: iban
           type: string
           constraints:
             required: true
             maxLength: 34
+          carveops:
+            description: International bank account number for payment processing.
+            aliases:
+              - iban
+            semantic_type: bank_account
         - name: currency
           type: string
           constraints:
@@ -95,3 +151,9 @@ resources:
               - EUR
               - GBP
               - USD
+          carveops:
+            description: Three-letter account currency code.
+            aliases:
+              - account_currency
+              - currency_code
+            semantic_type: currency_code
