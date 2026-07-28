@@ -1,0 +1,52 @@
+{
+  "_run_info": {
+    "content_sha256": "97e5091d6fd50abed64b3af74e1497671fa7f732f7bd3331e074bfc74ef23823",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T08:22:54+00:00"
+  },
+  "_meta": {
+    "component": "migration_contract_validation",
+    "engine": "frictionless",
+    "engine_version": "5.19.0",
+    "contract_id": "sap-supplier-reference-v1",
+    "contract_name": "sap-supplier-reference",
+    "contract_version": "1.0.0",
+    "adapter": "sap_supplier_reference",
+    "domain": "supplier_master",
+    "synthetic": true,
+    "authoritative": false,
+    "contract_path": "contracts/sap_supplier_reference/datapackage.yaml",
+    "contract_sha256": "ac5eb12dd4d5f36f2172149650badb368595c67b6bc34cdab06582d1d6c718f4",
+    "data_root": "data/generated/sap_supplier_reference",
+    "resource_count": 2,
+    "row_count": 12,
+    "read_only": true
+  },
+  "summary": {
+    "valid": true,
+    "finding_count": 0,
+    "by_category": {},
+    "by_resource": {},
+    "by_severity": {}
+  },
+  "resources": [
+    {
+      "name": "supplier_general",
+      "path": "data/generated/sap_supplier_reference/supplier_general.csv",
+      "row_count": 6,
+      "valid": true,
+      "finding_count": 0
+    },
+    {
+      "name": "supplier_company",
+      "path": "data/generated/sap_supplier_reference/supplier_company.csv",
+      "row_count": 6,
+      "valid": true,
+      "finding_count": 0
+    }
+  ],
+  "findings": [],
+  "validation": {
+    "valid": true
+  }
+}

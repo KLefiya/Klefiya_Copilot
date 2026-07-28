@@ -1,0 +1,7 @@
+supplier_id,organization_name,business_partner_category,country_code,language_code,tax_number
+V-2001,Synthetic Meridian Parts,2,DE,DE,SYN-VAT-DE-2001
+V-2002,Synthetic Northwind Supply,2,US,EN,SYN-VAT-US-2002
+V-2003,Synthetic Orchard Materials,2,GB,EN,SYN-VAT-GB-2003
+V-2004,Synthetic Prairie Components,2,DE,DE,SYN-VAT-DE-2004
+V-2005,Synthetic Quartz Services,2,US,EN,SYN-VAT-US-2005
+V-2006,Synthetic Rowan Logistics,2,GB,EN,SYN-VAT-GB-2006

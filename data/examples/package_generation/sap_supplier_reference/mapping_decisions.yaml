@@ -1,0 +1,66 @@
+version: 1.0.0
+contract_id: sap-supplier-reference-v1
+mapping_report: data/synthetic/sap_supplier_reference_contract_mapping.json
+source:
+  path: data/examples/mapping/sap_supplier_reference/source_supplier.csv
+  record_id_field: old_vendor_number
+decisions:
+  - source_field: old_vendor_number
+    target: supplier_general.supplier_id
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: vendor_legal_name
+    target: supplier_general.organization_name
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: partner_type
+    target: supplier_general.business_partner_category
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: vendor_country
+    target: supplier_general.country_code
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: preferred_language
+    target: supplier_general.language_code
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: vat_number
+    target: supplier_general.tax_number
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: company_assignment_key
+    target: supplier_company.assignment_id
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: company_vendor_reference
+    target: supplier_company.supplier_id
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: legal_entity_code
+    target: supplier_company.company_code
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: recon_gl_account
+    target: supplier_company.reconciliation_account
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: payment_condition
+    target: supplier_company.payment_terms
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: legacy_created_by
+    target: null
+    decision: rejected
+    reason: No target field exists in this contract.

@@ -1,0 +1,66 @@
+version: 1.0.0
+contract_id: generic-customer-v1
+mapping_report: data/synthetic/generic_customer_contract_mapping.json
+source:
+  path: data/examples/mapping/generic_customer/source_customer.csv
+  record_id_field: legacy_client_id
+decisions:
+  - source_field: legacy_client_id
+    target: customer.customer_id
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: client_name
+    target: customer.customer_name
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: nation
+    target: customer.country
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: contact_email
+    target: customer.email
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: telephone_number
+    target: customer.phone
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: vat_registration_number
+    target: customer.tax_number
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: terms_code
+    target: customer.payment_terms
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: bank_record_key
+    target: customer_bank.bank_id
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: bank_customer_reference
+    target: customer_bank.customer_id
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: bank_account_iban
+    target: customer_bank.iban
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: account_currency
+    target: customer_bank.currency
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: marketing_opt_in
+    target: null
+    decision: rejected
+    reason: No target field exists in this contract.

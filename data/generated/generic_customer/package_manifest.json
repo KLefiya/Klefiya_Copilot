@@ -1,0 +1,68 @@
+{
+  "_run_info": {
+    "content_sha256": "d2e4abbc5b0e451787fecd38ab0bf57a4af5492436ac5b6df55c95eb9e22ae59",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T09:04:40+00:00"
+  },
+  "contract": {
+    "contract_id": "generic-customer-v1",
+    "version": "1.0.0",
+    "sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792"
+  },
+  "source": {
+    "path": "data/examples/mapping/generic_customer/source_customer.csv",
+    "sha256": "19d66f2d5c87f8ebad74223a0182a0993f31fd5630980d49f682be457d2db33d",
+    "row_count": 6
+  },
+  "mapping_report": {
+    "path": "data/synthetic/generic_customer_contract_mapping.json",
+    "sha256": "6ab72a4ed15b4e7dec79da4e4749dbe6163ed9050ea4a97b0c6d906a26d22a89"
+  },
+  "mapping_decisions": {
+    "path": "data/examples/package_generation/generic_customer/mapping_decisions.yaml",
+    "sha256": "a32bbdfa0ea5ae2070e867ce6ed9733128826fbd7abe5fb6a6060f00215aedb3"
+  },
+  "resources": [
+    {
+      "resource": "customer",
+      "target_path": "data/generated/generic_customer/customer.csv",
+      "field_names": [
+        "customer_id",
+        "customer_name",
+        "country",
+        "email",
+        "phone",
+        "tax_number",
+        "payment_terms"
+      ],
+      "row_count": 6,
+      "rejected_row_count": 0,
+      "content_sha256": "933b7e5cb1057f35f3f34340c22cc8384114b9ca26c7014a938e4e6626d9c06e"
+    },
+    {
+      "resource": "customer_bank",
+      "target_path": "data/generated/generic_customer/customer_bank.csv",
+      "field_names": [
+        "bank_id",
+        "customer_id",
+        "iban",
+        "currency"
+      ],
+      "row_count": 6,
+      "rejected_row_count": 0,
+      "content_sha256": "cc1841873e9979666a963e9c1d4b090d27a08c38ef82de1075acf60340dcd6ec"
+    }
+  ],
+  "lineage": {
+    "path": "data/generated/generic_customer/lineage.json",
+    "sha256": "d243d2733de19368c306c68c69343013ee82edd646e2e38408c1f1277ae930a6",
+    "entry_count": 66
+  },
+  "build": {
+    "read_only_source": true,
+    "deterministic": true,
+    "generated_resource_count": 2,
+    "generated_row_count": 12,
+    "rejected_row_count": 0
+  }
+}

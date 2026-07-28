@@ -1,0 +1,68 @@
+{
+  "_run_info": {
+    "content_sha256": "71874bf500dbe39fc9f7bf0ff19d292f1eb0cd870c891f9a0ee3db99062a1ba5",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T09:04:53+00:00"
+  },
+  "contract": {
+    "contract_id": "sap-supplier-reference-v1",
+    "version": "1.0.0",
+    "sha256": "ac5eb12dd4d5f36f2172149650badb368595c67b6bc34cdab06582d1d6c718f4"
+  },
+  "source": {
+    "path": "data/examples/mapping/sap_supplier_reference/source_supplier.csv",
+    "sha256": "f94a34b6c57ba1bee0ef68b8603c3eaa596d95bb7045db307fdff01a58ce5e16",
+    "row_count": 6
+  },
+  "mapping_report": {
+    "path": "data/synthetic/sap_supplier_reference_contract_mapping.json",
+    "sha256": "7b019307338c495cccc760a6dd37f22fb05b1f59910f798d6eb41891e99ec08d"
+  },
+  "mapping_decisions": {
+    "path": "data/examples/package_generation/sap_supplier_reference/mapping_decisions.yaml",
+    "sha256": "270c270ad4bd1804dfdb043d6d1173e1398fba22ad1800c4713b9a9042eefa76"
+  },
+  "resources": [
+    {
+      "resource": "supplier_general",
+      "target_path": "data/generated/sap_supplier_reference/supplier_general.csv",
+      "field_names": [
+        "supplier_id",
+        "organization_name",
+        "business_partner_category",
+        "country_code",
+        "language_code",
+        "tax_number"
+      ],
+      "row_count": 6,
+      "rejected_row_count": 0,
+      "content_sha256": "3b2c20f367cca904a8d8cbe1f84195873bec9255bc2f91d82b1882cda4a3bb3e"
+    },
+    {
+      "resource": "supplier_company",
+      "target_path": "data/generated/sap_supplier_reference/supplier_company.csv",
+      "field_names": [
+        "assignment_id",
+        "supplier_id",
+        "company_code",
+        "reconciliation_account",
+        "payment_terms"
+      ],
+      "row_count": 6,
+      "rejected_row_count": 0,
+      "content_sha256": "bbf9d042aa450629ecfe616937e66298e9f0fc1b4c6cfb2d4b3f2ad9bb75d238"
+    }
+  ],
+  "lineage": {
+    "path": "data/generated/sap_supplier_reference/lineage.json",
+    "sha256": "ce947476bfea46b6fa371902e24059c7b24832e6786e2cfe4dd2a883b0585194",
+    "entry_count": 66
+  },
+  "build": {
+    "read_only_source": true,
+    "deterministic": true,
+    "generated_resource_count": 2,
+    "generated_row_count": 12,
+    "rejected_row_count": 0
+  }
+}

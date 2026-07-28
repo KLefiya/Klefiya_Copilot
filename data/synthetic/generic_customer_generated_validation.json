@@ -1,0 +1,52 @@
+{
+  "_run_info": {
+    "content_sha256": "0f564f5cb94626694c1694639774587aaae264fa50b1587eaa3a0a20f2c22401",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T08:22:54+00:00"
+  },
+  "_meta": {
+    "component": "migration_contract_validation",
+    "engine": "frictionless",
+    "engine_version": "5.19.0",
+    "contract_id": "generic-customer-v1",
+    "contract_name": "generic-customer",
+    "contract_version": "1.0.0",
+    "adapter": "generic_csv",
+    "domain": "customer_master",
+    "synthetic": true,
+    "authoritative": false,
+    "contract_path": "contracts/generic_customer/datapackage.yaml",
+    "contract_sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792",
+    "data_root": "data/generated/generic_customer",
+    "resource_count": 2,
+    "row_count": 12,
+    "read_only": true
+  },
+  "summary": {
+    "valid": true,
+    "finding_count": 0,
+    "by_category": {},
+    "by_resource": {},
+    "by_severity": {}
+  },
+  "resources": [
+    {
+      "name": "customer",
+      "path": "data/generated/generic_customer/customer.csv",
+      "row_count": 6,
+      "valid": true,
+      "finding_count": 0
+    },
+    {
+      "name": "customer_bank",
+      "path": "data/generated/generic_customer/customer_bank.csv",
+      "row_count": 6,
+      "valid": true,
+      "finding_count": 0
+    }
+  ],
+  "findings": [],
+  "validation": {
+    "valid": true
+  }
+}
