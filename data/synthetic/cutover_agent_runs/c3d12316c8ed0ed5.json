@@ -1,0 +1,99 @@
+{
+  "_run_info": {
+    "content_sha256": "b1a2c208ef55ebeca152bcd283ff8c7e5073f967f8a13d0230279ec8d181198e",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T02:51:11+00:00",
+    "offline": true,
+    "planner_cache": {
+      "hit": 1,
+      "miss": 0
+    },
+    "trace_events": [
+      {
+        "node": "validate_input",
+        "route": "continue"
+      },
+      {
+        "node": "plan_request",
+        "intent": "unsupported",
+        "route": "continue",
+        "cache": {
+          "hit": 1,
+          "miss": 0
+        }
+      },
+      {
+        "node": "enforce_policy",
+        "allowed": true,
+        "tool_count": 0
+      },
+      {
+        "node": "execute_mcp_tools",
+        "mcp_session": 0,
+        "success_count": 0
+      },
+      {
+        "node": "compose_answer",
+        "citations": 0
+      },
+      {
+        "node": "validate_output",
+        "valid": true,
+        "reasons": []
+      }
+    ]
+  },
+  "_meta": {
+    "component": "cutover_langgraph_agent",
+    "graph": "cutover-copilot",
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "allow_rebuild": false
+  },
+  "request": {
+    "request_id": "c3d12316c8ed0ed5",
+    "user_query": "把 ACT-EX-024-TEST 修改成 Completed。"
+  },
+  "plan": {
+    "intent": "unsupported",
+    "tools": [],
+    "activity_filters": {
+      "status": null,
+      "owner_role": null,
+      "workstream": null,
+      "critical_only": false
+    },
+    "raid_filters": {
+      "raid_type": null,
+      "status": null,
+      "severity": null
+    },
+    "rebuild_plan": false,
+    "answer_focus": "",
+    "confidence": 1.0,
+    "needs_clarification": false,
+    "clarification_question": "",
+    "tool_requests": []
+  },
+  "policy": {
+    "allowed": true,
+    "denied_reason": "",
+    "validated_tool_requests": []
+  },
+  "tool_calls": [],
+  "final_answer": "这个请求超出了当前 Cutover Copilot 的只读边界。\n\n当前 Agent 只能通过 MCP 查询计划、状态、日报、活动和 RAID，并可在显式授权时重建报告。它不能修改活动状态，也不能写入 cutover_status_updates.json。",
+  "validation": {
+    "valid": true,
+    "reasons": []
+  },
+  "mcp_sessions": 0,
+  "graph_path": [
+    "validate_input",
+    "plan_request",
+    "enforce_policy",
+    "execute_mcp_tools",
+    "compose_answer",
+    "validate_output"
+  ],
+  "errors": []
+}

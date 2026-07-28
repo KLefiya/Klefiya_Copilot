@@ -1,0 +1,43 @@
+{
+  "_schema_name": "CutoverAgentPlan",
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "thinking": "enabled",
+  "reasoning_effort": "high",
+  "_request": {
+    "schema_version": "cutover-agent-plan-v1",
+    "system": "You are a controlled planner for a Cutover governance agent. Return only one JSON object matching the supplied schema. Do not answer the user. Do not invent tool names. Do not modify status. Use rebuild_cutover_reports only when the user explicitly asks to rebuild reports; a vague request to update or refresh is not enough. Unsupported status modification requests must use intent unsupported and no tool calls. Choose the smallest sufficient tool set, maximum three tools. Management actions must come from get_cutover_daily_brief. Do not output internal reasoning.",
+    "user_query": "列出目前所有风险。",
+    "allowed_tools": [
+      "get_cutover_plan_summary",
+      "get_cutover_status_summary",
+      "get_cutover_daily_brief",
+      "list_cutover_activities",
+      "list_raid_items",
+      "rebuild_cutover_reports"
+    ]
+  },
+  "parsed": {
+    "intent": "raid_review",
+    "tools": [
+      "list_raid_items"
+    ],
+    "activity_filters": {
+      "status": null,
+      "owner_role": null,
+      "workstream": null,
+      "critical_only": false
+    },
+    "raid_filters": {
+      "raid_type": "Risk",
+      "status": null,
+      "severity": null
+    },
+    "rebuild_plan": false,
+    "answer_focus": "列出所有风险",
+    "confidence": 0.95,
+    "needs_clarification": false,
+    "clarification_question": "",
+    "tool_requests": []
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "_run_info": {
+    "content_sha256": "8b5cdc1ac942dc285d6f69adfb2a974deff66c8d4f463b7df926efed7ea00cd0",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T02:51:06+00:00",
+    "offline": true,
+    "planner_cache": {
+      "hit": 1,
+      "miss": 0
+    },
+    "trace_events": [
+      {
+        "node": "validate_input",
+        "route": "continue"
+      },
+      {
+        "node": "plan_request",
+        "intent": "raid_review",
+        "route": "continue",
+        "cache": {
+          "hit": 1,
+          "miss": 0
+        }
+      },
+      {
+        "node": "enforce_policy",
+        "allowed": true,
+        "tool_count": 1
+      },
+      {
+        "node": "execute_mcp_tools",
+        "mcp_session": 1,
+        "success_count": 1
+      },
+      {
+        "node": "compose_answer",
+        "citations": 1
+      },
+      {
+        "node": "validate_output",
+        "valid": true,
+        "reasons": []
+      }
+    ]
+  },
+  "_meta": {
+    "component": "cutover_langgraph_agent",
+    "graph": "cutover-copilot",
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "allow_rebuild": false
+  },
+  "request": {
+    "request_id": "afd93286ba294a1a",
+    "user_query": "列出目前所有风险。"
+  },
+  "plan": {
+    "intent": "raid_review",
+    "tools": [
+      "list_raid_items"
+    ],
+    "activity_filters": {
+      "status": null,
+      "owner_role": null,
+      "workstream": null,
+      "critical_only": false
+    },
+    "raid_filters": {
+      "raid_type": "Risk",
+      "status": null,
+      "severity": null
+    },
+    "rebuild_plan": false,
+    "answer_focus": "列出所有风险",
+    "confidence": 0.95,
+    "needs_clarification": false,
+    "clarification_question": "",
+    "tool_requests": []
+  },
+  "policy": {
+    "allowed": true,
+    "denied_reason": "",
+    "validated_tool_requests": [
+      {
+        "tool_name": "list_raid_items",
+        "arguments": {
+          "raid_type": "Risk"
+        },
+        "reason": "Planner selected list_raid_items for raid_review."
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "tool_name": "list_raid_items",
+      "arguments": {
+        "raid_type": "Risk"
+      },
+      "ok": true,
+      "data": {
+        "source_content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+        "count": 2,
+        "raid_items": [
+          {
+            "raid_id": "RAID-RISK-EX-016",
+            "type": "Risk",
+            "title": "needs_review reason(s): 置信度 0.50 < 0.7. confidence=0.50. evidence=KB-XC-004, KB-P2P-003.",
+            "owner_role": "Data Migration Lead",
+            "severity": "Medium",
+            "current_status": "Resolved",
+            "mitigation": null,
+            "trigger": null,
+            "linked_requirement_ids": [],
+            "linked_activity_ids": []
+          },
+          {
+            "raid_id": "RAID-RISK-EX-022",
+            "type": "Risk",
+            "title": "needs_review reason(s): 置信度 0.60 < 0.7; 未给出任何证据条目. confidence=0.60. evidence=no evidence entries.",
+            "owner_role": "Data Migration Lead",
+            "severity": "Medium",
+            "current_status": "Open",
+            "mitigation": null,
+            "trigger": null,
+            "linked_requirement_ids": [],
+            "linked_activity_ids": []
+          }
+        ]
+      },
+      "error": null,
+      "source_content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b"
+    }
+  ],
+  "final_answer": "当前共有 2 个 Risk RAID 项。\n1. RAID-RISK-EX-016：Resolved，severity=Medium，owner=Data Migration Lead。\n2. RAID-RISK-EX-022：Open，severity=Medium，owner=Data Migration Lead。\n数据来源：\n- list_raid_items · SHA 093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+  "validation": {
+    "valid": true,
+    "reasons": []
+  },
+  "mcp_sessions": 1,
+  "graph_path": [
+    "validate_input",
+    "plan_request",
+    "enforce_policy",
+    "execute_mcp_tools",
+    "compose_answer",
+    "validate_output"
+  ],
+  "errors": []
+}
