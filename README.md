@@ -1,5 +1,9 @@
 # CarveOps Copilot
 
+CarveOps Copilot is an auditable engineering portfolio for enterprise carve-out and ERP rebuild scenarios. It combines deterministic migration tooling, RAG/LLM Fit-to-Standard analysis, Cutover governance, and a human-in-the-loop Migration Review Workspace.
+
+The deterministic core covers Contract Validation, Source Profiling, Mapping Candidate Generation, Approved Decision Validation, Target Package Generation, Contract Revalidation, and Cell-level Lineage. LLMs are used only for Module 2 requirement extraction and Fit/Gap judgement, plus the Module 3 natural-language planner example; they do not perform the formal business calculation that builds migration packages.
+
 CarveOps Copilot 是一个面向企业并购剥离（Carve-out）与 ERP 重建场景的可审计 AI Agent 作品集项目。
 
 项目覆盖三条相互衔接的工作流：
@@ -8,7 +12,7 @@ CarveOps Copilot 是一个面向企业并购剥离（Carve-out）与 ERP 重建�
 2. Fit-to-Standard 差异分析
 3. Cutover / RAID 治理
 
-三条工作流均已实现：确定性工具负责业务计算、校验和正式报告生成；本地 stdio MCP Server 提供受控工具接口；LangGraph Agent 只负责规划与编排；FastAPI + React 前端只读展示正式报告和审计轨迹。
+三条工作流均已实现：确定性工具负责业务计算、校验和正式报告生成；本地 stdio MCP Server 提供受控工具接口；LangGraph Agent 只负责规划与编排；FastAPI + React 提供只读分析报告，并提供一个受控的本地 Migration Review Workspace。Workspace 写入仅限 Git 忽略的 `data/runtime/`，不会覆盖正式证据。
 
 核心技术栈包括 Python、Splink、Chroma、DeepSeek/OpenAI/Anthropic Provider 契约、MCP、LangGraph、FastAPI、React、Vite 与 Mantine。项目重点是可解释、可审计、可复现的边界设计，而不是替代企业级 SAP 工具。全部业务数据均为合成数据，不连接真实 SAP 系统，定位为教学和作品集实现。
 
@@ -18,7 +22,7 @@ CarveOps Copilot 是一个面向企业并购剥离（Carve-out）与 ERP 重建�
 
 | 模块 | 输入 | 核心处理 | 正式输出 |
 | -- | -- | ---- | ---- |
-| 模块一 · 数据迁移映射 | 合成跨国供应商遗留数据；SAP Business Partner 目标 schema | 数据画像；字段映射；可加载性校验；Splink 实体解析 | `vendor_profile_report.json`、`vendor_field_mapping.json`、`vendor_validation_report.json`、`vendor_duplicate_report.json` |
+| 模块一 · 数据迁移映射 | 合成跨国供应商遗留数据；SAP Business Partner 目标 schema；合成 Source CSV；Frictionless Migration Contract；Mapping Report；Human-approved Mapping Decisions | 数据画像；字段映射；可加载性校验；Splink 实体解析；Contract-driven validation；Source profiling；Top-3 field mapping candidates；Single-target and multi-target human approval；Target package generation；Contract revalidation；Cell-level lineage | `vendor_profile_report.json`、`vendor_field_mapping.json`、`vendor_validation_report.json`、`vendor_duplicate_report.json`；Contract Validation Report；Mapping Report；Mapping Evaluation；Mapping Decisions；Target Resource CSV；Package Manifest；Generated Validation Report；Lineage |
 | 模块二 · Fit-to-Standard 差异分析 | 合成访谈笔记；自撰 SAP 标准流程知识库 | 需求抽取；RAG 检索；Fit / Configuration / Enhancement / Development 判定；独立 ground-truth 评估 | `gap_analysis_report.json`、`gap_analysis_evaluation.json` |
 | 模块三 · Cutover / RAID 治理 | 模块二 Development Backlog；`needs_review` 项；追加式状态事件 | Cutover 计划与依赖图；RAID 登记；状态机和审批门校验；管理日报；stdio MCP 工具层；LangGraph Planner Agent | `cutover_plan_report.json`、`cutover_status_report.json`、`cutover_daily_report.json`、`cutover_agent_trace.json` |
 
@@ -77,7 +81,7 @@ flowchart LR
 
 **LLM cache 与离线重放：**
 
-模块二和模块三 Planner 首次请求需要网络和对应 API key。每次 LLM 调用按 provider、model、prompt、schema 和 DeepSeek thinking 参数形成请求指纹，结构化响应缓存到仓库内。后续 `--offline` 只读缓存，cache miss 会明确失败，不会静默联网。
+模块二和模块三 Planner 首次请求需要网络和对应 provider credential。每次 LLM 调用按 provider、model、prompt、schema 和 DeepSeek thinking 参数形成请求指纹，结构化响应缓存到仓库内。后续 `--offline` 只读缓存，cache miss 会明确失败，不会静默联网。
 
 ```powershell
 $env:DEEPSEEK_API_KEY = "..."   # 仅首次未命中缓存时需要；不要提交真实密钥
@@ -137,12 +141,15 @@ python scripts/prefetch_model.py --check
 
 ```text
 carveops-copilot/
-├── backend/                       # FastAPI 只读报告 API
-├── frontend/                      # React + Vite + Mantine 只读界面
+├── backend/                       # read-only report API + scoped migration workspace
+├── frontend/                      # report display + human-in-the-loop migration review
 ├── schemas/                       # SAP 公开字段结构参考
 ├── data/
+│   ├── examples/                  # contract, source, blind benchmark, and seed workspace fixtures
+│   ├── generated/                 # committed deterministic migration packages and lineage
 │   ├── legacy/                    # 模块一合成遗留数据及评估数据
 │   ├── knowledge/                 # 自撰 SAP 标准流程知识库
+│   ├── runtime/                   # local workspace state, Git ignored
 │   └── synthetic/                 # 正式报告、LLM cache、Agent trace
 ├── src/
 │   ├── tools/                     # 确定性分析和报告构建工具
@@ -366,7 +373,7 @@ rebuild_cutover_reports
 - 不接受任意路径；
 - 不执行 shell；
 - 不访问网络；
-- 不读取 API Key；
+- 不读取 provider credential；
 - 不读取 ground truth / evaluation；
 - 不提供状态写入工具；
 - rebuild 只重建正式 Cutover 报告。
@@ -433,6 +440,12 @@ Blocked activities observed = 2
 | `GET /api/health` | 连通性检查；列出报告可用状态 |
 | `GET /api/reports` | 报告目录 |
 | `GET /api/reports/{name}` | 读取一份白名单报告 JSON |
+
+API boundary:
+
+- `/api/reports/*`: read-only formal report access.
+- `/api/migration/*`: scoped local writes only for the fixed Migration Review Workspace.
+- Workspace writes are restricted to `data/runtime/` and cannot overwrite committed evidence.
 
 `{name}` 走显式白名单，不做任何路径拼接。这样避免两类问题：路径穿越（例如 `../../schemas/...`）和评估答案泄漏。以下内容不暴露：
 
@@ -548,6 +561,139 @@ offline、cache hit/miss 和运行节点事件属于运行元数据，不进入 
 
 ---
 
+## practical-v2: Contract-driven Migration Workflow
+
+```mermaid
+flowchart LR
+    A[Source CSV] --> B[Source Profiler]
+    C[Migration Contract] --> D[Contract Target Index]
+    B --> E[Mapping Candidate Engine]
+    D --> E
+    E --> F[Top-3 Candidates]
+    F --> G[Human Review]
+    G --> H[Approved Mapping Decisions]
+    H --> I[Target Package Builder]
+    C --> I
+    I --> J[Target Resource CSVs]
+    I --> K[Cell-level Lineage]
+    J --> L[Contract Revalidation]
+    F --> M[Migration Review Workspace]
+    G --> M
+    J --> M
+    K --> M
+    L --> M
+```
+
+The practical-v2 workflow is contract-driven from the first source profile to the final generated target package. A Frictionless Migration Contract defines target resources and fields; the source profiler describes incoming CSV fields; the mapping engine produces Top-3 candidates; a human reviewer approves one or more target links; the deterministic package builder executes only approved decisions; and the same contract revalidates generated resources with cell-level lineage.
+
+### Frozen-engine blind benchmark
+
+```text
+Domain: ERPNext Item + Item Price
+Contract aliases: 0
+Source fields: 10
+Expected target links: 11
+Source Top-1 accuracy: 0.2222
+Top-3 target-link recall: 1.0000
+Multi-target full Top-3 coverage: 1.0000
+No-target accuracy: 1.0000
+High-confidence predictions: 0
+```
+
+The frozen engine recalled all expected target links into Top-3 candidates, but only 2 of 9 mapped source fields had the correct target ranked first, and no suggestions were high confidence. Blind observations: strong candidate recall, weak top-1 ranking, conservative confidence calibration, human review required, and the original system could not execute one source field into multiple targets.
+
+Remediation keeps the blind evidence unchanged. The human reviewer approved both Top-3 links for `article_number` and `inventory_measure`; the Decision Loader was extended so one Source can approve multiple distinct Targets; and the existing target-driven Builder generated both resources.
+
+### Human-approved multi-target execution
+
+```text
+Approved links: 11
+Unique approved source fields: 9
+Multi-target source fields: 2
+item.csv: 8 rows x 5 fields
+item_price.csv: 8 rows x 6 fields
+Generated validation valid: true
+Generated validation findings: 0
+Lineage entries: 88
+```
+
+The two multi-target approvals are:
+
+- `article_number` -> `item.item_code` and `item_price.item_code`
+- `inventory_measure` -> `item.stock_uom` and `item_price.uom`
+
+The Mapping Engine provides Top-3 candidates. It does not automatically identify two formal recommendations for a source field. The reviewer approved two links, and the Builder executed the approved result.
+
+## Migration Review Workspace
+
+The local workspace has a fixed `workspace_id: erpnext-item-price`. It supports a focused review loop: view candidates, approve one or more Targets, save Runtime Decision, build package, view contract validation, preview target CSV, and inspect lineage.
+
+Security and audit boundaries:
+
+- The workspace registry is an explicit whitelist.
+- Requests do not accept contract, source, decision, or output paths.
+- Runtime writes are limited to `data/runtime/`, which is Git ignored.
+- Runtime state cannot overwrite formal committed evidence.
+- Decision save uses a temporary file, the existing Loader validation, and `os.replace`.
+- Save and build use Mapping SHA plus Decision SHA optimistic concurrency.
+- Build calls Core directly, not through a subprocess.
+- Repeated build for the same workspace is guarded by a process-local lock.
+- The report API remains read-only.
+
+Quick Start for the workspace:
+
+```powershell
+uvicorn backend.main:app --reload --port 8001
+
+cd frontend
+$env:VITE_API_BASE="http://127.0.0.1:8001"
+npm run dev
+```
+
+Visit:
+
+```text
+http://127.0.0.1:5173/
+```
+
+The default page is `迁移工作台`. No LLM credential is required for this demo. It uses committed synthetic evidence and makes no LLM or network calls.
+
+## practical-v2 Reproducibility
+
+Run the practical-v2 verification suite from the repository root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/verify_practical_v2.ps1
+```
+
+The script runs contract smoke, mapping smoke, package generation smoke, ERPNext blind benchmark smoke, multi-target smoke, backend API tests, full Python tests, frontend tests, frontend build, frontend lint, pip check, git diff checks, and runtime cleanup.
+
+Current local verification counts:
+
+```text
+Python tests: 417
+Frontend tests: 45
+Workspace API tests: 38
+```
+
+## Known Limitations
+
+- Mapping Engine still has one formal recommendation per Source.
+- One-source and multi-target execution requires human approval from Top-3 candidates.
+- Migration Review Workspace currently supports only `erpnext-item-price`.
+- There is no upload flow or dynamic workspace creation.
+- There is no database persistence.
+- There is no user authorization or audit identity.
+- The build lock is process-local only and does not coordinate multiple workers or processes.
+- The ERPNext Contract is a fixed upstream snapshot for a teaching subset, `authoritative=false`.
+- The SAP schema reference is also a teaching snapshot; real projects must verify target metadata.
+- All business data is synthetic.
+- No real SAP or ERPNext system is connected.
+- Module 2 first cache miss may require the selected LLM provider credential.
+- This project is not a substitute for SAP, ERPNext, or data migration commercial products.
+
+---
+
 ## 项目限制
 
 - 全部业务数据均为合成数据；
@@ -557,7 +703,7 @@ offline、cache hit/miss 和运行节点事件属于运行元数据，不进入 
 - LLM 评估规模只有 23 条 ground truth requirements；
 - Cutover 时间使用 `T-30`、`T0` 等相对 offset；
 - 没有真实审批、通知或 SAP 写回；
-- 前端完全只读；
+- 前端包含只读报告和受控本地 Migration Review Workspace；
 - MCP 仅使用本地 stdio；
 - Agent 不具备状态写入工具；
 - 当前项目重点是架构、审计性和失败边界，不是替代企业级 SAP 工具。
@@ -567,10 +713,11 @@ offline、cache hit/miss 和运行节点事件属于运行元数据，不进入 
 ## 验证状态
 
 ```text
-Python unittest: 143 passed
-Frontend Vitest: 15 passed
+Python unittest: 417 passed
+Frontend Vitest: 45 passed
 Frontend build: passed
 Frontend lint: passed
+Workspace API tests: 38 passed
 Backend reports: 10/10
 MCP smoke: passed
 LangGraph offline smoke: passed
