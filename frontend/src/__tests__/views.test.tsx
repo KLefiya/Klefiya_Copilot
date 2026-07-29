@@ -16,6 +16,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProfileView } from '../views/ProfileView'
 import { MappingView } from '../views/MappingView'
+import { MigrationWorkspaceView } from '../views/MigrationWorkspaceView'
 import { ValidationView } from '../views/ValidationView'
 import { DuplicateView } from '../views/DuplicateView'
 import { FitGapView } from '../views/FitGapView'
@@ -83,6 +84,56 @@ describe('数据质量画像', () => {
 
     // 自由文本字段标注为「不适用」，不是 0 种签名
     expect(screen.getAllByText('自由文本 · 不适用').length).toBeGreaterThan(0)
+  })
+})
+
+describe('迁移工作台', () => {
+  it('renders the workspace shell from the scoped migration API', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({
+            workspace: {
+              workspace_id: 'erpnext-item-price',
+              title: 'ERPNext Item + Item Price',
+              description: 'Human-approved workspace.',
+              contract_id: 'erpnext-item-price-reference-v1',
+              contract_version: '1.0.0',
+              contract_sha256: '0'.repeat(64),
+              domain: 'product_and_pricing',
+              source_path: 'data/examples/blind/erpnext_item_price/source_product_catalog.csv',
+              source_sha256: '1'.repeat(64),
+              mapping_content_sha256: '2'.repeat(64),
+              mapping_report_sha256: '3'.repeat(64),
+              decision_source: 'seed',
+              decision_sha256: '4'.repeat(64),
+              runtime_state: false,
+            },
+            summary: {
+              source_rows: 8,
+              source_fields: 10,
+              target_fields: 11,
+              approved_links: 11,
+              unique_approved_sources: 9,
+              rejected_sources: 1,
+              deferred_sources: 0,
+              multi_target_sources: 2,
+            },
+            mappings: [],
+            decisions: [],
+            build: { available: false },
+            resources: [],
+          }),
+          { status: 200 },
+        ),
+      ),
+    )
+
+    renderView(<MigrationWorkspaceView />)
+
+    await waitFor(() => expect(screen.getByText('迁移工作台')).toBeDefined())
+    expect(screen.getByText('ERPNext Item + Item Price · Human-in-the-loop Review')).toBeDefined()
   })
 })
 

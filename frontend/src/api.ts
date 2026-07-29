@@ -54,10 +54,20 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string): Promise<T> {
+async function request<T>(
+  path: string,
+  options?: {
+    method?: 'GET' | 'PUT' | 'POST'
+    body?: unknown
+  },
+): Promise<T> {
   let response: Response
   try {
-    response = await fetch(`${API_BASE}${path}`)
+    response = await fetch(`${API_BASE}${path}`, {
+      method: options?.method ?? 'GET',
+      headers: options?.body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      body: options?.body === undefined ? undefined : JSON.stringify(options.body),
+    })
   } catch (cause) {
     // fetch 抛错 = 根本没连上（后端没起、端口不对、CORS 预检失败）
     throw new ApiError(0, {
@@ -82,5 +92,46 @@ async function request<T>(path: string): Promise<T> {
 export const getHealth = () => request<Health>('/api/health')
 
 export const getReport = (name: string) => request<unknown>(`/api/reports/${name}`)
+
+export const getMigrationWorkspaces = () => request<unknown>('/api/migration/workspaces')
+
+export const getMigrationWorkspace = (workspaceId: string) =>
+  request<unknown>(`/api/migration/workspaces/${encodeURIComponent(workspaceId)}`)
+
+export const saveMigrationDecisions = (workspaceId: string, payload: unknown) =>
+  request<unknown>(`/api/migration/workspaces/${encodeURIComponent(workspaceId)}/decisions`, {
+    method: 'PUT',
+    body: payload,
+  })
+
+export const buildMigrationPackage = (workspaceId: string, payload: unknown) =>
+  request<unknown>(`/api/migration/workspaces/${encodeURIComponent(workspaceId)}/build`, {
+    method: 'POST',
+    body: payload,
+  })
+
+export const resetMigrationWorkspace = (workspaceId: string) =>
+  request<unknown>(`/api/migration/workspaces/${encodeURIComponent(workspaceId)}/reset`, {
+    method: 'POST',
+  })
+
+export const getMigrationResource = (workspaceId: string, resourceName: string, limit = 20) =>
+  request<unknown>(
+    `/api/migration/workspaces/${encodeURIComponent(workspaceId)}/resources/${encodeURIComponent(resourceName)}?limit=${encodeURIComponent(String(limit))}`,
+  )
+
+export const getMigrationLineage = (
+  workspaceId: string,
+  filters?: { source_field?: string; target_resource?: string; limit?: number },
+) => {
+  const params = new URLSearchParams()
+  if (filters?.source_field) params.set('source_field', filters.source_field)
+  if (filters?.target_resource) params.set('target_resource', filters.target_resource)
+  if (filters?.limit) params.set('limit', String(filters.limit))
+  const query = params.toString()
+  return request<unknown>(
+    `/api/migration/workspaces/${encodeURIComponent(workspaceId)}/lineage${query ? `?${query}` : ''}`,
+  )
+}
 
 export { API_BASE }

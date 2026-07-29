@@ -43,7 +43,7 @@ class BackendApiTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 404)
                 self.assertEqual(response.json()["detail"]["error"], "unknown_report")
 
-    def test_api_only_allows_get_methods(self) -> None:
+    def test_report_catalog_endpoints_remain_read_only(self) -> None:
         response = self.client.post("/api/reports/cutover_daily_report")
         self.assertEqual(response.status_code, 405)
 

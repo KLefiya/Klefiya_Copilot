@@ -26,6 +26,7 @@ import { CutoverView } from './views/CutoverView'
 import { DuplicateView } from './views/DuplicateView'
 import { FitGapView } from './views/FitGapView'
 import { MappingView } from './views/MappingView'
+import { MigrationWorkspaceView } from './views/MigrationWorkspaceView'
 import { ProfileView } from './views/ProfileView'
 import { ValidationView } from './views/ValidationView'
 import { STATUS } from './lib/theme'
@@ -34,11 +35,12 @@ interface NavItem {
   key: string
   label: string
   /** 对应的报告名，用于查 /api/health 里的 available */
-  report: string
+  report?: string
   element: React.ReactNode
 }
 
 const MODULE_ONE: NavItem[] = [
+  { key: 'migration-workspace', label: '迁移工作台', element: <MigrationWorkspaceView /> },
   { key: 'profile', label: '数据质量画像', report: 'vendor_profile_report', element: <ProfileView /> },
   { key: 'duplicate', label: '实体解析', report: 'vendor_duplicate_report', element: <DuplicateView /> },
   { key: 'mapping', label: '字段映射建议', report: 'vendor_field_mapping', element: <MappingView /> },
@@ -55,7 +57,7 @@ const MODULE_THREE: NavItem[] = [
 
 export default function App() {
   const [opened, { toggle, close }] = useDisclosure()
-  const [active, setActive] = useState('profile')
+  const [active, setActive] = useState('migration-workspace')
   const [health, setHealth] = useState<Health | null>(null)
   const [offline, setOffline] = useState(false)
 
@@ -87,29 +89,50 @@ export default function App() {
               CarveOps Copilot
             </Title>
             <Text size="xs" c="dimmed" visibleFrom="sm">
-              SAP 并购剥离辅助
+              企业迁移准备与 Cutover 治理
             </Text>
           </Group>
 
           <Group gap="sm">
             {offline ? (
-              <Badge size="sm" variant="light" color="red">
-                后端未连接
-              </Badge>
+              <>
+                <Badge size="sm" variant="light" color="red" visibleFrom="xs">
+                  后端未连接
+                </Badge>
+                <Badge size="sm" variant="light" color="red" hiddenFrom="xs">
+                  未连接
+                </Badge>
+              </>
             ) : health ? (
               <Tooltip label={`${health.service} v${health.version}`}>
-                <Badge
-                  size="sm"
-                  variant="light"
-                  style={{ backgroundColor: `${STATUS.good}22`, color: STATUS.good }}
-                >
-                  后端已连接 · 报告 {health.reports_available}/{health.reports_total}
-                </Badge>
+                <span>
+                  <Badge
+                    size="sm"
+                    variant="light"
+                    visibleFrom="xs"
+                    style={{ backgroundColor: `${STATUS.good}22`, color: STATUS.good }}
+                  >
+                    后端已连接 · 报告 {health.reports_available}/{health.reports_total}
+                  </Badge>
+                  <Badge
+                    size="sm"
+                    variant="light"
+                    hiddenFrom="xs"
+                    style={{ backgroundColor: `${STATUS.good}22`, color: STATUS.good }}
+                  >
+                    报告 {health.reports_available}/{health.reports_total}
+                  </Badge>
+                </span>
               </Tooltip>
             ) : (
-              <Badge size="sm" variant="light" color="gray">
-                连接中…
-              </Badge>
+              <>
+                <Badge size="sm" variant="light" color="gray" visibleFrom="xs">
+                  连接中…
+                </Badge>
+                <Badge size="sm" variant="light" color="gray" hiddenFrom="xs">
+                  连接中
+                </Badge>
+              </>
             )}
           </Group>
         </Group>
@@ -122,7 +145,7 @@ export default function App() {
           </Text>
           <Stack gap={2}>
             {MODULE_ONE.map((item) => {
-              const available = availability.get(item.report)
+              const available = item.report ? availability.get(item.report) : undefined
               return (
                 <NavLink
                   key={item.key}
@@ -154,7 +177,7 @@ export default function App() {
           </Text>
           <Stack gap={2}>
             {MODULE_TWO.map((item) => {
-              const available = availability.get(item.report)
+              const available = item.report ? availability.get(item.report) : undefined
               return (
                 <NavLink
                   key={item.key}
@@ -186,7 +209,7 @@ export default function App() {
           </Text>
           <Stack gap={2}>
             {MODULE_THREE.map((item) => {
-              const available = availability.get(item.report)
+              const available = item.report ? availability.get(item.report) : undefined
               return (
                 <NavLink
                   key={item.key}
@@ -212,7 +235,7 @@ export default function App() {
               全部为合成数据
             </Text>
             <Text size="xs" c="dimmed" mt={2}>
-              不接触任何真实 SAP 系统
+              示例均为合成数据，不连接真实目标系统
             </Text>
             {health && (
               <Text size="xs" c="dimmed" mt={6}>

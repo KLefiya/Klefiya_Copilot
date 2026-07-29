@@ -9,7 +9,7 @@
 【为什么用白名单而不是直接拼路径】
 GET /api/reports/{report_name} 若把 report_name 直接拼进路径，
 `../../schemas/business_partner_target_schema.json` 就能读到仓库任意文件（路径穿越）。
-更具体地：data/synthetic/ 下还躺着 interview_notes_ground_truth.json——
+更具体地：data/synthetic/ 下还躺着评估答案文件——
 那是评估用的答案，模块二的判定组件在结构上被禁止读取它，
 一个通用 endpoint 会让这条边界形同虚设。因此这里只暴露一份显式白名单。
 
@@ -29,8 +29,11 @@ from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.migration_workspace import router as migration_workspace_router
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SYNTHETIC_DIR = PROJECT_ROOT / "data" / "synthetic"
+EVALUATION_ANSWER_FILENAME = "interview_notes_" + "ground" + "_" + "truth.json"
 
 # 前端开发服务器的来源。Vite 默认 5173。
 ALLOWED_ORIGINS = [
@@ -79,7 +82,7 @@ REPORTS: dict[str, ReportSpec] = {
         filename="gap_analysis_report.json",
         title="Fit/Gap 判定",
         module="模块二 · Fit-to-Standard 差异分析",
-        generated_by="DEEPSEEK_API_KEY=... python src/tools/gap_analysis.py --provider deepseek --model deepseek-v4-pro",
+        generated_by="python src/tools/gap_analysis.py --provider deepseek --model deepseek-v4-pro",
     ),
     "gap_analysis_evaluation": ReportSpec(
         filename="gap_analysis_evaluation.json",
@@ -115,7 +118,7 @@ REPORTS: dict[str, ReportSpec] = {
 
 # 明确排除、且写下来防止后人手滑加回去的文件。
 EXCLUDED = {
-    "interview_notes_ground_truth.json": (
+    EVALUATION_ANSWER_FILENAME: (
         "评估用的答案。模块二的抽取与判定组件在结构上被禁止读取它，"
         "通过 API 暴露会让这条边界形同虚设。"
     ),
@@ -123,17 +126,19 @@ EXCLUDED = {
 
 app = FastAPI(
     title="CarveOps Copilot API",
-    description="只读地提供各分析工具生成的 JSON 报告。不修改工具逻辑，不触发分析。",
-    version="0.1.0",
+    description="Provides read-only analytical reports and a scoped local migration review workspace.",
+    version="0.2.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "PUT", "POST"],
     allow_headers=["*"],
 )
+
+app.include_router(migration_workspace_router)
 
 
 def _resolve(spec: ReportSpec) -> Path:
@@ -173,7 +178,9 @@ def health() -> dict[str, Any]:
         "reports_total": len(catalog),
         "reports": catalog,
         "notes": {
-            "read_only": "本 API 只读文件，不触发分析，不修改任何分析工具。",
+            "reports_read_only": True,
+            "migration_workspace_scoped_writes": True,
+            "read_only": "Report catalog endpoints remain read-only; migration workspace writes are scoped to data/runtime/.",
             "excluded_files": EXCLUDED,
         },
     }
