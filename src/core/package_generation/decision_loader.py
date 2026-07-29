@@ -21,7 +21,7 @@ DECISIONS = {"approved", "rejected", "deferred"}
 TRANSFORMATIONS = {"copy", "constant", "value_map"}
 VALUE_MAP_ON_MISSING = {"reject_row", "keep_original", "empty"}
 SECRET_MARKERS = ("authorization", "api_key", "secret", "token", "bearer ", "sk-")
-GROUND_TRUTH_MARKERS = ("ground" + "_truth", "ground" + "-truth")
+EVALUATION_ANSWER_MARKERS = ("ground" + "_truth", "ground" + "-truth")
 
 
 class DecisionLoadError(Exception):
@@ -86,7 +86,7 @@ def _scan_strings(value: Any, trail: tuple[str, ...] = ()) -> None:
         return
     lowered = value.lower()
     field = ".".join(trail)
-    if any(marker in lowered for marker in GROUND_TRUTH_MARKERS):
+    if any(marker in lowered for marker in EVALUATION_ANSWER_MARKERS):
         raise DecisionLoadError("ground" + "_truth_reference_not_allowed", "Decision files must not reference evaluation answers", {"field": field})
     if _is_url(value):
         raise DecisionLoadError("remote_path_not_allowed", "Decision files must not reference remote paths", {"field": field})
@@ -244,8 +244,9 @@ def load_mapping_decisions(
     target_fields = {field.qualified_name for field in build_target_field_index(contract)}
     mapping_by_source = _mapping_index(mapping_report)
     decisions = _parse_decisions(raw["decisions"])
-    approved_sources: set[str] = set()
+    approved_links: set[tuple[str, str]] = set()
     approved_targets: set[str] = set()
+    source_decisions: dict[str, set[str]] = {}
     for item in decisions:
         if item.source_field not in header_set:
             raise DecisionLoadError("source_field_missing", "Decision source field does not exist in source CSV", {"source_field": item.source_field})
@@ -254,18 +255,30 @@ def load_mapping_decisions(
         if item.decision == "approved":
             if not item.target:
                 raise DecisionLoadError("approved_target_required", "Approved decisions must include a target", {"source_field": item.source_field})
-            if item.source_field in approved_sources:
-                raise DecisionLoadError("duplicate_approved_source", "A source field cannot be approved more than once", {"source_field": item.source_field})
-            if item.target in approved_targets:
-                raise DecisionLoadError("duplicate_approved_target", "A target field cannot be approved more than once", {"target": item.target})
             if item.target not in target_fields:
                 raise DecisionLoadError("unknown_target", "Approved target does not exist in the contract", {"target": item.target})
+            existing = source_decisions.get(item.source_field, set())
+            if existing - {"approved"}:
+                raise DecisionLoadError("conflicting_source_decisions", "A source field cannot mix approved, rejected, and deferred decisions", {"source_field": item.source_field})
+            link = (item.source_field, item.target)
+            if link in approved_links:
+                raise DecisionLoadError("duplicate_approved_link", "A source-to-target link cannot be approved more than once", {"source_field": item.source_field, "target": item.target})
+            if item.target in approved_targets:
+                raise DecisionLoadError("duplicate_approved_target", "A target field cannot be approved more than once", {"target": item.target})
             if item.target not in _top3_targets(mapping_by_source[item.source_field]):
                 raise DecisionLoadError("target_not_in_top3", "Approved target must appear in the mapping report top-3 candidates", {"source_field": item.source_field, "target": item.target})
-            approved_sources.add(item.source_field)
+            approved_links.add(link)
             approved_targets.add(item.target)
+            source_decisions.setdefault(item.source_field, set()).add("approved")
         elif item.target is not None:
             raise DecisionLoadError("target_not_allowed", "Rejected and deferred decisions must not include a target", {"source_field": item.source_field})
+        else:
+            existing = source_decisions.get(item.source_field, set())
+            if "approved" in existing or (existing and item.decision not in existing):
+                raise DecisionLoadError("conflicting_source_decisions", "A source field cannot mix approved, rejected, and deferred decisions", {"source_field": item.source_field})
+            if item.decision in existing:
+                raise DecisionLoadError("duplicate_nonapproved_source_decision", "A rejected or deferred source decision cannot be repeated", {"source_field": item.source_field, "decision": item.decision})
+            source_decisions.setdefault(item.source_field, set()).add(item.decision)
 
     return LoadedMappingDecisions(
         version=str(raw["version"]),

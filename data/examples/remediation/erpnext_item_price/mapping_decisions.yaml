@@ -1,0 +1,66 @@
+version: 1.1.0
+contract_id: erpnext-item-price-reference-v1
+mapping_report: data/synthetic/erpnext_item_price_blind_mapping.json
+source:
+  path: data/examples/blind/erpnext_item_price/source_product_catalog.csv
+  record_id_field: article_number
+decisions:
+  - source_field: article_number
+    target: item.item_code
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: article_number
+    target: item_price.item_code
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: catalogue_caption
+    target: item.item_name
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: merchandise_family
+    target: item.item_group
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: inventory_measure
+    target: item.stock_uom
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: inventory_measure
+    target: item_price.uom
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: lifecycle_block
+    target: item.disabled
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: tariff_name
+    target: item_price.price_list
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: retail_amount
+    target: item_price.price_list_rate
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: effective_start
+    target: item_price.valid_from
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: effective_end
+    target: item_price.valid_upto
+    decision: approved
+    transformation:
+      type: copy
+  - source_field: data_steward
+    target: null
+    decision: rejected
+    reason: No target field exists in this contract after human domain review.

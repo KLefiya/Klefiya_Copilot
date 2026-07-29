@@ -1,0 +1,52 @@
+{
+  "_run_info": {
+    "content_sha256": "a4c688073df9799a05f5a6d5cba4c584c175c51e7615c87559923efa2b65f012",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-29T01:21:16+00:00"
+  },
+  "_meta": {
+    "component": "migration_contract_validation",
+    "engine": "frictionless",
+    "engine_version": "5.19.0",
+    "contract_id": "erpnext-item-price-reference-v1",
+    "contract_name": "erpnext-item-price-reference",
+    "contract_version": "1.0.0",
+    "adapter": "erpnext_item_price_reference",
+    "domain": "product_and_pricing",
+    "synthetic": true,
+    "authoritative": false,
+    "contract_path": "contracts/erpnext_item_price_reference/datapackage.yaml",
+    "contract_sha256": "091dd55c2181411440de824d154202f0b28130ee706c2d9c0b7f3a5c9926db0d",
+    "data_root": "data/generated/erpnext_item_price_multitarget",
+    "resource_count": 2,
+    "row_count": 16,
+    "read_only": true
+  },
+  "summary": {
+    "valid": true,
+    "finding_count": 0,
+    "by_category": {},
+    "by_resource": {},
+    "by_severity": {}
+  },
+  "resources": [
+    {
+      "name": "item",
+      "path": "data/generated/erpnext_item_price_multitarget/item.csv",
+      "row_count": 8,
+      "valid": true,
+      "finding_count": 0
+    },
+    {
+      "name": "item_price",
+      "path": "data/generated/erpnext_item_price_multitarget/item_price.csv",
+      "row_count": 8,
+      "valid": true,
+      "finding_count": 0
+    }
+  ],
+  "findings": [],
+  "validation": {
+    "valid": true
+  }
+}

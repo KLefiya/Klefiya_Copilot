@@ -1,0 +1,80 @@
+{
+  "_run_info": {
+    "content_sha256": "320c88a2f86e1c6caa3e89308f449d07d10b95b8c9d2acc35cb56ef077d80057",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-29T01:21:16+00:00"
+  },
+  "_meta": {
+    "component": "migration_package_generation",
+    "contract_id": "erpnext-item-price-reference-v1",
+    "contract_sha256": "091dd55c2181411440de824d154202f0b28130ee706c2d9c0b7f3a5c9926db0d",
+    "source_path": "data/examples/blind/erpnext_item_price/source_product_catalog.csv",
+    "source_sha256": "4df8f194d11c89de6aa01f538644aa73eee1488921a942b2f9af0ad8de38cd0a",
+    "mapping_report_path": "data/synthetic/erpnext_item_price_blind_mapping.json",
+    "mapping_report_sha256": "19075c3e403f7b82b6363470b17bd7bbfac1c9dda24d5b8e73787cbfa9fc4e1d",
+    "decision_path": "data/examples/remediation/erpnext_item_price/mapping_decisions.yaml",
+    "decision_sha256": "c178cb179cacc1515eba3e787df4c688a11ae9965026b15fa27b4d29c31e1f87",
+    "output_root": "data/generated/erpnext_item_price_multitarget",
+    "read_only_source": true,
+    "ground_truth_used": false
+  },
+  "summary": {
+    "build_status": "completed",
+    "source_rows": 8,
+    "resources_generated": 2,
+    "rows_generated": 16,
+    "approved_mappings": 11,
+    "rejected_mappings": 1,
+    "deferred_mappings": 0,
+    "rejected_rows": 0,
+    "lineage_entries": 88
+  },
+  "resources": [
+    {
+      "resource": "item",
+      "target_path": "data/generated/erpnext_item_price_multitarget/item.csv",
+      "field_names": [
+        "item_code",
+        "item_name",
+        "item_group",
+        "stock_uom",
+        "disabled"
+      ],
+      "row_count": 8,
+      "rejected_row_count": 0,
+      "content_sha256": "1390d49baba27ae28db01de6c3ac1adfe6e3687e82c0a6b6df09bea9837a947d"
+    },
+    {
+      "resource": "item_price",
+      "target_path": "data/generated/erpnext_item_price_multitarget/item_price.csv",
+      "field_names": [
+        "item_code",
+        "uom",
+        "price_list",
+        "price_list_rate",
+        "valid_from",
+        "valid_upto"
+      ],
+      "row_count": 8,
+      "rejected_row_count": 0,
+      "content_sha256": "24dff197956a2acf840a001aa456b05837e9abfbcf5b83ee18a4b1aa526ae2a8"
+    }
+  ],
+  "rejected_rows": [],
+  "unmapped_target_fields": [],
+  "validation": {
+    "report_path": "data/synthetic/erpnext_item_price_multitarget_generated_validation.json",
+    "valid": true,
+    "finding_count": 0
+  },
+  "manifest": {
+    "path": "data/generated/erpnext_item_price_multitarget/package_manifest.json",
+    "content_sha256": "8a63eafaface02dc3d04cebec1dea58a722b6f10cb8d2763a6077af96f9052c3"
+  },
+  "lineage": {
+    "path": "data/generated/erpnext_item_price_multitarget/lineage.json",
+    "content_sha256": "e374719ce18c569a03ba84119cb904f7790b0dcaf33a27e6d1cce45b23d322fe",
+    "entry_count": 88,
+    "sensitive_values_included": false
+  }
+}

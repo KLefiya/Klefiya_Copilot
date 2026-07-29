@@ -1,0 +1,49 @@
+{
+  "_run_info": {
+    "content_sha256": "b762c77de540b0d86d4bdd0aa48ae2be87a69f14a3a1a0513ecc7f7789edf8c8",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-29T01:21:41+00:00"
+  },
+  "_meta": {
+    "component": "multitarget_mapping_remediation",
+    "blind_benchmark_commit": "e7f227fff0816b85e2e6e8b279062b944c723da5",
+    "blind_mapping_content_sha256": "f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164",
+    "blind_evaluation_content_sha256": "d665596750403d5928daa332f318dec3078bce1a7ab977c8192b3a5edd106fed",
+    "protocol_lock_content_sha256": "bd092f06592d6a71961454cf638e2864ac3e5fb8fc0f247a1fe0b8ae36fdb2ed",
+    "mapping_engine_modified": false,
+    "candidate_ranking_modified": false,
+    "thresholds_modified": false
+  },
+  "before": {
+    "mapping_report_supports_multiple_formal_recommendations": false,
+    "decision_loader_supports_one_source_to_multiple_targets": false,
+    "package_builder_verified_for_one_source_to_multiple_targets": false
+  },
+  "after": {
+    "mapping_report_supports_multiple_formal_recommendations": false,
+    "decision_loader_supports_one_source_to_multiple_targets": true,
+    "package_builder_verified_for_one_source_to_multiple_targets": true
+  },
+  "execution": {
+    "approved_mapping_links": 11,
+    "unique_approved_source_fields": 9,
+    "multi_target_source_fields": [
+      "article_number",
+      "inventory_measure"
+    ],
+    "resources_generated": 2,
+    "rows_generated": 16,
+    "lineage_entries": 88,
+    "generated_validation_valid": true,
+    "generated_validation_findings": 0
+  },
+  "artifacts": {
+    "decision_path": "data/examples/remediation/erpnext_item_price/mapping_decisions.yaml",
+    "decision_sha256": "c178cb179cacc1515eba3e787df4c688a11ae9965026b15fa27b4d29c31e1f87",
+    "output_root": "data/generated/erpnext_item_price_multitarget",
+    "manifest_content_sha256": "8a63eafaface02dc3d04cebec1dea58a722b6f10cb8d2763a6077af96f9052c3",
+    "build_report_content_sha256": "320c88a2f86e1c6caa3e89308f449d07d10b95b8c9d2acc35cb56ef077d80057",
+    "generated_validation_content_sha256": "a4c688073df9799a05f5a6d5cba4c584c175c51e7615c87559923efa2b65f012",
+    "lineage_content_sha256": "e374719ce18c569a03ba84119cb904f7790b0dcaf33a27e6d1cce45b23d322fe"
+  }
+}

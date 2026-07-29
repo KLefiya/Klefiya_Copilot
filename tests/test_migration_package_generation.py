@@ -186,14 +186,14 @@ class MigrationPackageGenerationTests(unittest.TestCase):
                 load_mapping_decisions(path, _contract(), GENERIC_MAPPING)
         self.assertEqual(ctx.exception.code, "unknown_target")
 
-    def test_09_duplicate_approved_source_rejected(self):
+    def test_09_duplicate_approved_link_rejected(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as root:
             doc = _load_yaml()
             doc["decisions"].append(dict(doc["decisions"][0]))
             path = _write_yaml(Path(root), doc)
             with self.assertRaises(DecisionLoadError) as ctx:
                 load_mapping_decisions(path, _contract(), GENERIC_MAPPING)
-        self.assertEqual(ctx.exception.code, "duplicate_approved_source")
+        self.assertEqual(ctx.exception.code, "duplicate_approved_link")
 
     def test_10_duplicate_approved_target_rejected(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as root:

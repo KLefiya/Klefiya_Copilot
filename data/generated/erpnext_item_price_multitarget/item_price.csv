@@ -1,0 +1,9 @@
+item_code,uom,price_list,price_list_rate,valid_from,valid_upto
+ART-3001,Nos,Standard Selling,129.50,2026-01-01,2026-12-31
+ART-3002,Box,Standard Selling,42.00,2026-01-15,2026-12-31
+ART-3003,Nos,Service Tariff,750.00,2026-02-01,2026-10-31
+ART-3004,Kg,Standard Selling,18.75,2026-03-01,2026-09-30
+ART-3005,Box,Clearance Tariff,8.25,2026-04-01,2026-08-31
+ART-3006,Nos,Service Tariff,310.00,2026-05-01,2026-12-31
+ART-3007,Kg,Standard Selling,64.40,2026-06-01,2026-12-31
+ART-3008,Box,Export Tariff,95.00,2026-07-01,2026-12-31

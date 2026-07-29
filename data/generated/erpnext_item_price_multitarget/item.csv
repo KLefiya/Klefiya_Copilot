@@ -1,0 +1,9 @@
+item_code,item_name,item_group,stock_uom,disabled
+ART-3001,Synthetic Atlas Gear,Components,Nos,false
+ART-3002,Synthetic Beacon Kit,Packaging,Box,false
+ART-3003,Synthetic Cascade Service,Services,Nos,false
+ART-3004,Synthetic Delta Compound,Components,Kg,false
+ART-3005,Synthetic Ember Wrap,Packaging,Box,true
+ART-3006,Synthetic Finch Calibration,Services,Nos,false
+ART-3007,Synthetic Grove Resin,Components,Kg,false
+ART-3008,Synthetic Harbor Crate,Packaging,Box,false
