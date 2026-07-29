@@ -1,0 +1,20 @@
+{
+  "repository": "frappe/erpnext",
+  "commit_sha": "a051a12d9b6603bb838f8b8149436a3a7900d545",
+  "license": "GPL-3.0",
+  "license_source": "https://api.github.com/repos/frappe/erpnext",
+  "sources": [
+    {
+      "path": "erpnext/stock/doctype/item/item.json",
+      "sha256": "ac9e4070ccd832f2597d653438dd181fe6d62f5b28bd0bc001434b71fb0a7724",
+      "url": "https://raw.githubusercontent.com/frappe/erpnext/a051a12d9b6603bb838f8b8149436a3a7900d545/erpnext/stock/doctype/item/item.json"
+    },
+    {
+      "path": "erpnext/stock/doctype/item_price/item_price.json",
+      "sha256": "509288b37cb9dfb1f18d0f91ffb04cfb3387447204fe996b9bc29d9ad82204af",
+      "url": "https://raw.githubusercontent.com/frappe/erpnext/a051a12d9b6603bb838f8b8149436a3a7900d545/erpnext/stock/doctype/item_price/item_price.json"
+    }
+  ],
+  "usage": "Field-level educational reference only.",
+  "authoritative": false
+}

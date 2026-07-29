@@ -1,0 +1,26 @@
+{
+  "engine_commit": "c908712daab4f4989988d41e869df693b5d8944a",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "thresholds": {
+    "high_confidence": 0.7,
+    "medium_confidence": 0.45,
+    "no_match": 0.4,
+    "alias_confidence_floor": 0.9,
+    "type_gate_floor": 0.6,
+    "top_n_candidates": 3
+  },
+  "engine_files": {
+    "src/core/mapping/models.py": "e5c615a8c55e7abaf3cba619feb37bd5d0edf9fdd29efe33f1630ce4861c9023",
+    "src/core/mapping/profiler.py": "a698de7fc21e2d398e9a6fa5f010224431c81c66a150f95ba08816a21c5c8542",
+    "src/core/mapping/target_index.py": "a0ea3897a4fd49f502e641ddd8bb8ed2f6bc05690780669c255e552d5d4f0c72",
+    "src/core/mapping/scorer.py": "ac12d45fed6741a5d0ec446616c76e0eaec7927a550365b3f2d463d59f94e61b",
+    "src/core/mapping/engine.py": "a8df8ff2fbc58bb7434198f835ecbc16fac56a4f413dabb2dff056003aceace9",
+    "src/tools/suggest_contract_mappings.py": "9dde797a747c87cdea2e16d7c7269a1450bdba72710a0fe3e960389611f0a3f7"
+  },
+  "contract_sha256": "091dd55c2181411440de824d154202f0b28130ee706c2d9c0b7f3a5c9926db0d",
+  "source_sha256": "4df8f194d11c89de6aa01f538644aa73eee1488921a942b2f9af0ad8de38cd0a",
+  "ground_truth_sha256": "24b28a09ad671bc9a0cca59c4c2b79cd11ded087d694918775475d66b3886019",
+  "upstream_reference_sha256": "c36bdc305ca660a6ec5f28f15592aaa5c0dab66019dcc919ba976188351baa8e",
+  "aliases_present": false,
+  "locked_before_first_mapping": true
+}

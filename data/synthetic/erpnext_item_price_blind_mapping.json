@@ -1,0 +1,726 @@
+{
+  "_run_info": {
+    "content_sha256": "f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-28T09:20:37+00:00"
+  },
+  "_meta": {
+    "component": "contract_field_mapping",
+    "contract_id": "erpnext-item-price-reference-v1",
+    "contract_version": "1.0.0",
+    "contract_sha256": "091dd55c2181411440de824d154202f0b28130ee706c2d9c0b7f3a5c9926db0d",
+    "adapter": "erpnext_item_price_reference",
+    "domain": "product_and_pricing",
+    "source_path": "data/examples/blind/erpnext_item_price/source_product_catalog.csv",
+    "source_sha256": "4df8f194d11c89de6aa01f538644aa73eee1488921a942b2f9af0ad8de38cd0a",
+    "source_row_count": 8,
+    "source_field_count": 10,
+    "target_field_count": 11,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "thresholds": {
+      "high_confidence": 0.7,
+      "medium_confidence": 0.45,
+      "no_match_threshold": 0.4,
+      "alias_confidence_floor": 0.9,
+      "type_gate_floor": 0.6,
+      "top_n_candidates": 3
+    },
+    "read_only": true,
+    "ground_truth_used": false
+  },
+  "summary": {
+    "suggested": 0,
+    "needs_review": 2,
+    "possible_false_friend": 0,
+    "no_confident_target": 8,
+    "alias_based": 0,
+    "semantic_based": 0,
+    "target_coverage": 0.1818
+  },
+  "mappings": [
+    {
+      "source_field": "article_number",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "article_number",
+        "inferred_kind": "string",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 8,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 8,
+        "samples": [
+          "ART-3001",
+          "ART-3002",
+          "ART-3003",
+          "ART-3004",
+          "ART-3005"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.2459,
+          "semantic_score": 0.1812,
+          "fuzzy_score": 0.5217,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_code",
+          "rank": 2,
+          "score": 0.2145,
+          "semantic_score": 0.2036,
+          "fuzzy_score": 0.3571,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.item_code",
+          "rank": 3,
+          "score": 0.1995,
+          "semantic_score": 0.1797,
+          "fuzzy_score": 0.3529,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "catalogue_caption",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "catalogue_caption",
+        "inferred_kind": "string",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 8,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 27,
+        "samples": [
+          "Synthetic Atlas Gear",
+          "Synthetic Beacon Kit",
+          "Synthetic Cascade Service",
+          "Synthetic Delta Compound",
+          "Synthetic Ember Wrap"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item_price.price_list",
+          "rank": 1,
+          "score": 0.2969,
+          "semantic_score": 0.37,
+          "fuzzy_score": 0.3051,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_name",
+          "rank": 2,
+          "score": 0.2853,
+          "semantic_score": 0.3313,
+          "fuzzy_score": 0.3448,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.stock_uom",
+          "rank": 3,
+          "score": 0.2584,
+          "semantic_score": 0.2954,
+          "fuzzy_score": 0.3226,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "merchandise_family",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "merchandise_family",
+        "inferred_kind": "string",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 3,
+        "distinct_ratio": 0.375,
+        "observed_max_length": 10,
+        "samples": [
+          "Components",
+          "Packaging",
+          "Services"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.3259,
+          "semantic_score": 0.3956,
+          "fuzzy_score": 0.3571,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_group",
+          "rank": 2,
+          "score": 0.2377,
+          "semantic_score": 0.273,
+          "fuzzy_score": 0.2941,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_code",
+          "rank": 3,
+          "score": 0.2253,
+          "semantic_score": 0.2505,
+          "fuzzy_score": 0.2963,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "inventory_measure",
+      "status": "needs_review",
+      "recommendation": "item.stock_uom",
+      "confidence": 0.4601,
+      "band": "medium",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "inventory_measure",
+        "inferred_kind": "string",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 3,
+        "distinct_ratio": 0.375,
+        "observed_max_length": 3,
+        "samples": [
+          "Nos",
+          "Box",
+          "Kg"
+        ]
+      },
+      "review_reasons": [
+        "medium_confidence"
+      ],
+      "top_candidates": [
+        {
+          "target": "item.stock_uom",
+          "rank": 1,
+          "score": 0.4601,
+          "semantic_score": 0.5637,
+          "fuzzy_score": 0.4375,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.uom",
+          "rank": 2,
+          "score": 0.4049,
+          "semantic_score": 0.4685,
+          "fuzzy_score": 0.4375,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.1,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.price_list_rate",
+          "rank": 3,
+          "score": 0.297,
+          "semantic_score": 0.3085,
+          "fuzzy_score": 0.4375,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "lifecycle_block",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "lifecycle_block",
+        "inferred_kind": "boolean",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 2,
+        "distinct_ratio": 0.25,
+        "observed_max_length": 5,
+        "samples": [
+          "false",
+          "true"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item.disabled",
+          "rank": 1,
+          "score": 0.1204,
+          "semantic_score": 0.1799,
+          "fuzzy_score": 0.3571,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.6,
+          "warnings": [
+            "boolean_source_for_text_target"
+          ]
+        },
+        {
+          "target": "item.item_code",
+          "rank": 2,
+          "score": 0.0951,
+          "semantic_score": 0.1128,
+          "fuzzy_score": 0.3448,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.6,
+          "warnings": [
+            "boolean_source_for_text_target"
+          ]
+        },
+        {
+          "target": "item_price.valid_upto",
+          "rank": 3,
+          "score": 0.0942,
+          "semantic_score": 0.1217,
+          "fuzzy_score": 0.32,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.6,
+          "warnings": [
+            "boolean_source_for_text_target"
+          ]
+        }
+      ]
+    },
+    {
+      "source_field": "tariff_name",
+      "status": "needs_review",
+      "recommendation": "item_price.price_list",
+      "confidence": 0.5273,
+      "band": "medium",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "tariff_name",
+        "inferred_kind": "string",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 4,
+        "distinct_ratio": 0.5,
+        "observed_max_length": 16,
+        "samples": [
+          "Standard Selling",
+          "Service Tariff",
+          "Clearance Tariff",
+          "Export Tariff"
+        ]
+      },
+      "review_reasons": [
+        "medium_confidence"
+      ],
+      "top_candidates": [
+        {
+          "target": "item_price.price_list",
+          "rank": 1,
+          "score": 0.5273,
+          "semantic_score": 0.6513,
+          "fuzzy_score": 0.4151,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.25,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_name",
+          "rank": 2,
+          "score": 0.3805,
+          "semantic_score": 0.3809,
+          "fuzzy_score": 0.5217,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.125,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.item_code",
+          "rank": 3,
+          "score": 0.2635,
+          "semantic_score": 0.3042,
+          "fuzzy_score": 0.3226,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "retail_amount",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "mixed",
+      "source_profile": {
+        "name": "retail_amount",
+        "inferred_kind": "number",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 8,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 6,
+        "samples": [
+          "129.50",
+          "42.00",
+          "750.00",
+          "18.75",
+          "8.25"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item_price.price_list_rate",
+          "rank": 1,
+          "score": 0.4437,
+          "semantic_score": 0.4109,
+          "fuzzy_score": 0.7143,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0833,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.valid_from",
+          "rank": 2,
+          "score": 0.3008,
+          "semantic_score": 0.3161,
+          "fuzzy_score": 0.4348,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.valid_upto",
+          "rank": 3,
+          "score": 0.296,
+          "semantic_score": 0.3079,
+          "fuzzy_score": 0.4348,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_field": "effective_start",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "effective_start",
+        "inferred_kind": "date",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 8,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 10,
+        "samples": [
+          "2026-01-01",
+          "2026-01-15",
+          "2026-02-01",
+          "2026-03-01",
+          "2026-04-01"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item_price.valid_from",
+          "rank": 1,
+          "score": 0.3223,
+          "semantic_score": 0.2343,
+          "fuzzy_score": 0.64,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0909,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.disabled",
+          "rank": 2,
+          "score": 0.1609,
+          "semantic_score": 0.0058,
+          "fuzzy_score": 0.7143,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.82,
+          "warnings": [
+            "weak_date_to_text_compatibility"
+          ]
+        },
+        {
+          "target": "item.stock_uom",
+          "rank": 3,
+          "score": 0.12,
+          "semantic_score": 0.0917,
+          "fuzzy_score": 0.3448,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.82,
+          "warnings": [
+            "weak_date_to_text_compatibility"
+          ]
+        }
+      ]
+    },
+    {
+      "source_field": "effective_end",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "none",
+      "source_profile": {
+        "name": "effective_end",
+        "inferred_kind": "date",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 4,
+        "distinct_ratio": 0.5,
+        "observed_max_length": 10,
+        "samples": [
+          "2026-12-31",
+          "2026-10-31",
+          "2026-09-30",
+          "2026-08-31"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item_price.valid_upto",
+          "rank": 1,
+          "score": 0.279,
+          "semantic_score": 0.1916,
+          "fuzzy_score": 0.5714,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0909,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.valid_from",
+          "rank": 2,
+          "score": 0.1258,
+          "semantic_score": 0.0525,
+          "fuzzy_score": 0.3529,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_code",
+          "rank": 3,
+          "score": 0.1143,
+          "semantic_score": 0.0602,
+          "fuzzy_score": 0.3871,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 0.82,
+          "warnings": [
+            "weak_date_to_text_compatibility"
+          ]
+        }
+      ]
+    },
+    {
+      "source_field": "data_steward",
+      "status": "no_confident_target",
+      "recommendation": null,
+      "confidence": 0.0,
+      "band": "low",
+      "mapping_basis": "fuzzy",
+      "source_profile": {
+        "name": "data_steward",
+        "inferred_kind": "string",
+        "row_count": 8,
+        "present_count": 8,
+        "missing_count": 0,
+        "missing_ratio": 0.0,
+        "distinct_count": 8,
+        "distinct_ratio": 1.0,
+        "observed_max_length": 15,
+        "samples": [
+          "steward_alpha",
+          "steward_beta",
+          "steward_gamma",
+          "steward_delta",
+          "steward_epsilon"
+        ]
+      },
+      "review_reasons": [
+        "best_score_below_threshold"
+      ],
+      "top_candidates": [
+        {
+          "target": "item_price.valid_from",
+          "rank": 1,
+          "score": 0.2258,
+          "semantic_score": 0.0507,
+          "fuzzy_score": 0.7273,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item.item_name",
+          "rank": 2,
+          "score": 0.2214,
+          "semantic_score": 0.2026,
+          "fuzzy_score": 0.3846,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        },
+        {
+          "target": "item_price.valid_upto",
+          "rank": 3,
+          "score": 0.211,
+          "semantic_score": 0.0844,
+          "fuzzy_score": 0.6,
+          "alias_hit": false,
+          "alias_source": null,
+          "lexical_overlap": 0.0,
+          "type_gate": 1.0,
+          "warnings": []
+        }
+      ]
+    }
+  ],
+  "unmapped_target_fields": [
+    "item.disabled",
+    "item.item_code",
+    "item.item_group",
+    "item.item_name",
+    "item_price.item_code",
+    "item_price.price_list_rate",
+    "item_price.uom",
+    "item_price.valid_from",
+    "item_price.valid_upto"
+  ]
+}

@@ -1,0 +1,108 @@
+profile: tabular-data-package
+name: erpnext-item-price-reference
+title: ERPNext Item and Item Price Reference Contract
+version: 1.0.0
+description: Educational field subset derived from a pinned ERPNext source snapshot.
+carveops:
+  contract_id: erpnext-item-price-reference-v1
+  adapter: erpnext_item_price_reference
+  domain: product_and_pricing
+  synthetic: true
+  authoritative: false
+  source_note: Validate real imports against the target ERPNext instance and import template.
+resources:
+  - profile: tabular-data-resource
+    name: item
+    path: item.csv
+    schema:
+      primaryKey:
+        - item_code
+      fields:
+        - name: item_code
+          type: string
+          constraints:
+            required: true
+            unique: true
+            maxLength: 140
+          carveops:
+            description: Product or service identifier used by ERPNext Item.
+            semantic_type: product_identifier
+        - name: item_name
+          type: string
+          constraints:
+            maxLength: 140
+          carveops:
+            description: Human-readable product or service name.
+            semantic_type: product_name
+        - name: item_group
+          type: string
+          constraints:
+            required: true
+            maxLength: 140
+          carveops:
+            description: Product grouping used for item classification.
+            semantic_type: product_category
+        - name: stock_uom
+          type: string
+          constraints:
+            required: true
+            maxLength: 140
+          carveops:
+            description: Default stock unit of measure for the item.
+            semantic_type: unit_of_measure
+        - name: disabled
+          type: boolean
+          carveops:
+            description: Flag indicating whether the item is blocked from use.
+            semantic_type: active_status
+  - profile: tabular-data-resource
+    name: item_price
+    path: item_price.csv
+    schema:
+      foreignKeys:
+        - fields:
+            - item_code
+          reference:
+            resource: item
+            fields:
+              - item_code
+      fields:
+        - name: item_code
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Item identifier for the price record.
+            semantic_type: product_identifier
+        - name: uom
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Unit of measure for which the price applies.
+            semantic_type: unit_of_measure
+        - name: price_list
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Price list or tariff name used for pricing.
+            semantic_type: price_list
+        - name: price_list_rate
+          type: number
+          constraints:
+            required: true
+            minimum: 0
+          carveops:
+            description: Non-negative rate for the item in the price list.
+            semantic_type: monetary_amount
+        - name: valid_from
+          type: date
+          carveops:
+            description: First date on which the price is valid.
+            semantic_type: start_date
+        - name: valid_upto
+          type: date
+          carveops:
+            description: Last date on which the price is valid.
+            semantic_type: end_date

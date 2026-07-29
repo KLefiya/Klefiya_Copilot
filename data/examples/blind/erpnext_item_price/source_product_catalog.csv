@@ -1,0 +1,9 @@
+article_number,catalogue_caption,merchandise_family,inventory_measure,lifecycle_block,tariff_name,retail_amount,effective_start,effective_end,data_steward
+ART-3001,Synthetic Atlas Gear,Components,Nos,false,Standard Selling,129.50,2026-01-01,2026-12-31,steward_alpha
+ART-3002,Synthetic Beacon Kit,Packaging,Box,false,Standard Selling,42.00,2026-01-15,2026-12-31,steward_beta
+ART-3003,Synthetic Cascade Service,Services,Nos,false,Service Tariff,750.00,2026-02-01,2026-10-31,steward_gamma
+ART-3004,Synthetic Delta Compound,Components,Kg,false,Standard Selling,18.75,2026-03-01,2026-09-30,steward_delta
+ART-3005,Synthetic Ember Wrap,Packaging,Box,true,Clearance Tariff,8.25,2026-04-01,2026-08-31,steward_epsilon
+ART-3006,Synthetic Finch Calibration,Services,Nos,false,Service Tariff,310.00,2026-05-01,2026-12-31,steward_zeta
+ART-3007,Synthetic Grove Resin,Components,Kg,false,Standard Selling,64.40,2026-06-01,2026-12-31,steward_eta
+ART-3008,Synthetic Harbor Crate,Packaging,Box,false,Export Tariff,95.00,2026-07-01,2026-12-31,steward_theta

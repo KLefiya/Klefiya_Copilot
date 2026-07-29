@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "purpose": "blind_evaluation_only",
+    "synthetic": true,
+    "multi_target": true,
+    "must_not_be_read_by_mapping_engine": true
+  },
+  "mappings": [
+    {
+      "source_field": "article_number",
+      "expected_targets": [
+        "item.item_code",
+        "item_price.item_code"
+      ],
+      "evaluation_group": "multi_target"
+    },
+    {
+      "source_field": "catalogue_caption",
+      "expected_targets": [
+        "item.item_name"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "merchandise_family",
+      "expected_targets": [
+        "item.item_group"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "inventory_measure",
+      "expected_targets": [
+        "item.stock_uom",
+        "item_price.uom"
+      ],
+      "evaluation_group": "multi_target"
+    },
+    {
+      "source_field": "lifecycle_block",
+      "expected_targets": [
+        "item.disabled"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "tariff_name",
+      "expected_targets": [
+        "item_price.price_list"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "retail_amount",
+      "expected_targets": [
+        "item_price.price_list_rate"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "effective_start",
+      "expected_targets": [
+        "item_price.valid_from"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "effective_end",
+      "expected_targets": [
+        "item_price.valid_upto"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "data_steward",
+      "expected_targets": [],
+      "evaluation_group": "no_target"
+    }
+  ]
+}
