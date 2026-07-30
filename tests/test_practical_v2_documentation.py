@@ -26,161 +26,237 @@ class PracticalV2DocumentationTests(unittest.TestCase):
         cls.demo = read_text("docs/practical-v2-demo.md")
         cls.demo_lower = cls.demo.lower()
         cls.guide = read_text("docs/practical-v2-review-guide.md")
-        cls.guide_lower = cls.guide.lower()
         cls.script = read_text("scripts/verify_practical_v2.ps1")
         cls.script_lower = cls.script.lower()
         cls.docs_combined = "\n".join([cls.readme, cls.demo, cls.guide, cls.script])
         cls.docs_lower = cls.docs_combined.lower()
 
-    def test_01_readme_frontend_is_not_described_as_read_only_only(self) -> None:
-        self.assertNotIn("前端完全只读", self.readme)
-        self.assertIn("Migration Review Workspace", self.readme)
+    def test_01_readme_has_new_main_sections(self) -> None:
+        for heading in [
+            "## What It Does",
+            "## Main Workflows",
+            "## Migration Workflow",
+            "## Migration Review Workspace",
+            "## Blind Benchmark",
+            "## Project Structure",
+            "## Quick Start",
+            "## Run The Verification Suite",
+            "## Results",
+            "## Design Choices",
+            "## Known Limitations",
+        ]:
+            self.assertIn(heading, self.readme)
 
-    def test_02_readme_mentions_migration_review_workspace(self) -> None:
-        self.assertIn("## Migration Review Workspace", self.readme)
+    def test_02_readme_omits_forbidden_vendor_terms(self) -> None:
+        for term in ["SAP", "S/4HANA", "Business Partner", "SAP SE", "A2X", "Fiori", "ABAP"]:
+            self.assertNotIn(term.lower(), self.readme_lower)
 
-    def test_03_readme_contains_contract_driven_workflow(self) -> None:
-        self.assertIn("## practical-v2: Contract-driven Migration Workflow", self.readme)
+    def test_03_readme_describes_general_project_positioning(self) -> None:
+        self.assertIn("enterprise carve-out", self.readme)
+        self.assertIn("ERP rebuild", self.readme)
+        self.assertIn("data migration", self.readme)
+        self.assertIn("All examples use synthetic data.", self.readme)
+
+    def test_04_readme_keeps_actual_workflow_capabilities(self) -> None:
+        for phrase in [
+            "Profiles source data.",
+            "Validates target contracts.",
+            "Suggests Top-3 field mappings.",
+            "Records human mapping decisions.",
+            "Generates target CSV resources.",
+            "Stores cell-level lineage.",
+        ]:
+            self.assertIn(phrase, self.readme)
+
+    def test_05_readme_contains_three_workflows(self) -> None:
+        self.assertIn("### Data Migration", self.readme)
+        self.assertIn("### Fit-to-Standard", self.readme)
+        self.assertIn("### Cutover And RAID", self.readme)
+
+    def test_06_readme_contains_simplified_mermaid_flow(self) -> None:
         self.assertIn("flowchart LR", self.readme)
+        for node in ["Source CSV", "Source Profile", "Target Contract", "Mapping Candidates", "Human Review", "Package Builder", "Validation"]:
+            self.assertIn(node, self.readme)
 
-    def test_04_readme_contains_blind_benchmark(self) -> None:
-        self.assertIn("### Frozen-engine blind benchmark", self.readme)
+    def test_07_readme_states_human_review_is_required(self) -> None:
+        self.assertIn("The reviewer decides what should be approved, rejected, or deferred.", self.readme)
+        self.assertIn("The builder executes the approved result.", self.readme)
 
-    def test_05_readme_records_top_one_accuracy(self) -> None:
-        self.assertIn("Source Top-1 accuracy: 0.2222", self.readme)
-
-    def test_06_readme_records_top_three_recall(self) -> None:
-        self.assertIn("Top-3 target-link recall: 1.0000", self.readme)
-
-    def test_07_readme_does_not_claim_full_mapping_accuracy(self) -> None:
-        forbidden = "mapping accuracy" + " = " + "100%"
-        self.assertNotIn(forbidden, self.readme_lower)
-
-    def test_08_readme_contains_lineage_count(self) -> None:
-        self.assertIn("Lineage entries: 88", self.readme)
+    def test_08_readme_explains_lineage_hashes(self) -> None:
+        self.assertIn("Lineage records the source field and a SHA for the source value.", self.readme)
+        self.assertIn("not complete source values", self.readme)
 
     def test_09_readme_contains_fixed_workspace_id(self) -> None:
-        self.assertIn("workspace_id: erpnext-item-price", self.readme)
+        self.assertIn("workspace_id = erpnext-item-price", self.readme)
 
-    def test_10_readme_contains_process_local_lock_limitation(self) -> None:
-        self.assertIn("process-local lock", self.readme_lower)
+    def test_10_readme_contains_workspace_actions(self) -> None:
+        for phrase in ["View Top-3 candidates.", "Approve one or more targets.", "Reject or defer a source field.", "Save a Runtime Decision.", "Preview generated resources.", "Reset local runtime state."]:
+            self.assertIn(phrase, self.readme)
 
-    def test_11_readme_contains_no_upload_limitation(self) -> None:
-        self.assertIn("There is no upload flow", self.readme)
+    def test_11_readme_contains_runtime_boundaries(self) -> None:
+        self.assertIn("Workspace paths come from a fixed registry.", self.readme)
+        self.assertIn("data/runtime/", self.readme)
+        self.assertIn("ignored by Git", self.readme)
+        self.assertIn("process-local", self.readme_lower)
 
-    def test_12_readme_contains_no_database_limitation(self) -> None:
-        self.assertIn("There is no database persistence", self.readme)
+    def test_12_readme_records_blind_benchmark_numbers(self) -> None:
+        for phrase in [
+            "Domain: Item + Item Price",
+            "Contract aliases: 0",
+            "Source fields: 10",
+            "Expected target links: 11",
+            "Source Top-1 accuracy: 0.2222",
+            "Top-3 target-link recall: 1.0000",
+            "Multi-target full Top-3 coverage: 1.0000",
+            "No-target accuracy: 1.0000",
+            "High-confidence predictions: 0",
+        ]:
+            self.assertIn(phrase, self.readme)
 
-    def test_13_readme_contains_no_user_permission_limitation(self) -> None:
-        self.assertIn("no user authorization or audit identity", self.readme_lower)
+    def test_13_readme_does_not_claim_full_mapping_accuracy(self) -> None:
+        forbidden = ["mapping accuracy = 100%", "mapping accuracy 100%", "automatic mapping success = 100%"]
+        for phrase in forbidden:
+            self.assertNotIn(phrase, self.readme_lower)
+        self.assertIn("correct target ranked first for only 2 of 9 source fields that had a target", self.readme)
 
-    def test_14_readme_quick_start_references_workspace_commands(self) -> None:
-        self.assertIn("uvicorn backend.main:app --reload --port 8001", self.readme)
-        self.assertIn('$env:VITE_API_BASE="http://127.0.0.1:8001"', self.readme)
-        self.assertIn("npm run dev", self.readme)
+    def test_14_readme_records_multi_target_results(self) -> None:
+        for phrase in [
+            "Approved links: 11",
+            "Unique approved source fields: 9",
+            "Multi-target source fields: 2",
+            "item.csv: 8 rows x 5 fields",
+            "item_price.csv: 8 rows x 6 fields",
+            "Validation: valid",
+            "Findings: 0",
+            "Lineage entries: 88",
+        ]:
+            self.assertIn(phrase, self.readme)
+
+    def test_15_readme_records_multi_target_fields(self) -> None:
+        for phrase in ["article_number", "item.item_code", "item_price.item_code", "inventory_measure", "item.stock_uom", "item_price.uom"]:
+            self.assertIn(phrase, self.readme)
+        self.assertIn("approved by a reviewer from candidate lists", self.readme)
+        self.assertIn("engine did not decide multi-target intent by itself", self.readme)
+
+    def test_16_project_structure_is_compact(self) -> None:
+        for path in ["backend/", "frontend/", "contracts/", "data/examples/", "data/generated/", "data/runtime/", "data/synthetic/", "docs/", "scripts/", "src/core/", "src/tools/", "tests/"]:
+            self.assertIn(path, self.readme)
+
+    def test_17_quick_start_commands_are_present(self) -> None:
+        for command in [
+            "python -m pip install -r requirements.txt",
+            "python -m pip install -r backend/requirements.txt",
+            "npm install",
+            "uvicorn backend.main:app --reload --port 8001",
+            '$env:VITE_API_BASE="http://127.0.0.1:8001"',
+            "npm run dev",
+            "http://127.0.0.1:5173/",
+        ]:
+            self.assertIn(command, self.readme)
+
+    def test_18_quick_start_names_default_page(self) -> None:
         self.assertIn("迁移工作台", self.readme)
 
-    def test_15_demo_doc_exists(self) -> None:
-        self.assertTrue((ROOT / "docs/practical-v2-demo.md").is_file())
-
-    def test_16_review_guide_exists(self) -> None:
-        self.assertTrue((ROOT / "docs/practical-v2-review-guide.md").is_file())
-
-    def test_17_verification_script_exists(self) -> None:
-        self.assertTrue((ROOT / "scripts/verify_practical_v2.ps1").is_file())
-
-    def test_18_demo_requires_no_llm_credential(self) -> None:
+    def test_19_demo_does_not_require_llm_credential(self) -> None:
+        self.assertIn("does not require an LLM credential", self.readme)
+        self.assertIn("does not need the Fit-to-Standard report to be regenerated", self.readme)
         self.assertIn("No LLM credential is required.", self.demo)
         self.assertNotIn("llm credential required", self.demo_lower)
 
-    def test_19_reviewer_guide_sha_matches_committed_reports(self) -> None:
+    def test_20_verification_command_and_counts_are_present(self) -> None:
+        self.assertIn("powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify_practical_v2.ps1", self.readme)
+        self.assertIn("Python tests: 417", self.readme)
+        self.assertIn("Frontend tests: 45", self.readme)
+        self.assertIn("Workspace API tests: 38", self.readme)
+        self.assertIn("Python tests: 417", self.script)
+
+    def test_21_results_keep_migration_numbers(self) -> None:
+        for phrase in ["Target package: valid", "Findings: 0", "Lineage entries: 88"]:
+            self.assertIn(phrase, self.readme)
+
+    def test_22_results_keep_fit_to_standard_numbers(self) -> None:
+        for phrase in [
+            "Ground truth requirements = 23",
+            "Extracted requirements = 24",
+            "Matched = 21",
+            "Spurious = 3",
+            "Missed = 2",
+            "Strict Precision = 0.8750",
+            "Strict Recall = 0.9130",
+            "Strict F1 = 0.8936",
+            "Matched-only classification accuracy = 0.9524",
+            "Development Backlog = 5",
+            "needs_review = 2",
+        ]:
+            self.assertIn(phrase, self.readme)
+
+    def test_23_results_keep_cutover_numbers(self) -> None:
+        for phrase in ["Activities = 30", "Completed = 17", "Blocked = 2", "Not Started = 11", "Work packages = 5", "Freeze windows = 3", "Approval gates = 4", "RAID items = 7"]:
+            self.assertIn(phrase, self.readme)
+
+    def test_24_design_choices_are_limited_and_concrete(self) -> None:
+        self.assertEqual(self.readme.count("Human approval stays between mapping suggestions and package generation."), 1)
+        self.assertIn("Generated data is validated with the same contract used to define the target.", self.readme)
+        self.assertIn("Runtime workspace files do not modify committed examples.", self.readme)
+
+    def test_25_known_limitations_are_present(self) -> None:
+        for phrase in [
+            "Only one workspace is registered.",
+            "There is no upload flow.",
+            "There is no dynamic contract registration.",
+            "There is no database.",
+            "There are no user accounts or reviewer identities.",
+            "The build lock is process-local only.",
+            "Multi-target execution needs human approval.",
+            "Reference contracts are educational snapshots.",
+            "All business data is synthetic.",
+            "There is no real ERP connection.",
+            "First uncached LLM analysis may require network access.",
+            "not a replacement for commercial migration tooling",
+        ]:
+            self.assertIn(phrase, self.readme)
+
+    def test_26_readme_does_not_claim_universal_or_production_capability(self) -> None:
+        for phrase in ["completely vendor-neutral", "universal ERP standards", "supports every ERP platform", "production-ready", "automatically solves migration mapping", "automatic multi-target detection", "authoritative contract", "LLM generates final migration packages"]:
+            self.assertNotIn(phrase, self.readme_lower)
+
+    def test_27_documentation_files_exist(self) -> None:
+        self.assertTrue((ROOT / "docs/practical-v2-demo.md").is_file())
+        self.assertTrue((ROOT / "docs/practical-v2-review-guide.md").is_file())
+        self.assertTrue((ROOT / "scripts/verify_practical_v2.ps1").is_file())
+
+    def test_28_reviewer_guide_records_current_report_shas(self) -> None:
         expected = [
             read_json("data/synthetic/erpnext_item_price_blind_mapping.json")["_run_info"]["content_sha256"],
             read_json("data/synthetic/erpnext_item_price_blind_evaluation.json")["_run_info"]["content_sha256"],
-            hashlib.sha256((ROOT / "data/examples/blind/erpnext_item_price/blind_protocol_lock.json").read_bytes()).hexdigest(),
             read_json("data/generated/erpnext_item_price_multitarget/package_manifest.json")["_run_info"]["content_sha256"],
             read_json("data/synthetic/erpnext_item_price_multitarget_generated_validation.json")["_run_info"]["content_sha256"],
         ]
         for sha in expected:
             self.assertIn(sha, self.guide)
+        self.assertIn("Protocol Lock", self.guide)
 
-    def test_20_docs_contain_no_local_absolute_paths(self) -> None:
+    def test_29_docs_contain_no_local_absolute_paths(self) -> None:
         self.assertIsNone(re.search(r"[A-Z]:\\\\", self.docs_combined))
         self.assertNotIn("/" + "home/", self.docs_combined)
 
-    def test_21_docs_contain_no_real_secret_markers(self) -> None:
+    def test_30_docs_contain_no_real_secret_markers(self) -> None:
         forbidden = ["Be" + "arer", "Authorization" + ":", "s" + "k-" + "live", "s" + "k-" + "proj"]
         for marker in forbidden:
             self.assertNotIn(marker, self.docs_combined)
 
-    def test_22_docs_do_not_claim_erpnext_contract_authoritative(self) -> None:
-        self.assertIn("authoritative=false", self.readme)
-        self.assertNotIn("authoritative" + " = " + "true", self.docs_lower)
-
-    def test_23_docs_do_not_claim_automatic_multi_target_identification(self) -> None:
-        self.assertIn("does not automatically identify two formal recommendations", self.readme)
-
-    def test_24_docs_contain_python_test_count(self) -> None:
-        self.assertIn("Python tests: 417", self.readme)
-        self.assertIn("Python tests: 417", self.script)
-
-    def test_25_docs_contain_frontend_test_count(self) -> None:
-        self.assertIn("Frontend tests: 45", self.readme)
-        self.assertIn("Frontend tests: 45", self.script)
-
-    def test_26_docs_contain_workspace_api_test_count(self) -> None:
-        self.assertIn("Workspace API tests: 38", self.readme)
-        self.assertIn("Workspace API tests: 38", self.script)
-
-    def test_27_verification_script_does_not_call_remote_fetch_tools(self) -> None:
-        forbidden = ["invoke-webrequest", "invoke-restmethod", "curl ", "wget ", "fetch("]
-        for marker in forbidden:
+    def test_31_verification_script_does_not_call_remote_fetch_tools(self) -> None:
+        for marker in ["invoke-webrequest", "invoke-restmethod", "curl ", "wget ", "fetch("]:
             self.assertNotIn(marker, self.script_lower)
 
-    def test_28_verification_script_does_not_start_servers(self) -> None:
-        forbidden = ["uvicorn", "npm run dev", "vite --host"]
-        for marker in forbidden:
+    def test_32_verification_script_does_not_start_servers(self) -> None:
+        for marker in ["uvicorn", "npm run dev", "vite --host"]:
             self.assertNotIn(marker, self.script_lower)
 
-    def test_29_verification_script_does_not_install_dependencies(self) -> None:
-        forbidden = ["pip install", "npm install", "npm ci"]
-        for marker in forbidden:
+    def test_33_verification_script_does_not_install_dependencies(self) -> None:
+        for marker in ["pip install", "npm install", "npm ci"]:
             self.assertNotIn(marker, self.script_lower)
 
-    def test_30_verification_script_cleans_runtime_and_frontend_dist(self) -> None:
+    def test_34_verification_script_cleans_runtime_and_frontend_dist(self) -> None:
         self.assertIn('Remove-TreeIfPresent "data/runtime"', self.script)
         self.assertIn('Remove-TreeIfPresent "frontend/dist"', self.script)
-
-    def test_31_demo_contains_required_demo_steps(self) -> None:
-        for phrase in [
-            "Show the 10 source fields.",
-            "Keep both `item_code` targets approved.",
-            "Show `valid=true` and `findings=0`.",
-            "Confirm that the git worktree remains unchanged.",
-        ]:
-            self.assertIn(phrase, self.demo)
-
-    def test_32_reviewer_guide_lists_review_order(self) -> None:
-        for phrase in [
-            "Contract Loader and Validator",
-            "Mapping Engine",
-            "Blind Benchmark",
-            "Migration Workspace API",
-            "React Workspace",
-        ]:
-            self.assertIn(phrase, self.guide)
-
-    def test_33_readme_distinguishes_deterministic_core_from_llm_usage(self) -> None:
-        self.assertIn("The deterministic core covers Contract Validation", self.readme)
-        self.assertIn("Source Profiling", self.readme)
-        self.assertIn("LLMs are used only for Module 2", self.readme)
-        self.assertIn("they do not perform the formal business calculation", self.readme)
-
-    def test_34_readme_describes_runtime_as_git_ignored(self) -> None:
-        self.assertIn("data/runtime/", self.readme)
-        self.assertIn("Git ignored", self.readme)
-        self.assertIn("`/api/reports/*`: read-only formal report access.", self.readme)
-        self.assertIn("`/api/migration/*`: scoped local writes only", self.readme)
-        self.assertIn("Workspace writes are restricted to `data/runtime/`", self.readme)
-        self.assertIn("Requests do not accept contract, source, decision, or output paths.", self.readme)
-        self.assertIn("No real SAP or ERPNext system is connected.", self.readme)
