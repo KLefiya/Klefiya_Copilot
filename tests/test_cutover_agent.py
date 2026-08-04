@@ -116,13 +116,17 @@ class CutoverAgentTests(unittest.TestCase):
         self.assertIn("stdio_client", source)
         self.assertIn("StdioServerParameters", source)
 
-    def test_combined_brief_calls_two_tools(self) -> None:
+    def test_combined_brief_calls_three_tools(self) -> None:
         p = plan("combined_brief", [
+            {"tool_name": "get_cutover_plan_summary", "arguments": {}, "reason": "plan"},
             {"tool_name": "get_cutover_status_summary", "arguments": {}, "reason": "status"},
             {"tool_name": "get_cutover_daily_brief", "arguments": {}, "reason": "daily"},
         ])
         state, _ = run_fake("当前状态", p)
-        self.assertEqual([r["tool_name"] for r in state["tool_results"]], ["get_cutover_status_summary", "get_cutover_daily_brief"])
+        self.assertEqual(
+            [r["tool_name"] for r in state["tool_results"]],
+            ["get_cutover_plan_summary", "get_cutover_status_summary", "get_cutover_daily_brief"],
+        )
 
     def test_blocked_query_returns_two_rows(self) -> None:
         p = plan("blocked_activities", [
@@ -131,15 +135,15 @@ class CutoverAgentTests(unittest.TestCase):
         state, _ = run_fake("是什么阻塞了 Cutover Readiness？", p)
         self.assertIn("2 个匹配活动", state["final_answer"])
 
-    def test_risk_query_returns_two_rows(self) -> None:
+    def test_risk_query_returns_migration_rows(self) -> None:
         p = plan("raid_review", [{"tool_name": "list_raid_items", "arguments": {"raid_type": "Risk"}, "reason": "risks"}])
         state, _ = run_fake("列出风险", p)
-        self.assertIn("2 个 Risk", state["final_answer"])
+        self.assertIn("9 个 Risk", state["final_answer"])
 
     def test_management_actions_come_from_daily(self) -> None:
         p = plan("management_actions", [{"tool_name": "get_cutover_daily_brief", "arguments": {}, "reason": "actions"}])
         state, _ = run_fake("管理层需要什么行动", p)
-        self.assertIn("管理层动作共有 4 项", state["final_answer"])
+        self.assertIn("管理层动作共有 13 项", state["final_answer"])
 
     def test_unsupported_status_change_returns_read_only_answer(self) -> None:
         state, _ = run_fake("把 ACT-EX-024-TEST 修改成 Completed", plan("unsupported"))
@@ -156,7 +160,19 @@ class CutoverAgentTests(unittest.TestCase):
     def test_numbers_come_from_tool_result(self) -> None:
         state, _ = run_fake("current status", agent.heuristic_plan("current status").model_dump())
         daily = next(r for r in state["tool_results"] if r["tool_name"] == "get_cutover_daily_brief")
+        plan_summary = next(r for r in state["tool_results"] if r["tool_name"] == "get_cutover_plan_summary")
         self.assertIn(str(daily["data"]["headline"]["blocked_activity_count"]), state["final_answer"])
+        self.assertIn(str(plan_summary["data"]["activity_count"]), state["final_answer"])
+        self.assertIn(str(plan_summary["data"]["migration_finding_count"]), state["final_answer"])
+
+    def test_current_status_trace_uses_migration_plan_numbers(self) -> None:
+        _state, trace = run_fake("current status", agent.heuristic_plan("current status").model_dump())
+        text = json.dumps(trace, ensure_ascii=False)
+        self.assertIn("34 activities", text)
+        self.assertIn("Migration findings: 22", text)
+        self.assertIn("migration activities=4", text)
+        self.assertIn("activity links carry finding and RAID IDs directly", text)
+        self.assertNotIn("Across 30 activities", text)
 
     def test_sha_citations_are_correct(self) -> None:
         state, _ = run_fake("current status", agent.heuristic_plan("current status").model_dump())

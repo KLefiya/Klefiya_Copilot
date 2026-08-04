@@ -11,7 +11,9 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import sys
+import uuid
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -25,6 +27,7 @@ if str(TOOLS_DIR) not in sys.path:
 
 import build_cutover_plan as cutover_plan  # noqa: E402
 import build_cutover_status as cutover_status  # noqa: E402
+import migration_cutover_findings as migration_findings  # noqa: E402
 
 SERVER_NAME = "carveops-cutover"
 TOOL_NAMES = (
@@ -40,6 +43,7 @@ SYNTHETIC_DIR = PROJECT_ROOT / "data" / "synthetic"
 PLAN_REPORT_PATH = SYNTHETIC_DIR / "cutover_plan_report.json"
 STATUS_REPORT_PATH = SYNTHETIC_DIR / "cutover_status_report.json"
 DAILY_REPORT_PATH = SYNTHETIC_DIR / "cutover_daily_report.json"
+MIGRATION_FINDINGS_PATH = SYNTHETIC_DIR / "migration_cutover_findings.json"
 CONSTRAINTS_PATH = SYNTHETIC_DIR / "cutover_constraints.json"
 STATUS_UPDATES_PATH = SYNTHETIC_DIR / "cutover_status_updates.json"
 MODULE_TWO_REPORT_PATH = SYNTHETIC_DIR / "gap_analysis_report.json"
@@ -48,6 +52,7 @@ REPORT_PATHS = {
     "plan": PLAN_REPORT_PATH,
     "status": STATUS_REPORT_PATH,
     "daily": DAILY_REPORT_PATH,
+    "migration_findings": MIGRATION_FINDINGS_PATH,
     "constraints": CONSTRAINTS_PATH,
     "updates": STATUS_UPDATES_PATH,
     "module_two": MODULE_TWO_REPORT_PATH,
@@ -164,17 +169,42 @@ def summarize_plan() -> dict[str, Any]:
     if not isinstance(activities, list) or not isinstance(raid_register, list):
         raise McpToolError("INVALID_REPORT", "Cutover plan report is missing activities or raid_register arrays.")
     validation_valid = report_validation_valid(report)
+    migration_meta = report.get("_meta", {}).get("migration_findings", {})
+    migration_raids = [
+        item
+        for item in raid_register
+        if isinstance(item.get("source"), dict)
+        and item["source"].get("type") == "migration_cutover_finding"
+    ]
+    migration_activities = [
+        item
+        for item in activities
+        if isinstance(item.get("activity_id"), str)
+        and item["activity_id"].startswith("CUT-MIG-")
+    ]
     return {
         "source_content_sha256": source_sha(report),
+        "migration_findings_content_sha256": migration_meta.get("content_sha256"),
+        "migration_finding_count": migration_meta.get("finding_count", 0),
         "work_package_count": len(report.get("work_packages", [])),
         "activity_count": len(activities),
         "shared_activity_count": sum(1 for item in activities if not item.get("work_package_id")),
+        "migration_activity_count": len(migration_activities),
         "raid_count": len(raid_register),
+        "migration_raid_count": len(migration_raids),
         "freeze_window_count": len(report.get("freeze_windows", [])),
         "approval_gate_count": len(report.get("approval_gates", [])),
         "validation_valid": validation_valid,
         "activities_by_status": compact_counter([item.get("status", "") for item in activities]),
         "raid_by_type": compact_counter([item.get("type", "") for item in raid_register]),
+        "migration_activity_links": [
+            {
+                "activity_id": item["activity_id"],
+                "linked_finding_ids": item.get("linked_finding_ids", []),
+                "linked_raid_ids": item.get("linked_raid_ids", []),
+            }
+            for item in sorted(migration_activities, key=lambda activity: activity["activity_id"])
+        ],
     }
 
 
@@ -284,7 +314,10 @@ def filter_activities(
 
 
 def raid_view(item: dict[str, Any]) -> dict[str, Any]:
-    linked_requirement = item.get("source_requirement_id")
+    linked_requirements = item.get("linked_requirement_ids")
+    if not isinstance(linked_requirements, list):
+        linked_requirement = item.get("source_requirement_id")
+        linked_requirements = [linked_requirement] if linked_requirement else []
     linked_activity_ids = [
         activity_id
         for activity_id in item.get("linked_activity_ids", [])
@@ -299,8 +332,12 @@ def raid_view(item: dict[str, Any]) -> dict[str, Any]:
         "current_status": item.get("current_status"),
         "mitigation": item.get("mitigation") or item.get("mitigation_plan"),
         "trigger": item.get("trigger"),
-        "linked_requirement_ids": [linked_requirement] if linked_requirement else [],
+        "linked_requirement_ids": linked_requirements,
         "linked_activity_ids": linked_activity_ids,
+        "linked_finding_ids": item.get("linked_finding_ids", []),
+        "review_required": item.get("review_required"),
+        "gate_blocker": item.get("gate_blocker"),
+        "source": item.get("source"),
     }
 
 
@@ -352,23 +389,156 @@ def preserve_timestamp_if_same_content(new_report: dict[str, Any], output_path: 
     return new_report
 
 
-def write_stable_report(report: dict[str, Any], output_path: Path) -> dict[str, Any]:
-    report = preserve_timestamp_if_same_content(report, output_path)
-    output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return report
+def fsync_directory(path: Path) -> None:
+    try:
+        descriptor = os.open(path, os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(descriptor)
+    except OSError:
+        return
+    finally:
+        os.close(descriptor)
+
+
+def write_bytes_fsynced(path: Path, data: bytes) -> None:
+    with path.open("wb") as handle:
+        handle.write(data)
+        handle.flush()
+        os.fsync(handle.fileno())
+    fsync_directory(path.parent)
+
+
+def cleanup_paths(paths: list[Path]) -> None:
+    for path in paths:
+        try:
+            if path.exists():
+                path.unlink()
+        except OSError:
+            pass
+
+
+def rollback_replaced_targets(
+    *,
+    replaced_keys: list[str],
+    targets: dict[str, Path],
+    backups: dict[str, Path | None],
+    original_exists: dict[str, bool],
+) -> list[str]:
+    errors: list[str] = []
+    for key in reversed(replaced_keys):
+        target = targets[key]
+        backup = backups[key]
+        try:
+            if original_exists[key]:
+                if backup is None:
+                    raise OSError("missing backup for existing target")
+                os.replace(backup, target)
+            elif target.exists():
+                target.unlink()
+            fsync_directory(target.parent)
+        except OSError as error:
+            errors.append(f"{key}: {type(error).__name__}: {error}")
+    return errors
+
+
+def write_reports_with_rollback(reports: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Validated batch commit with rollback on ordinary write/replace failures.
+
+    Each os.replace is a single-file atomic replace. If a normal commit-time
+    exception occurs, previously replaced targets are restored from per-call
+    backups. It does not cover process termination, system crash, or power loss
+    during a multi-file commit.
+    """
+    prepared = {
+        key: preserve_timestamp_if_same_content(report, REPORT_PATHS[key])
+        for key, report in reports.items()
+    }
+    ordered_keys = sorted(prepared)
+    batch_id = uuid.uuid4().hex
+    targets = {key: REPORT_PATHS[key] for key in ordered_keys}
+    staged_paths = {
+        key: targets[key].with_name(f".{targets[key].name}.{batch_id}.staged")
+        for key in ordered_keys
+    }
+    backup_paths = {
+        key: (
+            targets[key].with_name(f".{targets[key].name}.{batch_id}.backup")
+            if targets[key].exists()
+            else None
+        )
+        for key in ordered_keys
+    }
+    original_exists = {key: targets[key].exists() for key in ordered_keys}
+    replaced_keys: list[str] = []
+    rollback_failed = False
+
+    try:
+        for key in ordered_keys:
+            data = (json.dumps(prepared[key], ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+            write_bytes_fsynced(staged_paths[key], data)
+
+        for key in ordered_keys:
+            backup_path = backup_paths[key]
+            if backup_path is not None:
+                write_bytes_fsynced(backup_path, targets[key].read_bytes())
+
+        for key in ordered_keys:
+            os.replace(staged_paths[key], targets[key])
+            replaced_keys.append(key)
+            fsync_directory(targets[key].parent)
+        return prepared
+    except Exception as commit_error:  # noqa: BLE001 - convert write path failures to MCP errors.
+        rollback_errors: list[str] = []
+        if replaced_keys:
+            rollback_errors = rollback_replaced_targets(
+                replaced_keys=replaced_keys,
+                targets=targets,
+                backups=backup_paths,
+                original_exists=original_exists,
+            )
+        if rollback_errors:
+            rollback_failed = True
+            backup_display = {
+                key: display_path(path)
+                for key, path in backup_paths.items()
+                if path is not None and path.exists()
+            }
+            raise McpToolError(
+                "COMMIT_FAILED_MANUAL_RECOVERY_REQUIRED",
+                "Report batch commit failed and rollback failed; manual recovery required.",
+                {
+                    "commit_error": f"{type(commit_error).__name__}: {commit_error}",
+                    "rollback_errors": rollback_errors,
+                    "backup_paths": backup_display,
+                },
+            ) from commit_error
+        raise McpToolError(
+            "COMMIT_FAILED",
+            "Report batch commit failed; replaced targets were rolled back.",
+            {"reason": f"{type(commit_error).__name__}: {commit_error}"},
+        ) from commit_error
+    finally:
+        cleanup_paths(list(staged_paths.values()))
+        if not rollback_failed:
+            cleanup_paths([path for path in backup_paths.values() if path is not None])
 
 
 def rebuild_reports_impl(*, rebuild_plan: bool = False) -> dict[str, Any]:
     try:
         plan_report: dict[str, Any]
         if rebuild_plan:
+            findings_inputs = migration_findings.load_default_reports()
+            findings_report = migration_findings.build_migration_cutover_findings(findings_inputs)
             source_report = cutover_plan.load_json(REPORT_PATHS["module_two"])
             constraints = cutover_plan.load_json(REPORT_PATHS["constraints"])
-            raw_plan = cutover_plan.build_cutover_plan(source_report, constraints)
+            raw_plan = cutover_plan.build_cutover_plan(source_report, constraints, findings_report)
             if not raw_plan["validation"]["valid"]:
                 raise McpToolError("VALIDATION_FAILED", "Cutover plan validation failed.", raw_plan["validation"])
-            plan_report = cutover_plan.write_report(raw_plan, REPORT_PATHS["plan"])
+            plan_report = cutover_plan.attach_run_info(raw_plan)
         else:
+            findings_report = load_report("migration_findings")
             plan_report = load_report("plan")
 
         constraints = cutover_status.load_json(REPORT_PATHS["constraints"])
@@ -382,23 +552,50 @@ def rebuild_reports_impl(*, rebuild_plan: bool = False) -> dict[str, Any]:
     except McpToolError:
         raise
     except (cutover_plan.CutoverBuildError, cutover_status.CutoverStatusError) as error:
+        if "Cutover plan SHA mismatch" in str(error):
+            raise McpToolError(
+                "REBASE_REQUIRED",
+                "status updates rebase required",
+                {"reason": str(error)},
+            ) from error
         raise McpToolError(
             "VALIDATION_FAILED",
             "Deterministic cutover rebuild validation failed.",
             {"reason": str(error)},
         ) from error
 
-    status_report = write_stable_report(status_report, REPORT_PATHS["status"])
-    daily_report = write_stable_report(daily_report, REPORT_PATHS["daily"])
+    if rebuild_plan:
+        written = write_reports_with_rollback({
+            "migration_findings": findings_report,
+            "plan": plan_report,
+            "status": status_report,
+            "daily": daily_report,
+        })
+        findings_report = written["migration_findings"]
+        plan_report = written["plan"]
+        status_report = written["status"]
+        daily_report = written["daily"]
+    else:
+        written = write_reports_with_rollback({
+            "status": status_report,
+            "daily": daily_report,
+        })
+        status_report = written["status"]
+        daily_report = written["daily"]
 
     return {
         "rebuild_plan": rebuild_plan,
         "validation": "valid",
+        "migration_findings_content_sha256": source_sha(findings_report),
+        "migration_finding_count": len(findings_report.get("findings", [])),
         "plan_content_sha256": source_sha(plan_report),
         "status_content_sha256": source_sha(status_report),
         "daily_content_sha256": source_sha(daily_report),
+        "plan_activity_count": len(plan_report.get("activities", [])),
+        "plan_raid_count": len(plan_report.get("raid_register", [])),
         "activity_status_counts": status_report["activity_status_counts"],
         "raid_status_counts": status_report["raid_status_counts"],
+        "migration_blocker_count": len(status_report.get("migration_blockers", [])),
         "overall_rag": daily_report["headline"]["overall_rag"],
     }
 

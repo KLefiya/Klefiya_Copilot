@@ -13,6 +13,7 @@ TOOLS_DIR = PROJECT_ROOT / "src" / "tools"
 sys.path.insert(0, str(TOOLS_DIR))
 
 import build_cutover_status as status_tool  # noqa: E402
+from data_profile import attach_run_info  # noqa: E402
 
 
 def load_inputs() -> tuple[dict, dict, dict]:
@@ -32,17 +33,46 @@ class CutoverStatusTests(unittest.TestCase):
     def build_with_updates(self, updates: dict) -> dict:
         return status_tool.build_status_report(self.plan, self.constraints, updates)
 
+    def build_with_plan(self, plan: dict) -> dict:
+        rebound_plan = attach_run_info(plan)
+        updates = copy.deepcopy(self.updates)
+        updates["_meta"]["source_plan_content_sha256"] = rebound_plan["_run_info"]["content_sha256"]
+        return status_tool.build_status_report(rebound_plan, self.constraints, updates)
+
+    def migration_blocker_raid(self, plan: dict) -> dict:
+        return next(raid for raid in plan["raid_register"] if raid.get("gate_blocker") is True)
+
     def event_by_id(self, updates: dict, event_id: str) -> dict:
         return next(event for event in updates["events"] if event["event_id"] == event_id)
 
     def test_source_plan_shape_is_expected(self) -> None:
-        self.assertEqual(len(self.plan["activities"]), 30)
-        self.assertEqual(len(self.plan["raid_register"]), 7)
+        self.assertEqual(len(self.plan["activities"]), 34)
+        self.assertEqual(len(self.plan["raid_register"]), 29)
         self.assertEqual(len(self.plan["approval_gates"]), 4)
 
     def test_source_plan_sha_matches_expected_snapshot(self) -> None:
-        self.assertEqual(self.plan["_run_info"]["content_sha256"], status_tool.EXPECTED_SOURCE_PLAN_SHA)
-        self.assertEqual(self.status_report["source_plan_content_sha256"], status_tool.EXPECTED_SOURCE_PLAN_SHA)
+        expected_sha = self.updates["_meta"]["source_plan_content_sha256"]
+        self.assertEqual(self.plan["_run_info"]["content_sha256"], expected_sha)
+        self.assertEqual(self.status_report["source_plan_content_sha256"], expected_sha)
+        self.assertEqual(self.status_report["_meta"]["source_plan_content_sha256"], expected_sha)
+
+    def test_status_uses_updates_meta_plan_sha(self) -> None:
+        changed = copy.deepcopy(self.updates)
+        changed["_meta"]["source_plan_content_sha256"] = self.plan["_run_info"]["content_sha256"]
+        rebuilt = status_tool.build_status_report(self.plan, self.constraints, changed)
+        self.assertEqual(rebuilt["_meta"]["source_plan_content_sha256"], changed["_meta"]["source_plan_content_sha256"])
+
+    def test_status_rejects_missing_expected_plan_sha(self) -> None:
+        changed = copy.deepcopy(self.updates)
+        del changed["_meta"]["source_plan_content_sha256"]
+        with self.assertRaisesRegex(status_tool.CutoverStatusError, "source_plan_content_sha256"):
+            status_tool.build_status_report(self.plan, self.constraints, changed)
+
+    def test_status_rejects_mismatched_plan_sha(self) -> None:
+        changed = copy.deepcopy(self.updates)
+        changed["_meta"]["source_plan_content_sha256"] = "0" * 64
+        with self.assertRaisesRegex(status_tool.CutoverStatusError, "expected .* actual"):
+            status_tool.build_status_report(self.plan, self.constraints, changed)
 
     def test_event_log_has_expected_event_count(self) -> None:
         self.assertEqual(self.status_report["events_applied_count"], 28)
@@ -58,7 +88,7 @@ class CutoverStatusTests(unittest.TestCase):
     def test_activity_status_counts_are_expected(self) -> None:
         self.assertEqual(
             self.status_report["activity_status_counts"],
-            {"Not Started": 11, "In Progress": 0, "Blocked": 2, "Completed": 17, "Cancelled": 0},
+            {"Not Started": 15, "In Progress": 0, "Blocked": 2, "Completed": 17, "Cancelled": 0},
         )
 
     def test_work_package_status_counts_are_expected(self) -> None:
@@ -68,13 +98,17 @@ class CutoverStatusTests(unittest.TestCase):
         )
 
     def test_raid_dependencies_are_mitigating(self) -> None:
-        dependencies = [item for item in self.status_report["raid_register"] if item["type"] == "Dependency"]
+        dependencies = [
+            item
+            for item in self.status_report["raid_register"]
+            if item["type"] == "Dependency" and item.get("source") == "development_backlog"
+        ]
         self.assertEqual(len(dependencies), 5)
         self.assertEqual({item["current_status"] for item in dependencies}, {"Mitigating"})
 
     def test_risk_statuses_are_deterministic(self) -> None:
         risks = sorted(
-            (item for item in self.status_report["raid_register"] if item["type"] == "Risk"),
+            (item for item in self.status_report["raid_register"] if item.get("source") == "needs_review"),
             key=lambda x: x["raid_id"],
         )
         self.assertEqual(risks[0]["raid_id"], "RAID-RISK-EX-016")
@@ -100,6 +134,62 @@ class CutoverStatusTests(unittest.TestCase):
         self.assertEqual(gate["current_status"], "Blocked")
         self.assertFalse(gate["readiness"])
         self.assertIn("ACT-EX-024-TEST", " ".join(gate["missing_readiness_criteria"]))
+        self.assertNotIn("RAID-MIG", " ".join(gate["missing_readiness_criteria"]))
+
+    def test_open_explicit_migration_blocker_blocks_go_no_go(self) -> None:
+        gates = {gate["gate_id"]: gate for gate in self.status_report["approval_gates"]}
+        gate = gates["GATE-GO-NOGO"]
+        self.assertIn("RAID-MIG-127FBCE66F53", " ".join(gate["missing_readiness_criteria"]))
+        self.assertEqual(len(self.status_report["migration_blockers"]), 1)
+
+    def test_high_review_only_migration_raid_does_not_block(self) -> None:
+        plan = copy.deepcopy(self.plan)
+        raid = self.migration_blocker_raid(plan)
+        raid["gate_blocker"] = False
+        raid["review_required"] = True
+        status = self.build_with_plan(plan)
+        self.assertEqual(status["migration_blockers"], [])
+
+    def test_high_non_blocking_migration_raid_does_not_block(self) -> None:
+        plan = copy.deepcopy(self.plan)
+        raid = self.migration_blocker_raid(plan)
+        raid["gate_blocker"] = False
+        status = self.build_with_plan(plan)
+        self.assertEqual(status["migration_blockers"], [])
+
+    def test_mitigating_migration_blocker_remains_open(self) -> None:
+        plan = copy.deepcopy(self.plan)
+        self.migration_blocker_raid(plan)["status"] = "Mitigating"
+        status = self.build_with_plan(plan)
+        self.assertEqual([item["raid_id"] for item in status["migration_blockers"]], ["RAID-MIG-127FBCE66F53"])
+
+    def test_resolved_migration_blocker_clears(self) -> None:
+        plan = copy.deepcopy(self.plan)
+        self.migration_blocker_raid(plan)["status"] = "Resolved"
+        status = self.build_with_plan(plan)
+        self.assertEqual(status["migration_blockers"], [])
+
+    def test_legacy_high_risk_behavior_is_preserved(self) -> None:
+        plan = copy.deepcopy(self.plan)
+        legacy_risk = next(raid for raid in plan["raid_register"] if raid["raid_id"] == "RAID-RISK-EX-022")
+        legacy_risk["severity"] = "High"
+        status = self.build_with_plan(plan)
+        gates = {gate["gate_id"]: gate for gate in status["approval_gates"]}
+        self.assertIn("RAID-RISK-EX-022", " ".join(gates["GATE-CUTOVER-READINESS"]["missing_readiness_criteria"]))
+
+    def test_migration_blocker_does_not_block_unrelated_early_gate(self) -> None:
+        gates = {gate["gate_id"]: gate for gate in self.status_report["approval_gates"]}
+        self.assertNotIn("RAID-MIG", " ".join(gates["GATE-DESIGN-SIGNOFF"]["missing_readiness_criteria"]))
+        self.assertNotIn("RAID-MIG", " ".join(gates["GATE-CUTOVER-READINESS"]["missing_readiness_criteria"]))
+
+    def test_status_blocker_contains_finding_provenance(self) -> None:
+        blocker = self.status_report["migration_blockers"][0]
+        self.assertEqual(blocker["raid_id"], "RAID-MIG-127FBCE66F53")
+        self.assertEqual(blocker["finding_id"], "MIG-127FBCE66F53")
+        self.assertEqual(blocker["source_type"], "migration_cutover_finding")
+        self.assertEqual(blocker["severity"], "High")
+        self.assertTrue(blocker["source_report_ids"])
+        self.assertTrue(blocker["source_pointers"])
 
     def test_day1_critical_path_flags_are_derived(self) -> None:
         activities = {activity["activity_id"]: activity for activity in self.status_report["activities"]}
@@ -113,9 +203,9 @@ class CutoverStatusTests(unittest.TestCase):
         self.assertEqual(blocker_ids, ["ACT-EX-024-TEST", "CUT-CUTOVER-READINESS"])
 
     def test_daily_due_buckets_are_expected(self) -> None:
-        self.assertEqual(len(self.daily_report["due_now"]), 2)
-        self.assertEqual(len(self.daily_report["overdue"]), 0)
-        self.assertEqual(len(self.daily_report["due_next"]), 9)
+        self.assertEqual(len(self.daily_report["due_now"]), 4)
+        self.assertEqual(len(self.daily_report["overdue"]), 1)
+        self.assertEqual(len(self.daily_report["due_next"]), 10)
 
     def test_daily_next_gate_is_cutover_readiness(self) -> None:
         next_gate = self.daily_report["headline"]["next_gate"]
@@ -128,7 +218,7 @@ class CutoverStatusTests(unittest.TestCase):
 
     def test_management_actions_are_prioritized(self) -> None:
         actions = self.daily_report["management_actions"]
-        self.assertEqual(len(actions), 4)
+        self.assertEqual(len(actions), 13)
         self.assertEqual([action["priority"] for action in actions], sorted(action["priority"] for action in actions))
         self.assertEqual(actions[0]["source_id"], "ACT-EX-024-TEST")
 
@@ -162,6 +252,24 @@ class CutoverStatusTests(unittest.TestCase):
         self.event_by_id(changed, "EVT-ACT-EX-004-DESIGN-COMPLETED")["entity_id"] = "NO-SUCH-ACTIVITY"
         with self.assertRaisesRegex(status_tool.CutoverStatusError, "unknown activity"):
             self.build_with_updates(changed)
+
+    def test_status_update_targets_exist_in_migration_plan(self) -> None:
+        result = status_tool.validate_status_update_targets(self.plan, self.updates)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["missing_targets"], [])
+        self.assertIn("RAID-DEP-EX-004", result["legacy_ids"]["raids"])
+
+    def test_rebase_rejects_missing_event_target(self) -> None:
+        changed = copy.deepcopy(self.updates)
+        self.event_by_id(changed, "EVT-RAID-DEP-EX-004-MITIGATING")["entity_id"] = "RAID-NO-SUCH"
+        result = status_tool.validate_status_update_targets(self.plan, changed)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["missing_targets"][0]["entity_id"], "RAID-NO-SUCH")
+
+    def test_rebase_does_not_change_human_events(self) -> None:
+        changed = copy.deepcopy(self.updates)
+        changed["_meta"]["source_plan_content_sha256"] = "1" * 64
+        self.assertEqual(changed["events"], self.updates["events"])
 
     def test_unknown_owner_role_fails(self) -> None:
         changed = copy.deepcopy(self.updates)

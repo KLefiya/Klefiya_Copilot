@@ -165,7 +165,10 @@ class PracticalV2DocumentationTests(unittest.TestCase):
 
     def test_20_verification_command_and_counts_are_present(self) -> None:
         self.assertIn("powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify_practical_v2.ps1", self.readme)
-        self.assertIn("Python tests: 417", self.readme)
+        self.assertIn("Scoped Migration/Cutover tests: 238 passed", self.readme)
+        self.assertIn("Full unittest discovery: 503 discovered, 27 failures, 33 errors", self.readme)
+        self.assertIn("The full discovery failures are inherited from the baseline stale migration evidence-lock contracts.", self.readme)
+        self.assertNotIn("483 tests passed", self.readme)
         self.assertIn("Frontend tests: 45", self.readme)
         self.assertIn("Workspace API tests: 38", self.readme)
         self.assertIn("Python tests: 417", self.script)
@@ -191,7 +194,38 @@ class PracticalV2DocumentationTests(unittest.TestCase):
             self.assertIn(phrase, self.readme)
 
     def test_23_results_keep_cutover_numbers(self) -> None:
-        for phrase in ["Activities = 30", "Completed = 17", "Blocked = 2", "Not Started = 11", "Work packages = 5", "Freeze windows = 3", "Approval gates = 4", "RAID items = 7"]:
+        for phrase in [
+            "Migration findings = 22",
+            "Migration RAID = 22",
+            "Migration Activities = 4",
+            "Activities = 34",
+            "Completed = 17",
+            "Blocked = 2",
+            "Not Started = 15",
+            "Work packages = 5",
+            "Freeze windows = 3",
+            "Approval gates = 4",
+            "RAID items = 29",
+            "Migration blockers = 1",
+        ]:
+            self.assertIn(phrase, self.readme)
+        self.assertIn("one explicit High, non-review-only migration blocker", self.readme)
+        self.assertIn("This is a synthetic demo result", self.readme)
+        self.assertNotIn("Activities = 30", self.readme)
+        self.assertNotIn("RAID items = 7", self.readme)
+
+    def test_23b_readme_records_migration_cutover_pipeline(self) -> None:
+        for phrase in [
+            "migration_cutover_findings.json",
+            "validation report, duplicate report, field mapping report, and generated package validation report",
+            "Blind benchmark accuracy, precision/recall/F1, ground truth",
+            "do not become automatic go-live blockers",
+            "_meta.source_plan_content_sha256",
+            "migration findings, plan, status, daily",
+            "Ordinary commit failures trigger rollback",
+            "does not promise cross-file recovery during process termination, system crash, or power loss",
+            "`11/11` available",
+        ]:
             self.assertIn(phrase, self.readme)
 
     def test_24_design_choices_are_limited_and_concrete(self) -> None:

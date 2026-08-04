@@ -2,7 +2,7 @@
   "_meta": {
     "description": "Append-only deterministic cutover status updates for the T-7 execution snapshot.",
     "source_plan_path": "data/synthetic/cutover_plan_report.json",
-    "source_plan_content_sha256": "c4a88a3cb0923d2ed28356f72c037ace313ee73bee961ae8212265e4de2a0a8d",
+    "source_plan_content_sha256": "160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767",
     "as_of_offset": "T-7",
     "note": "This file is deterministic synthetic execution evidence and does not contain LLM output or credentials."
   },
@@ -18,7 +18,9 @@
       "updated_by_role": "Business Process Owner",
       "note": "Design confirmed for emergency repair order nightly interface.",
       "blocker": "",
-      "evidence": ["Signed design note for EX-004."]
+      "evidence": [
+        "Signed design note for EX-004."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-008-DESIGN-COMPLETED",
@@ -31,7 +33,9 @@
       "updated_by_role": "Data Migration Lead",
       "note": "Design confirmed for supplier risk score load.",
       "blocker": "",
-      "evidence": ["Signed design note for EX-008."]
+      "evidence": [
+        "Signed design note for EX-008."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-012-DESIGN-COMPLETED",
@@ -44,7 +48,9 @@
       "updated_by_role": "Business Process Owner",
       "note": "Design confirmed for Virello portal order conversion.",
       "blocker": "",
-      "evidence": ["Signed design note for EX-012."]
+      "evidence": [
+        "Signed design note for EX-012."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-019-DESIGN-COMPLETED",
@@ -57,7 +63,9 @@
       "updated_by_role": "Finance Lead",
       "note": "Design confirmed for Separation Ledger balance file.",
       "blocker": "",
-      "evidence": ["Signed design note for EX-019."]
+      "evidence": [
+        "Signed design note for EX-019."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-024-DESIGN-COMPLETED",
@@ -70,7 +78,9 @@
       "updated_by_role": "Data Migration Lead",
       "note": "Design confirmed for SeltraBridge archive drawing upload.",
       "blocker": "",
-      "evidence": ["Signed design note for EX-024."]
+      "evidence": [
+        "Signed design note for EX-024."
+      ]
     },
     {
       "event_id": "EVT-CUT-SCOPE-BASELINE-COMPLETED",
@@ -83,7 +93,9 @@
       "updated_by_role": "Cutover Manager",
       "note": "Development backlog scope baseline completed after design sign-off inputs.",
       "blocker": "",
-      "evidence": ["Scope baseline checklist closed."]
+      "evidence": [
+        "Scope baseline checklist closed."
+      ]
     },
     {
       "event_id": "EVT-GATE-DESIGN-SIGNOFF-READY",
@@ -96,7 +108,9 @@
       "updated_by_role": "Business Process Owner",
       "note": "Design sign-off gate is ready after all design activities and scope baseline are complete.",
       "blocker": "",
-      "evidence": ["Design gate readiness checklist."]
+      "evidence": [
+        "Design gate readiness checklist."
+      ]
     },
     {
       "event_id": "EVT-GATE-DESIGN-SIGNOFF-APPROVED",
@@ -109,7 +123,9 @@
       "updated_by_role": "Business Process Owner",
       "note": "Design sign-off approved for module three cutover scope.",
       "blocker": "",
-      "evidence": ["Design gate approval record."]
+      "evidence": [
+        "Design gate approval record."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-004-BUILD-COMPLETED",
@@ -122,7 +138,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Nightly interface build completed for EX-004.",
       "blocker": "",
-      "evidence": ["Build evidence package EX-004."]
+      "evidence": [
+        "Build evidence package EX-004."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-008-BUILD-COMPLETED",
@@ -135,7 +153,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Supplier risk score loader build completed.",
       "blocker": "",
-      "evidence": ["Build evidence package EX-008."]
+      "evidence": [
+        "Build evidence package EX-008."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-012-BUILD-COMPLETED",
@@ -148,7 +168,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Legacy customer portal conversion build completed.",
       "blocker": "",
-      "evidence": ["Build evidence package EX-012."]
+      "evidence": [
+        "Build evidence package EX-012."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-019-BUILD-COMPLETED",
@@ -161,7 +183,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Separation Ledger balance file build completed.",
       "blocker": "",
-      "evidence": ["Build evidence package EX-019."]
+      "evidence": [
+        "Build evidence package EX-019."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-024-BUILD-COMPLETED",
@@ -174,7 +198,9 @@
       "updated_by_role": "Integration Lead",
       "note": "SeltraBridge archive upload build completed.",
       "blocker": "",
-      "evidence": ["Build evidence package EX-024."]
+      "evidence": [
+        "Build evidence package EX-024."
+      ]
     },
     {
       "event_id": "EVT-CUT-MOCK-EXECUTION-COMPLETED",
@@ -187,7 +213,9 @@
       "updated_by_role": "Cutover Manager",
       "note": "Mock cutover completed for development backlog scope.",
       "blocker": "",
-      "evidence": ["Mock cutover completion checklist."]
+      "evidence": [
+        "Mock cutover completion checklist."
+      ]
     },
     {
       "event_id": "EVT-CUT-INTEGRATION-READINESS-COMPLETED",
@@ -200,7 +228,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Integration readiness completed after build evidence review.",
       "blocker": "",
-      "evidence": ["Integration readiness checklist."]
+      "evidence": [
+        "Integration readiness checklist."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-004-TEST-COMPLETED",
@@ -213,7 +243,9 @@
       "updated_by_role": "Business Process Owner",
       "note": "EX-004 test evidence accepted.",
       "blocker": "",
-      "evidence": ["Test sign-off EX-004."]
+      "evidence": [
+        "Test sign-off EX-004."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-008-TEST-COMPLETED",
@@ -226,7 +258,9 @@
       "updated_by_role": "Data Migration Lead",
       "note": "EX-008 test evidence accepted.",
       "blocker": "",
-      "evidence": ["Test sign-off EX-008."]
+      "evidence": [
+        "Test sign-off EX-008."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-012-TEST-COMPLETED",
@@ -239,7 +273,9 @@
       "updated_by_role": "Business Process Owner",
       "note": "EX-012 test evidence accepted.",
       "blocker": "",
-      "evidence": ["Test sign-off EX-012."]
+      "evidence": [
+        "Test sign-off EX-012."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-019-TEST-COMPLETED",
@@ -252,7 +288,9 @@
       "updated_by_role": "Finance Lead",
       "note": "EX-019 test evidence accepted.",
       "blocker": "",
-      "evidence": ["Test sign-off EX-019."]
+      "evidence": [
+        "Test sign-off EX-019."
+      ]
     },
     {
       "event_id": "EVT-ACT-EX-024-TEST-BLOCKED",
@@ -265,7 +303,9 @@
       "updated_by_role": "Data Migration Lead",
       "note": "Archive drawing load test cannot complete until sample drawing links are remediated.",
       "blocker": "SeltraBridge archive sample files do not preserve product drawing link identifiers for EX-024.",
-      "evidence": ["Defect log EX-024-TEST-003."]
+      "evidence": [
+        "Defect log EX-024-TEST-003."
+      ]
     },
     {
       "event_id": "EVT-CUT-CUTOVER-READINESS-BLOCKED",
@@ -278,7 +318,9 @@
       "updated_by_role": "Cutover Manager",
       "note": "Cutover readiness review blocked by incomplete EX-024 test evidence.",
       "blocker": "ACT-EX-024-TEST remains blocked and prevents readiness approval.",
-      "evidence": ["Cutover readiness action log."]
+      "evidence": [
+        "Cutover readiness action log."
+      ]
     },
     {
       "event_id": "EVT-RAID-DEP-EX-004-MITIGATING",
@@ -291,7 +333,9 @@
       "updated_by_role": "Integration Lead",
       "note": "OrivaBuy TSA dependency has named mitigation owner.",
       "blocker": "",
-      "evidence": ["Dependency mitigation tracker EX-004."]
+      "evidence": [
+        "Dependency mitigation tracker EX-004."
+      ]
     },
     {
       "event_id": "EVT-RAID-DEP-EX-008-MITIGATING",
@@ -304,7 +348,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Risk Hub spreadsheet dependency has named mitigation owner.",
       "blocker": "",
-      "evidence": ["Dependency mitigation tracker EX-008."]
+      "evidence": [
+        "Dependency mitigation tracker EX-008."
+      ]
     },
     {
       "event_id": "EVT-RAID-DEP-EX-012-MITIGATING",
@@ -317,7 +363,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Legacy portal dependency has named mitigation owner.",
       "blocker": "",
-      "evidence": ["Dependency mitigation tracker EX-012."]
+      "evidence": [
+        "Dependency mitigation tracker EX-012."
+      ]
     },
     {
       "event_id": "EVT-RAID-DEP-EX-019-MITIGATING",
@@ -330,7 +378,9 @@
       "updated_by_role": "Integration Lead",
       "note": "Separation Ledger dependency has named mitigation owner.",
       "blocker": "",
-      "evidence": ["Dependency mitigation tracker EX-019."]
+      "evidence": [
+        "Dependency mitigation tracker EX-019."
+      ]
     },
     {
       "event_id": "EVT-RAID-DEP-EX-024-MITIGATING",
@@ -343,7 +393,9 @@
       "updated_by_role": "Integration Lead",
       "note": "SeltraBridge archive dependency has named mitigation owner.",
       "blocker": "",
-      "evidence": ["Dependency mitigation tracker EX-024."]
+      "evidence": [
+        "Dependency mitigation tracker EX-024."
+      ]
     },
     {
       "event_id": "EVT-RAID-RISK-EX-016-RESOLVED",
@@ -356,7 +408,9 @@
       "updated_by_role": "Data Migration Lead",
       "note": "First medium data risk closed after rehearsal evidence review.",
       "blocker": "",
-      "evidence": ["Risk resolution note EX-016."]
+      "evidence": [
+        "Risk resolution note EX-016."
+      ]
     },
     {
       "event_id": "EVT-GATE-CUTOVER-READINESS-BLOCKED",
@@ -369,7 +423,9 @@
       "updated_by_role": "Cutover Manager",
       "note": "Cutover Readiness cannot be approved until the archive drawing load test is closed.",
       "blocker": "ACT-EX-024-TEST remains blocked; CUT-CUTOVER-READINESS activity is also blocked.",
-      "evidence": ["Gate action log GATE-CUTOVER-READINESS."]
+      "evidence": [
+        "Gate action log GATE-CUTOVER-READINESS."
+      ]
     }
   ]
 }

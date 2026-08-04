@@ -78,6 +78,12 @@ REPORTS: dict[str, ReportSpec] = {
         module="模块一 · 数据迁移映射",
         generated_by="python src/tools/entity_resolution.py",
     ),
+    "migration_cutover_findings": ReportSpec(
+        filename="migration_cutover_findings.json",
+        title="Migration findings for Cutover",
+        module="模块一 · 模块三 Cutover 接入",
+        generated_by="python src/tools/build_migration_cutover_findings.py",
+    ),
     "gap_analysis_report": ReportSpec(
         filename="gap_analysis_report.json",
         title="Fit/Gap 判定",

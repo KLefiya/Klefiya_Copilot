@@ -1,11 +1,11 @@
 {
   "_run_info": {
-    "content_sha256": "688342f8cd89f8c8529c661e50e32c5640c48b7fa4f7035428cf899d0a619419",
+    "content_sha256": "9fdf9cc299a738ef74da0e86fd18a78714c8b331b9fc02dcbe98a1eabc4fe4a6",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T02:51:38+00:00",
+    "generated_at": "2026-08-04T03:00:48+00:00",
     "offline": true,
     "planner_cache": {
-      "hit": 1,
+      "hit": 0,
       "miss": 0
     },
     "trace_events": [
@@ -18,23 +18,23 @@
         "intent": "combined_brief",
         "route": "continue",
         "cache": {
-          "hit": 1,
+          "hit": 0,
           "miss": 0
         }
       },
       {
         "node": "enforce_policy",
         "allowed": true,
-        "tool_count": 2
+        "tool_count": 3
       },
       {
         "node": "execute_mcp_tools",
         "mcp_session": 1,
-        "success_count": 2
+        "success_count": 3
       },
       {
         "node": "compose_answer",
-        "citations": 2
+        "citations": 3
       },
       {
         "node": "validate_output",
@@ -51,15 +51,12 @@
     "allow_rebuild": false
   },
   "request": {
-    "request_id": "079d010f577e19c6",
-    "user_query": "当前 Cutover 总体状态怎么样？"
+    "request_id": "246a6a69ce27cca0",
+    "user_query": "current Cutover status with migration traceability"
   },
   "plan": {
     "intent": "combined_brief",
-    "tools": [
-      "get_cutover_status_summary",
-      "get_cutover_daily_brief"
-    ],
+    "tools": [],
     "activity_filters": {
       "status": null,
       "owner_role": null,
@@ -72,39 +69,164 @@
       "severity": null
     },
     "rebuild_plan": false,
-    "answer_focus": "",
-    "confidence": 0.0,
+    "answer_focus": "overall status",
+    "confidence": 0.85,
     "needs_clarification": false,
     "clarification_question": "",
-    "tool_requests": []
+    "tool_requests": [
+      {
+        "tool_name": "get_cutover_plan_summary",
+        "arguments": {},
+        "reason": "Get plan counts and migration traceability."
+      },
+      {
+        "tool_name": "get_cutover_status_summary",
+        "arguments": {},
+        "reason": "Get status counts."
+      },
+      {
+        "tool_name": "get_cutover_daily_brief",
+        "arguments": {},
+        "reason": "Get RAG, blockers, and next gate."
+      }
+    ]
   },
   "policy": {
     "allowed": true,
     "denied_reason": "",
     "validated_tool_requests": [
       {
+        "tool_name": "get_cutover_plan_summary",
+        "arguments": {},
+        "reason": "Get plan counts and migration traceability."
+      },
+      {
         "tool_name": "get_cutover_status_summary",
         "arguments": {},
-        "reason": "Planner selected get_cutover_status_summary for combined_brief."
+        "reason": "Get status counts."
       },
       {
         "tool_name": "get_cutover_daily_brief",
         "arguments": {},
-        "reason": "Planner selected get_cutover_daily_brief for combined_brief."
+        "reason": "Get RAG, blockers, and next gate."
       }
     ]
   },
   "tool_calls": [
     {
+      "tool_name": "get_cutover_plan_summary",
+      "arguments": {},
+      "ok": true,
+      "data": {
+        "source_content_sha256": "160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767",
+        "migration_findings_content_sha256": "74dfc9310502fadaeb4cc27ec31c2e630d0fb97e9dbe645ba3e755d298fbaf60",
+        "migration_finding_count": 22,
+        "work_package_count": 5,
+        "activity_count": 34,
+        "shared_activity_count": 14,
+        "migration_activity_count": 4,
+        "raid_count": 29,
+        "migration_raid_count": 22,
+        "freeze_window_count": 3,
+        "approval_gate_count": 4,
+        "validation_valid": true,
+        "activities_by_status": {
+          "Not Started": 30,
+          "Planned": 4
+        },
+        "raid_by_type": {
+          "Dependency": 18,
+          "Issue": 2,
+          "Risk": 9
+        },
+        "migration_activity_links": [
+          {
+            "activity_id": "CUT-MIG-DUPLICATE-RESOLUTION",
+            "linked_finding_ids": [
+              "MIG-B1CD62331725",
+              "MIG-BE20BB03FE65",
+              "MIG-CB796C3C7B83",
+              "MIG-D3121D625FB2",
+              "MIG-FB02D994DD29"
+            ],
+            "linked_raid_ids": [
+              "RAID-MIG-B1CD62331725",
+              "RAID-MIG-BE20BB03FE65",
+              "RAID-MIG-CB796C3C7B83",
+              "RAID-MIG-D3121D625FB2",
+              "RAID-MIG-FB02D994DD29"
+            ]
+          },
+          {
+            "activity_id": "CUT-MIG-MAPPING-REVIEW",
+            "linked_finding_ids": [
+              "MIG-0883DAF95F47",
+              "MIG-094628933C7E",
+              "MIG-A6373B0B44E9",
+              "MIG-B5CF92FEF27E"
+            ],
+            "linked_raid_ids": [
+              "RAID-MIG-0883DAF95F47",
+              "RAID-MIG-094628933C7E",
+              "RAID-MIG-A6373B0B44E9",
+              "RAID-MIG-B5CF92FEF27E"
+            ]
+          },
+          {
+            "activity_id": "CUT-MIG-TARGET-DEPENDENCY",
+            "linked_finding_ids": [
+              "MIG-025FDEF68B06",
+              "MIG-09FF5CB1E047",
+              "MIG-4EBF9E8154E2",
+              "MIG-823922F40F31",
+              "MIG-8426F8F045A9",
+              "MIG-B16C0C153A09",
+              "MIG-C3603BD00750",
+              "MIG-DE590E18C1CF",
+              "MIG-E41F569A816A",
+              "MIG-F7A761791FD5",
+              "MIG-FAEFB2155DC9"
+            ],
+            "linked_raid_ids": [
+              "RAID-MIG-025FDEF68B06",
+              "RAID-MIG-09FF5CB1E047",
+              "RAID-MIG-4EBF9E8154E2",
+              "RAID-MIG-823922F40F31",
+              "RAID-MIG-8426F8F045A9",
+              "RAID-MIG-B16C0C153A09",
+              "RAID-MIG-C3603BD00750",
+              "RAID-MIG-DE590E18C1CF",
+              "RAID-MIG-E41F569A816A",
+              "RAID-MIG-F7A761791FD5",
+              "RAID-MIG-FAEFB2155DC9"
+            ]
+          },
+          {
+            "activity_id": "CUT-MIG-VALIDATION-REMEDIATION",
+            "linked_finding_ids": [
+              "MIG-127FBCE66F53",
+              "MIG-519791EDC75B"
+            ],
+            "linked_raid_ids": [
+              "RAID-MIG-127FBCE66F53",
+              "RAID-MIG-519791EDC75B"
+            ]
+          }
+        ]
+      },
+      "error": null,
+      "source_content_sha256": "160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767"
+    },
+    {
       "tool_name": "get_cutover_status_summary",
       "arguments": {},
       "ok": true,
       "data": {
-        "source_content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+        "source_content_sha256": "c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5",
         "as_of_offset": "T-7",
         "events_applied_count": 28,
         "activity_status_counts": {
-          "Not Started": 11,
+          "Not Started": 15,
           "In Progress": 0,
           "Blocked": 2,
           "Completed": 17,
@@ -119,7 +241,7 @@
         },
         "raid_status_counts": {
           "by_status": {
-            "Open": 1,
+            "Open": 23,
             "Mitigating": 5,
             "Accepted": 0,
             "Resolved": 1,
@@ -127,14 +249,21 @@
           },
           "by_type": {
             "Dependency": {
-              "Open": 0,
+              "Open": 13,
               "Mitigating": 5,
               "Accepted": 0,
               "Resolved": 0,
               "Closed": 0
             },
+            "Issue": {
+              "Open": 2,
+              "Mitigating": 0,
+              "Accepted": 0,
+              "Resolved": 0,
+              "Closed": 0
+            },
             "Risk": {
-              "Open": 1,
+              "Open": 8,
               "Mitigating": 0,
               "Accepted": 0,
               "Resolved": 1,
@@ -156,14 +285,14 @@
         "validation_valid": true
       },
       "error": null,
-      "source_content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b"
+      "source_content_sha256": "c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5"
     },
     {
       "tool_name": "get_cutover_daily_brief",
       "arguments": {},
       "ok": true,
       "data": {
-        "source_content_sha256": "d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1",
+        "source_content_sha256": "e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8",
         "as_of_offset": "T-7",
         "overall_rag": "Red",
         "headline": {
@@ -171,9 +300,10 @@
           "as_of_offset": "T-7",
           "completed_activity_count": 17,
           "blocked_activity_count": 2,
-          "not_started_activity_count": 11,
+          "not_started_activity_count": 15,
           "work_packages_blocked": 1,
-          "open_high_risks_or_issues": 0,
+          "open_high_risks_or_issues": 1,
+          "migration_blocker_count": 1,
           "next_gate": {
             "gate_id": "GATE-CUTOVER-READINESS",
             "name": "Cutover Readiness",
@@ -188,7 +318,9 @@
         },
         "rag_reasons": [
           "One or more Day-1 critical activities are blocked.",
-          "Due approval gate is blocked: GATE-CUTOVER-READINESS."
+          "Open migration gate blocker RAID items: RAID-MIG-127FBCE66F53.",
+          "Due approval gate is blocked: GATE-CUTOVER-READINESS.",
+          "One or more activities are overdue."
         ],
         "critical_blockers": [
           {
@@ -224,6 +356,24 @@
             "current_status": "Blocked",
             "blocker": "ACT-EX-024-TEST remains blocked and prevents readiness approval.",
             "is_critical_to_day1": true
+          },
+          {
+            "activity_id": "CUT-MIG-DUPLICATE-RESOLUTION",
+            "title": "Resolve duplicate supplier migration findings",
+            "owner_role": "Data Migration Lead",
+            "end_offset": "T-7",
+            "current_status": "Not Started",
+            "blocker": "",
+            "is_critical_to_day1": true
+          },
+          {
+            "activity_id": "CUT-MIG-TARGET-DEPENDENCY",
+            "title": "Resolve migration target dependencies",
+            "owner_role": "Data Migration Lead",
+            "end_offset": "T-7",
+            "current_status": "Not Started",
+            "blocker": "",
+            "is_critical_to_day1": true
           }
         ],
         "due_next": [
@@ -239,6 +389,15 @@
           {
             "activity_id": "CUT-DATA-FREEZE",
             "title": "Data freeze",
+            "owner_role": "Data Migration Lead",
+            "end_offset": "T-2",
+            "current_status": "Not Started",
+            "blocker": "",
+            "is_critical_to_day1": true
+          },
+          {
+            "activity_id": "CUT-MIG-VALIDATION-REMEDIATION",
+            "title": "Remediate migration validation findings",
             "owner_role": "Data Migration Lead",
             "end_offset": "T-2",
             "current_status": "Not Started",
@@ -311,7 +470,7 @@
         ],
         "raid_summary": {
           "by_status": {
-            "Open": 1,
+            "Open": 23,
             "Mitigating": 5,
             "Accepted": 0,
             "Resolved": 1,
@@ -319,14 +478,21 @@
           },
           "by_type": {
             "Dependency": {
-              "Open": 0,
+              "Open": 13,
               "Mitigating": 5,
               "Accepted": 0,
               "Resolved": 0,
               "Closed": 0
             },
+            "Issue": {
+              "Open": 2,
+              "Mitigating": 0,
+              "Accepted": 0,
+              "Resolved": 0,
+              "Closed": 0
+            },
             "Risk": {
-              "Open": 1,
+              "Open": 8,
               "Mitigating": 0,
               "Accepted": 0,
               "Resolved": 1,
@@ -358,13 +524,77 @@
           },
           {
             "priority": 2,
+            "source_type": "MigrationRAID",
+            "source_id": "RAID-MIG-127FBCE66F53",
+            "finding_id": "MIG-127FBCE66F53",
+            "owner_role": "Data Migration Lead",
+            "action": "Resolve migration finding MIG-127FBCE66F53 before the Go / No-Go gate."
+          },
+          {
+            "priority": 3,
             "source_type": "ApprovalGate",
             "source_id": "GATE-CUTOVER-READINESS",
             "owner_role": "Cutover Manager",
             "action": "Reassess GATE-CUTOVER-READINESS after missing readiness criteria are cleared."
           },
           {
-            "priority": 3,
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-094628933C7E",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-094628933C7E."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-519791EDC75B",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-519791EDC75B."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-B1CD62331725",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-B1CD62331725."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-B5CF92FEF27E",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-B5CF92FEF27E."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-BE20BB03FE65",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-BE20BB03FE65."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-CB796C3C7B83",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-CB796C3C7B83."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-D3121D625FB2",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-D3121D625FB2."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-FB02D994DD29",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-FB02D994DD29."
+          },
+          {
+            "priority": 4,
             "source_type": "RAID",
             "source_id": "RAID-RISK-EX-022",
             "owner_role": "Data Migration Lead",
@@ -374,10 +604,10 @@
         "validation_valid": true
       },
       "error": null,
-      "source_content_sha256": "d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1"
+      "source_content_sha256": "e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8"
     }
   ],
-  "final_answer": "当前 Cutover 状态为 Red（截至 T-7）。\n30 个活动中，17 个已完成，2 个被阻塞，11 个尚未开始。\n下一审批门是 GATE-CUTOVER-READINESS，当前为 Blocked。\n数据来源：\n- get_cutover_status_summary · SHA 093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b\n- get_cutover_daily_brief · SHA d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1",
+  "final_answer": "The current Cutover status is Red as of T-7.\nAcross 34 activities, 17 are completed, 2 are blocked, and 15 are not started.\nMigration findings: 22 with SHA 74dfc9310502fadaeb4cc27ec31c2e630d0fb97e9dbe645ba3e755d298fbaf60.\nMigration RAID=22; migration activities=4; activity links carry finding and RAID IDs directly.\nMigration blockers: 1.\nThe next gate is GATE-CUTOVER-READINESS, currently Blocked.\nData sources:\n- get_cutover_plan_summary · SHA 160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767\n- get_cutover_status_summary · SHA c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5\n- get_cutover_daily_brief · SHA e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8",
   "validation": {
     "valid": true,
     "reasons": []

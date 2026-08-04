@@ -1,0 +1,902 @@
+{
+  "_run_info": {
+    "content_sha256": "74dfc9310502fadaeb4cc27ec31c2e630d0fb97e9dbe645ba3e755d298fbaf60",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
+    "generated_at": "2026-07-30T07:01:02+00:00"
+  },
+  "_meta": {
+    "report_type": "migration_cutover_findings",
+    "schema_version": "1.0",
+    "data_classification": "synthetic_demo",
+    "component": "module_1_migration_risk_standardizer",
+    "formal_input_boundary": [
+      "generated_validation",
+      "vendor_duplicate",
+      "vendor_field_mapping",
+      "vendor_validation"
+    ],
+    "excluded_inputs": [
+      "erpnext_item_price_blind_evaluation.json",
+      "vendor_duplicate_report.evaluation",
+      "vendor_duplicate_report.duplicate_groups[*].ground_truth",
+      "vendor_profile_report.fields",
+      "vendor_profile_report.quality_flags",
+      "ground_truth",
+      "benchmark_accuracy_precision_recall_f1"
+    ],
+    "record_ids_sample_limit": 10,
+    "id_rule": "MIG- + uppercase(first 12 hex chars of sha256('v1|' + rule_id + '|' + dedupe_key))",
+    "gate_recommendation_boundary": "Only explicit non-review High validation failures from formal inputs can recommend blocker=true."
+  },
+  "source_reports": [
+    {
+      "report_id": "generated_validation",
+      "path": "data/synthetic/erpnext_item_price_multitarget_generated_validation.json",
+      "content_sha256": "a4c688073df9799a05f5a6d5cba4c584c175c51e7615c87559923efa2b65f012",
+      "finding_count": 0
+    },
+    {
+      "report_id": "vendor_duplicate",
+      "path": "data/synthetic/vendor_duplicate_report.json",
+      "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
+      "finding_count": 5
+    },
+    {
+      "report_id": "vendor_field_mapping",
+      "path": "data/synthetic/vendor_field_mapping.json",
+      "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+      "finding_count": 4
+    },
+    {
+      "report_id": "vendor_validation",
+      "path": "data/synthetic/vendor_validation_report.json",
+      "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+      "finding_count": 13
+    }
+  ],
+  "summary": {
+    "finding_count": 22,
+    "by_category": {
+      "duplicate_supplier": 5,
+      "field_mapping": 4,
+      "master_data_validation": 13
+    },
+    "by_severity": {
+      "High": 11,
+      "Medium": 10,
+      "Low": 1,
+      "null": 0
+    },
+    "by_suggested_raid_type": {
+      "Dependency": 13,
+      "Issue": 2,
+      "Risk": 7
+    },
+    "review_required_count": 21,
+    "gate_blocker_count": 1
+  },
+  "findings": [
+    {
+      "finding_id": "MIG-BE20BB03FE65",
+      "rule_id": "MIG-DUP-001",
+      "dedupe_key": "duplicate|groups|merge_approval_required",
+      "category": "duplicate_supplier",
+      "title": "Duplicate supplier resolution requires approval",
+      "description": "47 high-confidence duplicate supplier group(s) require human merge approval.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Issue",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_duplicate",
+          "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
+          "json_pointer": "/duplicate_groups[needs_review=false]",
+          "matched_record_count": 114,
+          "record_ids_sample": [
+            "V100003",
+            "V100003D",
+            "V100005",
+            "V100005D",
+            "V100005D2",
+            "V100015",
+            "V100015D",
+            "V100015X",
+            "V100016",
+            "V100016D"
+          ]
+        }
+      ],
+      "evidence": {
+        "duplicate_group_count": 47,
+        "records_in_groups": 114
+      }
+    },
+    {
+      "finding_id": "MIG-CB796C3C7B83",
+      "rule_id": "MIG-DUP-003",
+      "dedupe_key": "duplicate|borderline_pairs|review_required",
+      "category": "duplicate_supplier",
+      "title": "Borderline duplicate supplier pairs require review",
+      "description": "1 borderline supplier pair(s) were scored below the clustering threshold and require review.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_duplicate",
+          "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
+          "json_pointer": "/borderline_pairs/pairs",
+          "matched_record_count": 1,
+          "record_ids_sample": [
+            "V100081",
+            "V100081D"
+          ]
+        }
+      ],
+      "evidence": {
+        "borderline_pair_count": 1,
+        "threshold_used_for_clustering": 0.95
+      }
+    },
+    {
+      "finding_id": "MIG-D3121D625FB2",
+      "rule_id": "MIG-DUP-002",
+      "dedupe_key": "duplicate|group|gv100048|needs_review",
+      "category": "duplicate_supplier",
+      "title": "Suspected duplicate supplier group requires review: GV100048",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.950726,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_duplicate",
+          "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
+          "json_pointer": "/duplicate_groups/group_id=gv100048",
+          "matched_record_count": 3,
+          "record_ids_sample": [
+            "V100048",
+            "V100048D",
+            "V100048D2"
+          ]
+        }
+      ],
+      "evidence": {
+        "group_id": "GV100048",
+        "review_reasons": [
+          "组内最弱匹配概率 0.9507 低于复核阈值 0.99。"
+        ],
+        "min_match_probability": 0.950726
+      }
+    },
+    {
+      "finding_id": "MIG-FB02D994DD29",
+      "rule_id": "MIG-DUP-002",
+      "dedupe_key": "duplicate|group|gv100052|needs_review",
+      "category": "duplicate_supplier",
+      "title": "Suspected duplicate supplier group requires review: GV100052",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.999574,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_duplicate",
+          "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
+          "json_pointer": "/duplicate_groups/group_id=gv100052",
+          "matched_record_count": 3,
+          "record_ids_sample": [
+            "V100052",
+            "V100052D",
+            "V100052D2"
+          ]
+        }
+      ],
+      "evidence": {
+        "group_id": "GV100052",
+        "review_reasons": [
+          "该组由传递闭包形成（2/3 条直接边），并非两两都被判为匹配。"
+        ],
+        "min_match_probability": 0.999574
+      }
+    },
+    {
+      "finding_id": "MIG-B1CD62331725",
+      "rule_id": "MIG-DUP-002",
+      "dedupe_key": "duplicate|group|gv100082|needs_review",
+      "category": "duplicate_supplier",
+      "title": "Suspected duplicate supplier group requires review: GV100082",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.99046,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_duplicate",
+          "content_sha256": "8314a16bc94fee71582fada71bd500a767f088ebbae54e24f6822b69500430c8",
+          "json_pointer": "/duplicate_groups/group_id=gv100082",
+          "matched_record_count": 3,
+          "record_ids_sample": [
+            "V100082",
+            "V100082D",
+            "V100082D2"
+          ]
+        }
+      ],
+      "evidence": {
+        "group_id": "GV100082",
+        "review_reasons": [
+          "该组由传递闭包形成（2/3 条直接边），并非两两都被判为匹配。"
+        ],
+        "min_match_probability": 0.99046
+      }
+    },
+    {
+      "finding_id": "MIG-A6373B0B44E9",
+      "rule_id": "MIG-MAP-002",
+      "dedupe_key": "mapping|email|no_confident_target",
+      "category": "field_mapping",
+      "title": "Field mapping requires review: email",
+      "description": "Mapping status for email is no_confident_target; reviewer approval is required before cutover use.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.3295,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/gaps/source_field=email,status=no_confident_target",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        },
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/mappings/source_field=email",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "status": "no_confident_target",
+        "recommendation": null,
+        "band": "low",
+        "best_candidate": "A_BusinessPartnerAddress.AddressID"
+      }
+    },
+    {
+      "finding_id": "MIG-0883DAF95F47",
+      "rule_id": "MIG-MAP-002",
+      "dedupe_key": "mapping|phone|no_confident_target",
+      "category": "field_mapping",
+      "title": "Field mapping requires review: phone",
+      "description": "Mapping status for phone is no_confident_target; reviewer approval is required before cutover use.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.3588,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/gaps/source_field=phone,status=no_confident_target",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        },
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/mappings/source_field=phone",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "status": "no_confident_target",
+        "recommendation": null,
+        "band": "low",
+        "best_candidate": "A_BusinessPartner.Language"
+      }
+    },
+    {
+      "finding_id": "MIG-094628933C7E",
+      "rule_id": "MIG-MAP-001",
+      "dedupe_key": "mapping|currency|possible_false_friend",
+      "category": "field_mapping",
+      "title": "Field mapping requires review: currency",
+      "description": "Mapping status for currency is possible_false_friend; reviewer approval is required before cutover use.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.4999,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/gaps/source_field=currency,status=possible_false_friend",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        },
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/mappings/source_field=currency",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "status": "possible_false_friend",
+        "recommendation": "A_BusinessPartnerBank.BankAccount",
+        "band": "medium",
+        "best_candidate": "A_BusinessPartnerBank.BankAccount"
+      }
+    },
+    {
+      "finding_id": "MIG-B5CF92FEF27E",
+      "rule_id": "MIG-MAP-001",
+      "dedupe_key": "mapping|legacy_vendor_id|needs_review",
+      "category": "field_mapping",
+      "title": "Field mapping requires review: legacy_vendor_id",
+      "description": "Mapping status for legacy_vendor_id is needs_review; reviewer approval is required before cutover use.",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "confidence": 0.5622,
+      "confidence_origin": "source",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_field_mapping",
+          "content_sha256": "91639a83b0d23aaa78eb0c47d375d123b5c926db0e898cc65702d52977523a0a",
+          "json_pointer": "/mappings/source_field=legacy_vendor_id",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "status": "needs_review",
+        "recommendation": "A_BusinessPartner.BusinessPartnerIDByExtSystem",
+        "band": "medium"
+      }
+    },
+    {
+      "finding_id": "MIG-DE590E18C1CF",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartner.businesspartner|a_businesspartner.businesspartner|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartner.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartner` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartner.businesspartner,target=a_businesspartner.businesspartner/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartner.BusinessPartner",
+        "target": "A_BusinessPartner.BusinessPartner"
+      }
+    },
+    {
+      "finding_id": "MIG-C3603BD00750",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartneraddress.addressid|a_businesspartneraddress.addressid|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartnerAddress.AddressID",
+      "description": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `AddressID` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartneraddress.addressid,target=a_businesspartneraddress.addressid/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartnerAddress.AddressID",
+        "target": "A_BusinessPartnerAddress.AddressID"
+      }
+    },
+    {
+      "finding_id": "MIG-B16C0C153A09",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartneraddress.businesspartner|a_businesspartneraddress.businesspartner|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartnerAddress.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartneraddress.businesspartner,target=a_businesspartneraddress.businesspartner/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartnerAddress.BusinessPartner",
+        "target": "A_BusinessPartnerAddress.BusinessPartner"
+      }
+    },
+    {
+      "finding_id": "MIG-F7A761791FD5",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartnerbank.bankidentification|a_businesspartnerbank.bankidentification|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartnerBank.BankIdentification",
+      "description": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BankIdentification` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartnerbank.bankidentification,target=a_businesspartnerbank.bankidentification/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartnerBank.BankIdentification",
+        "target": "A_BusinessPartnerBank.BankIdentification"
+      }
+    },
+    {
+      "finding_id": "MIG-4EBF9E8154E2",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartnerbank.businesspartner|a_businesspartnerbank.businesspartner|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartnerBank.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartnerbank.businesspartner,target=a_businesspartnerbank.businesspartner/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartnerBank.BusinessPartner",
+        "target": "A_BusinessPartnerBank.BusinessPartner"
+      }
+    },
+    {
+      "finding_id": "MIG-E41F569A816A",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartnertaxnumber.bptaxtype|a_businesspartnertaxnumber.bptaxtype|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartnerTaxNumber.BPTaxType",
+      "description": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BPTaxType` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartnertaxnumber.bptaxtype,target=a_businesspartnertaxnumber.bptaxtype/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartnerTaxNumber.BPTaxType",
+        "target": "A_BusinessPartnerTaxNumber.BPTaxType"
+      }
+    },
+    {
+      "finding_id": "MIG-8426F8F045A9",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|a_businesspartnertaxnumber.businesspartner|a_businesspartnertaxnumber.businesspartner|unmapped_target_key",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for A_BusinessPartnerTaxNumber.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=a_businesspartnertaxnumber.businesspartner,target=a_businesspartnertaxnumber.businesspartner/field_issues/issue_type=unmapped_target_key",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "unmapped_target_key",
+        "field": "A_BusinessPartnerTaxNumber.BusinessPartner",
+        "target": "A_BusinessPartnerTaxNumber.BusinessPartner"
+      }
+    },
+    {
+      "finding_id": "MIG-FAEFB2155DC9",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|created_date|a_businesspartner.creationdate|target_not_creatable_or_updatable",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for created_date",
+      "description": "目标字段 `A_BusinessPartner.CreationDate` 的 sap:creatable 与 sap:updatable 均为 false，不可写入。该字段的映射语义是正确的，但它不能作为加载目标。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=created_date,target=a_businesspartner.creationdate/field_issues/issue_type=target_not_creatable_or_updatable",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "target_not_creatable_or_updatable",
+        "field": "created_date",
+        "target": "A_BusinessPartner.CreationDate"
+      }
+    },
+    {
+      "finding_id": "MIG-823922F40F31",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|email||no_target_in_schema",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for email",
+      "description": "字段 `email` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.330）。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=email,target=/field_issues/issue_type=no_target_in_schema",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "no_target_in_schema",
+        "field": "email",
+        "target": null
+      }
+    },
+    {
+      "finding_id": "MIG-025FDEF68B06",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|phone||no_target_in_schema",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for phone",
+      "description": "字段 `phone` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.359）。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=phone,target=/field_issues/issue_type=no_target_in_schema",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "no_target_in_schema",
+        "field": "phone",
+        "target": null
+      }
+    },
+    {
+      "finding_id": "MIG-09FF5CB1E047",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|legacy_vendor_id|a_businesspartner.businesspartneridbyextsystem|mapping_needs_review",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for legacy_vendor_id",
+      "description": "映射置信度 0.562（medium），未达 high 档。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Dependency",
+      "severity": "Low",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=legacy_vendor_id,target=a_businesspartner.businesspartneridbyextsystem/field_issues/issue_type=mapping_needs_review",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "mapping_needs_review",
+        "field": "legacy_vendor_id",
+        "target": "A_BusinessPartner.BusinessPartnerIDByExtSystem"
+      }
+    },
+    {
+      "finding_id": "MIG-127FBCE66F53",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|country|a_businesspartneraddress.country|normalization_required",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for country",
+      "description": "字段 `country` 需先归一化为 ISO 3166-1 alpha-2 代码。当前 14 种写法中有 11 种不符合规范形态（^[A-Z]{2}$），且目标字段上限仅 3 字符。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Issue",
+      "severity": "High",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": false,
+      "gate_impact": {
+        "blocker": true,
+        "reason": "High severity record-level migration validation failure: normalization_required."
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=country,target=a_businesspartneraddress.country/field_issues/issue_type=normalization_required",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        },
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/record_view/issues[field=country,target=a_businesspartneraddress.country,root_cause=normalization_required]",
+          "matched_record_count": 100,
+          "record_ids_sample": [
+            "V100001",
+            "V100002",
+            "V100004",
+            "V100005",
+            "V100006",
+            "V100009",
+            "V100010",
+            "V100011",
+            "V100015",
+            "V100015X"
+          ]
+        }
+      ],
+      "evidence": {
+        "issue_type": "max_length_overflow",
+        "field": "country",
+        "target": "A_BusinessPartnerAddress.Country",
+        "root_cause": "normalization_required",
+        "matched_record_count": 100
+      }
+    },
+    {
+      "finding_id": "MIG-519791EDC75B",
+      "rule_id": "MIG-VAL-001",
+      "dedupe_key": "validation|currency|a_businesspartnerbank.bankaccount|possible_false_friend_target",
+      "category": "master_data_validation",
+      "title": "Migration validation issue for currency",
+      "description": "field_mapping 将 `currency` 标为疑似假朋友：候选 `A_BusinessPartnerBank.BankAccount` 与其零共享词元且未命中 alias。",
+      "affected_workstream": "master_data",
+      "suggested_raid_type": "Risk",
+      "severity": "Medium",
+      "severity_origin": "source",
+      "confidence": null,
+      "confidence_origin": "none",
+      "status": "Open",
+      "review_required": true,
+      "gate_impact": {
+        "blocker": false,
+        "reason": null
+      },
+      "sources": [
+        {
+          "report_id": "vendor_validation",
+          "content_sha256": "b9ec76c77f72ca26c5ad11584352fb946ee636bbdf8ab166af4f3b5fe39978b8",
+          "json_pointer": "/field_view/field=currency,target=a_businesspartnerbank.bankaccount/field_issues/issue_type=possible_false_friend_target",
+          "matched_record_count": 0,
+          "record_ids_sample": []
+        }
+      ],
+      "evidence": {
+        "issue_type": "possible_false_friend_target",
+        "field": "currency",
+        "target": "A_BusinessPartnerBank.BankAccount"
+      }
+    }
+  ]
+}

@@ -61,15 +61,29 @@ The current result uses cached structured LLM responses. A first uncached run ma
 
 ### Cutover And RAID
 
-The cutover workflow starts from the Development Backlog.
+The cutover workflow starts from the Development Backlog and the standardized migration findings report.
+
+The current pipeline is:
+
+```text
+migration source reports
+-> migration_cutover_findings.json
+-> Cutover RAID and Activities
+-> Status Gate and RAG
+-> Daily report
+```
 
 It builds work packages, activities, dependencies, freeze windows, approval gates, and RAID items. A second tool applies status update events and produces a status snapshot and daily management report.
 
+The formal migration finding inputs are the validation report, duplicate report, field mapping report, and generated package validation report. Blind benchmark accuracy, precision/recall/F1, ground truth, and review-only mapping or duplicate candidates are kept as evidence or review material; they do not become automatic go-live blockers.
+
 There is also a natural-language planner example. It calls local tools through a stdio MCP server. It is a planner layer, not the source of record for cutover data.
 
-The cutover tools are deterministic. The first tool converts backlog items into a plan skeleton. The second applies status events to that plan. The output is meant to look like a project control artifact: activity status, package status, approval gates, due-now items, critical blockers, RAID status, and management actions.
+The cutover tools are deterministic. The first tool converts backlog items and migration findings into a plan skeleton. The second applies status events to that plan. The output is meant to look like a project control artifact: activity status, package status, approval gates, due-now items, critical blockers, RAID status, and management actions.
 
 The natural-language planner is intentionally narrow. It can ask the local MCP server for summaries, blocked activities, RAID items, and a daily brief. It cannot invent a new plan or write arbitrary files. Rebuild actions are rejected unless they are explicitly allowed by the caller.
+
+Status updates are bound to the current plan by `_meta.source_plan_content_sha256`. If the plan changes, the status event log must be reviewed and rebound before status and daily reports can be rebuilt.
 
 ## Migration Workflow
 
@@ -245,7 +259,21 @@ The fastest path through the app is:
 5. Preview `item.csv` and `item_price.csv`.
 6. Filter lineage for `article_number` or `inventory_measure`.
 
-The report pages are read-only. They show the current checked-in analysis outputs for data profiling, Fit-to-Standard, cutover planning, cutover status, and the daily cutover report.
+The report pages are read-only. They show the current checked-in analysis outputs for data profiling, Fit-to-Standard, migration cutover findings, cutover planning, cutover status, and the daily cutover report.
+
+The backend exposes reports through a fixed whitelist, not request-built file paths. The current health catalog is `11/11` available and includes `migration_cutover_findings.json`.
+
+## Rebuild Cutover Reports
+
+```powershell
+python src/tools/build_migration_cutover_findings.py
+python src/tools/build_cutover_plan.py --migration-findings data/synthetic/migration_cutover_findings.json
+python src/tools/build_cutover_status.py
+```
+
+When the plan SHA changes, update `data/synthetic/cutover_status_updates.json` only after confirming every existing event target still exists in the new plan.
+
+The MCP rebuild path uses the same core generators in this order: migration findings, plan, status, daily. It first builds and validates every report, then stages files beside their targets. Each `os.replace` is a single-file atomic replacement. Ordinary commit failures trigger rollback from per-run backups, but the code does not promise cross-file recovery during process termination, system crash, or power loss.
 
 ## Run The Verification Suite
 
@@ -256,10 +284,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify_practical_v2.
 Current local verification counts:
 
 ```text
-Python tests: 417
+Scoped Migration/Cutover tests: 238 passed
+Full unittest discovery: 503 discovered, 27 failures, 33 errors
 Frontend tests: 45
 Workspace API tests: 38
 ```
+
+The full discovery failures are inherited from the baseline stale migration evidence-lock contracts. The scoped Migration/Cutover verification is the current evidence for this integration.
 
 The frontend build passed. Frontend lint passed with one existing Fast Refresh warning. `pip check` passed.
 
@@ -302,19 +333,23 @@ The Fit-to-Standard report keeps review flags visible. The `needs_review` count 
 ### Cutover
 
 ```text
-Activities = 30
+Migration findings = 22
+Migration RAID = 22
+Migration Activities = 4
+Activities = 34
 Completed = 17
 Blocked = 2
-Not Started = 11
+Not Started = 15
 Work packages = 5
 Freeze windows = 3
 Approval gates = 4
-RAID items = 7
+RAID items = 29
+Migration blockers = 1
 ```
 
-The daily report marks the overall state as Red because critical blockers remain open.
+The daily report marks the overall state as Red because critical blockers remain open, including one explicit High, non-review-only migration blocker. This is a synthetic demo result, not a real production project status.
 
-The cutover status snapshot is based on 28 update events. It records 17 completed activities, 2 blocked activities, and 11 not started activities. It also records 5 mitigating RAID items, 1 resolved RAID item, and 1 open RAID item. Approval gates are split across 1 approved, 1 blocked, and 2 pending.
+The cutover status snapshot is based on 28 update events. It records 17 completed activities, 2 blocked activities, and 15 not started activities. It records 29 RAID items, including 22 migration RAID items and 1 migration blocker. Approval gates are split across 1 approved, 1 blocked, and 2 pending.
 
 ## Design Choices
 
@@ -323,6 +358,7 @@ The cutover status snapshot is based on 28 update events. It records 17 complete
 3. Lineage records hashes instead of complete source values. The reports can explain where a target cell came from without storing full source values in the lineage file.
 4. Evaluation data is kept outside the mapping runtime path. Candidate generation and package generation do not read answer data.
 5. Runtime workspace files do not modify committed examples. The workspace can be reset without changing checked-in files.
+6. Migration benchmark metrics and ground truth do not feed cutover blockers. Formal blockers come only from traceable migration findings and conservative gate rules.
 
 These choices keep the demo honest. The code can be run locally, the reports can be opened directly, and the tests can check the same files a reviewer sees in the browser. The tradeoff is that the repository is not a configurable platform yet.
 

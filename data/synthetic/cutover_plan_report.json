@@ -1,8 +1,8 @@
 {
   "_run_info": {
-    "content_sha256": "c4a88a3cb0923d2ed28356f72c037ace313ee73bee961ae8212265e4de2a0a8d",
+    "content_sha256": "160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T01:02:00+00:00"
+    "generated_at": "2026-08-04T02:55:37+00:00"
   },
   "_meta": {
     "module": "module_3_cutover_raid_governance",
@@ -13,9 +13,9 @@
     "development_backlog_count": 5,
     "needs_review_count": 2,
     "work_package_count": 5,
-    "activity_count": 30,
-    "shared_activity_count": 10,
-    "raid_count": 7,
+    "activity_count": 34,
+    "shared_activity_count": 14,
+    "raid_count": 29,
     "time_basis": "relative_to_day_1",
     "synthetic": true,
     "owner_role_rules": {
@@ -99,6 +99,17 @@
       "needs_review_confidence_below_0_50": "High",
       "needs_review_confidence_0_50_to_below_0_70": "Medium",
       "other_needs_review_reasons": "Medium"
+    },
+    "migration_findings": {
+      "report_type": "migration_cutover_findings",
+      "content_sha256": "74dfc9310502fadaeb4cc27ec31c2e630d0fb97e9dbe645ba3e755d298fbaf60",
+      "finding_count": 22,
+      "source_report_ids": [
+        "generated_validation",
+        "vendor_duplicate",
+        "vendor_field_mapping",
+        "vendor_validation"
+      ]
     }
   },
   "milestones": [
@@ -872,7 +883,11 @@
       "start_offset": "T-2",
       "end_offset": "T-2",
       "depends_on": [
-        "CUT-CODE-FREEZE"
+        "CUT-CODE-FREEZE",
+        "CUT-MIG-DUPLICATE-RESOLUTION",
+        "CUT-MIG-MAPPING-REVIEW",
+        "CUT-MIG-TARGET-DEPENDENCY",
+        "CUT-MIG-VALIDATION-REMEDIATION"
       ],
       "source_requirement_id": null,
       "source_note_id": null,
@@ -986,6 +1001,214 @@
       "rollback_action": "",
       "status": "Not Started",
       "milestone_id": "MS-INTEGRATION-READINESS"
+    },
+    {
+      "activity_id": "CUT-MIG-DUPLICATE-RESOLUTION",
+      "work_package_id": null,
+      "title": "Resolve duplicate supplier migration findings",
+      "description": "Review and approve supplier duplicate treatment before final data freeze. Covers 5 migration finding(s).",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-10",
+      "end_offset": "T-7",
+      "depends_on": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": "master_data",
+      "source_evidence": [
+        "MIG-B1CD62331725",
+        "MIG-BE20BB03FE65",
+        "MIG-CB796C3C7B83",
+        "MIG-D3121D625FB2",
+        "MIG-FB02D994DD29"
+      ],
+      "source_rationale": "Aggregated from deterministic migration cutover findings.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Planned",
+      "milestone_id": null,
+      "source_finding_ids": [
+        "MIG-B1CD62331725",
+        "MIG-BE20BB03FE65",
+        "MIG-CB796C3C7B83",
+        "MIG-D3121D625FB2",
+        "MIG-FB02D994DD29"
+      ],
+      "linked_finding_ids": [
+        "MIG-B1CD62331725",
+        "MIG-BE20BB03FE65",
+        "MIG-CB796C3C7B83",
+        "MIG-D3121D625FB2",
+        "MIG-FB02D994DD29"
+      ],
+      "linked_raid_ids": [
+        "RAID-MIG-B1CD62331725",
+        "RAID-MIG-BE20BB03FE65",
+        "RAID-MIG-CB796C3C7B83",
+        "RAID-MIG-D3121D625FB2",
+        "RAID-MIG-FB02D994DD29"
+      ]
+    },
+    {
+      "activity_id": "CUT-MIG-MAPPING-REVIEW",
+      "work_package_id": null,
+      "title": "Review migration field mapping findings",
+      "description": "Confirm field mapping decisions and unresolved mapping gaps before target remediation. Covers 4 migration finding(s).",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-14",
+      "end_offset": "T-10",
+      "depends_on": [],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": "master_data",
+      "source_evidence": [
+        "MIG-0883DAF95F47",
+        "MIG-094628933C7E",
+        "MIG-A6373B0B44E9",
+        "MIG-B5CF92FEF27E"
+      ],
+      "source_rationale": "Aggregated from deterministic migration cutover findings.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Planned",
+      "milestone_id": null,
+      "source_finding_ids": [
+        "MIG-0883DAF95F47",
+        "MIG-094628933C7E",
+        "MIG-A6373B0B44E9",
+        "MIG-B5CF92FEF27E"
+      ],
+      "linked_finding_ids": [
+        "MIG-0883DAF95F47",
+        "MIG-094628933C7E",
+        "MIG-A6373B0B44E9",
+        "MIG-B5CF92FEF27E"
+      ],
+      "linked_raid_ids": [
+        "RAID-MIG-0883DAF95F47",
+        "RAID-MIG-094628933C7E",
+        "RAID-MIG-A6373B0B44E9",
+        "RAID-MIG-B5CF92FEF27E"
+      ]
+    },
+    {
+      "activity_id": "CUT-MIG-TARGET-DEPENDENCY",
+      "work_package_id": null,
+      "title": "Resolve migration target dependencies",
+      "description": "Close target schema and load dependency findings required for cutover readiness. Covers 11 migration finding(s).",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-10",
+      "end_offset": "T-7",
+      "depends_on": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": "master_data",
+      "source_evidence": [
+        "MIG-025FDEF68B06",
+        "MIG-09FF5CB1E047",
+        "MIG-4EBF9E8154E2",
+        "MIG-823922F40F31",
+        "MIG-8426F8F045A9",
+        "MIG-B16C0C153A09",
+        "MIG-C3603BD00750",
+        "MIG-DE590E18C1CF",
+        "MIG-E41F569A816A",
+        "MIG-F7A761791FD5",
+        "MIG-FAEFB2155DC9"
+      ],
+      "source_rationale": "Aggregated from deterministic migration cutover findings.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Planned",
+      "milestone_id": null,
+      "source_finding_ids": [
+        "MIG-025FDEF68B06",
+        "MIG-09FF5CB1E047",
+        "MIG-4EBF9E8154E2",
+        "MIG-823922F40F31",
+        "MIG-8426F8F045A9",
+        "MIG-B16C0C153A09",
+        "MIG-C3603BD00750",
+        "MIG-DE590E18C1CF",
+        "MIG-E41F569A816A",
+        "MIG-F7A761791FD5",
+        "MIG-FAEFB2155DC9"
+      ],
+      "linked_finding_ids": [
+        "MIG-025FDEF68B06",
+        "MIG-09FF5CB1E047",
+        "MIG-4EBF9E8154E2",
+        "MIG-823922F40F31",
+        "MIG-8426F8F045A9",
+        "MIG-B16C0C153A09",
+        "MIG-C3603BD00750",
+        "MIG-DE590E18C1CF",
+        "MIG-E41F569A816A",
+        "MIG-F7A761791FD5",
+        "MIG-FAEFB2155DC9"
+      ],
+      "linked_raid_ids": [
+        "RAID-MIG-025FDEF68B06",
+        "RAID-MIG-09FF5CB1E047",
+        "RAID-MIG-4EBF9E8154E2",
+        "RAID-MIG-823922F40F31",
+        "RAID-MIG-8426F8F045A9",
+        "RAID-MIG-B16C0C153A09",
+        "RAID-MIG-C3603BD00750",
+        "RAID-MIG-DE590E18C1CF",
+        "RAID-MIG-E41F569A816A",
+        "RAID-MIG-F7A761791FD5",
+        "RAID-MIG-FAEFB2155DC9"
+      ]
+    },
+    {
+      "activity_id": "CUT-MIG-VALIDATION-REMEDIATION",
+      "work_package_id": null,
+      "title": "Remediate migration validation findings",
+      "description": "Complete data quality and load validation remediation before data freeze. Covers 2 migration finding(s).",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-7",
+      "end_offset": "T-2",
+      "depends_on": [
+        "CUT-MIG-DUPLICATE-RESOLUTION",
+        "CUT-MIG-MAPPING-REVIEW",
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "source_requirement_id": null,
+      "source_note_id": null,
+      "source_domain": "master_data",
+      "source_evidence": [
+        "MIG-127FBCE66F53",
+        "MIG-519791EDC75B"
+      ],
+      "source_rationale": "Aggregated from deterministic migration cutover findings.",
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "rollback_required": false,
+      "rollback_action": "",
+      "status": "Planned",
+      "milestone_id": null,
+      "source_finding_ids": [
+        "MIG-127FBCE66F53",
+        "MIG-519791EDC75B"
+      ],
+      "linked_finding_ids": [
+        "MIG-127FBCE66F53",
+        "MIG-519791EDC75B"
+      ],
+      "linked_raid_ids": [
+        "RAID-MIG-127FBCE66F53",
+        "RAID-MIG-519791EDC75B"
+      ]
     },
     {
       "activity_id": "CUT-MOCK-EXECUTION",
@@ -1176,6 +1399,780 @@
         "ACT-EX-024-DEPLOY"
       ],
       "source": "development_backlog"
+    },
+    {
+      "raid_id": "RAID-MIG-025FDEF68B06",
+      "type": "Dependency",
+      "title": "Migration validation issue for phone",
+      "description": "字段 `phone` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.359）。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-025FDEF68B06 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-025FDEF68B06 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-025FDEF68B06"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-025FDEF68B06",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|phone||no_target_in_schema",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=phone,target=/field_issues/issue_type=no_target_in_schema"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-0883DAF95F47",
+      "type": "Dependency",
+      "title": "Field mapping requires review: phone",
+      "description": "Mapping status for phone is no_confident_target; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-0883DAF95F47 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-0883DAF95F47 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-0883DAF95F47"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-0883DAF95F47",
+        "rule_id": "MIG-MAP-002",
+        "dedupe_key": "mapping|phone|no_confident_target",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/gaps/source_field=phone,status=no_confident_target",
+          "/mappings/source_field=phone"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-094628933C7E",
+      "type": "Risk",
+      "title": "Field mapping requires review: currency",
+      "description": "Mapping status for currency is possible_false_friend; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-094628933C7E before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-094628933C7E remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-094628933C7E"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-094628933C7E",
+        "rule_id": "MIG-MAP-001",
+        "dedupe_key": "mapping|currency|possible_false_friend",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/gaps/source_field=currency,status=possible_false_friend",
+          "/mappings/source_field=currency"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-09FF5CB1E047",
+      "type": "Dependency",
+      "title": "Migration validation issue for legacy_vendor_id",
+      "description": "映射置信度 0.562（medium），未达 high 档。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Low",
+      "severity": "Low",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-09FF5CB1E047 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-09FF5CB1E047 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-09FF5CB1E047"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-09FF5CB1E047",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|legacy_vendor_id|a_businesspartner.businesspartneridbyextsystem|mapping_needs_review",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=legacy_vendor_id,target=a_businesspartner.businesspartneridbyextsystem/field_issues/issue_type=mapping_needs_review"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-127FBCE66F53",
+      "type": "Issue",
+      "title": "Migration validation issue for country",
+      "description": "字段 `country` 需先归一化为 ISO 3166-1 alpha-2 代码。当前 14 种写法中有 11 种不符合规范形态（^[A-Z]{2}$），且目标字段上限仅 3 字符。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-127FBCE66F53 before data freeze.",
+      "trigger": "Finding MIG-127FBCE66F53 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-VALIDATION-REMEDIATION"
+      ],
+      "linked_finding_ids": [
+        "MIG-127FBCE66F53"
+      ],
+      "review_required": false,
+      "gate_blocker": true,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-127FBCE66F53",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|country|a_businesspartneraddress.country|normalization_required",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=country,target=a_businesspartneraddress.country/field_issues/issue_type=normalization_required",
+          "/record_view/issues[field=country,target=a_businesspartneraddress.country,root_cause=normalization_required]"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-4EBF9E8154E2",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerBank.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-4EBF9E8154E2 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-4EBF9E8154E2 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-4EBF9E8154E2"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-4EBF9E8154E2",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnerbank.businesspartner|a_businesspartnerbank.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnerbank.businesspartner,target=a_businesspartnerbank.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-519791EDC75B",
+      "type": "Risk",
+      "title": "Migration validation issue for currency",
+      "description": "field_mapping 将 `currency` 标为疑似假朋友：候选 `A_BusinessPartnerBank.BankAccount` 与其零共享词元且未命中 alias。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-519791EDC75B before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-519791EDC75B remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-VALIDATION-REMEDIATION"
+      ],
+      "linked_finding_ids": [
+        "MIG-519791EDC75B"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-519791EDC75B",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|currency|a_businesspartnerbank.bankaccount|possible_false_friend_target",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=currency,target=a_businesspartnerbank.bankaccount/field_issues/issue_type=possible_false_friend_target"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-823922F40F31",
+      "type": "Dependency",
+      "title": "Migration validation issue for email",
+      "description": "字段 `email` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.330）。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-823922F40F31 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-823922F40F31 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-823922F40F31"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-823922F40F31",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|email||no_target_in_schema",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=email,target=/field_issues/issue_type=no_target_in_schema"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-8426F8F045A9",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerTaxNumber.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-8426F8F045A9 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-8426F8F045A9 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-8426F8F045A9"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-8426F8F045A9",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnertaxnumber.businesspartner|a_businesspartnertaxnumber.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnertaxnumber.businesspartner,target=a_businesspartnertaxnumber.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-A6373B0B44E9",
+      "type": "Dependency",
+      "title": "Field mapping requires review: email",
+      "description": "Mapping status for email is no_confident_target; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-A6373B0B44E9 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-A6373B0B44E9 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-A6373B0B44E9"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-A6373B0B44E9",
+        "rule_id": "MIG-MAP-002",
+        "dedupe_key": "mapping|email|no_confident_target",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/gaps/source_field=email,status=no_confident_target",
+          "/mappings/source_field=email"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-B16C0C153A09",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerAddress.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-B16C0C153A09 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-B16C0C153A09 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-B16C0C153A09"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-B16C0C153A09",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartneraddress.businesspartner|a_businesspartneraddress.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartneraddress.businesspartner,target=a_businesspartneraddress.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-B1CD62331725",
+      "type": "Risk",
+      "title": "Suspected duplicate supplier group requires review: GV100082",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-B1CD62331725 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-B1CD62331725 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-B1CD62331725"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-B1CD62331725",
+        "rule_id": "MIG-DUP-002",
+        "dedupe_key": "duplicate|group|gv100082|needs_review",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups/group_id=gv100082"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-B5CF92FEF27E",
+      "type": "Risk",
+      "title": "Field mapping requires review: legacy_vendor_id",
+      "description": "Mapping status for legacy_vendor_id is needs_review; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-B5CF92FEF27E before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-B5CF92FEF27E remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-B5CF92FEF27E"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-B5CF92FEF27E",
+        "rule_id": "MIG-MAP-001",
+        "dedupe_key": "mapping|legacy_vendor_id|needs_review",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/mappings/source_field=legacy_vendor_id"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-BE20BB03FE65",
+      "type": "Issue",
+      "title": "Duplicate supplier resolution requires approval",
+      "description": "47 high-confidence duplicate supplier group(s) require human merge approval.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-BE20BB03FE65 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-BE20BB03FE65 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-BE20BB03FE65"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-BE20BB03FE65",
+        "rule_id": "MIG-DUP-001",
+        "dedupe_key": "duplicate|groups|merge_approval_required",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups[needs_review=false]"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-C3603BD00750",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerAddress.AddressID",
+      "description": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `AddressID` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-C3603BD00750 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-C3603BD00750 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-C3603BD00750"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-C3603BD00750",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartneraddress.addressid|a_businesspartneraddress.addressid|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartneraddress.addressid,target=a_businesspartneraddress.addressid/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-CB796C3C7B83",
+      "type": "Risk",
+      "title": "Borderline duplicate supplier pairs require review",
+      "description": "1 borderline supplier pair(s) were scored below the clustering threshold and require review.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-CB796C3C7B83 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-CB796C3C7B83 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-CB796C3C7B83"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-CB796C3C7B83",
+        "rule_id": "MIG-DUP-003",
+        "dedupe_key": "duplicate|borderline_pairs|review_required",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/borderline_pairs/pairs"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-D3121D625FB2",
+      "type": "Risk",
+      "title": "Suspected duplicate supplier group requires review: GV100048",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-D3121D625FB2 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-D3121D625FB2 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-D3121D625FB2"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-D3121D625FB2",
+        "rule_id": "MIG-DUP-002",
+        "dedupe_key": "duplicate|group|gv100048|needs_review",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups/group_id=gv100048"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-DE590E18C1CF",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartner.BusinessPartner",
+      "description": "目标实体 `A_BusinessPartner` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-DE590E18C1CF before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-DE590E18C1CF remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-DE590E18C1CF"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-DE590E18C1CF",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartner.businesspartner|a_businesspartner.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartner.businesspartner,target=a_businesspartner.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-E41F569A816A",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerTaxNumber.BPTaxType",
+      "description": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BPTaxType` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-E41F569A816A before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-E41F569A816A remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-E41F569A816A"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-E41F569A816A",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnertaxnumber.bptaxtype|a_businesspartnertaxnumber.bptaxtype|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnertaxnumber.bptaxtype,target=a_businesspartnertaxnumber.bptaxtype/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-F7A761791FD5",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerBank.BankIdentification",
+      "description": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BankIdentification` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-F7A761791FD5 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-F7A761791FD5 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-F7A761791FD5"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-F7A761791FD5",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnerbank.bankidentification|a_businesspartnerbank.bankidentification|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnerbank.bankidentification,target=a_businesspartnerbank.bankidentification/field_issues/issue_type=unmapped_target_key"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-FAEFB2155DC9",
+      "type": "Dependency",
+      "title": "Migration validation issue for created_date",
+      "description": "目标字段 `A_BusinessPartner.CreationDate` 的 sap:creatable 与 sap:updatable 均为 false，不可写入。该字段的映射语义是正确的，但它不能作为加载目标。",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "High",
+      "severity": "High",
+      "severity_origin": "source",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-FAEFB2155DC9 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-FAEFB2155DC9 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-FAEFB2155DC9"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-FAEFB2155DC9",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|created_date|a_businesspartner.creationdate|target_not_creatable_or_updatable",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=created_date,target=a_businesspartner.creationdate/field_issues/issue_type=target_not_creatable_or_updatable"
+        ]
+      }
+    },
+    {
+      "raid_id": "RAID-MIG-FB02D994DD29",
+      "type": "Risk",
+      "title": "Suspected duplicate supplier group requires review: GV100052",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "owner_role": "Data Migration Lead",
+      "probability": null,
+      "impact": "Medium",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "status": "Open",
+      "mitigation": "Resolve or formally accept migration finding MIG-FB02D994DD29 before data freeze. Review is required before the finding can be accepted as resolved.",
+      "trigger": "Finding MIG-FB02D994DD29 remains Open for Data Migration Lead review at the migration cutover checkpoint.",
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-FB02D994DD29"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-FB02D994DD29",
+        "rule_id": "MIG-DUP-002",
+        "dedupe_key": "duplicate|group|gv100052|needs_review",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups/group_id=gv100052"
+        ]
+      }
     },
     {
       "raid_id": "RAID-RISK-EX-016",

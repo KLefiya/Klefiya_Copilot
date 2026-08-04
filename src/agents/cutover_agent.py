@@ -400,6 +400,7 @@ def heuristic_plan(query: str) -> CutoverAgentPlan:
         answer_focus="overall status",
         confidence=0.85,
         tool_requests=[
+            ToolRequest(tool_name="get_cutover_plan_summary", arguments={}, reason="Get plan counts and migration traceability."),
             ToolRequest(tool_name="get_cutover_status_summary", arguments={}, reason="Get status counts."),
             ToolRequest(tool_name="get_cutover_daily_brief", arguments={}, reason="Get RAG, blockers, and next gate."),
         ],
@@ -694,6 +695,7 @@ def compose_from_results(state: CutoverAgentState) -> tuple[str, list[dict[str, 
 
     daily = first_result(results, "get_cutover_daily_brief")
     status = first_result(results, "get_cutover_status_summary")
+    plan_summary = first_result(results, "get_cutover_plan_summary")
     activities = first_result(results, "list_cutover_activities")
     raid = first_result(results, "list_raid_items")
     rebuild = first_result(results, "rebuild_cutover_reports")
@@ -747,6 +749,9 @@ def compose_from_results(state: CutoverAgentState) -> tuple[str, list[dict[str, 
             lines.append(f"Cutover reports were rebuilt with validation = {data['validation']}.")
             lines.append("This only rebuilt deterministic reports; no status events were written.")
             lines.append(f"The current Overall RAG is {data['overall_rag']}.")
+            lines.append(f"Migration findings SHA: {data.get('migration_findings_content_sha256')}.")
+            lines.append(f"Plan SHA: {data.get('plan_content_sha256')}. Status SHA: {data.get('status_content_sha256')}. Daily SHA: {data.get('daily_content_sha256')}.")
+            lines.append(f"Activities={data.get('plan_activity_count')}, RAID={data.get('plan_raid_count')}, migration findings={data.get('migration_finding_count')}, migration blockers={data.get('migration_blocker_count')}.")
         elif intent == "raid_review" and raid:
             items = raid["data"]["raid_items"]
             lines.append(f"There are {len(items)} Risk RAID items.")
@@ -775,8 +780,14 @@ def compose_from_results(state: CutoverAgentState) -> tuple[str, list[dict[str, 
         else:
             if daily:
                 head = daily["data"]["headline"]
+                plan_data = plan_summary["data"] if plan_summary else {}
+                activity_count = plan_data.get("activity_count", 30)
                 lines.append(f"The current Cutover status is {daily['data']['overall_rag']} as of {head['as_of_offset']}.")
-                lines.append(f"Across 30 activities, {head['completed_activity_count']} are completed, {head['blocked_activity_count']} are blocked, and {head['not_started_activity_count']} are not started.")
+                lines.append(f"Across {activity_count} activities, {head['completed_activity_count']} are completed, {head['blocked_activity_count']} are blocked, and {head['not_started_activity_count']} are not started.")
+                if plan_data:
+                    lines.append(f"Migration findings: {plan_data.get('migration_finding_count')} with SHA {plan_data.get('migration_findings_content_sha256')}.")
+                    lines.append(f"Migration RAID={plan_data.get('migration_raid_count')}; migration activities={plan_data.get('migration_activity_count')}; activity links carry finding and RAID IDs directly.")
+                lines.append(f"Migration blockers: {head.get('migration_blocker_count', 0)}.")
                 gate = head.get("next_gate") or {}
                 lines.append(f"The next gate is {gate.get('gate_id')}, currently {gate.get('current_status')}.")
             elif status:

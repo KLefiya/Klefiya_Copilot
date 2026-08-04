@@ -1,13 +1,13 @@
 {
   "_run_info": {
-    "content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+    "content_sha256": "c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T01:27:00+00:00"
+    "generated_at": "2026-08-04T02:55:56+00:00"
   },
   "_meta": {
     "tool": "src/tools/build_cutover_status.py",
     "source_plan": "data/synthetic/cutover_plan_report.json",
-    "source_plan_content_sha256": "c4a88a3cb0923d2ed28356f72c037ace313ee73bee961ae8212265e4de2a0a8d",
+    "source_plan_content_sha256": "160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767",
     "source_constraints": "data/synthetic/cutover_constraints.json",
     "source_status_updates": "data/synthetic/cutover_status_updates.json",
     "as_of_offset": "T-7",
@@ -23,7 +23,7 @@
     ]
   },
   "as_of_offset": "T-7",
-  "source_plan_content_sha256": "c4a88a3cb0923d2ed28356f72c037ace313ee73bee961ae8212265e4de2a0a8d",
+  "source_plan_content_sha256": "160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767",
   "events_applied_count": 28,
   "events_applied": [
     {
@@ -448,7 +448,7 @@
     }
   ],
   "activity_status_counts": {
-    "Not Started": 11,
+    "Not Started": 15,
     "In Progress": 0,
     "Blocked": 2,
     "Completed": 17,
@@ -463,7 +463,7 @@
   },
   "raid_status_counts": {
     "by_status": {
-      "Open": 1,
+      "Open": 23,
       "Mitigating": 5,
       "Accepted": 0,
       "Resolved": 1,
@@ -471,14 +471,21 @@
     },
     "by_type": {
       "Dependency": {
-        "Open": 0,
+        "Open": 13,
         "Mitigating": 5,
         "Accepted": 0,
         "Resolved": 0,
         "Closed": 0
       },
+      "Issue": {
+        "Open": 2,
+        "Mitigating": 0,
+        "Accepted": 0,
+        "Resolved": 0,
+        "Closed": 0
+      },
       "Risk": {
-        "Open": 1,
+        "Open": 8,
         "Mitigating": 0,
         "Accepted": 0,
         "Resolved": 1,
@@ -938,7 +945,11 @@
       "start_offset": "T-2",
       "end_offset": "T-2",
       "depends_on": [
-        "CUT-CODE-FREEZE"
+        "CUT-CODE-FREEZE",
+        "CUT-MIG-DUPLICATE-RESOLUTION",
+        "CUT-MIG-MAPPING-REVIEW",
+        "CUT-MIG-TARGET-DEPENDENCY",
+        "CUT-MIG-VALIDATION-REMEDIATION"
       ],
       "approval_gate": null,
       "current_status": "Not Started",
@@ -1037,6 +1048,86 @@
       "last_event_id": "EVT-CUT-INTEGRATION-READINESS-COMPLETED",
       "last_update_offset": "T-14",
       "last_note": "Integration readiness completed after build evidence review.",
+      "blocker": ""
+    },
+    {
+      "activity_id": "CUT-MIG-DUPLICATE-RESOLUTION",
+      "work_package_id": null,
+      "title": "Resolve duplicate supplier migration findings",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-10",
+      "end_offset": "T-7",
+      "depends_on": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "current_status": "Not Started",
+      "progress_percent": 0,
+      "is_critical_to_day1": true,
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": "",
+      "blocker": ""
+    },
+    {
+      "activity_id": "CUT-MIG-MAPPING-REVIEW",
+      "work_package_id": null,
+      "title": "Review migration field mapping findings",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-14",
+      "end_offset": "T-10",
+      "depends_on": [],
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "current_status": "Not Started",
+      "progress_percent": 0,
+      "is_critical_to_day1": true,
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": "",
+      "blocker": ""
+    },
+    {
+      "activity_id": "CUT-MIG-TARGET-DEPENDENCY",
+      "work_package_id": null,
+      "title": "Resolve migration target dependencies",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-10",
+      "end_offset": "T-7",
+      "depends_on": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "current_status": "Not Started",
+      "progress_percent": 0,
+      "is_critical_to_day1": true,
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": "",
+      "blocker": ""
+    },
+    {
+      "activity_id": "CUT-MIG-VALIDATION-REMEDIATION",
+      "work_package_id": null,
+      "title": "Remediate migration validation findings",
+      "workstream": "master_data",
+      "owner_role": "Data Migration Lead",
+      "start_offset": "T-7",
+      "end_offset": "T-2",
+      "depends_on": [
+        "CUT-MIG-DUPLICATE-RESOLUTION",
+        "CUT-MIG-MAPPING-REVIEW",
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "approval_gate": "GATE-CUTOVER-READINESS",
+      "current_status": "Not Started",
+      "progress_percent": 0,
+      "is_critical_to_day1": true,
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": "",
       "blocker": ""
     },
     {
@@ -1215,10 +1306,25 @@
     {
       "raid_id": "RAID-DEP-EX-004",
       "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-004",
       "severity": "High",
+      "severity_origin": null,
       "description": "The development delivery for Emergency repair orders from the plant must continue to be sent nightly to OrivaBuy until the transition service agreement ends. must be complete before Go / No-Go.",
       "owner_role": "Integration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-004"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-004-DESIGN",
+        "ACT-EX-004-BUILD",
+        "ACT-EX-004-TEST",
+        "ACT-EX-004-DEPLOY"
+      ],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "development_backlog",
       "current_status": "Mitigating",
       "last_event_id": "EVT-RAID-DEP-EX-004-MITIGATING",
       "last_update_offset": "T-7",
@@ -1227,10 +1333,25 @@
     {
       "raid_id": "RAID-DEP-EX-008",
       "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-008",
       "severity": "High",
+      "severity_origin": null,
       "description": "The development delivery for Automatically load supplier risk scores from the Nivora Risk Hub spreadsheet, despite it being a carve-out-specific, temporary system. must be complete before Go / No-Go.",
       "owner_role": "Integration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-008"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-008-DESIGN",
+        "ACT-EX-008-BUILD",
+        "ACT-EX-008-TEST",
+        "ACT-EX-008-DEPLOY"
+      ],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "development_backlog",
       "current_status": "Mitigating",
       "last_event_id": "EVT-RAID-DEP-EX-008-MITIGATING",
       "last_update_offset": "T-7",
@@ -1239,10 +1360,25 @@
     {
       "raid_id": "RAID-DEP-EX-012",
       "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-012",
       "severity": "High",
+      "severity_origin": null,
       "description": "The development delivery for Orders placed through the legacy Virello customer portal by strategic customers must be automatically converted into NewCo sales orders without manual re-keying during the first six months. must be complete before Go / No-Go.",
       "owner_role": "Integration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-012"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-012-DESIGN",
+        "ACT-EX-012-BUILD",
+        "ACT-EX-012-TEST",
+        "ACT-EX-012-DEPLOY"
+      ],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "development_backlog",
       "current_status": "Mitigating",
       "last_event_id": "EVT-RAID-DEP-EX-012-MITIGATING",
       "last_update_offset": "T-7",
@@ -1251,10 +1387,25 @@
     {
       "raid_id": "RAID-DEP-EX-019",
       "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-019",
       "severity": "High",
+      "severity_origin": null,
       "description": "The development delivery for Send a nightly custom file to the Auralis Separation Ledger with Day-1 balances for treasury reconciliation outside the ERP during the first two quarters. must be complete before Go / No-Go.",
       "owner_role": "Integration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-019"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-019-DESIGN",
+        "ACT-EX-019-BUILD",
+        "ACT-EX-019-TEST",
+        "ACT-EX-019-DEPLOY"
+      ],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "development_backlog",
       "current_status": "Mitigating",
       "last_event_id": "EVT-RAID-DEP-EX-019-MITIGATING",
       "last_update_offset": "T-7",
@@ -1263,22 +1414,821 @@
     {
       "raid_id": "RAID-DEP-EX-024",
       "type": "Dependency",
+      "title": "Development delivery required before Go / No-Go for EX-024",
       "severity": "High",
+      "severity_origin": null,
       "description": "The development delivery for An upload from the SeltraBridge archive must bring over product drawings and link them to product records. must be complete before Go / No-Go.",
       "owner_role": "Integration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-024"
+      ],
+      "linked_activity_ids": [
+        "ACT-EX-024-DESIGN",
+        "ACT-EX-024-BUILD",
+        "ACT-EX-024-TEST",
+        "ACT-EX-024-DEPLOY"
+      ],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "development_backlog",
       "current_status": "Mitigating",
       "last_event_id": "EVT-RAID-DEP-EX-024-MITIGATING",
       "last_update_offset": "T-7",
       "last_note": "SeltraBridge archive dependency has named mitigation owner."
     },
     {
+      "raid_id": "RAID-MIG-025FDEF68B06",
+      "type": "Dependency",
+      "title": "Migration validation issue for phone",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "字段 `phone` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.359）。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-025FDEF68B06"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-025FDEF68B06",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|phone||no_target_in_schema",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=phone,target=/field_issues/issue_type=no_target_in_schema"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-0883DAF95F47",
+      "type": "Dependency",
+      "title": "Field mapping requires review: phone",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Mapping status for phone is no_confident_target; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-0883DAF95F47"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-0883DAF95F47",
+        "rule_id": "MIG-MAP-002",
+        "dedupe_key": "mapping|phone|no_confident_target",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/gaps/source_field=phone,status=no_confident_target",
+          "/mappings/source_field=phone"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-094628933C7E",
+      "type": "Risk",
+      "title": "Field mapping requires review: currency",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Mapping status for currency is possible_false_friend; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-094628933C7E"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-094628933C7E",
+        "rule_id": "MIG-MAP-001",
+        "dedupe_key": "mapping|currency|possible_false_friend",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/gaps/source_field=currency,status=possible_false_friend",
+          "/mappings/source_field=currency"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-09FF5CB1E047",
+      "type": "Dependency",
+      "title": "Migration validation issue for legacy_vendor_id",
+      "severity": "Low",
+      "severity_origin": "source",
+      "description": "映射置信度 0.562（medium），未达 high 档。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-09FF5CB1E047"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-09FF5CB1E047",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|legacy_vendor_id|a_businesspartner.businesspartneridbyextsystem|mapping_needs_review",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=legacy_vendor_id,target=a_businesspartner.businesspartneridbyextsystem/field_issues/issue_type=mapping_needs_review"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-127FBCE66F53",
+      "type": "Issue",
+      "title": "Migration validation issue for country",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "字段 `country` 需先归一化为 ISO 3166-1 alpha-2 代码。当前 14 种写法中有 11 种不符合规范形态（^[A-Z]{2}$），且目标字段上限仅 3 字符。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-VALIDATION-REMEDIATION"
+      ],
+      "linked_finding_ids": [
+        "MIG-127FBCE66F53"
+      ],
+      "review_required": false,
+      "gate_blocker": true,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-127FBCE66F53",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|country|a_businesspartneraddress.country|normalization_required",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=country,target=a_businesspartneraddress.country/field_issues/issue_type=normalization_required",
+          "/record_view/issues[field=country,target=a_businesspartneraddress.country,root_cause=normalization_required]"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-4EBF9E8154E2",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerBank.BusinessPartner",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-4EBF9E8154E2"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-4EBF9E8154E2",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnerbank.businesspartner|a_businesspartnerbank.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnerbank.businesspartner,target=a_businesspartnerbank.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-519791EDC75B",
+      "type": "Risk",
+      "title": "Migration validation issue for currency",
+      "severity": "Medium",
+      "severity_origin": "source",
+      "description": "field_mapping 将 `currency` 标为疑似假朋友：候选 `A_BusinessPartnerBank.BankAccount` 与其零共享词元且未命中 alias。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-VALIDATION-REMEDIATION"
+      ],
+      "linked_finding_ids": [
+        "MIG-519791EDC75B"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-519791EDC75B",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|currency|a_businesspartnerbank.bankaccount|possible_false_friend_target",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=currency,target=a_businesspartnerbank.bankaccount/field_issues/issue_type=possible_false_friend_target"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-823922F40F31",
+      "type": "Dependency",
+      "title": "Migration validation issue for email",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "字段 `email` 在目标 schema 中没有落点（field_mapping status=no_confident_target，最高置信度 0.330）。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-823922F40F31"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-823922F40F31",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|email||no_target_in_schema",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=email,target=/field_issues/issue_type=no_target_in_schema"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-8426F8F045A9",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerTaxNumber.BusinessPartner",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-8426F8F045A9"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-8426F8F045A9",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnertaxnumber.businesspartner|a_businesspartnertaxnumber.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnertaxnumber.businesspartner,target=a_businesspartnertaxnumber.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-A6373B0B44E9",
+      "type": "Dependency",
+      "title": "Field mapping requires review: email",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Mapping status for email is no_confident_target; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-A6373B0B44E9"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-A6373B0B44E9",
+        "rule_id": "MIG-MAP-002",
+        "dedupe_key": "mapping|email|no_confident_target",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/gaps/source_field=email,status=no_confident_target",
+          "/mappings/source_field=email"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-B16C0C153A09",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerAddress.BusinessPartner",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-B16C0C153A09"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-B16C0C153A09",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartneraddress.businesspartner|a_businesspartneraddress.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartneraddress.businesspartner,target=a_businesspartneraddress.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-B1CD62331725",
+      "type": "Risk",
+      "title": "Suspected duplicate supplier group requires review: GV100082",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-B1CD62331725"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-B1CD62331725",
+        "rule_id": "MIG-DUP-002",
+        "dedupe_key": "duplicate|group|gv100082|needs_review",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups/group_id=gv100082"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-B5CF92FEF27E",
+      "type": "Risk",
+      "title": "Field mapping requires review: legacy_vendor_id",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Mapping status for legacy_vendor_id is needs_review; reviewer approval is required before cutover use.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-MAPPING-REVIEW"
+      ],
+      "linked_finding_ids": [
+        "MIG-B5CF92FEF27E"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-B5CF92FEF27E",
+        "rule_id": "MIG-MAP-001",
+        "dedupe_key": "mapping|legacy_vendor_id|needs_review",
+        "source_report_ids": [
+          "vendor_field_mapping"
+        ],
+        "source_pointers": [
+          "/mappings/source_field=legacy_vendor_id"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-BE20BB03FE65",
+      "type": "Issue",
+      "title": "Duplicate supplier resolution requires approval",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "47 high-confidence duplicate supplier group(s) require human merge approval.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-BE20BB03FE65"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-BE20BB03FE65",
+        "rule_id": "MIG-DUP-001",
+        "dedupe_key": "duplicate|groups|merge_approval_required",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups[needs_review=false]"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-C3603BD00750",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerAddress.AddressID",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartnerAddress` 的主键字段 `AddressID` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-C3603BD00750"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-C3603BD00750",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartneraddress.addressid|a_businesspartneraddress.addressid|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartneraddress.addressid,target=a_businesspartneraddress.addressid/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-CB796C3C7B83",
+      "type": "Risk",
+      "title": "Borderline duplicate supplier pairs require review",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "1 borderline supplier pair(s) were scored below the clustering threshold and require review.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-CB796C3C7B83"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-CB796C3C7B83",
+        "rule_id": "MIG-DUP-003",
+        "dedupe_key": "duplicate|borderline_pairs|review_required",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/borderline_pairs/pairs"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-D3121D625FB2",
+      "type": "Risk",
+      "title": "Suspected duplicate supplier group requires review: GV100048",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-D3121D625FB2"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-D3121D625FB2",
+        "rule_id": "MIG-DUP-002",
+        "dedupe_key": "duplicate|group|gv100048|needs_review",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups/group_id=gv100048"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-DE590E18C1CF",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartner.BusinessPartner",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartner` 的主键字段 `BusinessPartner` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-DE590E18C1CF"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-DE590E18C1CF",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartner.businesspartner|a_businesspartner.businesspartner|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartner.businesspartner,target=a_businesspartner.businesspartner/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-E41F569A816A",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerTaxNumber.BPTaxType",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartnerTaxNumber` 的主键字段 `BPTaxType` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-E41F569A816A"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-E41F569A816A",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnertaxnumber.bptaxtype|a_businesspartnertaxnumber.bptaxtype|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnertaxnumber.bptaxtype,target=a_businesspartnertaxnumber.bptaxtype/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-F7A761791FD5",
+      "type": "Dependency",
+      "title": "Migration validation issue for A_BusinessPartnerBank.BankIdentification",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标实体 `A_BusinessPartnerBank` 的主键字段 `BankIdentification` 没有任何 legacy 字段映射到它。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-F7A761791FD5"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-F7A761791FD5",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|a_businesspartnerbank.bankidentification|a_businesspartnerbank.bankidentification|unmapped_target_key",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=a_businesspartnerbank.bankidentification,target=a_businesspartnerbank.bankidentification/field_issues/issue_type=unmapped_target_key"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-FAEFB2155DC9",
+      "type": "Dependency",
+      "title": "Migration validation issue for created_date",
+      "severity": "High",
+      "severity_origin": "source",
+      "description": "目标字段 `A_BusinessPartner.CreationDate` 的 sap:creatable 与 sap:updatable 均为 false，不可写入。该字段的映射语义是正确的，但它不能作为加载目标。",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-TARGET-DEPENDENCY"
+      ],
+      "linked_finding_ids": [
+        "MIG-FAEFB2155DC9"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-FAEFB2155DC9",
+        "rule_id": "MIG-VAL-001",
+        "dedupe_key": "validation|created_date|a_businesspartner.creationdate|target_not_creatable_or_updatable",
+        "source_report_ids": [
+          "vendor_validation"
+        ],
+        "source_pointers": [
+          "/field_view/field=created_date,target=a_businesspartner.creationdate/field_issues/issue_type=target_not_creatable_or_updatable"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
+      "raid_id": "RAID-MIG-FB02D994DD29",
+      "type": "Risk",
+      "title": "Suspected duplicate supplier group requires review: GV100052",
+      "severity": "Medium",
+      "severity_origin": "rule",
+      "description": "Automated entity resolution flagged this duplicate group for human review before any merge action.",
+      "owner_role": "Data Migration Lead",
+      "source_requirement_id": null,
+      "linked_requirement_ids": [],
+      "linked_activity_ids": [
+        "CUT-MIG-DUPLICATE-RESOLUTION"
+      ],
+      "linked_finding_ids": [
+        "MIG-FB02D994DD29"
+      ],
+      "review_required": true,
+      "gate_blocker": false,
+      "source": {
+        "type": "migration_cutover_finding",
+        "finding_id": "MIG-FB02D994DD29",
+        "rule_id": "MIG-DUP-002",
+        "dedupe_key": "duplicate|group|gv100052|needs_review",
+        "source_report_ids": [
+          "vendor_duplicate"
+        ],
+        "source_pointers": [
+          "/duplicate_groups/group_id=gv100052"
+        ]
+      },
+      "current_status": "Open",
+      "last_event_id": null,
+      "last_update_offset": null,
+      "last_note": ""
+    },
+    {
       "raid_id": "RAID-RISK-EX-016",
       "type": "Risk",
+      "title": "Fit/Gap judgement requires review for EX-016",
       "severity": "Medium",
+      "severity_origin": null,
       "description": "needs_review reason(s): 置信度 0.50 < 0.7. confidence=0.50. evidence=KB-XC-004, KB-P2P-003.",
       "owner_role": "Data Migration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-016"
+      ],
+      "linked_activity_ids": [],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "needs_review",
       "current_status": "Resolved",
       "last_event_id": "EVT-RAID-RISK-EX-016-RESOLVED",
       "last_update_offset": "T-7",
@@ -1287,10 +2237,20 @@
     {
       "raid_id": "RAID-RISK-EX-022",
       "type": "Risk",
+      "title": "Fit/Gap judgement requires review for EX-022",
       "severity": "Medium",
+      "severity_origin": null,
       "description": "needs_review reason(s): 置信度 0.60 < 0.7; 未给出任何证据条目. confidence=0.60. evidence=no evidence entries.",
       "owner_role": "Data Migration Lead",
       "source_requirement_id": null,
+      "linked_requirement_ids": [
+        "EX-022"
+      ],
+      "linked_activity_ids": [],
+      "linked_finding_ids": null,
+      "review_required": null,
+      "gate_blocker": null,
+      "source": "needs_review",
       "current_status": "Open",
       "last_event_id": null,
       "last_update_offset": null,
@@ -1360,7 +2320,8 @@
       "readiness": false,
       "missing_readiness_criteria": [
         "GATE-CUTOVER-READINESS is not Approved.",
-        "Freeze milestones incomplete: CUT-CODE-FREEZE, CUT-DATA-FREEZE"
+        "Freeze milestones incomplete: CUT-CODE-FREEZE, CUT-DATA-FREEZE",
+        "Open migration gate blocker RAID items: RAID-MIG-127FBCE66F53"
       ],
       "last_event_id": null,
       "last_update_offset": null,
@@ -1406,9 +2367,27 @@
       "end_offset": "T-7"
     }
   ],
+  "migration_blockers": [
+    {
+      "raid_id": "RAID-MIG-127FBCE66F53",
+      "finding_id": "MIG-127FBCE66F53",
+      "title": "Migration validation issue for country",
+      "severity": "High",
+      "status": "Open",
+      "source_type": "migration_cutover_finding",
+      "source_report_ids": [
+        "vendor_validation"
+      ],
+      "source_pointers": [
+        "/field_view/field=country,target=a_businesspartneraddress.country/field_issues/issue_type=normalization_required",
+        "/record_view/issues[field=country,target=a_businesspartneraddress.country,root_cause=normalization_required]"
+      ]
+    }
+  ],
   "validation": {
     "status": "valid",
     "source_plan_sha_matches": true,
+    "status_update_targets_valid": true,
     "event_ids_unique": true,
     "sequences_unique": true,
     "all_entities_resolved": true,

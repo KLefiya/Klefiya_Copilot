@@ -35,7 +35,6 @@ CONSTRAINTS_REL = "data/synthetic/cutover_constraints.json"
 UPDATES_REL = "data/synthetic/cutover_status_updates.json"
 STATUS_REL = "data/synthetic/cutover_status_report.json"
 
-EXPECTED_SOURCE_PLAN_SHA = "c4a88a3cb0923d2ed28356f72c037ace313ee73bee961ae8212265e4de2a0a8d"
 DEFAULT_AS_OF_OFFSET = "T-7"
 DAY1_TARGET_ACTIVITY_ID = "CUT-DAY1-VALIDATION"
 
@@ -44,6 +43,7 @@ ACTIVITY_STATUSES = ("Not Started", "In Progress", "Blocked", "Completed", "Canc
 RAID_STATUSES = ("Open", "Mitigating", "Accepted", "Resolved", "Closed")
 GATE_STATUSES = ("Pending", "Ready", "Approved", "Rejected", "Blocked")
 WORK_PACKAGE_STATUSES = ("Not Started", "In Progress", "Blocked", "Completed", "Cancelled")
+OPEN_RAID_STATUSES = {"Open", "Mitigating"}
 
 ACTIVITY_TRANSITIONS = {
     "Not Started": {"In Progress", "Blocked", "Cancelled", "Completed"},
@@ -136,14 +136,51 @@ def require_inputs(plan: dict[str, Any], constraints: dict[str, Any], updates: d
         if key not in plan:
             raise CutoverStatusError(f"Cutover plan is missing `{key}`.")
     source_sha = plan.get("_run_info", {}).get("content_sha256")
-    if source_sha != EXPECTED_SOURCE_PLAN_SHA:
+    expected_sha = updates.get("_meta", {}).get("source_plan_content_sha256")
+    if not isinstance(expected_sha, str) or not expected_sha:
+        raise CutoverStatusError("Cutover status updates are missing `_meta.source_plan_content_sha256`.")
+    if source_sha != expected_sha:
         raise CutoverStatusError(
-            f"Cutover plan SHA mismatch: expected {EXPECTED_SOURCE_PLAN_SHA}, got {source_sha}"
+            f"Cutover plan SHA mismatch: expected {expected_sha}, actual {source_sha}"
         )
     if not isinstance(constraints.get("owner_roles"), list) or not constraints["owner_roles"]:
         raise CutoverStatusError("Cutover constraints are missing owner_roles.")
     if not isinstance(updates.get("events"), list):
         raise CutoverStatusError("Cutover status updates must contain an events array.")
+
+
+def validate_status_update_targets(plan: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
+    activities = {item["activity_id"] for item in plan.get("activities", [])}
+    raids = {item["raid_id"] for item in plan.get("raid_register", [])}
+    gates = {item["gate_id"] for item in plan.get("approval_gates", [])}
+    milestones = {item["milestone_id"] for item in plan.get("milestones", [])}
+    target_sets = {
+        "Activity": activities,
+        "RAID": raids,
+        "ApprovalGate": gates,
+        "Milestone": milestones,
+    }
+    missing: list[dict[str, str]] = []
+    for event in updates.get("events", []):
+        entity_type = event.get("entity_type")
+        entity_id = event.get("entity_id")
+        if entity_type in target_sets and entity_id not in target_sets[entity_type]:
+            missing.append({
+                "event_id": str(event.get("event_id", "")),
+                "entity_type": str(entity_type),
+                "entity_id": str(entity_id),
+            })
+    legacy_ids = {
+        "activities": sorted(activity_id for activity_id in activities if not activity_id.startswith("CUT-MIG-")),
+        "raids": sorted(raid_id for raid_id in raids if not raid_id.startswith("RAID-MIG-")),
+        "gates": sorted(gates),
+        "milestones": sorted(milestones),
+    }
+    return {
+        "valid": not missing,
+        "missing_targets": missing,
+        "legacy_ids": legacy_ids,
+    }
 
 
 def sorted_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -177,6 +214,8 @@ def activity_phase(activity_id: str) -> str | None:
 
 def initial_activity_state(activity: dict[str, Any]) -> dict[str, Any]:
     status = activity.get("status", "Not Started")
+    if status == "Planned":
+        status = "Not Started"
     if status not in ACTIVITY_STATUSES:
         raise CutoverStatusError(f"Activity {activity.get('activity_id')} has invalid status `{status}`.")
     return {
@@ -242,13 +281,73 @@ def validate_progress(event: dict[str, Any]) -> None:
         raise CutoverStatusError(f"Event {event_id} must set Blocked progress from 0 to 99.")
 
 
-def high_open_risks_or_issues(raids: dict[str, dict[str, Any]]) -> list[str]:
+def is_migration_raid(item: dict[str, Any]) -> bool:
+    source = item.get("source")
+    return isinstance(source, dict) and source.get("type") == "migration_cutover_finding"
+
+
+def has_traceable_migration_source(item: dict[str, Any]) -> bool:
+    source = item.get("source")
+    if not isinstance(source, dict):
+        return False
+    return (
+        source.get("type") == "migration_cutover_finding"
+        and isinstance(source.get("finding_id"), str)
+        and bool(source.get("finding_id"))
+        and isinstance(source.get("source_report_ids"), list)
+        and isinstance(source.get("source_pointers"), list)
+    )
+
+
+def migration_blocker(item: dict[str, Any]) -> bool:
+    return (
+        is_migration_raid(item)
+        and item.get("gate_blocker") is True
+        and item.get("review_required") is False
+        and item.get("severity") == "High"
+        and item.get("current_status") in OPEN_RAID_STATUSES
+        and isinstance(item.get("linked_finding_ids"), list)
+        and bool(item.get("linked_finding_ids"))
+        and has_traceable_migration_source(item)
+    )
+
+
+def legacy_high_open_risks_or_issues(raids: dict[str, dict[str, Any]]) -> list[str]:
     return sorted(
         item["raid_id"]
         for item in raids.values()
-        if item.get("type") in {"Risk", "Issue"}
+        if not is_migration_raid(item)
+        and "gate_blocker" not in item
+        and item.get("type") in {"Risk", "Issue"}
         and item.get("severity") == "High"
-        and item.get("current_status") in {"Open", "Mitigating"}
+        and item.get("current_status") in OPEN_RAID_STATUSES
+    )
+
+
+def migration_blockers(raids: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    blockers = []
+    for item in raids.values():
+        if not migration_blocker(item):
+            continue
+        source = item["source"]
+        linked_finding_ids = item.get("linked_finding_ids", [])
+        blockers.append({
+            "raid_id": item["raid_id"],
+            "finding_id": linked_finding_ids[0],
+            "title": item.get("title") or item.get("description"),
+            "severity": item.get("severity"),
+            "status": item.get("current_status"),
+            "source_type": source.get("type"),
+            "source_report_ids": source.get("source_report_ids", []),
+            "source_pointers": source.get("source_pointers", []),
+        })
+    return sorted(blockers, key=lambda item: (item["raid_id"], item["finding_id"]))
+
+
+def high_open_risks_or_issues(raids: dict[str, dict[str, Any]]) -> list[str]:
+    return sorted(
+        legacy_high_open_risks_or_issues(raids)
+        + [item["raid_id"] for item in migration_blockers(raids)]
     )
 
 
@@ -271,7 +370,8 @@ def gate_readiness(
         if incomplete:
             missing.append(f"{label} incomplete: {', '.join(incomplete)}")
 
-    risk_ids = high_open_risks_or_issues(raids)
+    legacy_risk_ids = legacy_high_open_risks_or_issues(raids)
+    migration_blocker_ids = [item["raid_id"] for item in migration_blockers(raids)]
 
     if gate_id == "GATE-DESIGN-SIGNOFF":
         require_done(activities_by_suffix("DESIGN"), "DESIGN activities")
@@ -280,8 +380,8 @@ def gate_readiness(
         require_done(activities_by_suffix("BUILD"), "BUILD activities")
         require_done(activities_by_suffix("TEST"), "TEST activities")
         require_done(["CUT-INTEGRATION-READINESS", "CUT-CUTOVER-READINESS"], "Readiness milestones")
-        if risk_ids:
-            missing.append(f"Open or mitigating high Risk/Issue items: {', '.join(risk_ids)}")
+        if legacy_risk_ids:
+            missing.append(f"Open or mitigating high Risk/Issue items: {', '.join(legacy_risk_ids)}")
     elif gate_id == "GATE-GO-NOGO":
         if gates["GATE-CUTOVER-READINESS"]["current_status"] != "Approved":
             missing.append("GATE-CUTOVER-READINESS is not Approved.")
@@ -295,12 +395,14 @@ def gate_readiness(
         ]
         if bad_deploy:
             missing.append(f"DEPLOY activities blocked or cancelled: {', '.join(bad_deploy)}")
-        if risk_ids:
-            missing.append(f"Open or mitigating high Risk/Issue items: {', '.join(risk_ids)}")
+        if legacy_risk_ids:
+            missing.append(f"Open or mitigating high Risk/Issue items: {', '.join(legacy_risk_ids)}")
+        if migration_blocker_ids:
+            missing.append(f"Open migration gate blocker RAID items: {', '.join(migration_blocker_ids)}")
     elif gate_id == "GATE-HYPERCARE-HANDOVER":
         require_done(["CUT-DAY1-VALIDATION", "CUT-RECONCILIATION"], "Hypercare handover prerequisites")
-        if risk_ids:
-            missing.append(f"Open or mitigating high Risk/Issue items: {', '.join(risk_ids)}")
+        if legacy_risk_ids:
+            missing.append(f"Open or mitigating high Risk/Issue items: {', '.join(legacy_risk_ids)}")
     else:
         missing.append(f"Unknown gate: {gate_id}")
 
@@ -520,10 +622,18 @@ def normalize_raid(item: dict[str, Any]) -> dict[str, Any]:
     keys = [
         "raid_id",
         "type",
+        "title",
         "severity",
+        "severity_origin",
         "description",
         "owner_role",
         "source_requirement_id",
+        "linked_requirement_ids",
+        "linked_activity_ids",
+        "linked_finding_ids",
+        "review_required",
+        "gate_blocker",
+        "source",
         "current_status",
         "last_event_id",
         "last_update_offset",
@@ -587,6 +697,15 @@ def build_status_report(
     as_of_offset: str | None = None,
 ) -> dict[str, Any]:
     require_inputs(plan, constraints, updates)
+    target_validation = validate_status_update_targets(plan, updates)
+    if not target_validation["valid"]:
+        missing = target_validation["missing_targets"][0]
+        entity_label = str(missing["entity_type"]).lower()
+        raise CutoverStatusError(
+            f"Status update target validation failed: event {missing['event_id']} "
+            f"references unknown {entity_label} `{missing['entity_id']}`."
+        )
+    expected_plan_sha = updates["_meta"]["source_plan_content_sha256"]
     as_of = as_of_offset or updates.get("_meta", {}).get("as_of_offset") or DEFAULT_AS_OF_OFFSET
     require_offset(as_of, "as_of_offset")
     events = updates["events"]
@@ -606,6 +725,7 @@ def build_status_report(
         for activity in normalized_activities
         if activity["current_status"] == "Blocked" and activity["is_critical_to_day1"]
     ]
+    migration_gate_blockers = migration_blockers(raids)
 
     raid_by_type: dict[str, dict[str, int]] = {}
     for raid_type in sorted({item["type"] for item in normalized_raids}):
@@ -618,7 +738,7 @@ def build_status_report(
         "_meta": {
             "tool": "src/tools/build_cutover_status.py",
             "source_plan": PLAN_REL,
-            "source_plan_content_sha256": EXPECTED_SOURCE_PLAN_SHA,
+            "source_plan_content_sha256": expected_plan_sha,
             "source_constraints": CONSTRAINTS_REL,
             "source_status_updates": UPDATES_REL,
             "as_of_offset": as_of,
@@ -658,9 +778,11 @@ def build_status_report(
         "raid_register": normalized_raids,
         "approval_gates": normalized_gates,
         "critical_blockers": critical_blockers,
+        "migration_blockers": migration_gate_blockers,
         "validation": {
             "status": "valid",
             "source_plan_sha_matches": True,
+            "status_update_targets_valid": target_validation["valid"],
             "event_ids_unique": True,
             "sequences_unique": True,
             "all_entities_resolved": True,
@@ -733,8 +855,15 @@ def next_gate(gates: list[dict[str, Any]], as_of_offset: str) -> dict[str, Any] 
 def determine_rag(status_report: dict[str, Any], due_now: list[dict[str, Any]], overdue: list[dict[str, Any]]) -> tuple[str, list[str]]:
     reasons: list[str] = []
     critical_blockers = status_report["critical_blockers"]
+    migration_gate_blockers = status_report.get("migration_blockers", [])
     if critical_blockers:
         reasons.append("One or more Day-1 critical activities are blocked.")
+    if migration_gate_blockers:
+        reasons.append(
+            "Open migration gate blocker RAID items: "
+            + ", ".join(item["raid_id"] for item in migration_gate_blockers)
+            + "."
+        )
     blocked_due_gate = [
         gate["gate_id"]
         for gate in status_report["approval_gates"]
@@ -745,7 +874,8 @@ def determine_rag(status_report: dict[str, Any], due_now: list[dict[str, Any]], 
     high_items = [
         item["raid_id"]
         for item in status_report["raid_register"]
-        if item["type"] in {"Risk", "Issue"}
+        if not is_migration_raid(item)
+        and item["type"] in {"Risk", "Issue"}
         and item.get("severity") == "High"
         and item["current_status"] in {"Open", "Mitigating"}
     ]
@@ -773,19 +903,33 @@ def management_actions(status_report: dict[str, Any]) -> list[dict[str, Any]]:
             "owner_role": blocker["owner_role"],
             "action": f"Resolve {blocker['activity_id']} blocker and capture closure evidence before the Cutover Readiness gate is revisited.",
         })
+    migration_blocker_ids = {item["raid_id"] for item in status_report.get("migration_blockers", [])}
+    for blocker in status_report.get("migration_blockers", []):
+        actions.append({
+            "priority": 2,
+            "source_type": "MigrationRAID",
+            "source_id": blocker["raid_id"],
+            "finding_id": blocker["finding_id"],
+            "owner_role": "Data Migration Lead",
+            "action": f"Resolve migration finding {blocker['finding_id']} before the Go / No-Go gate.",
+        })
     for gate in status_report["approval_gates"]:
         if gate["current_status"] == "Blocked":
             actions.append({
-                "priority": 2,
+                "priority": 3,
                 "source_type": "ApprovalGate",
                 "source_id": gate["gate_id"],
                 "owner_role": gate["approver_roles"][0],
                 "action": f"Reassess {gate['gate_id']} after missing readiness criteria are cleared.",
             })
     for item in status_report["raid_register"]:
-        if item["type"] in {"Risk", "Issue"} and item["current_status"] in {"Open", "Mitigating"}:
+        if (
+            item["type"] in {"Risk", "Issue"}
+            and item["current_status"] in {"Open", "Mitigating"}
+            and item["raid_id"] not in migration_blocker_ids
+        ):
             actions.append({
-                "priority": 3,
+                "priority": 4,
                 "source_type": "RAID",
                 "source_id": item["raid_id"],
                 "owner_role": item["owner_role"],
@@ -810,6 +954,7 @@ def build_daily_report(status_report: dict[str, Any]) -> dict[str, Any]:
         item["raid_id"]: item
         for item in status_report["raid_register"]
     })
+    migration_gate_blockers = status_report.get("migration_blockers", [])
     actions = management_actions(status_report)
 
     body = {
@@ -820,8 +965,9 @@ def build_daily_report(status_report: dict[str, Any]) -> dict[str, Any]:
             "as_of_offset": as_of,
             "rag_rules": [
                 "Red if a Day-1 critical activity is blocked.",
+                "Red if an explicit migration gate blocker RAID is Open or Mitigating.",
                 "Red if a due approval gate is blocked.",
-                "Red if a high Risk or Issue is Open or Mitigating.",
+                "Red if a legacy high Risk or Issue is Open or Mitigating.",
                 "Red if any incomplete activity is overdue.",
                 "Amber if due work or non-high Risk/Issue items require attention.",
                 "Green otherwise.",
@@ -835,6 +981,7 @@ def build_daily_report(status_report: dict[str, Any]) -> dict[str, Any]:
             "not_started_activity_count": not_started_count,
             "work_packages_blocked": status_report["work_package_status_counts"]["Blocked"],
             "open_high_risks_or_issues": len(open_high),
+            "migration_blocker_count": len(migration_gate_blockers),
             "next_gate": next_gate(gates, as_of),
         },
         "rag_reasons": rag_reasons,
@@ -853,6 +1000,7 @@ def build_daily_report(status_report: dict[str, Any]) -> dict[str, Any]:
         "overdue": overdue,
         "due_next": due_next,
         "critical_blockers": status_report["critical_blockers"],
+        "migration_blockers": deepcopy(migration_gate_blockers),
         "management_actions": actions,
         "validation": {
             "status": "valid",

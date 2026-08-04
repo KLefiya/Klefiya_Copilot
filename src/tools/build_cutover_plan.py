@@ -11,6 +11,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -65,10 +66,51 @@ INTEGRATION_KEYWORDS = (
     "upload",
 )
 ALLOWED_RAID_TYPES = {"Risk", "Assumption", "Issue", "Dependency"}
+ALLOWED_MIGRATION_RAID_TYPES = {"Risk", "Issue", "Dependency"}
+ALLOWED_MIGRATION_SEVERITIES = {"High", "Medium", "Low", None}
+MIGRATION_ACTIVITY_ORDER = (
+    "CUT-MIG-DUPLICATE-RESOLUTION",
+    "CUT-MIG-MAPPING-REVIEW",
+    "CUT-MIG-TARGET-DEPENDENCY",
+    "CUT-MIG-VALIDATION-REMEDIATION",
+    "CUT-MIG-PACKAGE-VALIDATION",
+)
+MIGRATION_ACTIVITY_SPECS = {
+    "CUT-MIG-DUPLICATE-RESOLUTION": {
+        "title": "Resolve duplicate supplier migration findings",
+        "description": "Review and approve supplier duplicate treatment before final data freeze.",
+        "start_offset": "T-10",
+        "end_offset": "T-7",
+    },
+    "CUT-MIG-MAPPING-REVIEW": {
+        "title": "Review migration field mapping findings",
+        "description": "Confirm field mapping decisions and unresolved mapping gaps before target remediation.",
+        "start_offset": "T-14",
+        "end_offset": "T-10",
+    },
+    "CUT-MIG-TARGET-DEPENDENCY": {
+        "title": "Resolve migration target dependencies",
+        "description": "Close target schema and load dependency findings required for cutover readiness.",
+        "start_offset": "T-10",
+        "end_offset": "T-7",
+    },
+    "CUT-MIG-VALIDATION-REMEDIATION": {
+        "title": "Remediate migration validation findings",
+        "description": "Complete data quality and load validation remediation before data freeze.",
+        "start_offset": "T-7",
+        "end_offset": "T-2",
+    },
+    "CUT-MIG-PACKAGE-VALIDATION": {
+        "title": "Validate generated migration package findings",
+        "description": "Resolve generated package validation findings before the final migration load.",
+        "start_offset": "T-7",
+        "end_offset": "T-2",
+    },
+}
 OFFSET_RE = re.compile(r"^T(?:(?P<sign>[+-])(?P<num>\d+)|0)$")
 
 
-class CutoverBuildError(RuntimeError):
+class CutoverBuildError(ValueError):
     """Raised when input data is missing or structurally invalid."""
 
 
@@ -100,6 +142,81 @@ def require_gap_report_shape(report: dict[str, Any]) -> None:
         for key in ("requirement_id", "source_note_id", "description", "domain", "rationale", "evidence", "confidence"):
             if key not in item:
                 raise CutoverBuildError(f"Development backlog item is missing `{key}`.")
+
+
+def require_migration_findings_shape(report: dict[str, Any]) -> None:
+    if not isinstance(report, dict):
+        raise CutoverBuildError("Migration findings report must be a JSON object.")
+    for key in ("_run_info", "_meta", "source_reports", "summary", "findings"):
+        if key not in report:
+            raise CutoverBuildError(f"Migration findings report is missing `{key}`.")
+    content_sha = report.get("_run_info", {}).get("content_sha256")
+    if not isinstance(content_sha, str) or not content_sha:
+        raise CutoverBuildError("Migration findings report is missing `_run_info.content_sha256`.")
+    if report.get("_meta", {}).get("report_type") != "migration_cutover_findings":
+        raise CutoverBuildError("Migration findings report `_meta.report_type` must be `migration_cutover_findings`.")
+    if not isinstance(report["source_reports"], list):
+        raise CutoverBuildError("Migration findings report field `source_reports` must be an array.")
+    if not isinstance(report["summary"], dict):
+        raise CutoverBuildError("Migration findings report field `summary` must be an object.")
+    if not isinstance(report["findings"], list):
+        raise CutoverBuildError("Migration findings report field `findings` must be an array.")
+
+    seen_finding_ids: set[str] = set()
+    seen_dedupe_keys: set[str] = set()
+    required_finding_keys = (
+        "finding_id",
+        "rule_id",
+        "dedupe_key",
+        "category",
+        "title",
+        "description",
+        "affected_workstream",
+        "suggested_raid_type",
+        "severity",
+        "severity_origin",
+        "status",
+        "review_required",
+        "gate_impact",
+        "sources",
+    )
+    for finding in report["findings"]:
+        if not isinstance(finding, dict):
+            raise CutoverBuildError("Migration finding entries must be JSON objects.")
+        for key in required_finding_keys:
+            if key not in finding:
+                raise CutoverBuildError(f"Migration finding is missing `{key}`.")
+
+        finding_id = finding["finding_id"]
+        dedupe_key = finding["dedupe_key"]
+        if not isinstance(finding_id, str) or not finding_id:
+            raise CutoverBuildError("Migration finding `finding_id` must be a non-empty string.")
+        if finding_id in seen_finding_ids:
+            raise CutoverBuildError(f"Duplicate migration finding_id: {finding_id}")
+        seen_finding_ids.add(finding_id)
+        if not isinstance(dedupe_key, str) or not dedupe_key:
+            raise CutoverBuildError(f"Migration finding {finding_id} has an invalid `dedupe_key`.")
+        if dedupe_key in seen_dedupe_keys:
+            raise CutoverBuildError(f"Duplicate migration dedupe_key: {dedupe_key}")
+        seen_dedupe_keys.add(dedupe_key)
+
+        raid_type = finding["suggested_raid_type"]
+        if raid_type not in ALLOWED_MIGRATION_RAID_TYPES:
+            raise CutoverBuildError(f"Migration finding {finding_id} has invalid suggested_raid_type: {raid_type}")
+        severity = finding["severity"]
+        if severity not in ALLOWED_MIGRATION_SEVERITIES:
+            raise CutoverBuildError(f"Migration finding {finding_id} has invalid severity: {severity}")
+        if not isinstance(finding["review_required"], bool):
+            raise CutoverBuildError(f"Migration finding {finding_id} field `review_required` must be boolean.")
+        gate_impact = finding["gate_impact"]
+        if not isinstance(gate_impact, dict) or not isinstance(gate_impact.get("blocker"), bool):
+            raise CutoverBuildError(f"Migration finding {finding_id} field `gate_impact.blocker` must be boolean.")
+        if gate_impact["blocker"] and finding["review_required"]:
+            raise CutoverBuildError(f"Migration finding {finding_id} cannot be both gate blocker and review_required.")
+        if gate_impact["blocker"] and severity != "High":
+            raise CutoverBuildError(f"Migration finding {finding_id} gate blocker must have High severity.")
+        if not isinstance(finding["sources"], list):
+            raise CutoverBuildError(f"Migration finding {finding_id} field `sources` must be an array.")
 
 
 def slug_id(value: str) -> str:
@@ -151,8 +268,12 @@ def activity(
     rollback_required: bool,
     rollback_action: str,
     milestone_id: str | None = None,
+    status: str = "Not Started",
+    source_finding_ids: list[str] | None = None,
+    linked_finding_ids: list[str] | None = None,
+    linked_raid_ids: list[str] | None = None,
 ) -> dict[str, Any]:
-    return {
+    entry = {
         "activity_id": activity_id,
         "work_package_id": work_package_id,
         "title": title,
@@ -170,9 +291,16 @@ def activity(
         "approval_gate": approval_gate,
         "rollback_required": rollback_required,
         "rollback_action": rollback_action,
-        "status": "Not Started",
+        "status": status,
         "milestone_id": milestone_id,
     }
+    if source_finding_ids is not None:
+        entry["source_finding_ids"] = sorted(source_finding_ids)
+    if linked_finding_ids is not None:
+        entry["linked_finding_ids"] = sorted(linked_finding_ids)
+    if linked_raid_ids is not None:
+        entry["linked_raid_ids"] = sorted(linked_raid_ids)
+    return entry
 
 
 def build_work_packages(dev_backlog: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, list[str]], dict[str, list[str]]]:
@@ -338,6 +466,149 @@ def build_raid_register(
     return sorted(items, key=lambda item: item["raid_id"])
 
 
+def migration_activity_id_for_finding(finding: dict[str, Any]) -> str:
+    category = finding["category"]
+    raid_type = finding["suggested_raid_type"]
+    rule_id = finding["rule_id"]
+    if category == "duplicate_supplier":
+        return "CUT-MIG-DUPLICATE-RESOLUTION"
+    if category == "field_mapping":
+        return "CUT-MIG-MAPPING-REVIEW"
+    if category == "master_data_validation" and raid_type == "Dependency":
+        return "CUT-MIG-TARGET-DEPENDENCY"
+    if category == "master_data_validation":
+        return "CUT-MIG-VALIDATION-REMEDIATION"
+    if category in {"generated_package_validation", "package_validation"} or rule_id.startswith("MIG-GEN"):
+        return "CUT-MIG-PACKAGE-VALIDATION"
+    return "CUT-MIG-VALIDATION-REMEDIATION"
+
+
+def migration_source_summary(finding: dict[str, Any]) -> dict[str, Any]:
+    sources = finding.get("sources", [])
+    return {
+        "type": "migration_cutover_finding",
+        "finding_id": finding["finding_id"],
+        "rule_id": finding["rule_id"],
+        "dedupe_key": finding["dedupe_key"],
+        "source_report_ids": sorted({source["report_id"] for source in sources}),
+        "source_pointers": sorted({source["json_pointer"] for source in sources}),
+    }
+
+
+def migration_raid_item(finding: dict[str, Any], linked_activity_id: str) -> dict[str, Any]:
+    severity = finding["severity"]
+    gate_blocker = finding["gate_impact"]["blocker"]
+    review_note = " Review is required before the finding can be accepted as resolved." if finding["review_required"] else ""
+    mitigation = (
+        f"Resolve or formally accept migration finding {finding['finding_id']} before data freeze."
+        f"{review_note}"
+    )
+    trigger = (
+        f"Finding {finding['finding_id']} remains Open for Data Migration Lead review at the migration cutover checkpoint."
+    )
+    return {
+        "raid_id": f"RAID-{finding['finding_id']}",
+        "type": finding["suggested_raid_type"],
+        "title": finding["title"],
+        "description": finding["description"],
+        "owner_role": "Data Migration Lead",
+        "probability": None,
+        "impact": severity,
+        "severity": severity,
+        "severity_origin": finding["severity_origin"],
+        "status": "Open",
+        "mitigation": mitigation,
+        "trigger": trigger,
+        "linked_requirement_ids": [],
+        "linked_activity_ids": [linked_activity_id],
+        "linked_finding_ids": [finding["finding_id"]],
+        "review_required": finding["review_required"],
+        "gate_blocker": gate_blocker,
+        "source": migration_source_summary(finding),
+    }
+
+
+def build_migration_raid_register(migration_findings_report: dict[str, Any]) -> list[dict[str, Any]]:
+    findings = sorted(migration_findings_report["findings"], key=lambda finding: finding["finding_id"])
+    return sorted(
+        [
+            migration_raid_item(finding, migration_activity_id_for_finding(finding))
+            for finding in findings
+        ],
+        key=lambda item: item["raid_id"],
+    )
+
+
+def migration_activity_dependencies(activity_id: str, existing_activity_ids: set[str]) -> list[str]:
+    dependencies: dict[str, list[str]] = {
+        "CUT-MIG-DUPLICATE-RESOLUTION": ["CUT-MIG-MAPPING-REVIEW"],
+        "CUT-MIG-MAPPING-REVIEW": [],
+        "CUT-MIG-TARGET-DEPENDENCY": ["CUT-MIG-MAPPING-REVIEW"],
+        "CUT-MIG-VALIDATION-REMEDIATION": [
+            "CUT-MIG-MAPPING-REVIEW",
+            "CUT-MIG-TARGET-DEPENDENCY",
+            "CUT-MIG-DUPLICATE-RESOLUTION",
+        ],
+        "CUT-MIG-PACKAGE-VALIDATION": ["CUT-MIG-VALIDATION-REMEDIATION"],
+    }
+    return sorted([dependency for dependency in dependencies[activity_id] if dependency in existing_activity_ids])
+
+
+def build_migration_activities(raid_register: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for raid in raid_register:
+        activity_id = raid["linked_activity_ids"][0]
+        grouped[activity_id].append(raid)
+
+    existing_activity_ids = set(grouped)
+    activities: list[dict[str, Any]] = []
+    for activity_id in MIGRATION_ACTIVITY_ORDER:
+        if activity_id not in grouped:
+            continue
+        raids = sorted(grouped[activity_id], key=lambda item: item["raid_id"])
+        finding_ids = sorted({finding_id for raid in raids for finding_id in raid["linked_finding_ids"]})
+        raid_ids = [raid["raid_id"] for raid in raids]
+        spec = MIGRATION_ACTIVITY_SPECS[activity_id]
+        activities.append(
+            activity(
+                activity_id=activity_id,
+                work_package_id=None,
+                title=spec["title"],
+                description=f"{spec['description']} Covers {len(finding_ids)} migration finding(s).",
+                workstream="master_data",
+                owner_role="Data Migration Lead",
+                start_offset=spec["start_offset"],
+                end_offset=spec["end_offset"],
+                depends_on=migration_activity_dependencies(activity_id, existing_activity_ids),
+                source_requirement_id=None,
+                source_note_id=None,
+                source_domain="master_data",
+                source_evidence=finding_ids,
+                source_rationale="Aggregated from deterministic migration cutover findings.",
+                approval_gate="GATE-CUTOVER-READINESS",
+                rollback_required=False,
+                rollback_action="",
+                status="Planned",
+                source_finding_ids=finding_ids,
+                linked_finding_ids=finding_ids,
+                linked_raid_ids=raid_ids,
+            )
+        )
+    return activities
+
+
+def migration_provenance(migration_findings_report: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "report_type": migration_findings_report["_meta"]["report_type"],
+        "content_sha256": migration_findings_report["_run_info"]["content_sha256"],
+        "finding_count": len(migration_findings_report["findings"]),
+        "source_report_ids": sorted(
+            source_report["report_id"]
+            for source_report in migration_findings_report["source_reports"]
+        ),
+    }
+
+
 def detect_cycle(activity_ids: set[str], edges: dict[str, list[str]]) -> bool:
     indegree = {activity_id: 0 for activity_id in activity_ids}
     children: dict[str, list[str]] = defaultdict(list)
@@ -422,12 +693,24 @@ def validate_report(
     if deployments_without_rollback:
         errors.append(f"DEPLOY activities without rollback: {deployments_without_rollback}")
 
-    dependency_ids = {item["linked_requirement_ids"][0] for item in raid_register if item["type"] == "Dependency"}
+    dependency_ids = {
+        item["linked_requirement_ids"][0]
+        for item in raid_register
+        if item["type"] == "Dependency"
+        and item.get("source") == "development_backlog"
+        and item.get("linked_requirement_ids")
+    }
     missing_dependency_raid = sorted(dev_requirement_ids - dependency_ids)
     if missing_dependency_raid:
         errors.append(f"Development requirements without RAID Dependency: {missing_dependency_raid}")
 
-    risk_ids = {item["linked_requirement_ids"][0] for item in raid_register if item["type"] == "Risk"}
+    risk_ids = {
+        item["linked_requirement_ids"][0]
+        for item in raid_register
+        if item["type"] == "Risk"
+        and item.get("source") == "needs_review"
+        and item.get("linked_requirement_ids")
+    }
     missing_risk_raid = sorted(needs_review_ids - risk_ids)
     if missing_risk_raid:
         errors.append(f"needs_review requirements without RAID Risk: {missing_risk_raid}")
@@ -493,6 +776,15 @@ def validate_report(
     if invalid_raid_types:
         errors.append(f"Invalid RAID types: {invalid_raid_types}")
 
+    raid_activity_references = sorted({
+        activity_id
+        for item in raid_register
+        for activity_id in item.get("linked_activity_ids", [])
+        if activity_id not in activity_ids
+    })
+    if raid_activity_references:
+        errors.append(f"RAID items reference unknown activity IDs: {raid_activity_references}")
+
     return {
         "valid": not errors,
         "errors": errors,
@@ -505,45 +797,68 @@ def validate_report(
     }
 
 
-def build_cutover_plan(source_report: dict[str, Any], constraints: dict[str, Any]) -> dict[str, Any]:
+def build_cutover_plan(
+    source_report: dict[str, Any],
+    constraints: dict[str, Any],
+    migration_findings_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     require_gap_report_shape(source_report)
+    if migration_findings_report is not None:
+        require_migration_findings_shape(migration_findings_report)
     dev_backlog = sorted(source_report["dev_backlog"], key=lambda item: slug_id(item["requirement_id"]))
     requirements = sorted(source_report["requirements"], key=lambda item: slug_id(item["extracted_id"]))
     needs_review_count = sum(1 for item in requirements if item.get("llm", {}).get("needs_review"))
     work_packages, package_activities, phase_ids, owner_keyword_hits = build_work_packages(dev_backlog)
     shared_activities = build_shared_activities(phase_ids)
-    activities = sorted(package_activities + shared_activities, key=lambda item: item["activity_id"])
     raid_register = build_raid_register(dev_backlog, requirements)
+    migration_raid_register: list[dict[str, Any]] = []
+    migration_activities: list[dict[str, Any]] = []
+    if migration_findings_report is not None:
+        migration_raid_register = build_migration_raid_register(migration_findings_report)
+        migration_activities = build_migration_activities(migration_raid_register)
+        migration_activity_ids = [item["activity_id"] for item in migration_activities]
+        for shared_activity in shared_activities:
+            if shared_activity["activity_id"] == "CUT-DATA-FREEZE":
+                shared_activity["depends_on"] = sorted(set(shared_activity["depends_on"]) | set(migration_activity_ids))
+                break
+    activities = sorted(package_activities + shared_activities + migration_activities, key=lambda item: item["activity_id"])
+    raid_register = sorted(raid_register + migration_raid_register, key=lambda item: item["raid_id"])
+
+    meta = {
+        "module": "module_3_cutover_raid_governance",
+        "component": "deterministic_cutover_plan_builder",
+        "source_report": SOURCE_REPORT_REL,
+        "constraints_file": CONSTRAINTS_REL,
+        "source_report_content_sha256": source_report["_run_info"]["content_sha256"],
+        "development_backlog_count": len(dev_backlog),
+        "needs_review_count": needs_review_count,
+        "work_package_count": len(work_packages),
+        "activity_count": len(activities),
+        "shared_activity_count": len(shared_activities) + len(migration_activities),
+        "raid_count": len(raid_register),
+        "time_basis": constraints["_meta"]["time_basis"],
+        "synthetic": constraints["_meta"]["synthetic"],
+        "owner_role_rules": {
+            "domain_owner_roles": DOMAIN_OWNER_ROLES,
+            "development_delivery_default": "Technical Lead",
+            "integration_delivery_owner": "Integration Lead",
+            "integration_keyword_rule": {
+                "keywords": INTEGRATION_KEYWORDS,
+                "matched_by_requirement_id": owner_keyword_hits,
+            },
+        },
+        "raid_severity_rules": {
+            "needs_review_confidence_below_0_50": "High",
+            "needs_review_confidence_0_50_to_below_0_70": "Medium",
+            "other_needs_review_reasons": "Medium",
+        },
+    }
+    if migration_findings_report is not None:
+        meta["migration_findings"] = migration_provenance(migration_findings_report)
 
     report = {
         "_meta": {
-            "module": "module_3_cutover_raid_governance",
-            "component": "deterministic_cutover_plan_builder",
-            "source_report": SOURCE_REPORT_REL,
-            "constraints_file": CONSTRAINTS_REL,
-            "source_report_content_sha256": source_report["_run_info"]["content_sha256"],
-            "development_backlog_count": len(dev_backlog),
-            "needs_review_count": needs_review_count,
-            "work_package_count": len(work_packages),
-            "activity_count": len(activities),
-            "shared_activity_count": len(shared_activities),
-            "raid_count": len(raid_register),
-            "time_basis": constraints["_meta"]["time_basis"],
-            "synthetic": constraints["_meta"]["synthetic"],
-            "owner_role_rules": {
-                "domain_owner_roles": DOMAIN_OWNER_ROLES,
-                "development_delivery_default": "Technical Lead",
-                "integration_delivery_owner": "Integration Lead",
-                "integration_keyword_rule": {
-                    "keywords": INTEGRATION_KEYWORDS,
-                    "matched_by_requirement_id": owner_keyword_hits,
-                },
-            },
-            "raid_severity_rules": {
-                "needs_review_confidence_below_0_50": "High",
-                "needs_review_confidence_0_50_to_below_0_70": "Medium",
-                "other_needs_review_reasons": "Medium",
-            },
+            **meta,
         },
         "milestones": sorted(constraints["shared_milestones"], key=lambda item: (offset_value(item["offset"]), item["milestone_id"])),
         "freeze_windows": sorted(constraints["freeze_windows"], key=lambda item: item["freeze_id"]),
@@ -580,13 +895,26 @@ def write_report(report: dict[str, Any], output_path: Path = OUTPUT_PATH) -> dic
     return report_with_run_info
 
 
-def main() -> None:
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Build the deterministic cutover plan report.")
+    parser.add_argument(
+        "--migration-findings",
+        type=Path,
+        default=None,
+        help="Optional migration_cutover_findings.json report to link into cutover RAID and activities.",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    args = build_parser().parse_args(argv)
     try:
         source_report = load_json(SOURCE_REPORT_PATH)
         constraints = load_json(CONSTRAINTS_PATH)
-        report = build_cutover_plan(source_report, constraints)
+        migration_findings_report = load_json(args.migration_findings) if args.migration_findings else None
+        report = build_cutover_plan(source_report, constraints, migration_findings_report)
         report = write_report(report)
     except CutoverBuildError as error:
         print(str(error), file=sys.stderr)

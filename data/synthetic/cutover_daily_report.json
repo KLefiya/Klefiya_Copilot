@@ -1,18 +1,19 @@
 {
   "_run_info": {
-    "content_sha256": "d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1",
+    "content_sha256": "e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T01:27:00+00:00"
+    "generated_at": "2026-08-04T02:55:56+00:00"
   },
   "_meta": {
     "tool": "src/tools/build_cutover_status.py",
     "source_status_report": "data/synthetic/cutover_status_report.json",
-    "source_status_report_content_sha256": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+    "source_status_report_content_sha256": "c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5",
     "as_of_offset": "T-7",
     "rag_rules": [
       "Red if a Day-1 critical activity is blocked.",
+      "Red if an explicit migration gate blocker RAID is Open or Mitigating.",
       "Red if a due approval gate is blocked.",
-      "Red if a high Risk or Issue is Open or Mitigating.",
+      "Red if a legacy high Risk or Issue is Open or Mitigating.",
       "Red if any incomplete activity is overdue.",
       "Amber if due work or non-high Risk/Issue items require attention.",
       "Green otherwise."
@@ -23,9 +24,10 @@
     "as_of_offset": "T-7",
     "completed_activity_count": 17,
     "blocked_activity_count": 2,
-    "not_started_activity_count": 11,
+    "not_started_activity_count": 15,
     "work_packages_blocked": 1,
-    "open_high_risks_or_issues": 0,
+    "open_high_risks_or_issues": 1,
+    "migration_blocker_count": 1,
     "next_gate": {
       "gate_id": "GATE-CUTOVER-READINESS",
       "name": "Cutover Readiness",
@@ -40,18 +42,20 @@
   },
   "rag_reasons": [
     "One or more Day-1 critical activities are blocked.",
-    "Due approval gate is blocked: GATE-CUTOVER-READINESS."
+    "Open migration gate blocker RAID items: RAID-MIG-127FBCE66F53.",
+    "Due approval gate is blocked: GATE-CUTOVER-READINESS.",
+    "One or more activities are overdue."
   ],
   "progress_summary": {
-    "activities_total": 30,
+    "activities_total": 34,
     "activity_status_counts": {
-      "Not Started": 11,
+      "Not Started": 15,
       "In Progress": 0,
       "Blocked": 2,
       "Completed": 17,
       "Cancelled": 0
     },
-    "activity_completion_percent": 56.67,
+    "activity_completion_percent": 50.0,
     "work_packages_total": 5,
     "work_package_status_counts": {
       "Not Started": 0,
@@ -60,10 +64,10 @@
       "Completed": 0,
       "Cancelled": 0
     },
-    "raid_total": 7,
+    "raid_total": 29,
     "raid_status_counts": {
       "by_status": {
-        "Open": 1,
+        "Open": 23,
         "Mitigating": 5,
         "Accepted": 0,
         "Resolved": 1,
@@ -71,14 +75,21 @@
       },
       "by_type": {
         "Dependency": {
-          "Open": 0,
+          "Open": 13,
           "Mitigating": 5,
           "Accepted": 0,
           "Resolved": 0,
           "Closed": 0
         },
+        "Issue": {
+          "Open": 2,
+          "Mitigating": 0,
+          "Accepted": 0,
+          "Resolved": 0,
+          "Closed": 0
+        },
         "Risk": {
-          "Open": 1,
+          "Open": 8,
           "Mitigating": 0,
           "Accepted": 0,
           "Resolved": 1,
@@ -113,9 +124,37 @@
       "current_status": "Blocked",
       "blocker": "ACT-EX-024-TEST remains blocked and prevents readiness approval.",
       "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-MIG-DUPLICATE-RESOLUTION",
+      "title": "Resolve duplicate supplier migration findings",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-7",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-MIG-TARGET-DEPENDENCY",
+      "title": "Resolve migration target dependencies",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-7",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
     }
   ],
-  "overdue": [],
+  "overdue": [
+    {
+      "activity_id": "CUT-MIG-MAPPING-REVIEW",
+      "title": "Review migration field mapping findings",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-10",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    }
+  ],
   "due_next": [
     {
       "activity_id": "CUT-CODE-FREEZE",
@@ -129,6 +168,15 @@
     {
       "activity_id": "CUT-DATA-FREEZE",
       "title": "Data freeze",
+      "owner_role": "Data Migration Lead",
+      "end_offset": "T-2",
+      "current_status": "Not Started",
+      "blocker": "",
+      "is_critical_to_day1": true
+    },
+    {
+      "activity_id": "CUT-MIG-VALIDATION-REMEDIATION",
+      "title": "Remediate migration validation findings",
       "owner_role": "Data Migration Lead",
       "end_offset": "T-2",
       "current_status": "Not Started",
@@ -215,6 +263,23 @@
       "end_offset": "T-7"
     }
   ],
+  "migration_blockers": [
+    {
+      "raid_id": "RAID-MIG-127FBCE66F53",
+      "finding_id": "MIG-127FBCE66F53",
+      "title": "Migration validation issue for country",
+      "severity": "High",
+      "status": "Open",
+      "source_type": "migration_cutover_finding",
+      "source_report_ids": [
+        "vendor_validation"
+      ],
+      "source_pointers": [
+        "/field_view/field=country,target=a_businesspartneraddress.country/field_issues/issue_type=normalization_required",
+        "/record_view/issues[field=country,target=a_businesspartneraddress.country,root_cause=normalization_required]"
+      ]
+    }
+  ],
   "management_actions": [
     {
       "priority": 1,
@@ -232,13 +297,77 @@
     },
     {
       "priority": 2,
+      "source_type": "MigrationRAID",
+      "source_id": "RAID-MIG-127FBCE66F53",
+      "finding_id": "MIG-127FBCE66F53",
+      "owner_role": "Data Migration Lead",
+      "action": "Resolve migration finding MIG-127FBCE66F53 before the Go / No-Go gate."
+    },
+    {
+      "priority": 3,
       "source_type": "ApprovalGate",
       "source_id": "GATE-CUTOVER-READINESS",
       "owner_role": "Cutover Manager",
       "action": "Reassess GATE-CUTOVER-READINESS after missing readiness criteria are cleared."
     },
     {
-      "priority": 3,
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-094628933C7E",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-094628933C7E."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-519791EDC75B",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-519791EDC75B."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-B1CD62331725",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-B1CD62331725."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-B5CF92FEF27E",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-B5CF92FEF27E."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-BE20BB03FE65",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-BE20BB03FE65."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-CB796C3C7B83",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-CB796C3C7B83."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-D3121D625FB2",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-D3121D625FB2."
+    },
+    {
+      "priority": 4,
+      "source_type": "RAID",
+      "source_id": "RAID-MIG-FB02D994DD29",
+      "owner_role": "Data Migration Lead",
+      "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-FB02D994DD29."
+    },
+    {
+      "priority": 4,
       "source_type": "RAID",
       "source_id": "RAID-RISK-EX-022",
       "owner_role": "Data Migration Lead",
@@ -247,7 +376,7 @@
   ],
   "validation": {
     "status": "valid",
-    "source_status_report_sha": "093b49b64f5917de0977fd69fdf7b60596d9b84fddbb571a0afba10c7bdb9f6b",
+    "source_status_report_sha": "c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5",
     "source_status_report_valid": true
   }
 }
