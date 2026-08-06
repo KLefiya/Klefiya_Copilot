@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "56725ac76a07fcdf7c37e9d2f64d3aeb3a7c96b7261b4cabf1e927231c0b303a",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T08:32:25+00:00"
+    "content_sha256": "397bc0301d29f402f1a37fd5c672b2b755f3976475c36c7721997f74a5b8f3e8",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "migration_package_generation",
@@ -11,7 +10,9 @@
     "source_path": "data/examples/mapping/sap_supplier_reference/source_supplier.csv",
     "source_sha256": "f94a34b6c57ba1bee0ef68b8603c3eaa596d95bb7045db307fdff01a58ce5e16",
     "mapping_report_path": "data/synthetic/sap_supplier_reference_contract_mapping.json",
-    "mapping_report_sha256": "7b019307338c495cccc760a6dd37f22fb05b1f59910f798d6eb41891e99ec08d",
+    "mapping_report_content_sha256": "bfb792f21f9ce81b161d5898cd644d20f6d3e601cacbd2efe2d8a98551cc1d63",
+    "mapping_report_hash_mode": "content_sha256",
+    "mapping_report_sha256": "bfb792f21f9ce81b161d5898cd644d20f6d3e601cacbd2efe2d8a98551cc1d63",
     "decision_path": "data/examples/package_generation/sap_supplier_reference/mapping_decisions.yaml",
     "decision_sha256": "270c270ad4bd1804dfdb043d6d1173e1398fba22ad1800c4713b9a9042eefa76",
     "output_root": "data/generated/sap_supplier_reference",
@@ -69,7 +70,7 @@
   },
   "manifest": {
     "path": "data/generated/sap_supplier_reference/package_manifest.json",
-    "content_sha256": "71874bf500dbe39fc9f7bf0ff19d292f1eb0cd870c891f9a0ee3db99062a1ba5"
+    "content_sha256": "0dcd68ef1422747be95223aacac782735c7cdad59fa2e865a0a36ff8154ff17e"
   },
   "lineage": {
     "path": "data/generated/sap_supplier_reference/lineage.json",

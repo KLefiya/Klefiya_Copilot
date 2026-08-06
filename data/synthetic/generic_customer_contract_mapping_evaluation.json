@@ -1,13 +1,12 @@
 {
   "_run_info": {
-    "content_sha256": "9cb450eb7b9d1323d7c7f1b563228b72a49612322f2e67dbf11753098bdd3525",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T07:19:06+00:00"
+    "content_sha256": "247844f1d8176e016962ddcf5f8796cdc8555fbc9bc95029b28d980b74fdaf5d",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "contract_field_mapping_evaluation",
     "mapping_report": "data/synthetic/generic_customer_contract_mapping.json",
-    "mapping_report_sha256": "67ab0cbece2c538df6a8e63147e0123ad36bb60cbd74297b60da795a83418b60",
+    "mapping_report_sha256": "4bdcd8ba13e6a31994cf686aa5c5b0a8d3dbed4efd1f65e23dfa5f7d723b8ec2",
     "ground_truth": "data/examples/mapping/generic_customer/ground_truth.json",
     "ground_truth_used_for_evaluation_only": true,
     "mapping_report_ground_truth_used": false,

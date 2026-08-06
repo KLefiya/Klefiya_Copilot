@@ -25,6 +25,31 @@ function Invoke-Native {
     }
 }
 
+function Invoke-NativeCapture {
+    param(
+        [Parameter(Mandatory = $true)][string]$Title,
+        [Parameter(Mandatory = $true)][string]$File,
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [string]$WorkingDirectory = $Root
+    )
+
+    Write-Host ""
+    Write-Host "== $Title =="
+    Push-Location $WorkingDirectory
+    try {
+        $output = & $File @Arguments 2>&1
+        $exitCode = $LASTEXITCODE
+        $output | ForEach-Object { Write-Host $_ }
+        if ($exitCode -ne 0) {
+            throw "$Title failed with exit code $exitCode"
+        }
+        return ($output -join "`n")
+    }
+    finally {
+        Pop-Location
+    }
+}
+
 function Remove-TreeIfPresent {
     param([Parameter(Mandatory = $true)][string]$RelativePath)
 
@@ -116,7 +141,11 @@ try {
     Invoke-Native "Multi-target smoke" "python" @("scripts/smoke_test_multitarget_package_generation.py")
     Invoke-Native "Backend API tests" "python" @("-m", "unittest", "tests.test_backend_api", "-v")
     Invoke-Native "Workspace API tests" "python" @("-m", "unittest", "tests.test_migration_workspace_api", "-v")
-    Invoke-Native "Full Python tests" "python" @("-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v")
+    $fullPythonOutput = Invoke-NativeCapture "Full Python tests" "python" @("-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v")
+    if ($fullPythonOutput -notmatch "Ran\s+(\d+)\s+tests") {
+        throw "Unable to parse full Python test count"
+    }
+    $fullPythonCount = [int]$Matches[1]
     Invoke-Native "Frontend tests" "npm" @("test", "--", "--run") (Join-Path $Root "frontend")
     Invoke-Native "Frontend build" "npm" @("run", "build") (Join-Path $Root "frontend")
     Invoke-Native "Frontend lint" "npm" @("run", "lint") (Join-Path $Root "frontend")
@@ -133,7 +162,7 @@ try {
 
     Write-Host ""
     Write-Host "practical-v2 verification passed"
-    Write-Host "Python tests: 417"
+    Write-Host "Python tests: $fullPythonCount"
     Write-Host "Frontend tests: 45"
     Write-Host "Workspace API tests: 38"
     Write-Host "Runtime state: clean"

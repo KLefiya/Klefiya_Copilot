@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "5ee837b005fbe3162363e9587bc0b57128e53b75efc2cb404efc66ab3b5dc789",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T08:32:11+00:00"
+    "content_sha256": "d70d0d02d4231da377f3fbcdd3095bdfd8fcfcac8fec57d718486f3fac69c473",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "migration_package_generation",
@@ -11,7 +10,9 @@
     "source_path": "data/examples/mapping/generic_customer/source_customer.csv",
     "source_sha256": "19d66f2d5c87f8ebad74223a0182a0993f31fd5630980d49f682be457d2db33d",
     "mapping_report_path": "data/synthetic/generic_customer_contract_mapping.json",
-    "mapping_report_sha256": "6ab72a4ed15b4e7dec79da4e4749dbe6163ed9050ea4a97b0c6d906a26d22a89",
+    "mapping_report_content_sha256": "4bdcd8ba13e6a31994cf686aa5c5b0a8d3dbed4efd1f65e23dfa5f7d723b8ec2",
+    "mapping_report_hash_mode": "content_sha256",
+    "mapping_report_sha256": "4bdcd8ba13e6a31994cf686aa5c5b0a8d3dbed4efd1f65e23dfa5f7d723b8ec2",
     "decision_path": "data/examples/package_generation/generic_customer/mapping_decisions.yaml",
     "decision_sha256": "a32bbdfa0ea5ae2070e867ce6ed9733128826fbd7abe5fb6a6060f00215aedb3",
     "output_root": "data/generated/generic_customer",
@@ -69,7 +70,7 @@
   },
   "manifest": {
     "path": "data/generated/generic_customer/package_manifest.json",
-    "content_sha256": "d2e4abbc5b0e451787fecd38ab0bf57a4af5492436ac5b6df55c95eb9e22ae59"
+    "content_sha256": "3915849c255cafa9baf3011e212bb287985d8c20e785e3bbc3baa47aad234c5c"
   },
   "lineage": {
     "path": "data/generated/generic_customer/lineage.json",

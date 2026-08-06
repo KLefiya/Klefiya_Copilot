@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -9,6 +8,7 @@ from typing import Any
 import yaml
 
 from src.core.contracts.loader import PROJECT_ROOT, LoadedMigrationContract
+from src.core.hashing import canonical_json_content_sha256, normalized_text_sha256, provenance_text_or_raw_sha256
 from src.core.mapping.target_index import build_target_field_index
 from src.core.package_generation.models import (
     LoadedMappingDecisions,
@@ -35,8 +35,8 @@ class DecisionLoadError(Exception):
         return {"code": self.code, "message": self.message, "details": self.details}
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _source_text_sha256(path: Path) -> str:
+    return normalized_text_sha256(path)
 
 
 def _project_relative(path: Path) -> str:
@@ -232,7 +232,8 @@ def load_mapping_decisions(
     if not isinstance(source, dict) or "path" not in source or "record_id_field" not in source:
         raise DecisionLoadError("decision_schema_error", "Decision source must contain path and record_id_field", {})
     source_path = _safe_project_path(source["path"], "source.path")
-    source_sha = _sha256(source_path)
+    # Backward-compatible JSON field name; value is normalized_text_sha256 for CSV text.
+    source_sha = _source_text_sha256(source_path)
     if meta.get("source_sha256") != source_sha:
         raise DecisionLoadError("stale_source_sha", "Mapping report source SHA does not match decision source", {})
     header, row_count = _source_header(source_path)
@@ -284,7 +285,7 @@ def load_mapping_decisions(
         version=str(raw["version"]),
         contract_id=contract.contract_id,
         mapping_report_path=mapping_expected,
-        mapping_report_sha256=_sha256(mapping_expected),
+        mapping_report_sha256=mapping_report_content_sha(mapping_report),
         source_path=source_path,
         source_sha256=source_sha,
         source_row_count=row_count,
@@ -292,6 +293,20 @@ def load_mapping_decisions(
         record_id_field=record_id_field,
         decisions=decisions,
         decision_path=decision_abs,
-        decision_sha256=_sha256(decision_abs),
+        decision_sha256=provenance_text_or_raw_sha256(decision_abs),
         mapping_report=mapping_report,
     )
+
+
+def mapping_report_content_sha(mapping_report: dict[str, Any]) -> str:
+    run_info = mapping_report.get("_run_info", {})
+    if not isinstance(run_info, dict) or not isinstance(run_info.get("content_sha256"), str):
+        raise DecisionLoadError("mapping_report_content_sha_missing", "Mapping report is missing _run_info.content_sha256", {})
+    content_sha = str(run_info["content_sha256"])
+    if content_sha != canonical_json_content_sha256(mapping_report):
+        raise DecisionLoadError(
+            "mapping_report_content_sha_mismatch",
+            "Mapping report _run_info.content_sha256 does not match canonical JSON content",
+            {},
+        )
+    return content_sha

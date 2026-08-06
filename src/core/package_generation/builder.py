@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 import os
 import shutil
@@ -13,6 +12,7 @@ from typing import Any
 
 from src.core.contracts.loader import PROJECT_ROOT, LoadedMigrationContract
 from src.core.contracts.validator import validate_migration_contract, write_validation_report
+from src.core.hashing import raw_file_sha256
 from src.core.mapping.target_index import build_target_field_index
 from src.core.package_generation.decision_loader import DecisionLoadError, load_mapping_decisions
 from src.core.package_generation.lineage import (
@@ -43,8 +43,8 @@ class PackageBuildBlocked(PackageGenerationError):
     pass
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _raw_file_sha256(path: Path) -> str:
+    return raw_file_sha256(path)
 
 
 def _safe_output_root(path: Path) -> Path:
@@ -316,7 +316,7 @@ def build_migration_package(
                     field_names=tuple(field_names),
                     row_count=len(output_rows),
                     rejected_row_count=resource_rejections,
-                    content_sha256=_sha256(target_path),
+                    content_sha256=_raw_file_sha256(target_path),
                 )
             )
 
@@ -373,6 +373,9 @@ def build_migration_package(
             "source_path": project_relative(source_abs),
             "source_sha256": decisions.source_sha256,
             "mapping_report_path": project_relative(decisions.mapping_report_path),
+            "mapping_report_content_sha256": decisions.mapping_report_sha256,
+            "mapping_report_hash_mode": "content_sha256",
+            # Backward-compatible field name; value is mapping report _run_info.content_sha256.
             "mapping_report_sha256": decisions.mapping_report_sha256,
             "decision_path": project_relative(decisions.decision_path),
             "decision_sha256": decisions.decision_sha256,

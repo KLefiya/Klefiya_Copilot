@@ -52,8 +52,18 @@ Use this guide to review practical-v2 without rerunning the whole project in an 
 
 | Evidence | SHA256 |
 | --- | --- |
-| Blind Mapping | `f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164` |
-| Blind Evaluation | `d665596750403d5928daa332f318dec3078bce1a7ab977c8192b3a5edd106fed` |
+| Blind Mapping | `99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703` |
+| Blind Evaluation | `e75c2f8e5b6ed7794f265ceb795426045b403d2973a5bc7622af016c887e7527` |
 | Protocol Lock | `bd092f06592d6a71961454cf638e2864ac3e5fb8fc0f247a1fe0b8ae36fdb2ed` |
-| ERPNext Manifest | `8a63eafaface02dc3d04cebec1dea58a722b6f10cb8d2763a6077af96f9052c3` |
+| Protocol Compatibility Amendment | `2b15b49a87f031312534a28e376345e463de2a3aaae14380150f3c7c0a58888a` |
+| Generic Manifest | `3915849c255cafa9baf3011e212bb287985d8c20e785e3bbc3baa47aad234c5c` |
+| Supplier-reference Manifest | `0dcd68ef1422747be95223aacac782735c7cdad59fa2e865a0a36ff8154ff17e` |
+| ERPNext Manifest | `5c8f6d523a60887ce2b0173e3a89cae94cf484f0212b9cc247c7bd56738d0dfe` |
 | ERPNext Generated Validation | `a4c688073df9799a05f5a6d5cba4c584c175c51e7615c87559923efa2b65f012` |
+| Migration Findings | `74dfc9310502fadaeb4cc27ec31c2e630d0fb97e9dbe645ba3e755d298fbaf60` |
+| Cutover Plan | `160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767` |
+| Cutover Status | `c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5` |
+| Cutover Daily | `e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8` |
+| Cutover Agent Trace | `ac99965064bd5900686ebbb9cb1762eebdfcf63ba5dff66f45ae82a61e17522d` |
+
+The historical blind protocol lock remains fixed. The compatibility amendment validates only the provenance-mode profiler change and mapping-engine metadata propagation; mapping source provenance uses `normalized_text_sha256_v1`, while formal JSON report chains use `_run_info.content_sha256`. This is maintenance compatibility evidence, not a new original blind lock.

@@ -6,10 +6,11 @@ import hashlib
 import io
 import json
 import subprocess
+import shutil
 import sys
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -85,6 +86,19 @@ def create_report_targets(tmp: str, *, missing: set[str] | None = None) -> dict[
         if key not in missing:
             path.write_text(json.dumps(simple_report(key, 1), sort_keys=True) + "\n", encoding="utf-8")
     return paths
+
+
+@contextmanager
+def patched_rebuild_report_paths():
+    with tempfile.TemporaryDirectory() as tmp:
+        paths = {
+            key: Path(tmp) / server.REPORT_PATHS[key].name
+            for key in ("migration_findings", "plan", "status", "daily")
+        }
+        for key, path in paths.items():
+            shutil.copyfile(server.REPORT_PATHS[key], path)
+        with PatchReportPaths(paths):
+            yield paths
 
 
 def snapshot(paths: dict[str, Path]) -> dict[str, bytes | None]:
@@ -196,12 +210,14 @@ class CutoverMcpTests(unittest.TestCase):
         self.assertEqual(result["error"]["code"], "INVALID_REPORT")
 
     def test_rebuild_status_only_succeeds(self) -> None:
-        data = payload(server.rebuild_cutover_reports(rebuild_plan=False))
+        with patched_rebuild_report_paths():
+            data = payload(server.rebuild_cutover_reports(rebuild_plan=False))
         self.assertEqual(data["validation"], "valid")
         self.assertEqual(data["overall_rag"], "Red")
 
     def test_rebuild_plan_and_status_succeeds(self) -> None:
-        data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
+        with patched_rebuild_report_paths():
+            data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
         self.assertEqual(data["validation"], "valid")
         self.assertEqual(data["overall_rag"], "Red")
         self.assertEqual(data["migration_finding_count"], 22)
@@ -209,8 +225,9 @@ class CutoverMcpTests(unittest.TestCase):
         self.assertEqual(data["plan_activity_count"], 34)
 
     def test_rebuild_returns_stable_sha(self) -> None:
-        first = payload(server.rebuild_cutover_reports(rebuild_plan=False))
-        second = payload(server.rebuild_cutover_reports(rebuild_plan=False))
+        with patched_rebuild_report_paths():
+            first = payload(server.rebuild_cutover_reports(rebuild_plan=False))
+            second = payload(server.rebuild_cutover_reports(rebuild_plan=False))
         self.assertEqual(first["status_content_sha256"], second["status_content_sha256"])
         self.assertEqual(first["daily_content_sha256"], second["daily_content_sha256"])
 
@@ -220,21 +237,23 @@ class CutoverMcpTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bad_updates = Path(tmp) / "cutover_status_updates.json"
             bad_updates.write_text(json.dumps(updates), encoding="utf-8")
-            with PatchReportPath("updates", bad_updates):
+            with patched_rebuild_report_paths(), PatchReportPath("updates", bad_updates):
                 result = server.rebuild_cutover_reports(rebuild_plan=False)
         self.assertFalse(result["ok"])
         self.assertEqual(result["error"]["code"], "VALIDATION_FAILED")
 
     def test_mcp_rebuild_builds_findings_before_plan(self) -> None:
-        data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
-        self.assertEqual(data["migration_finding_count"], 22)
-        self.assertEqual(data["migration_findings_content_sha256"], server.source_sha(server.load_report("migration_findings")))
+        with patched_rebuild_report_paths():
+            data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
+            self.assertEqual(data["migration_finding_count"], 22)
+            self.assertEqual(data["migration_findings_content_sha256"], server.source_sha(server.load_report("migration_findings")))
 
     def test_mcp_rebuild_passes_findings_to_plan(self) -> None:
-        data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
-        plan = server.load_report("plan")
-        self.assertEqual(plan["_meta"]["migration_findings"]["content_sha256"], data["migration_findings_content_sha256"])
-        self.assertEqual(data["plan_raid_count"], 29)
+        with patched_rebuild_report_paths():
+            data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
+            plan = server.load_report("plan")
+            self.assertEqual(plan["_meta"]["migration_findings"]["content_sha256"], data["migration_findings_content_sha256"])
+            self.assertEqual(data["plan_raid_count"], 29)
 
     def test_mcp_rebuild_reports_rebase_required(self) -> None:
         updates = copy.deepcopy(server.load_report("updates"))
@@ -242,28 +261,28 @@ class CutoverMcpTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bad_updates = Path(tmp) / "cutover_status_updates.json"
             bad_updates.write_text(json.dumps(updates), encoding="utf-8")
-            with PatchReportPath("updates", bad_updates):
+            with patched_rebuild_report_paths(), PatchReportPath("updates", bad_updates):
                 result = server.rebuild_cutover_reports(rebuild_plan=True)
         self.assertFalse(result["ok"])
         self.assertEqual(result["error"]["code"], "REBASE_REQUIRED")
         self.assertIn("status updates rebase required", result["error"]["message"])
 
     def test_mcp_rebuild_is_atomic_on_status_sha_failure(self) -> None:
-        before = {
-            key: server.source_sha(server.load_report(key))
-            for key in ("migration_findings", "plan", "status", "daily")
-        }
         updates = copy.deepcopy(server.load_report("updates"))
         updates["_meta"]["source_plan_content_sha256"] = "0" * 64
         with tempfile.TemporaryDirectory() as tmp:
             bad_updates = Path(tmp) / "cutover_status_updates.json"
             bad_updates.write_text(json.dumps(updates), encoding="utf-8")
-            with PatchReportPath("updates", bad_updates):
+            with patched_rebuild_report_paths(), PatchReportPath("updates", bad_updates):
+                before = {
+                    key: server.source_sha(server.load_report(key))
+                    for key in ("migration_findings", "plan", "status", "daily")
+                }
                 result = server.rebuild_cutover_reports(rebuild_plan=True)
-        after = {
-            key: server.source_sha(server.load_report(key))
-            for key in ("migration_findings", "plan", "status", "daily")
-        }
+                after = {
+                    key: server.source_sha(server.load_report(key))
+                    for key in ("migration_findings", "plan", "status", "daily")
+                }
         self.assertFalse(result["ok"])
         self.assertEqual(before, after)
 
@@ -378,24 +397,24 @@ class CutoverMcpTests(unittest.TestCase):
     def test_validation_failure_still_writes_nothing(self) -> None:
         updates = copy.deepcopy(server.load_report("updates"))
         updates["events"][0]["new_status"] = "Invalid"
-        before = {
-            key: server.source_sha(server.load_report(key))
-            for key in ("migration_findings", "plan", "status", "daily")
-        }
         with tempfile.TemporaryDirectory() as tmp:
             bad_updates = Path(tmp) / "cutover_status_updates.json"
             bad_updates.write_text(json.dumps(updates), encoding="utf-8")
-            with PatchReportPath("updates", bad_updates):
+            with patched_rebuild_report_paths(), PatchReportPath("updates", bad_updates):
+                before = {
+                    key: server.source_sha(server.load_report(key))
+                    for key in ("migration_findings", "plan", "status", "daily")
+                }
                 result = server.rebuild_cutover_reports(rebuild_plan=True)
-        after = {
-            key: server.source_sha(server.load_report(key))
-            for key in ("migration_findings", "plan", "status", "daily")
-        }
+                after = {
+                    key: server.source_sha(server.load_report(key))
+                    for key in ("migration_findings", "plan", "status", "daily")
+                }
         self.assertFalse(result["ok"])
         self.assertEqual(before, after)
 
     def test_mcp_does_not_return_success_sha_chain_after_commit_failure(self) -> None:
-        with mock.patch.object(server, "write_reports_with_rollback", side_effect=server.McpToolError("COMMIT_FAILED", "failed")):
+        with patched_rebuild_report_paths(), mock.patch.object(server, "write_reports_with_rollback", side_effect=server.McpToolError("COMMIT_FAILED", "failed")):
             result = server.rebuild_cutover_reports(rebuild_plan=False)
         self.assertFalse(result["ok"])
         self.assertEqual(result["error"]["code"], "COMMIT_FAILED")
@@ -406,7 +425,8 @@ class CutoverMcpTests(unittest.TestCase):
         self.assertEqual(server.REPORT_PATHS["migration_findings"].name, "migration_cutover_findings.json")
 
     def test_mcp_rebuild_returns_full_sha_chain(self) -> None:
-        data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
+        with patched_rebuild_report_paths():
+            data = payload(server.rebuild_cutover_reports(rebuild_plan=True))
         for key in (
             "migration_findings_content_sha256",
             "plan_content_sha256",
@@ -447,25 +467,31 @@ class CutoverMcpTests(unittest.TestCase):
             self.assertNotIn("output_path", properties)
 
     def test_existing_cli_tools_still_run(self) -> None:
-        commands = [
-            [sys.executable, "src/tools/build_migration_cutover_findings.py"],
-            [sys.executable, "src/tools/build_cutover_plan.py", "--migration-findings", "data/synthetic/migration_cutover_findings.json"],
-            [sys.executable, "src/tools/build_cutover_status.py"],
-        ]
-        for command in commands:
-            with self.subTest(command=command[-1]):
-                result = subprocess.run(
-                    command,
-                    cwd=PROJECT_ROOT,
-                    text=True,
-                    capture_output=True,
-                    check=False,
-                )
-                self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertTrue(
-                    "valid" in result.stdout.lower()
-                    or "content sha" in result.stdout.lower()
-                )
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as tmp:
+            output_root = Path(tmp)
+            findings = output_root / "migration_cutover_findings.json"
+            plan = output_root / "cutover_plan_report.json"
+            status = output_root / "cutover_status_report.json"
+            daily = output_root / "cutover_daily_report.json"
+            commands = [
+                [sys.executable, "src/tools/build_migration_cutover_findings.py", "--output", str(findings)],
+                [sys.executable, "src/tools/build_cutover_plan.py", "--migration-findings", str(findings), "--output", str(plan)],
+                [sys.executable, "src/tools/build_cutover_status.py", "--status-output", str(status), "--daily-output", str(daily)],
+            ]
+            for command in commands:
+                with self.subTest(command=command[1]):
+                    result = subprocess.run(
+                        command,
+                        cwd=PROJECT_ROOT,
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertTrue(
+                        "valid" in result.stdout.lower()
+                        or "content sha" in result.stdout.lower()
+                    )
 
     def test_mcp_stdio_smoke_test_succeeds(self) -> None:
         result = subprocess.run(

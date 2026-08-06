@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "71874bf500dbe39fc9f7bf0ff19d292f1eb0cd870c891f9a0ee3db99062a1ba5",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T09:04:53+00:00"
+    "content_sha256": "0dcd68ef1422747be95223aacac782735c7cdad59fa2e865a0a36ff8154ff17e",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "contract": {
     "contract_id": "sap-supplier-reference-v1",
@@ -16,7 +15,9 @@
   },
   "mapping_report": {
     "path": "data/synthetic/sap_supplier_reference_contract_mapping.json",
-    "sha256": "7b019307338c495cccc760a6dd37f22fb05b1f59910f798d6eb41891e99ec08d"
+    "content_sha256": "bfb792f21f9ce81b161d5898cd644d20f6d3e601cacbd2efe2d8a98551cc1d63",
+    "hash_mode": "content_sha256",
+    "sha256": "bfb792f21f9ce81b161d5898cd644d20f6d3e601cacbd2efe2d8a98551cc1d63"
   },
   "mapping_decisions": {
     "path": "data/examples/package_generation/sap_supplier_reference/mapping_decisions.yaml",

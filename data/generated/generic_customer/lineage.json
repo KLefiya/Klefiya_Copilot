@@ -1,8 +1,7 @@
 {
   "_run_info": {
     "content_sha256": "d243d2733de19368c306c68c69343013ee82edd646e2e38408c1f1277ae930a6",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T09:04:40+00:00"
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "migration_package_lineage",

@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 
@@ -88,6 +89,30 @@ def _truth_isolated() -> bool:
     )
 
 
+def _safe_output_root(path: Path) -> Path:
+    if ".." in Path(path).parts:
+        raise ValueError("--output-root must not contain path escapes")
+    resolved = Path(path).resolve()
+    try:
+        resolved.relative_to(PROJECT_ROOT)
+    except ValueError as exc:
+        raise ValueError("--output-root must stay inside the project root") from exc
+    resolved.mkdir(parents=True, exist_ok=True)
+    return resolved
+
+
+def _cases_for_output_root(root: Path | None) -> list[dict]:
+    cases = [deepcopy(case) for case in CASES]
+    if root is None:
+        return cases
+    for case in cases:
+        stem = str(case["output_root"].name)
+        case["output_root"] = root / "generated" / stem
+        case["build_report"] = root / "synthetic" / f"{stem}_package_build_report.json"
+        case["validation_report"] = root / "synthetic" / f"{stem}_generated_validation.json"
+    return cases
+
+
 def _run(case: dict) -> dict:
     args = [
         sys.executable,
@@ -111,10 +136,16 @@ def _run(case: dict) -> dict:
     }
 
 
-def main() -> int:
-    loaded = [load_migration_contract(case["contract"], case["data_root"]) for case in CASES]
-    first = [_run(case) for case in CASES]
-    second = [_run(case) for case in CASES]
+def main(argv: list[str] | None = None) -> int:
+    output_root: Path | None = None
+    if argv:
+        if len(argv) != 2 or argv[0] != "--output-root":
+            raise ValueError("Usage: smoke_test_migration_package_generation.py [--output-root PATH]")
+        output_root = _safe_output_root(Path(argv[1]))
+    cases = _cases_for_output_root(output_root)
+    loaded = [load_migration_contract(case["contract"], case["data_root"]) for case in cases]
+    first = [_run(case) for case in cases]
+    second = [_run(case) for case in cases]
     deterministic = all(
         first_item["build"]["_run_info"]["content_sha256"] == second_item["build"]["_run_info"]["content_sha256"]
         and first_item["validation"]["_run_info"]["content_sha256"] == second_item["validation"]["_run_info"]["content_sha256"]
@@ -153,4 +184,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

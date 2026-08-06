@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import yaml
 from frictionless import Package
+
+from src.core.hashing import normalized_text_sha256
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -230,9 +231,7 @@ def load_migration_contract(
     _scan_for_disallowed_strings(descriptor)
     carveops = _validate_metadata(descriptor)
     resource_names = _validate_resource_paths(descriptor, data_root_abs)
-    descriptor_sha256 = hashlib.sha256(
-        descriptor_abs.read_bytes()
-    ).hexdigest()
+    descriptor_sha256 = normalized_text_sha256(descriptor_abs)
     package = Package(descriptor, basepath=str(data_root_abs))
     return LoadedMigrationContract(
         contract_id=str(carveops["contract_id"]),

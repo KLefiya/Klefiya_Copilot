@@ -10,6 +10,7 @@ tools. No network, LLM, SAP, shell, or arbitrary path access is involved.
 from __future__ import annotations
 
 import asyncio
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -49,7 +50,7 @@ def require_ok(payload: dict[str, Any], tool_name: str) -> dict[str, Any]:
     return payload["data"]
 
 
-async def run_smoke() -> None:
+async def run_smoke(*, allow_write_rebuild: bool = False) -> None:
     server = StdioServerParameters(
         command=sys.executable,
         args=["-m", "src.mcp_servers.cutover_server"],
@@ -84,10 +85,12 @@ async def run_smoke() -> None:
                 extract_payload(await session.call_tool("list_raid_items", {"raid_type": "Risk"})),
                 "list_raid_items",
             )
-            rebuild = require_ok(
-                extract_payload(await session.call_tool("rebuild_cutover_reports", {"rebuild_plan": False})),
-                "rebuild_cutover_reports",
-            )
+            rebuild = None
+            if allow_write_rebuild:
+                rebuild = require_ok(
+                    extract_payload(await session.call_tool("rebuild_cutover_reports", {"rebuild_plan": False})),
+                    "rebuild_cutover_reports",
+                )
 
     print("MCP server: carveops-cutover")
     print(f"Tools discovered: {len(tool_names)}")
@@ -96,12 +99,19 @@ async def run_smoke() -> None:
     print(f"Overall RAG: {daily['overall_rag']}")
     print(f"Blocked activities: {blocked['count']}")
     print(f"Risk items: {risks['count']}")
-    print(f"Rebuild validation: {rebuild['validation']}")
+    print(f"Rebuild validation: {rebuild['validation'] if rebuild else 'skipped'}")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Smoke test the local cutover MCP server over stdio.")
+    parser.add_argument(
+        "--allow-write-rebuild",
+        action="store_true",
+        help="Also call rebuild_cutover_reports, which writes formal cutover artifacts by default.",
+    )
+    args = parser.parse_args(argv)
     try:
-        asyncio.run(run_smoke())
+        asyncio.run(run_smoke(allow_write_rebuild=args.allow_write_rebuild))
     except Exception as error:  # noqa: BLE001 - smoke test should print a concise failure.
         print(f"MCP smoke test failed: {error}", file=sys.stderr)
         return 1
@@ -109,4 +119,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

@@ -34,6 +34,24 @@ def run_fake(query: str, fake_plan: dict, **kwargs):
         return agent.run_agent(query, fake_plan=fake_plan, trace_output=Path(tmp) / "trace.json", **kwargs)
 
 
+def fake_rebuild_result() -> list[dict]:
+    return [
+        {
+            "tool_name": "rebuild_cutover_reports",
+            "arguments": {"rebuild_plan": False},
+            "ok": True,
+            "data": {
+                "validation": "valid",
+                "overall_rag": "Red",
+                "status_content_sha256": "a" * 64,
+                "daily_content_sha256": "b" * 64,
+            },
+            "error": None,
+            "source_content_sha256": "b" * 64,
+        }
+    ]
+
+
 class CutoverAgentTests(unittest.TestCase):
     def test_graph_contains_required_nodes(self) -> None:
         graph = agent.build_graph()
@@ -91,7 +109,8 @@ class CutoverAgentTests(unittest.TestCase):
 
     def test_allow_rebuild_status_only_is_available(self) -> None:
         p = plan("rebuild_reports", [{"tool_name": "rebuild_cutover_reports", "arguments": {"rebuild_plan": False}, "reason": "rebuild"}])
-        state, _ = run_fake("重新生成状态和日报", p, allow_rebuild=True)
+        with mock.patch.object(agent, "execute_mcp_requests", return_value=fake_rebuild_result()):
+            state, _ = run_fake("重新生成状态和日报", p, allow_rebuild=True)
         self.assertTrue(state["policy_decision"]["allowed"])
         self.assertIn("validation = valid", state["final_answer"])
 
@@ -108,7 +127,8 @@ class CutoverAgentTests(unittest.TestCase):
 
     def test_explicit_rebuild_request_allows_rebuild(self) -> None:
         p = plan("rebuild_reports", [{"tool_name": "rebuild_cutover_reports", "arguments": {"rebuild_plan": False}, "reason": "rebuild"}])
-        state, _ = run_fake("请重新生成状态和日报", p, allow_rebuild=True)
+        with mock.patch.object(agent, "execute_mcp_requests", return_value=fake_rebuild_result()):
+            state, _ = run_fake("请重新生成状态和日报", p, allow_rebuild=True)
         self.assertTrue(state["policy_decision"]["allowed"])
 
     def test_mcp_session_uses_stdio(self) -> None:
@@ -173,6 +193,14 @@ class CutoverAgentTests(unittest.TestCase):
         self.assertIn("migration activities=4", text)
         self.assertIn("activity links carry finding and RAID IDs directly", text)
         self.assertNotIn("Across 30 activities", text)
+
+    def test_chinese_current_status_trace_uses_plan_activity_count(self) -> None:
+        query = "当前 Cutover 总体状态怎么样？"
+        _state, trace = run_fake(query, agent.heuristic_plan(query).model_dump())
+        text = json.dumps(trace, ensure_ascii=False)
+        self.assertIn("34 个活动中", text)
+        self.assertIn("Migration findings：22", text)
+        self.assertNotIn("30 个活动中", text)
 
     def test_sha_citations_are_correct(self) -> None:
         state, _ = run_fake("current status", agent.heuristic_plan("current status").model_dump())

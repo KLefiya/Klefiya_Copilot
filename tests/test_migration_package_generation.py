@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 import shutil
 import subprocess
 import sys
@@ -18,6 +19,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.core.contracts.loader import load_migration_contract
+from src.core.hashing import canonical_json_content_sha256, normalized_text_sha256
+from src.core.mapping.engine import suggest_contract_mappings, write_mapping_report
 from src.core.package_generation.builder import (
     PackageBuildBlocked,
     build_migration_package,
@@ -69,6 +72,15 @@ def _write_mapping(root: Path, report: dict, name: str = "mapping.json") -> Path
     return path
 
 
+def _set_content_sha(report: dict) -> dict:
+    report["_run_info"] = {"content_sha256": canonical_json_content_sha256(report)}
+    return report
+
+
+def _text_sha(path: Path) -> str:
+    return normalized_text_sha256(path)
+
+
 def _build_temp(decisions=GENERIC_DECISIONS, source=GENERIC_SOURCE, mapping=GENERIC_MAPPING, contract=None):
     contract = contract or _contract()
     temp = tempfile.TemporaryDirectory(dir=GENERATED_ROOT)
@@ -88,6 +100,37 @@ def _build_temp(decisions=GENERIC_DECISIONS, source=GENERIC_SOURCE, mapping=GENE
 def _read_csv(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+class FakeEmbeddingBackend:
+    def encode(self, sentences, normalize_embeddings=True, show_progress_bar=False):
+        return [self._vector(text, normalize_embeddings) for text in sentences]
+
+    def _vector(self, text: str, normalize_embeddings: bool):
+        text = text.lower()
+        features = [
+            "customer",
+            "supplier",
+            "name",
+            "country",
+            "phone",
+            "tax",
+            "payment",
+            "bank",
+            "currency",
+            "identifier",
+            "company",
+            "language",
+            "category",
+            "account",
+            "email",
+        ]
+        vector = [1.0 if feature in text else 0.0 for feature in features]
+        vector.append(0.0 if any(vector) else 1.0)
+        if normalize_embeddings:
+            norm = math.sqrt(sum(item * item for item in vector))
+            vector = [item / norm for item in vector]
+        return vector
 
 
 def _cli_args(case: str, output_root: Path, build_report: Path, validation_report: Path, *, decisions=None, mapping=None):
@@ -401,10 +444,10 @@ class MigrationPackageGenerationTests(unittest.TestCase):
             contract_path.write_text(yaml.safe_dump(descriptor), encoding="utf-8")
             contract = load_migration_contract(contract_path, data)
             mapping = {
-                "_meta": {"contract_id": "optional-v1", "contract_sha256": contract.descriptor_sha256, "source_sha256": _sha(source), "source_row_count": 1, "source_field_count": 2},
+                "_meta": {"contract_id": "optional-v1", "contract_sha256": contract.descriptor_sha256, "source_sha256": _text_sha(source), "source_row_count": 1, "source_field_count": 2},
                 "mappings": [{"source_field": "opt", "top_candidates": [{"target": "optional.optional_note"}]}],
             }
-            mapping_path = _write_mapping(root_path, mapping)
+            mapping_path = _write_mapping(root_path, _set_content_sha(mapping))
             doc = {"version": "1.0.0", "contract_id": "optional-v1", "mapping_report": _rel(mapping_path), "source": {"path": _rel(source), "record_id_field": "id"}, "decisions": [{"source_field": "opt", "target": "optional.optional_note", "decision": "approved", "transformation": {"type": "copy"}}]}
             decision_path = _write_yaml(root_path, doc)
             with tempfile.TemporaryDirectory(dir=GENERATED_ROOT) as out:
@@ -492,8 +535,8 @@ class MigrationPackageGenerationTests(unittest.TestCase):
             source.write_bytes(GENERIC_SOURCE.read_bytes())
             report_json = json.loads(GENERIC_MAPPING.read_text(encoding="utf-8"))
             report_json["_meta"]["source_path"] = _rel(source)
-            report_json["_meta"]["source_sha256"] = _sha(source)
-            mapping = _write_mapping(Path(root), report_json)
+            report_json["_meta"]["source_sha256"] = _text_sha(source)
+            mapping = _write_mapping(Path(root), _set_content_sha(report_json))
             doc = _load_yaml()
             doc["mapping_report"] = _rel(mapping)
             doc["source"]["path"] = _rel(source)
@@ -501,8 +544,8 @@ class MigrationPackageGenerationTests(unittest.TestCase):
             temp_a, _, _, report_a = _build_temp(decisions=decisions, source=source, mapping=mapping)
             rows = source.read_text(encoding="utf-8").replace("Synthetic Aurora Stores", "Synthetic Changed Stores")
             source.write_text(rows, encoding="utf-8")
-            report_json["_meta"]["source_sha256"] = _sha(source)
-            mapping = _write_mapping(Path(root), report_json, "mapping2.json")
+            report_json["_meta"]["source_sha256"] = _text_sha(source)
+            mapping = _write_mapping(Path(root), _set_content_sha(report_json), "mapping2.json")
             doc["mapping_report"] = _rel(mapping)
             decisions = _write_yaml(Path(root), doc, "decisions2.yaml")
             temp_b, _, _, report_b = _build_temp(decisions=decisions, source=source, mapping=mapping)
@@ -521,6 +564,80 @@ class MigrationPackageGenerationTests(unittest.TestCase):
             self.addCleanup(temp_a.cleanup)
             self.addCleanup(temp_b.cleanup)
             self.assertNotEqual(report_a["_run_info"]["content_sha256"], report_b["_run_info"]["content_sha256"])
+
+    def test_45a_mapping_generated_at_does_not_change_package_sha(self):
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as root, tempfile.TemporaryDirectory(dir=GENERATED_ROOT) as out:
+            root_path = Path(root)
+            report_json = json.loads(GENERIC_MAPPING.read_text(encoding="utf-8"))
+            mapping = _write_mapping(root_path, report_json)
+            doc = _load_yaml()
+            doc["mapping_report"] = _rel(mapping)
+            decisions = _write_yaml(root_path, doc)
+            output = Path(out) / "package"
+            validation = Path(out) / "validation.json"
+            report_a = build_migration_package(_contract(), GENERIC_SOURCE, mapping, decisions, output, validation_report_path=validation)
+            report_json["_run_info"]["generated_at"] = "2099-01-01T00:00:00Z"
+            _write_mapping(root_path, report_json)
+            report_b = build_migration_package(_contract(), GENERIC_SOURCE, mapping, decisions, output, validation_report_path=validation)
+        self.assertEqual(report_a["_run_info"]["content_sha256"], report_b["_run_info"]["content_sha256"])
+
+    def test_45aa_generated_mapping_report_uses_decision_loader_source_sha_contract(self):
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as root:
+            root_path = Path(root)
+            mapping = root_path / "generated_mapping.json"
+            report = suggest_contract_mappings(_contract(), GENERIC_SOURCE, embedding_backend=FakeEmbeddingBackend())
+            write_mapping_report(report, mapping)
+            doc = _load_yaml()
+            doc["mapping_report"] = _rel(mapping)
+            decisions_path = _write_yaml(root_path, doc)
+            self.assertEqual(report["_meta"]["source_sha256"], _text_sha(GENERIC_SOURCE))
+            self.assertEqual(report["_meta"]["source_hash_mode"], "normalized_text_sha256_v1")
+            decisions = load_mapping_decisions(decisions_path, _contract(), mapping)
+            self.assertEqual(len(decisions.approved()), 11)
+
+    def test_45ab_formal_mapping_reports_record_source_hash_mode(self):
+        cases = [
+            (GENERIC_MAPPING, GENERIC_SOURCE),
+            (SAP_MAPPING, SAP_SOURCE),
+        ]
+        for mapping_path, source_path in cases:
+            with self.subTest(mapping=mapping_path.name):
+                report = json.loads(mapping_path.read_text(encoding="utf-8"))
+                self.assertEqual(report["_meta"]["source_sha256"], normalized_text_sha256(source_path))
+                self.assertEqual(report["_meta"]["source_hash_mode"], "normalized_text_sha256_v1")
+                self.assertEqual(report["_run_info"]["content_sha256"], canonical_json_content_sha256(report))
+                self.assertNotRegex(json.dumps(report, ensure_ascii=False), r"[A-Za-z]:[\\/]")
+
+    def test_45b_mapping_line_endings_do_not_change_package_sha(self):
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as root, tempfile.TemporaryDirectory(dir=GENERATED_ROOT) as out:
+            root_path = Path(root)
+            report_json = json.loads(GENERIC_MAPPING.read_text(encoding="utf-8"))
+            mapping = _write_mapping(root_path, report_json)
+            doc = _load_yaml()
+            doc["mapping_report"] = _rel(mapping)
+            decisions = _write_yaml(root_path, doc)
+            output = Path(out) / "package"
+            validation = Path(out) / "validation.json"
+            report_a = build_migration_package(_contract(), GENERIC_SOURCE, mapping, decisions, output, validation_report_path=validation)
+            mapping.write_bytes(mapping.read_text(encoding="utf-8").replace("\n", "\r\n").encode("utf-8"))
+            report_b = build_migration_package(_contract(), GENERIC_SOURCE, mapping, decisions, output, validation_report_path=validation)
+        self.assertEqual(report_a["_run_info"]["content_sha256"], report_b["_run_info"]["content_sha256"])
+
+    def test_45c_mapping_semantic_change_changes_package_sha(self):
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as root, tempfile.TemporaryDirectory(dir=GENERATED_ROOT) as out:
+            root_path = Path(root)
+            report_json = json.loads(GENERIC_MAPPING.read_text(encoding="utf-8"))
+            mapping = _write_mapping(root_path, report_json)
+            doc = _load_yaml()
+            doc["mapping_report"] = _rel(mapping)
+            decisions = _write_yaml(root_path, doc)
+            output = Path(out) / "package"
+            validation = Path(out) / "validation.json"
+            report_a = build_migration_package(_contract(), GENERIC_SOURCE, mapping, decisions, output, validation_report_path=validation)
+            report_json["mappings"][0]["top_candidates"][0]["score"] = 0.12345
+            _write_mapping(root_path, _set_content_sha(report_json))
+            report_b = build_migration_package(_contract(), GENERIC_SOURCE, mapping, decisions, output, validation_report_path=validation)
+        self.assertNotEqual(report_a["_run_info"]["content_sha256"], report_b["_run_info"]["content_sha256"])
 
     def test_46_generic_generated_package_valid(self):
         temp, _, validation, _ = _build_temp()
@@ -545,7 +662,19 @@ class MigrationPackageGenerationTests(unittest.TestCase):
         self.assertEqual(report["validation"]["finding_count"], 0)
 
     def test_50_smoke_passes(self):
-        result = subprocess.run([sys.executable, "scripts/smoke_test_migration_package_generation.py"], cwd=PROJECT_ROOT, text=True, capture_output=True, check=False)
+        with tempfile.TemporaryDirectory(dir=GENERATED_ROOT) as root:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/smoke_test_migration_package_generation.py",
+                    "--output-root",
+                    str(Path(root) / "outputs with space"),
+                ],
+                cwd=PROJECT_ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
         self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
         self.assertIn("Validation: valid", result.stdout)
 

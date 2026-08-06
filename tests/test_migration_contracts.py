@@ -26,6 +26,7 @@ from src.core.contracts.validator import (
     validate_migration_contract,
     write_validation_report,
 )
+from src.core.hashing import normalized_text_sha256
 
 
 GENERIC_CONTRACT = PROJECT_ROOT / "contracts" / "generic_customer" / "datapackage.yaml"
@@ -124,7 +125,7 @@ class MigrationContractTests(unittest.TestCase):
     def test_06_descriptor_sha_is_stable_hex(self):
         contract = load_migration_contract(GENERIC_CONTRACT, GENERIC_DATA)
         self.assertRegex(contract.descriptor_sha256, r"^[0-9a-f]{64}$")
-        self.assertEqual(contract.descriptor_sha256, _sha(GENERIC_CONTRACT))
+        self.assertEqual(contract.descriptor_sha256, normalized_text_sha256(GENERIC_CONTRACT))
 
     def test_07_missing_carveops_metadata_fails(self):
         descriptor = _minimal_descriptor()
@@ -253,7 +254,28 @@ class MigrationContractTests(unittest.TestCase):
 
     def test_22_report_meta_has_contract_sha(self):
         report = load_and_validate(SUPPLIER_CONTRACT, SUPPLIER_DATA)
-        self.assertEqual(report["_meta"]["contract_sha256"], _sha(SUPPLIER_CONTRACT))
+        self.assertEqual(report["_meta"]["contract_sha256"], normalized_text_sha256(SUPPLIER_CONTRACT))
+
+    def test_22a_descriptor_sha_normalizes_crlf_and_cr(self):
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
+            root = Path(temp_dir)
+            lf = root / "lf.yaml"
+            crlf = root / "crlf.yaml"
+            cr = root / "cr.yaml"
+            lf.write_text("name: demo\nvalue: one\n", encoding="utf-8")
+            crlf.write_bytes(b"name: demo\r\nvalue: one\r\n")
+            cr.write_bytes(b"name: demo\rvalue: one\r")
+            self.assertEqual(normalized_text_sha256(lf), normalized_text_sha256(crlf))
+            self.assertEqual(normalized_text_sha256(lf), normalized_text_sha256(cr))
+
+    def test_22b_descriptor_sha_changes_for_real_text_change(self):
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
+            root = Path(temp_dir)
+            first = root / "first.yaml"
+            second = root / "second.yaml"
+            first.write_text("name: demo\nvalue: one\n", encoding="utf-8")
+            second.write_text("name: demo\nvalue: two\n", encoding="utf-8")
+            self.assertNotEqual(normalized_text_sha256(first), normalized_text_sha256(second))
 
     def test_23_resource_row_counts_are_actual(self):
         report = load_and_validate(GENERIC_CONTRACT, GENERIC_DATA)

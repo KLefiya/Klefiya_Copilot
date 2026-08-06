@@ -364,6 +364,7 @@ class ContractMappingTests(unittest.TestCase):
     def test_41_evaluator_is_only_ground_truth_consumer(self):
         allowed = {
             str(PROJECT_ROOT / "src/core/mapping/evaluator.py"),
+            str(PROJECT_ROOT / "src/core/mapping/protocol_lock.py"),
             str(PROJECT_ROOT / "src/tools/evaluate_contract_mappings.py"),
             str(PROJECT_ROOT / "tests/test_contract_mapping.py"),
             str(PROJECT_ROOT / "scripts/smoke_test_contract_mapping.py"),

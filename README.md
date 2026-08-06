@@ -263,17 +263,50 @@ The report pages are read-only. They show the current checked-in analysis output
 
 The backend exposes reports through a fixed whitelist, not request-built file paths. The current health catalog is `11/11` available and includes `migration_cutover_findings.json`.
 
+## Hash And Provenance Modes
+
+The repository uses three SHA meanings deliberately:
+
+- Raw-file SHA256 is the byte hash of a file exactly as stored.
+- `normalized_text_sha256_v1` is used for text provenance where Windows and Unix line endings must describe the same source content.
+- Canonical JSON content SHA256 is stored in `_run_info.content_sha256`; it excludes `_run_info` itself and is the value used by downstream report provenance.
+
+Mapping source provenance now records `source_hash_mode: normalized_text_sha256_v1` in the formal mapping report `_meta`. Historical blind protocol evidence remains immutable: `blind_protocol_lock.json` stays fixed, while `blind_protocol_compatibility_amendment_v1.json` authorizes only the provenance-only `src/core/mapping/profiler.py` normalization change and the `src/core/mapping/engine.py` metadata propagation change. Effective lock validation means the historical lock plus that maintenance compatibility amendment is valid; it does not claim the current profiler or engine was part of the original locked-before-first-mapping engine, and scoring logic remains unchanged.
+
 ## Rebuild Cutover Reports
 
 ```powershell
+python src/tools/evaluate_blind_multitarget_mapping.py --mapping-report data/synthetic/erpnext_item_price_blind_mapping.json --ground-truth data/examples/blind/erpnext_item_price/ground_truth.json --protocol-lock data/examples/blind/erpnext_item_price/blind_protocol_lock.json --protocol-amendment data/examples/blind/erpnext_item_price/blind_protocol_compatibility_amendment_v1.json --output data/synthetic/erpnext_item_price_blind_evaluation.json
+python -c "import os; os.environ['CARVEOPS_OMIT_TIMESTAMP']='1'; import scripts.smoke_test_multitarget_package_generation as s; s.rebuild_formal_package()"
 python src/tools/build_migration_cutover_findings.py
 python src/tools/build_cutover_plan.py --migration-findings data/synthetic/migration_cutover_findings.json
 python src/tools/build_cutover_status.py
+python -m src.agents.cutover_agent --query "当前 Cutover 总体状态怎么样？" --offline --trace-output data/synthetic/cutover_agent_trace.json
 ```
 
 When the plan SHA changes, update `data/synthetic/cutover_status_updates.json` only after confirming every existing event target still exists in the new plan.
 
 The MCP rebuild path uses the same core generators in this order: migration findings, plan, status, daily. It first builds and validates every report, then stages files beside their targets. Each `os.replace` is a single-file atomic replacement. Ordinary commit failures trigger rollback from per-run backups, but the code does not promise cross-file recovery during process termination, system crash, or power loss.
+
+Current formal content SHA chain:
+
+```text
+Blind mapping = 99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703
+Blind evaluation = e75c2f8e5b6ed7794f265ceb795426045b403d2973a5bc7622af016c887e7527
+Protocol compatibility amendment = 2b15b49a87f031312534a28e376345e463de2a3aaae14380150f3c7c0a58888a
+Generic manifest = 3915849c255cafa9baf3011e212bb287985d8c20e785e3bbc3baa47aad234c5c
+Supplier-reference manifest = 0dcd68ef1422747be95223aacac782735c7cdad59fa2e865a0a36ff8154ff17e
+ERPNext manifest = 5c8f6d523a60887ce2b0173e3a89cae94cf484f0212b9cc247c7bd56738d0dfe
+ERPNext build report = 02e79b6cf55d898475fd145107da94204cbebed9ddb79d141659cb64862b7af9
+ERPNext generated validation = a4c688073df9799a05f5a6d5cba4c584c175c51e7615c87559923efa2b65f012
+Migration findings = 74dfc9310502fadaeb4cc27ec31c2e630d0fb97e9dbe645ba3e755d298fbaf60
+Cutover plan = 160b1fc7777c71d435eda910686188febb957f21004ae4466f96b08c44c89767
+Cutover status = c44900cb3561bfc411664ae7602061ca801faf55587d5eb9b187e096d9b586c5
+Cutover daily = e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8
+Cutover agent trace = ac99965064bd5900686ebbb9cb1762eebdfcf63ba5dff66f45ae82a61e17522d
+```
+
+The smoke scripts default to temporary output locations when they are used as tests. The formal rebuild order above is only for controlled artifact maintenance.
 
 ## Run The Verification Suite
 
@@ -285,12 +318,12 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 503 discovered, 27 failures, 33 errors
+Full unittest discovery: 527 tests, 0 failures, 0 errors
 Frontend tests: 45
 Workspace API tests: 38
 ```
 
-The full discovery failures are inherited from the baseline stale migration evidence-lock contracts. The scoped Migration/Cutover verification is the current evidence for this integration.
+Full unittest discovery is expected to pass with 0 failures and 0 errors. The scoped Migration/Cutover verification remains the focused evidence for this integration.
 
 The frontend build passed. Frontend lint passed with one existing Fast Refresh warning. `pip check` passed.
 

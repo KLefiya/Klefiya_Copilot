@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 import os
 import shutil
@@ -21,6 +20,7 @@ from src.core.contracts.loader import (
     load_migration_contract,
 )
 from src.core.mapping.target_index import build_target_field_index
+from src.core.hashing import provenance_text_or_raw_sha256, raw_file_sha256
 from src.core.package_generation import builder as package_builder
 from src.core.package_generation.builder import (
     PackageBuildBlocked,
@@ -92,8 +92,13 @@ class BuildPayload(BaseModel):
     expected_decision_sha256: str
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _raw_file_sha256(path: Path) -> str:
+    return raw_file_sha256(path)
+
+
+def _decision_state_sha256(path: Path) -> str:
+    # Backward-compatible API field name; YAML decisions use normalized text SHA.
+    return provenance_text_or_raw_sha256(path)
 
 
 def _project_relative(path: Path) -> str:
@@ -179,7 +184,7 @@ def _mapping_content_sha(spec: WorkspaceSpec) -> str:
     run_info = report.get("_run_info", {})
     if isinstance(run_info, dict) and isinstance(run_info.get("content_sha256"), str):
         return str(run_info["content_sha256"])
-    return _sha256(spec.mapping_report_path)
+    return _raw_file_sha256(spec.mapping_report_path)
 
 
 def _source_shape(spec: WorkspaceSpec) -> tuple[list[str], int]:
@@ -333,7 +338,7 @@ def _check_expected_state(spec: WorkspaceSpec, expected_mapping_sha: str, expect
             detail={"error": "stale_mapping", "message": "Mapping report changed after the workspace was loaded."},
         )
     current_path, _ = _effective_decision_path(spec)
-    current_sha = _sha256(current_path)
+    current_sha = _decision_state_sha256(current_path)
     if expected_decision_sha != current_sha:
         raise HTTPException(
             status_code=409,
@@ -477,8 +482,7 @@ def build_package(workspace_id: str, payload: BuildPayload) -> dict[str, Any]:
 @router.post("/workspaces/{workspace_id}/reset")
 def reset_workspace(workspace_id: str) -> dict[str, Any]:
     spec = _workspace_or_404(workspace_id)
-    runtime = spec.runtime_root.resolve()
-    runtime.relative_to((PROJECT_ROOT / "data" / "runtime").resolve())
+    runtime = _ensure_runtime_path(spec, spec.runtime_root)
     if runtime.exists():
         shutil.rmtree(runtime)
     return workspace_detail(spec)
@@ -509,7 +513,7 @@ def get_resource_preview(
         "rows": rows[:limit],
         "total_rows": len(rows),
         "returned_rows": min(limit, len(rows)),
-        "content_sha256": _sha256(csv_path),
+        "content_sha256": _raw_file_sha256(csv_path),
     }
 
 

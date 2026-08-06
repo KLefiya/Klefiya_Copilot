@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T09:20:37+00:00"
+    "content_sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "contract_field_mapping",
@@ -13,6 +12,7 @@
     "domain": "product_and_pricing",
     "source_path": "data/examples/blind/erpnext_item_price/source_product_catalog.csv",
     "source_sha256": "4df8f194d11c89de6aa01f538644aa73eee1488921a942b2f9af0ad8de38cd0a",
+    "source_hash_mode": "normalized_text_sha256_v1",
     "source_row_count": 8,
     "source_field_count": 10,
     "target_field_count": 11,

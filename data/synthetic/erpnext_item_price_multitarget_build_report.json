@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "320c88a2f86e1c6caa3e89308f449d07d10b95b8c9d2acc35cb56ef077d80057",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-29T01:21:16+00:00"
+    "content_sha256": "02e79b6cf55d898475fd145107da94204cbebed9ddb79d141659cb64862b7af9",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "migration_package_generation",
@@ -11,7 +10,9 @@
     "source_path": "data/examples/blind/erpnext_item_price/source_product_catalog.csv",
     "source_sha256": "4df8f194d11c89de6aa01f538644aa73eee1488921a942b2f9af0ad8de38cd0a",
     "mapping_report_path": "data/synthetic/erpnext_item_price_blind_mapping.json",
-    "mapping_report_sha256": "19075c3e403f7b82b6363470b17bd7bbfac1c9dda24d5b8e73787cbfa9fc4e1d",
+    "mapping_report_content_sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
+    "mapping_report_hash_mode": "content_sha256",
+    "mapping_report_sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
     "decision_path": "data/examples/remediation/erpnext_item_price/mapping_decisions.yaml",
     "decision_sha256": "c178cb179cacc1515eba3e787df4c688a11ae9965026b15fa27b4d29c31e1f87",
     "output_root": "data/generated/erpnext_item_price_multitarget",
@@ -69,7 +70,7 @@
   },
   "manifest": {
     "path": "data/generated/erpnext_item_price_multitarget/package_manifest.json",
-    "content_sha256": "8a63eafaface02dc3d04cebec1dea58a722b6f10cb8d2763a6077af96f9052c3"
+    "content_sha256": "5c8f6d523a60887ce2b0173e3a89cae94cf484f0212b9cc247c7bd56738d0dfe"
   },
   "lineage": {
     "path": "data/generated/erpnext_item_price_multitarget/lineage.json",

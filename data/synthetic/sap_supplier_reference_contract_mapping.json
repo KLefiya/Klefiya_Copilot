@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "76fd39cc1338061fe2672bb1f03172522560452515c10597071deec8ed975cb2",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T07:18:44+00:00"
+    "content_sha256": "bfb792f21f9ce81b161d5898cd644d20f6d3e601cacbd2efe2d8a98551cc1d63",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "contract_field_mapping",
@@ -13,6 +12,7 @@
     "domain": "supplier_master",
     "source_path": "data/examples/mapping/sap_supplier_reference/source_supplier.csv",
     "source_sha256": "f94a34b6c57ba1bee0ef68b8603c3eaa596d95bb7045db307fdff01a58ce5e16",
+    "source_hash_mode": "normalized_text_sha256_v1",
     "source_row_count": 6,
     "source_field_count": 12,
     "target_field_count": 11,

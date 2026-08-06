@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -25,6 +24,12 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.core.hashing import canonical_json_content_sha256
 
 # --------------------------------------------------------------------------
 # 阈值（可调）
@@ -36,7 +41,6 @@ LOW_CARDINALITY_MAX_DISTINCT = 20  # 取值数 ≤ 此值 → 附取值分布
 MISSING_RATE_FLAG_THRESHOLD = 0.10  # 缺失率高于此值 → 进 quality_flags
 MAX_SIGNATURES_IN_REPORT = 6       # 每字段最多列出几种格式签名
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
 INPUT_PATH = PROJECT_ROOT / "data" / "legacy" / "legacy_vendors.json"
 SCHEMA_PATH = PROJECT_ROOT / "schemas" / "business_partner_target_schema.json"
 OUTPUT_PATH = PROJECT_ROOT / "data" / "synthetic" / "vendor_profile_report.json"
@@ -243,15 +247,13 @@ def attach_run_info(report: dict[str, Any]) -> dict[str, Any]:
 
     设 CARVEOPS_OMIT_TIMESTAMP=1 可完全不写入时间戳，让整个文件字节一致。
     """
-    body = {key: value for key, value in report.items() if key != "_run_info"}
-    canonical = json.dumps(body, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     run_info: dict[str, Any] = {
-        "content_sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+        "content_sha256": canonical_json_content_sha256(report),
         "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
     }
     if os.environ.get("CARVEOPS_OMIT_TIMESTAMP") != "1":
         run_info["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    return {"_run_info": run_info, **body}
+    return {"_run_info": run_info, **report}
 
 
 def profile_records(

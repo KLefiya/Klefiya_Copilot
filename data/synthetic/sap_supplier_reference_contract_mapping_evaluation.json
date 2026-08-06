@@ -1,13 +1,12 @@
 {
   "_run_info": {
-    "content_sha256": "d8ae0500a5639ba9385c03c6aeaae84abe8915894677798f23773c59164abf3e",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T07:19:06+00:00"
+    "content_sha256": "3a04e534f47879f51809a24ee58d4d2f1dd07077e9f3b669a40adf49a5df385f",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "contract_field_mapping_evaluation",
     "mapping_report": "data/synthetic/sap_supplier_reference_contract_mapping.json",
-    "mapping_report_sha256": "76fd39cc1338061fe2672bb1f03172522560452515c10597071deec8ed975cb2",
+    "mapping_report_sha256": "bfb792f21f9ce81b161d5898cd644d20f6d3e601cacbd2efe2d8a98551cc1d63",
     "ground_truth": "data/examples/mapping/sap_supplier_reference/ground_truth.json",
     "ground_truth_used_for_evaluation_only": true,
     "mapping_report_ground_truth_used": false,

@@ -1,17 +1,22 @@
 {
   "_run_info": {
-    "content_sha256": "d665596750403d5928daa332f318dec3078bce1a7ab977c8192b3a5edd106fed",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T09:46:45+00:00"
+    "content_sha256": "e75c2f8e5b6ed7794f265ceb795426045b403d2973a5bc7622af016c887e7527",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "erpnext_blind_multitarget_mapping_evaluation",
     "mapping_report_path": "data/synthetic/erpnext_item_price_blind_mapping.json",
-    "mapping_report_sha256": "19075c3e403f7b82b6363470b17bd7bbfac1c9dda24d5b8e73787cbfa9fc4e1d",
+    "mapping_report_content_sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
+    "mapping_report_hash_mode": "content_sha256",
+    "mapping_report_sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
     "ground_truth_path": "data/examples/blind/erpnext_item_price/ground_truth.json",
     "ground_truth_sha256": "24b28a09ad671bc9a0cca59c4c2b79cd11ded087d694918775475d66b3886019",
     "protocol_lock_path": "data/examples/blind/erpnext_item_price/blind_protocol_lock.json",
     "protocol_lock_sha256": "bd092f06592d6a71961454cf638e2864ac3e5fb8fc0f247a1fe0b8ae36fdb2ed",
+    "protocol_lock_hash_mode": "normalized_text_sha256_v1",
+    "protocol_amendment_path": "data/examples/blind/erpnext_item_price/blind_protocol_compatibility_amendment_v1.json",
+    "protocol_amendment_content_sha256": "2b15b49a87f031312534a28e376345e463de2a3aaae14380150f3c7c0a58888a",
+    "effective_protocol_validation": "effective_lock_with_compatibility_amendment",
     "ground_truth_used_for_evaluation_only": true
   },
   "summary": {
@@ -228,6 +233,8 @@
   "blind_protocol_lock": {
     "engine_commit": "c908712daab4f4989988d41e869df693b5d8944a",
     "aliases_present": false,
-    "locked_before_first_mapping": true
+    "locked_before_first_mapping": true,
+    "compatibility_amendment_applied": true,
+    "current_engine_claim": "historical_lock_with_provenance_only_profiler_amendment"
   }
 }

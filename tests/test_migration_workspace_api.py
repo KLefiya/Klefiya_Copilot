@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import json
 import shutil
+import tempfile
+import threading
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -14,14 +17,29 @@ from backend.main import app
 
 class MigrationWorkspaceApiTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.client = TestClient(app)
-        self.spec = workspace.WORKSPACE
+        self._original_workspace = workspace.WORKSPACE
+        self._original_workspaces = dict(workspace.WORKSPACES)
+        self._original_build_locks = dict(workspace.BUILD_LOCKS)
+        self._temp_dir = tempfile.TemporaryDirectory(dir=workspace.PROJECT_ROOT)
+        self.spec = replace(
+            workspace.WORKSPACE,
+            runtime_root=Path(self._temp_dir.name) / "runtime with space",
+        )
+        workspace.WORKSPACE = self.spec
+        workspace.WORKSPACES = {self.spec.workspace_id: self.spec}
+        workspace.BUILD_LOCKS = {self.spec.workspace_id: threading.Lock()}
         self.seed_bytes = self.spec.seed_decision_path.read_bytes()
-        self._clean_runtime()
+        self.client = TestClient(app)
 
     def tearDown(self) -> None:
-        self._clean_runtime()
-        self.spec.seed_decision_path.write_bytes(self.seed_bytes)
+        try:
+            self._clean_runtime()
+            self.assertEqual(self.spec.seed_decision_path.read_bytes(), self.seed_bytes)
+        finally:
+            workspace.WORKSPACE = self._original_workspace
+            workspace.WORKSPACES = self._original_workspaces
+            workspace.BUILD_LOCKS = self._original_build_locks
+            self._temp_dir.cleanup()
 
     def _clean_runtime(self) -> None:
         if self.spec.runtime_root.exists():
@@ -92,7 +110,7 @@ class MigrationWorkspaceApiTests(unittest.TestCase):
         detail = self._detail()
         self.assertEqual(
             detail["workspace"]["mapping_content_sha256"],
-            "f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164",
+            "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
         )
 
     def test_07_save_valid_single_target_decisions(self) -> None:
@@ -284,7 +302,7 @@ class MigrationWorkspaceApiTests(unittest.TestCase):
     def test_34_runtime_paths_remain_inside_data_runtime(self) -> None:
         self._build()
         for path in self.spec.runtime_root.rglob("*"):
-            path.resolve().relative_to((workspace.PROJECT_ROOT / "data" / "runtime").resolve())
+            path.resolve().relative_to(self.spec.runtime_root.resolve())
 
     def test_35_api_response_contains_no_local_absolute_path(self) -> None:
         detail = self._detail()

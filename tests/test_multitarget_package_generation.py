@@ -19,6 +19,8 @@ from scripts.smoke_test_multitarget_package_generation import (
     CONTRACT,
     CONTRACT_DATA,
     DECISIONS,
+    EVALUATION,
+    AMENDMENT,
     GENERIC_BUILD,
     GENERIC_BUILD_SHA,
     GENERIC_MANIFEST,
@@ -40,6 +42,7 @@ from scripts.smoke_test_multitarget_package_generation import (
     sha256,
 )
 from src.core.contracts.loader import load_migration_contract
+from src.core.mapping.protocol_lock import validate_effective_protocol_lock
 from src.core.package_generation.builder import build_migration_package
 from src.core.package_generation.decision_loader import DecisionLoadError, load_mapping_decisions
 
@@ -53,6 +56,22 @@ SAP_DATA = PROJECT_ROOT / "data" / "examples" / "sap_supplier_reference"
 SAP_MAPPING = PROJECT_ROOT / "data" / "synthetic" / "sap_supplier_reference_contract_mapping.json"
 SAP_DECISIONS = PROJECT_ROOT / "data" / "examples" / "package_generation" / "sap_supplier_reference" / "mapping_decisions.yaml"
 GENERATED_ROOT = PROJECT_ROOT / "data" / "generated"
+PROTECTED_FILES = (
+    CONTRACT,
+    SOURCE,
+    MAPPING,
+    EVALUATION,
+    LOCK,
+    AMENDMENT,
+    DECISIONS,
+    BUILD_REPORT,
+    VALIDATION_REPORT,
+    REMEDIATION_REPORT,
+    GENERIC_MANIFEST,
+    SAP_MANIFEST,
+    GENERIC_BUILD,
+    SAP_BUILD,
+)
 
 
 def _contract():
@@ -98,6 +117,17 @@ def _target_cells() -> list[tuple[str, int, str]]:
 
 
 class MultitargetPackageGenerationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._protected_bytes = {
+            path: path.read_bytes()
+            for path in PROTECTED_FILES
+            if path.exists()
+        }
+
+    def tearDown(self) -> None:
+        for path, before in self._protected_bytes.items():
+            self.assertEqual(path.read_bytes(), before, f"{path} was modified")
+
     def test_01_same_source_different_target_allowed(self):
         decisions = _load_decisions()
         targets = {item.target for item in decisions.approved() if item.source_field == "article_number"}
@@ -300,8 +330,8 @@ class MultitargetPackageGenerationTests(unittest.TestCase):
         self.assertEqual(sha256(LOCK), PROTOCOL_LOCK_SHA)
 
     def test_38_engine_file_sha_unchanged(self):
-        lock = _read_json(LOCK)
-        self.assertTrue(all(sha256(PROJECT_ROOT / path) == expected for path, expected in lock["engine_files"].items()))
+        result = validate_effective_protocol_lock(LOCK, AMENDMENT)
+        self.assertEqual(result["validation"], "valid")
 
     def test_39_generic_manifest_sha_unchanged(self):
         self.assertEqual(content_sha(GENERIC_MANIFEST), GENERIC_MANIFEST_SHA)
@@ -315,7 +345,9 @@ class MultitargetPackageGenerationTests(unittest.TestCase):
         self.assertEqual(build_remediation_report()["_run_info"]["content_sha256"], content_sha(REMEDIATION_REPORT))
 
     def test_42_smoke_passes(self):
-        self.assertEqual(smoke_main(), 0)
+        with tempfile.TemporaryDirectory(dir=GENERATED_ROOT) as root:
+            output_root = Path(root) / "outputs with space"
+            self.assertEqual(smoke_main(["--output-root", str(output_root)]), 0)
 
 
 if __name__ == "__main__":

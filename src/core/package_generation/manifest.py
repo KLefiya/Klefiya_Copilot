@@ -44,6 +44,9 @@ def build_package_manifest(
         },
         "mapping_report": {
             "path": project_relative(mapping_report_path),
+            "content_sha256": mapping_report_sha256,
+            "hash_mode": "content_sha256",
+            # Backward-compatible field name; value is mapping report _run_info.content_sha256.
             "sha256": mapping_report_sha256,
         },
         "mapping_decisions": {

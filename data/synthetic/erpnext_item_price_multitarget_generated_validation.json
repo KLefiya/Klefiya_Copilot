@@ -1,8 +1,7 @@
 {
   "_run_info": {
     "content_sha256": "a4c688073df9799a05f5a6d5cba4c584c175c51e7615c87559923efa2b65f012",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-29T01:21:16+00:00"
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "migration_contract_validation",

@@ -735,8 +735,17 @@ def compose_from_results(state: CutoverAgentState) -> tuple[str, list[dict[str, 
         else:
             if daily:
                 head = daily["data"]["headline"]
+                plan_data = plan_summary["data"] if plan_summary else {}
+                activity_count = plan_data.get("activity_count") or (
+                    head["completed_activity_count"]
+                    + head["blocked_activity_count"]
+                    + head["not_started_activity_count"]
+                )
                 lines.append(f"当前 Cutover 状态为 {daily['data']['overall_rag']}（截至 {head['as_of_offset']}）。")
-                lines.append(f"30 个活动中，{head['completed_activity_count']} 个已完成，{head['blocked_activity_count']} 个被阻塞，{head['not_started_activity_count']} 个尚未开始。")
+                lines.append(f"{activity_count} 个活动中，{head['completed_activity_count']} 个已完成，{head['blocked_activity_count']} 个被阻塞，{head['not_started_activity_count']} 个尚未开始。")
+                if plan_data:
+                    lines.append(f"Migration findings：{plan_data.get('migration_finding_count')}，SHA {plan_data.get('migration_findings_content_sha256')}。")
+                    lines.append(f"Migration RAID={plan_data.get('migration_raid_count')}；Migration Activities={plan_data.get('migration_activity_count')}。")
                 gate = head.get("next_gate") or {}
                 lines.append(f"下一审批门是 {gate.get('gate_id')}，当前为 {gate.get('current_status')}。")
             elif status:

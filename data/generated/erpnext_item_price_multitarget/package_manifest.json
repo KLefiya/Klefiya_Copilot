@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "8a63eafaface02dc3d04cebec1dea58a722b6f10cb8d2763a6077af96f9052c3",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-29T01:59:42+00:00"
+    "content_sha256": "5c8f6d523a60887ce2b0173e3a89cae94cf484f0212b9cc247c7bd56738d0dfe",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "contract": {
     "contract_id": "erpnext-item-price-reference-v1",
@@ -16,7 +15,9 @@
   },
   "mapping_report": {
     "path": "data/synthetic/erpnext_item_price_blind_mapping.json",
-    "sha256": "19075c3e403f7b82b6363470b17bd7bbfac1c9dda24d5b8e73787cbfa9fc4e1d"
+    "content_sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703",
+    "hash_mode": "content_sha256",
+    "sha256": "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703"
   },
   "mapping_decisions": {
     "path": "data/examples/remediation/erpnext_item_price/mapping_decisions.yaml",

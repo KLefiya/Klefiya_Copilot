@@ -1,0 +1,61 @@
+{
+  "amendment_version": "1.0",
+  "purpose": "cross_platform_provenance_normalization",
+  "base_lock_path": "data/examples/blind/erpnext_item_price/blind_protocol_lock.json",
+  "base_lock_normalized_text_sha256": "bd092f06592d6a71961454cf638e2864ac3e5fb8fc0f247a1fe0b8ae36fdb2ed",
+  "hash_mode": "normalized_text_sha256_v1",
+  "change_class": "provenance_only",
+  "scoring_logic_changed": false,
+  "ground_truth_used_for_mapping": false,
+  "locked_before_maintenance_replay": true,
+  "locked_before_first_mapping": false,
+  "allowed_engine_file_changes": [
+    {
+      "path": "src/core/mapping/profiler.py",
+      "before_normalized_text_sha256": "a698de7fc21e2d398e9a6fa5f010224431c81c66a150f95ba08816a21c5c8542",
+      "after_normalized_text_sha256": "7052b3741734cf4066151724136f315652f4cd39526cb21d8b07bbd3e1952e07",
+      "change_class": "provenance_only",
+      "reason": "source CSV provenance now uses LF-normalized text SHA so Git checkout line endings do not change mapping report identity."
+    },
+    {
+      "path": "src/core/mapping/engine.py",
+      "before_normalized_text_sha256": "a8df8ff2fbc58bb7434198f835ecbc16fac56a4f413dabb2dff056003aceace9",
+      "after_normalized_text_sha256": "0540a0a2927f1748a67b76caece665fe07930d622324135f6aa89c532504e97b",
+      "change_class": "provenance_only",
+      "reason": "propagate declared source hash mode into mapping report metadata"
+    }
+  ],
+  "unchanged_protocol_values": {
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "thresholds": {
+      "high_confidence": 0.7,
+      "medium_confidence": 0.45,
+      "no_match": 0.4,
+      "alias_confidence_floor": 0.9,
+      "type_gate_floor": 0.6,
+      "top_n_candidates": 3
+    },
+    "contract_sha256": "091dd55c2181411440de824d154202f0b28130ee706c2d9c0b7f3a5c9926db0d",
+    "source_sha256": "4df8f194d11c89de6aa01f538644aa73eee1488921a942b2f9af0ad8de38cd0a",
+    "ground_truth_sha256": "24b28a09ad671bc9a0cca59c4c2b79cd11ded087d694918775475d66b3886019",
+    "upstream_reference_sha256": "c36bdc305ca660a6ec5f28f15592aaa5c0dab66019dcc919ba976188351baa8e",
+    "aliases_present": false
+  },
+  "protected_inputs": {
+    "contract_path": "contracts/erpnext_item_price_reference/datapackage.yaml",
+    "source_path": "data/examples/blind/erpnext_item_price/source_product_catalog.csv",
+    "ground_truth_path": "data/examples/blind/erpnext_item_price/ground_truth.json",
+    "upstream_reference_path": "references/erpnext_item_price/upstream_reference.json"
+  },
+  "boundaries": [
+    "This amendment is not a new blind protocol lock.",
+    "It does not update engine_commit or the historical engine_files values.",
+    "It does not permit scorer, target index, mapping engine, model, threshold, contract, source semantic content, truth, or reference changes.",
+    "Ground truth remains evaluation-only and was not used to generate mappings."
+  ],
+  "_run_info": {
+    "content_sha256": "2b15b49a87f031312534a28e376345e463de2a3aaae14380150f3c7c0a58888a",
+    "hash_mode": "canonical_json_content_sha256_excluding_run_info",
+    "note": "Deterministic amendment identity; no generated timestamp is recorded."
+  }
+}

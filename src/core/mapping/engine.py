@@ -77,6 +77,7 @@ def suggest_contract_mappings(
             "domain": contract.domain,
             "source_path": source_meta["source_path"],
             "source_sha256": source_meta["source_sha256"],
+            "source_hash_mode": source_meta["source_hash_mode"],
             "source_row_count": source_meta["source_row_count"],
             "source_field_count": source_meta["source_field_count"],
             "target_field_count": len(targets),

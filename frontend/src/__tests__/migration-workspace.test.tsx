@@ -120,7 +120,7 @@ function detail(decisions = seedDecisions, build = false): MigrationWorkspaceDet
       domain: 'product_and_pricing',
       source_path: 'data/examples/blind/erpnext_item_price/source_product_catalog.csv',
       source_sha256: '1'.repeat(64),
-      mapping_content_sha256: 'f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164',
+      mapping_content_sha256: '99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703',
       mapping_report_sha256: '2'.repeat(64),
       decision_source: decisions === seedDecisions ? 'seed' : 'runtime',
       decision_sha256: decisions === seedDecisions ? 'seedsha' : 'runtimesha',
@@ -149,8 +149,8 @@ function detail(decisions = seedDecisions, build = false): MigrationWorkspaceDet
             lineage_entries: 88,
           },
           validation: { valid: true, finding_count: 0 },
-          manifest: { content_sha256: '8a63eafaface02dc3d04cebec1dea58a722b6f10cb8d2763a6077af96f9052c3', resource_count: 2 },
-          build_report_sha256: '320c88a2f86e1c6caa3e89308f449d07d10b95b8c9d2acc35cb56ef077d80057',
+          manifest: { content_sha256: '5c8f6d523a60887ce2b0173e3a89cae94cf484f0212b9cc247c7bd56738d0dfe', resource_count: 2 },
+          build_report_sha256: '02e79b6cf55d898475fd145107da94204cbebed9ddb79d141659cb64862b7af9',
         }
       : { available: false },
     resources: [

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import re
 from datetime import datetime
 from pathlib import Path
 
 from src.core.contracts.loader import PROJECT_ROOT, ContractLoadError
+from src.core.hashing import normalized_text_sha256
 from src.core.mapping.models import SourceFieldProfile
 
 
@@ -25,7 +25,7 @@ def project_relative(path: Path) -> str:
 
 
 def source_sha256(path: Path) -> str:
-    return hashlib.sha256(path.resolve().read_bytes()).hexdigest()
+    return normalized_text_sha256(path.resolve())
 
 
 def _is_url(value: str) -> bool:
@@ -170,6 +170,7 @@ def profile_source_csv(source_path: Path) -> tuple[list[SourceFieldProfile], dic
     return profiles, {
         "source_path": project_relative(resolved),
         "source_sha256": source_sha256(resolved),
+        "source_hash_mode": "normalized_text_sha256_v1",
         "source_row_count": row_count,
         "source_field_count": len(header),
     }

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 import re
 import sys
@@ -17,19 +16,21 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.core.contracts.loader import load_migration_contract
+from src.core.hashing import provenance_text_or_raw_sha256
+from src.core.mapping.protocol_lock import ProtocolLockError, validate_effective_protocol_lock
 from src.core.package_generation.builder import build_migration_package, write_build_report
 from src.core.package_generation.decision_loader import load_mapping_decisions
 from src.tools.data_profile import attach_run_info
 
 
 BLIND_COMMIT = "e7f227fff0816b85e2e6e8b279062b944c723da5"
-BLIND_MAPPING_SHA = "f2b1a3b578222694b845950165334b628a6e8285d54287457af10fb2fd836164"
-BLIND_EVALUATION_SHA = "d665596750403d5928daa332f318dec3078bce1a7ab977c8192b3a5edd106fed"
+BLIND_MAPPING_SHA = "99007ad5da580b6e764b01e3a9739840bcfcff1b1a16c29cf708124ebbc56703"
+BLIND_EVALUATION_SHA = "e75c2f8e5b6ed7794f265ceb795426045b403d2973a5bc7622af016c887e7527"
 PROTOCOL_LOCK_SHA = "bd092f06592d6a71961454cf638e2864ac3e5fb8fc0f247a1fe0b8ae36fdb2ed"
-GENERIC_MANIFEST_SHA = "d2e4abbc5b0e451787fecd38ab0bf57a4af5492436ac5b6df55c95eb9e22ae59"
-SAP_MANIFEST_SHA = "71874bf500dbe39fc9f7bf0ff19d292f1eb0cd870c891f9a0ee3db99062a1ba5"
-GENERIC_BUILD_SHA = "5ee837b005fbe3162363e9587bc0b57128e53b75efc2cb404efc66ab3b5dc789"
-SAP_BUILD_SHA = "56725ac76a07fcdf7c37e9d2f64d3aeb3a7c96b7261b4cabf1e927231c0b303a"
+GENERIC_MANIFEST_SHA = "3915849c255cafa9baf3011e212bb287985d8c20e785e3bbc3baa47aad234c5c"
+SAP_MANIFEST_SHA = "0dcd68ef1422747be95223aacac782735c7cdad59fa2e865a0a36ff8154ff17e"
+GENERIC_BUILD_SHA = "d70d0d02d4231da377f3fbcdd3095bdfd8fcfcac8fec57d718486f3fac69c473"
+SAP_BUILD_SHA = "397bc0301d29f402f1a37fd5c672b2b755f3976475c36c7721997f74a5b8f3e8"
 
 CONTRACT = PROJECT_ROOT / "contracts" / "erpnext_item_price_reference" / "datapackage.yaml"
 CONTRACT_DATA = PROJECT_ROOT / "data" / "examples" / "blind" / "erpnext_item_price"
@@ -37,6 +38,7 @@ SOURCE = CONTRACT_DATA / "source_product_catalog.csv"
 MAPPING = PROJECT_ROOT / "data" / "synthetic" / "erpnext_item_price_blind_mapping.json"
 EVALUATION = PROJECT_ROOT / "data" / "synthetic" / "erpnext_item_price_blind_evaluation.json"
 LOCK = CONTRACT_DATA / "blind_protocol_lock.json"
+AMENDMENT = CONTRACT_DATA / "blind_protocol_compatibility_amendment_v1.json"
 DECISIONS = PROJECT_ROOT / "data" / "examples" / "remediation" / "erpnext_item_price" / "mapping_decisions.yaml"
 OUTPUT_ROOT = PROJECT_ROOT / "data" / "generated" / "erpnext_item_price_multitarget"
 BUILD_REPORT = PROJECT_ROOT / "data" / "synthetic" / "erpnext_item_price_multitarget_build_report.json"
@@ -50,7 +52,7 @@ SAP_BUILD = PROJECT_ROOT / "data" / "synthetic" / "sap_supplier_reference_packag
 
 
 def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return provenance_text_or_raw_sha256(path)
 
 
 def content_sha(path: Path) -> str:
@@ -85,11 +87,17 @@ def multitarget_sources() -> list[str]:
     return sorted(source for source, count in counts.items() if count > 1)
 
 
-def build_remediation_report() -> dict[str, Any]:
-    build = read_json(BUILD_REPORT)
-    validation = read_json(VALIDATION_REPORT)
-    lineage = read_json(OUTPUT_ROOT / "lineage.json")
-    manifest = read_json(OUTPUT_ROOT / "package_manifest.json")
+def build_remediation_report(
+    *,
+    output_root: Path = OUTPUT_ROOT,
+    build_report: Path = BUILD_REPORT,
+    validation_report: Path = VALIDATION_REPORT,
+    remediation_report: Path = REMEDIATION_REPORT,
+) -> dict[str, Any]:
+    build = read_json(build_report)
+    validation = read_json(validation_report)
+    lineage = read_json(output_root / "lineage.json")
+    manifest = read_json(output_root / "package_manifest.json")
     body = {
         "_meta": {
             "component": "multitarget_mapping_remediation",
@@ -124,7 +132,7 @@ def build_remediation_report() -> dict[str, Any]:
         "artifacts": {
             "decision_path": "data/examples/remediation/erpnext_item_price/mapping_decisions.yaml",
             "decision_sha256": sha256(DECISIONS),
-            "output_root": "data/generated/erpnext_item_price_multitarget",
+            "output_root": project_relative(output_root),
             "manifest_content_sha256": manifest["_run_info"]["content_sha256"],
             "build_report_content_sha256": build["_run_info"]["content_sha256"],
             "generated_validation_content_sha256": validation["_run_info"]["content_sha256"],
@@ -146,18 +154,36 @@ def write_stable_json(document: dict[str, Any], output_path: Path) -> None:
     output_path.write_text(json.dumps(next_document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def rebuild_formal_package() -> dict[str, Any]:
+def project_relative(path: Path) -> str:
+    return Path(path).resolve().relative_to(PROJECT_ROOT).as_posix()
+
+
+def rebuild_formal_package(
+    *,
+    output_root: Path = OUTPUT_ROOT,
+    build_report: Path = BUILD_REPORT,
+    validation_report: Path = VALIDATION_REPORT,
+    remediation_report: Path = REMEDIATION_REPORT,
+) -> dict[str, Any]:
     contract = load_migration_contract(CONTRACT, CONTRACT_DATA)
     report = build_migration_package(
         contract,
         SOURCE,
         MAPPING,
         DECISIONS,
-        OUTPUT_ROOT,
-        validation_report_path=VALIDATION_REPORT,
+        output_root,
+        validation_report_path=validation_report,
     )
-    write_build_report(report, BUILD_REPORT)
-    write_stable_json(build_remediation_report(), REMEDIATION_REPORT)
+    write_build_report(report, build_report)
+    write_stable_json(
+        build_remediation_report(
+            output_root=output_root,
+            build_report=build_report,
+            validation_report=validation_report,
+            remediation_report=remediation_report,
+        ),
+        remediation_report,
+    )
     return report
 
 
@@ -165,11 +191,11 @@ def target_cell_key(entry: dict[str, Any]) -> tuple[str, int, str]:
     return (entry["target_resource"], int(entry["target_row_number"]), entry["target_field"])
 
 
-def every_nonempty_target_cell_has_lineage() -> bool:
-    lineage = read_json(OUTPUT_ROOT / "lineage.json")
+def every_nonempty_target_cell_has_lineage(output_root: Path = OUTPUT_ROOT) -> bool:
+    lineage = read_json(output_root / "lineage.json")
     lineage_cells = {target_cell_key(entry) for entry in lineage["entries"]}
     for resource_name, filename in (("item", "item.csv"), ("item_price", "item_price.csv")):
-        for row_number, row in enumerate(read_csv(OUTPUT_ROOT / filename), start=1):
+        for row_number, row in enumerate(read_csv(output_root / filename), start=1):
             for field, value in row.items():
                 if value and (resource_name, row_number, field) not in lineage_cells:
                     return False
@@ -186,10 +212,10 @@ def source_has_multiple_targets_loaded() -> bool:
 
 
 def engine_lock_matches() -> bool:
-    lock = read_json(LOCK)
-    for rel_path, expected in lock["engine_files"].items():
-        if sha256(PROJECT_ROOT / rel_path) != expected:
-            return False
+    try:
+        validate_effective_protocol_lock(LOCK, AMENDMENT)
+    except ProtocolLockError:
+        return False
     return True
 
 
@@ -205,15 +231,49 @@ def no_answer_file_dependency() -> bool:
     return "ground" + "_truth.json" not in text and "ground" + "_truth_path" not in text
 
 
-def main() -> int:
-    first = rebuild_formal_package()
-    first_validation = content_sha(VALIDATION_REPORT)
-    first_manifest = content_sha(OUTPUT_ROOT / "package_manifest.json")
-    first_remediation = content_sha(REMEDIATION_REPORT)
-    second = rebuild_formal_package()
-    lineage = read_json(OUTPUT_ROOT / "lineage.json")
-    item_rows = read_csv(OUTPUT_ROOT / "item.csv")
-    price_rows = read_csv(OUTPUT_ROOT / "item_price.csv")
+def _safe_output_root(path: Path) -> Path:
+    if ".." in Path(path).parts:
+        raise ValueError("--output-root must not contain path escapes")
+    resolved = Path(path).resolve()
+    try:
+        resolved.relative_to(PROJECT_ROOT)
+    except ValueError as exc:
+        raise ValueError("--output-root must stay inside the project root") from exc
+    resolved.mkdir(parents=True, exist_ok=True)
+    return resolved
+
+
+def main(argv: list[str] | None = None) -> int:
+    output_root = OUTPUT_ROOT
+    build_report = BUILD_REPORT
+    validation_report = VALIDATION_REPORT
+    remediation_report = REMEDIATION_REPORT
+    if argv is not None and argv:
+        if len(argv) != 2 or argv[0] != "--output-root":
+            raise ValueError("Usage: smoke_test_multitarget_package_generation.py [--output-root PATH]")
+        root = _safe_output_root(Path(argv[1]))
+        output_root = root / "generated" / "erpnext_item_price_multitarget"
+        build_report = root / "synthetic" / "erpnext_item_price_multitarget_build_report.json"
+        validation_report = root / "synthetic" / "erpnext_item_price_multitarget_generated_validation.json"
+        remediation_report = root / "synthetic" / "erpnext_item_price_multitarget_remediation.json"
+    first = rebuild_formal_package(
+        output_root=output_root,
+        build_report=build_report,
+        validation_report=validation_report,
+        remediation_report=remediation_report,
+    )
+    first_validation = content_sha(validation_report)
+    first_manifest = content_sha(output_root / "package_manifest.json")
+    first_remediation = content_sha(remediation_report)
+    second = rebuild_formal_package(
+        output_root=output_root,
+        build_report=build_report,
+        validation_report=validation_report,
+        remediation_report=remediation_report,
+    )
+    lineage = read_json(output_root / "lineage.json")
+    item_rows = read_csv(output_root / "item.csv")
+    price_rows = read_csv(output_root / "item_price.csv")
     target_cells = [target_cell_key(entry) for entry in lineage["entries"]]
     checks = {
         "blind_mapping": content_sha(MAPPING) == BLIND_MAPPING_SHA,
@@ -230,7 +290,7 @@ def main() -> int:
         "measure_item": all(item["stock_uom"] == price["uom"] for item, price in zip(item_rows, price_rows)),
         "lineage": len(lineage["entries"]) == 88,
         "lineage_unique": len(target_cells) == len(set(target_cells)),
-        "lineage_cells": every_nonempty_target_cell_has_lineage(),
+        "lineage_cells": every_nonempty_target_cell_has_lineage(output_root),
         "validation": second["validation"]["valid"] is True,
         "findings": second["validation"]["finding_count"] == 0,
         "generic_manifest": content_sha(GENERIC_MANIFEST) == GENERIC_MANIFEST_SHA,
@@ -239,9 +299,9 @@ def main() -> int:
         "sap_build": content_sha(SAP_BUILD) == SAP_BUILD_SHA,
         "deterministic": (
             first["_run_info"]["content_sha256"] == second["_run_info"]["content_sha256"]
-            and first_validation == content_sha(VALIDATION_REPORT)
-            and first_manifest == content_sha(OUTPUT_ROOT / "package_manifest.json")
-            and first_remediation == content_sha(REMEDIATION_REPORT)
+            and first_validation == content_sha(validation_report)
+            and first_manifest == content_sha(output_root / "package_manifest.json")
+            and first_remediation == content_sha(remediation_report)
         ),
         "answers": no_answer_file_dependency(),
         "branches": no_special_branch_in_package_core(),
@@ -264,4 +324,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

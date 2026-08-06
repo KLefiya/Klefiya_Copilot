@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import argparse
 import sys
 from collections import Counter, defaultdict, deque
 from copy import deepcopy
@@ -85,6 +86,13 @@ EVENT_REQUIRED_FIELDS = (
 
 class CutoverStatusError(RuntimeError):
     """Raised when status events or source reports are invalid."""
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Build deterministic cutover status and daily reports.")
+    parser.add_argument("--status-output", type=Path, default=STATUS_OUTPUT_PATH)
+    parser.add_argument("--daily-output", type=Path, default=DAILY_OUTPUT_PATH)
+    return parser
 
 
 def display_path(path: Path) -> str:
@@ -1011,15 +1019,16 @@ def build_daily_report(status_report: dict[str, Any]) -> dict[str, Any]:
     return attach_run_info(body)
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
     try:
         plan = load_json(PLAN_PATH)
         constraints = load_json(CONSTRAINTS_PATH)
         updates = load_json(UPDATES_PATH)
         status_report = build_status_report(plan, constraints, updates)
         daily_report = build_daily_report(status_report)
-        write_json(STATUS_OUTPUT_PATH, status_report)
-        write_json(DAILY_OUTPUT_PATH, daily_report)
+        write_json(args.status_output, status_report)
+        write_json(args.daily_output, daily_report)
     except CutoverStatusError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
@@ -1042,4 +1051,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

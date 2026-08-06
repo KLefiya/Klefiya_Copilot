@@ -166,12 +166,28 @@ class PracticalV2DocumentationTests(unittest.TestCase):
     def test_20_verification_command_and_counts_are_present(self) -> None:
         self.assertIn("powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify_practical_v2.ps1", self.readme)
         self.assertIn("Scoped Migration/Cutover tests: 238 passed", self.readme)
-        self.assertIn("Full unittest discovery: 503 discovered, 27 failures, 33 errors", self.readme)
-        self.assertIn("The full discovery failures are inherited from the baseline stale migration evidence-lock contracts.", self.readme)
+        self.assertIn("Full unittest discovery:", self.readme)
+        self.assertIn("0 failures, 0 errors", self.readme)
+        self.assertNotIn("27 failures", self.readme)
+        self.assertNotIn("33 errors", self.readme)
         self.assertNotIn("483 tests passed", self.readme)
         self.assertIn("Frontend tests: 45", self.readme)
         self.assertIn("Workspace API tests: 38", self.readme)
-        self.assertIn("Python tests: 417", self.script)
+        self.assertIn("Unable to parse full Python test count", self.script)
+        self.assertIn("Python tests: $fullPythonCount", self.script)
+
+    def test_20b_readme_records_hash_modes_and_effective_lock_boundary(self) -> None:
+        for phrase in [
+            "Raw-file SHA256",
+            "normalized_text_sha256_v1",
+            "Canonical JSON content SHA256",
+            "source_hash_mode: normalized_text_sha256_v1",
+            "blind_protocol_compatibility_amendment_v1.json",
+            "authorizes only the provenance-only `src/core/mapping/profiler.py` normalization change",
+            "`src/core/mapping/engine.py` metadata propagation change",
+            "does not claim the current profiler or engine was part of the original locked-before-first-mapping engine",
+        ]:
+            self.assertIn(phrase, self.readme)
 
     def test_21_results_keep_migration_numbers(self) -> None:
         for phrase in ["Target package: valid", "Findings: 0", "Lineage entries: 88"]:

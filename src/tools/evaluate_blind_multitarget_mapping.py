@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -15,6 +14,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.core.hashing import canonical_json_content_sha256, provenance_text_or_raw_sha256
+from src.core.mapping.protocol_lock import (
+    ProtocolLockError,
+    validate_effective_protocol_lock,
+    validate_historical_protocol_lock,
+)
 from src.tools.data_profile import attach_run_info
 
 
@@ -27,10 +32,6 @@ class BlindEvaluationError(Exception):
 
 def _project_relative(path: Path) -> str:
     return path.resolve().relative_to(PROJECT_ROOT).as_posix()
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _safe_project_path(path: Path, label: str) -> Path:
@@ -112,13 +113,33 @@ def evaluate_blind_multitarget_mapping(
     mapping_report_path: Path,
     ground_truth_path: Path,
     protocol_lock_path: Path,
+    protocol_amendment_path: Path | None = None,
 ) -> dict[str, Any]:
     mapping_path = _safe_project_path(mapping_report_path, "mapping_report")
     truth_path = _safe_project_path(ground_truth_path, "ground_truth")
     lock_path = _safe_project_path(protocol_lock_path, "protocol_lock")
+    amendment_path = (
+        _safe_project_path(protocol_amendment_path, "protocol_amendment")
+        if protocol_amendment_path is not None
+        else None
+    )
     mapping_report = _load_json(mapping_path, "mapping_report")
-    ground_truth = _load_json(truth_path, "ground_truth")
     protocol_lock = _load_json(lock_path, "protocol_lock")
+    try:
+        protocol_validation = (
+            validate_effective_protocol_lock(lock_path, amendment_path)
+            if amendment_path is not None
+            else validate_historical_protocol_lock(lock_path)
+        )
+    except ProtocolLockError as exc:
+        raise BlindEvaluationError(f"protocol_lock_{exc.code}: {exc.message}") from exc
+    ground_truth = _load_json(truth_path, "ground_truth")
+    mapping_run_info = mapping_report.get("_run_info", {})
+    mapping_content_sha256 = mapping_run_info.get("content_sha256") if isinstance(mapping_run_info, dict) else None
+    if not isinstance(mapping_content_sha256, str) or not mapping_content_sha256:
+        raise BlindEvaluationError("Mapping report is missing _run_info.content_sha256")
+    if mapping_content_sha256 != canonical_json_content_sha256(mapping_report):
+        raise BlindEvaluationError("Mapping report _run_info.content_sha256 does not match canonical JSON content")
     truth = _truth_index(ground_truth)
     mappings = _mapping_index(mapping_report)
 
@@ -193,11 +214,22 @@ def evaluate_blind_multitarget_mapping(
         "_meta": {
             "component": "erpnext_blind_multitarget_mapping_evaluation",
             "mapping_report_path": _project_relative(mapping_path),
-            "mapping_report_sha256": _sha256(mapping_path),
+            "mapping_report_content_sha256": mapping_content_sha256,
+            "mapping_report_hash_mode": "content_sha256",
+            # Backward-compatible field name; value is mapping report _run_info.content_sha256.
+            "mapping_report_sha256": mapping_content_sha256,
             "ground_truth_path": _project_relative(truth_path),
-            "ground_truth_sha256": _sha256(truth_path),
+            "ground_truth_sha256": provenance_text_or_raw_sha256(truth_path),
             "protocol_lock_path": _project_relative(lock_path),
-            "protocol_lock_sha256": _sha256(lock_path),
+            "protocol_lock_sha256": provenance_text_or_raw_sha256(lock_path),
+            "protocol_lock_hash_mode": "normalized_text_sha256_v1",
+            "protocol_amendment_path": _project_relative(amendment_path) if amendment_path is not None else None,
+            "protocol_amendment_content_sha256": (
+                protocol_validation.get("protocol_amendment_content_sha256")
+                if amendment_path is not None
+                else None
+            ),
+            "effective_protocol_validation": protocol_validation["mode"],
             "ground_truth_used_for_evaluation_only": True,
         },
         "summary": {
@@ -231,6 +263,12 @@ def evaluate_blind_multitarget_mapping(
             "engine_commit": protocol_lock.get("engine_commit"),
             "aliases_present": protocol_lock.get("aliases_present"),
             "locked_before_first_mapping": protocol_lock.get("locked_before_first_mapping"),
+            "compatibility_amendment_applied": amendment_path is not None,
+            "current_engine_claim": (
+                "historical_lock"
+                if amendment_path is None
+                else "historical_lock_with_provenance_only_profiler_amendment"
+            ),
         },
     }
     report = attach_run_info(body)
@@ -267,6 +305,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--mapping-report", required=True, type=Path)
     parser.add_argument("--ground-truth", required=True, type=Path)
     parser.add_argument("--protocol-lock", required=True, type=Path)
+    parser.add_argument("--protocol-amendment", type=Path, default=None)
     parser.add_argument("--output", required=True, type=Path)
     return parser
 
@@ -278,6 +317,7 @@ def main(argv: list[str] | None = None) -> int:
             args.mapping_report,
             args.ground_truth,
             args.protocol_lock,
+            args.protocol_amendment,
         )
         write_evaluation_report(report, args.output)
     except BlindEvaluationError as exc:

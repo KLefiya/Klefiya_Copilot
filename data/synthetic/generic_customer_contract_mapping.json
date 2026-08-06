@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "67ab0cbece2c538df6a8e63147e0123ad36bb60cbd74297b60da795a83418b60",
-    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T07:18:44+00:00"
+    "content_sha256": "4bdcd8ba13e6a31994cf686aa5c5b0a8d3dbed4efd1f65e23dfa5f7d723b8ec2",
+    "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。"
   },
   "_meta": {
     "component": "contract_field_mapping",
@@ -13,6 +12,7 @@
     "domain": "customer_master",
     "source_path": "data/examples/mapping/generic_customer/source_customer.csv",
     "source_sha256": "19d66f2d5c87f8ebad74223a0182a0993f31fd5630980d49f682be457d2db33d",
+    "source_hash_mode": "normalized_text_sha256_v1",
     "source_row_count": 6,
     "source_field_count": 12,
     "target_field_count": 11,

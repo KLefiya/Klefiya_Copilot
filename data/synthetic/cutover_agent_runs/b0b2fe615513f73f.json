@@ -1,8 +1,7 @@
 {
   "_run_info": {
-    "content_sha256": "b1d90b8f05d0184367d08783ac002cdbe5e0659dccf5f54c10f5e62114c1d849",
+    "content_sha256": "db6468d4086c7a2bcd535742af361690197f8629ea0fd1fefe6e4a4286cfffd1",
     "note": "_run_info 不属于报告内容主体；做可复现性比对时请忽略本区块。",
-    "generated_at": "2026-07-28T02:51:08+00:00",
     "offline": true,
     "planner_cache": {
       "hit": 1,
@@ -100,7 +99,7 @@
       "arguments": {},
       "ok": true,
       "data": {
-        "source_content_sha256": "d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1",
+        "source_content_sha256": "e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8",
         "as_of_offset": "T-7",
         "overall_rag": "Red",
         "headline": {
@@ -108,9 +107,10 @@
           "as_of_offset": "T-7",
           "completed_activity_count": 17,
           "blocked_activity_count": 2,
-          "not_started_activity_count": 11,
+          "not_started_activity_count": 15,
           "work_packages_blocked": 1,
-          "open_high_risks_or_issues": 0,
+          "open_high_risks_or_issues": 1,
+          "migration_blocker_count": 1,
           "next_gate": {
             "gate_id": "GATE-CUTOVER-READINESS",
             "name": "Cutover Readiness",
@@ -125,7 +125,9 @@
         },
         "rag_reasons": [
           "One or more Day-1 critical activities are blocked.",
-          "Due approval gate is blocked: GATE-CUTOVER-READINESS."
+          "Open migration gate blocker RAID items: RAID-MIG-127FBCE66F53.",
+          "Due approval gate is blocked: GATE-CUTOVER-READINESS.",
+          "One or more activities are overdue."
         ],
         "critical_blockers": [
           {
@@ -161,6 +163,24 @@
             "current_status": "Blocked",
             "blocker": "ACT-EX-024-TEST remains blocked and prevents readiness approval.",
             "is_critical_to_day1": true
+          },
+          {
+            "activity_id": "CUT-MIG-DUPLICATE-RESOLUTION",
+            "title": "Resolve duplicate supplier migration findings",
+            "owner_role": "Data Migration Lead",
+            "end_offset": "T-7",
+            "current_status": "Not Started",
+            "blocker": "",
+            "is_critical_to_day1": true
+          },
+          {
+            "activity_id": "CUT-MIG-TARGET-DEPENDENCY",
+            "title": "Resolve migration target dependencies",
+            "owner_role": "Data Migration Lead",
+            "end_offset": "T-7",
+            "current_status": "Not Started",
+            "blocker": "",
+            "is_critical_to_day1": true
           }
         ],
         "due_next": [
@@ -176,6 +196,15 @@
           {
             "activity_id": "CUT-DATA-FREEZE",
             "title": "Data freeze",
+            "owner_role": "Data Migration Lead",
+            "end_offset": "T-2",
+            "current_status": "Not Started",
+            "blocker": "",
+            "is_critical_to_day1": true
+          },
+          {
+            "activity_id": "CUT-MIG-VALIDATION-REMEDIATION",
+            "title": "Remediate migration validation findings",
             "owner_role": "Data Migration Lead",
             "end_offset": "T-2",
             "current_status": "Not Started",
@@ -248,7 +277,7 @@
         ],
         "raid_summary": {
           "by_status": {
-            "Open": 1,
+            "Open": 23,
             "Mitigating": 5,
             "Accepted": 0,
             "Resolved": 1,
@@ -256,14 +285,21 @@
           },
           "by_type": {
             "Dependency": {
-              "Open": 0,
+              "Open": 13,
               "Mitigating": 5,
               "Accepted": 0,
               "Resolved": 0,
               "Closed": 0
             },
+            "Issue": {
+              "Open": 2,
+              "Mitigating": 0,
+              "Accepted": 0,
+              "Resolved": 0,
+              "Closed": 0
+            },
             "Risk": {
-              "Open": 1,
+              "Open": 8,
               "Mitigating": 0,
               "Accepted": 0,
               "Resolved": 1,
@@ -295,13 +331,77 @@
           },
           {
             "priority": 2,
+            "source_type": "MigrationRAID",
+            "source_id": "RAID-MIG-127FBCE66F53",
+            "finding_id": "MIG-127FBCE66F53",
+            "owner_role": "Data Migration Lead",
+            "action": "Resolve migration finding MIG-127FBCE66F53 before the Go / No-Go gate."
+          },
+          {
+            "priority": 3,
             "source_type": "ApprovalGate",
             "source_id": "GATE-CUTOVER-READINESS",
             "owner_role": "Cutover Manager",
             "action": "Reassess GATE-CUTOVER-READINESS after missing readiness criteria are cleared."
           },
           {
-            "priority": 3,
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-094628933C7E",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-094628933C7E."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-519791EDC75B",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-519791EDC75B."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-B1CD62331725",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-B1CD62331725."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-B5CF92FEF27E",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-B5CF92FEF27E."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-BE20BB03FE65",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-BE20BB03FE65."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-CB796C3C7B83",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-CB796C3C7B83."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-D3121D625FB2",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-D3121D625FB2."
+          },
+          {
+            "priority": 4,
+            "source_type": "RAID",
+            "source_id": "RAID-MIG-FB02D994DD29",
+            "owner_role": "Data Migration Lead",
+            "action": "Confirm mitigation owner, due date, and escalation path for RAID-MIG-FB02D994DD29."
+          },
+          {
+            "priority": 4,
             "source_type": "RAID",
             "source_id": "RAID-RISK-EX-022",
             "owner_role": "Data Migration Lead",
@@ -311,10 +411,10 @@
         "validation_valid": true
       },
       "error": null,
-      "source_content_sha256": "d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1"
+      "source_content_sha256": "e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8"
     }
   ],
-  "final_answer": "当前 Cutover 状态为 Red（截至 T-7）。\nT-7 到期未完成活动 2 个，下一批到期活动 9 个。\n- ACT-EX-024-TEST：Blocked，owner=Data Migration Lead\n- CUT-CUTOVER-READINESS：Blocked，owner=Cutover Manager\n数据来源：\n- get_cutover_daily_brief · SHA d2b9a4c6318cf78e168f3744cb1681801114ab9c50e5cbba3e0f0050a49999c1",
+  "final_answer": "当前 Cutover 状态为 Red（截至 T-7）。\nT-7 到期未完成活动 4 个，下一批到期活动 10 个。\n- ACT-EX-024-TEST：Blocked，owner=Data Migration Lead\n- CUT-CUTOVER-READINESS：Blocked，owner=Cutover Manager\n- CUT-MIG-DUPLICATE-RESOLUTION：Not Started，owner=Data Migration Lead\n- CUT-MIG-TARGET-DEPENDENCY：Not Started，owner=Data Migration Lead\n数据来源：\n- get_cutover_daily_brief · SHA e6d095a93a2e05d6b13b7f6d88790d09613dbde1d5f416466df20b0d8e028bd8",
   "validation": {
     "valid": true,
     "reasons": []

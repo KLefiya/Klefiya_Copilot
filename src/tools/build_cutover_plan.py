@@ -903,6 +903,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional migration_cutover_findings.json report to link into cutover RAID and activities.",
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=OUTPUT_PATH,
+        help="Output path for the generated cutover plan report.",
+    )
     return parser
 
 
@@ -915,7 +921,7 @@ def main(argv: list[str] | None = None) -> None:
         constraints = load_json(CONSTRAINTS_PATH)
         migration_findings_report = load_json(args.migration_findings) if args.migration_findings else None
         report = build_cutover_plan(source_report, constraints, migration_findings_report)
-        report = write_report(report)
+        report = write_report(report, args.output)
     except CutoverBuildError as error:
         print(str(error), file=sys.stderr)
         raise SystemExit(1) from error
@@ -926,7 +932,7 @@ def main(argv: list[str] | None = None) -> None:
     print(f"RAID items          : {report['_meta']['raid_count']}")
     print("Validation          : valid" if report["validation"]["valid"] else "Validation          : invalid")
     print(f"Content             : sha256 {report['_run_info']['content_sha256'][:16]}")
-    print(f"Wrote report        : {OUTPUT_PATH.relative_to(PROJECT_ROOT)}")
+    print(f"Wrote report        : {args.output.relative_to(PROJECT_ROOT)}")
 
 
 if __name__ == "__main__":
