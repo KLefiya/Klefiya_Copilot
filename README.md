@@ -318,7 +318,7 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 527 tests, 0 failures, 0 errors
+Full unittest discovery: 541 tests, 0 failures, 0 errors
 Frontend tests: 45
 Workspace API tests: 38
 ```
@@ -328,6 +328,25 @@ Full unittest discovery is expected to pass with 0 failures and 0 errors. The sc
 The frontend build passed. Frontend lint passed with one existing Fast Refresh warning. `pip check` passed.
 
 The verification script is local. It does not fetch remote data, install dependencies, start servers, or call a model provider. It runs smoke tests, backend tests, workspace API tests, the full Python test suite, frontend tests, frontend build, frontend lint, and dependency checks. It also removes `data/runtime/`, `frontend/dist/`, Python cache directories, and generated runtime byproducts before running `git diff --check`.
+
+## Continuous Integration
+
+[CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 43 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
+
+The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 45 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems.
+
+Local equivalents:
+
+```powershell
+python scripts/verify_formal_artifacts_immutable.py snapshot
+python -m unittest discover tests
+python scripts/verify_formal_artifacts_immutable.py verify
+cd frontend
+npm ci
+npm run lint
+npm run test
+npm run build
+```
 
 ## Results
 
