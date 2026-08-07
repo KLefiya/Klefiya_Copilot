@@ -318,7 +318,7 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 541 tests, 0 failures, 0 errors
+Full unittest discovery: 549 tests, 0 failures, 0 errors
 Frontend tests: 45
 Workspace API tests: 38
 ```
@@ -333,7 +333,11 @@ The verification script is local. It does not fetch remote data, install depende
 
 [CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 43 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
 
-The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 45 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems.
+Fresh CI runners first bootstrap the public `sentence-transformers/all-MiniLM-L6-v2` files at pinned revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`. The bootstrap verifies that the public `main` revision currently resolves to that exact SHA, writes only the local Hugging Face cache ref needed by the production `local_files_only=True` loader, and then verifies local-only loading. The formal Python test step then runs with Hugging Face offline flags, so runtime inference remains local-only and does not use a hosted LLM or API key.
+
+FastAPI 0.139.0 is pinned in the root requirements because backend API and workspace API tests run from the root requirements installation.
+
+The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 45 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems. The artifact verification step is configured to run even when Python tests fail, as long as the pre-test snapshot was created.
 
 Local equivalents:
 

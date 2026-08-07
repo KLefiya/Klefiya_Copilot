@@ -29,10 +29,7 @@ jobs:
           - "3.12"
     env:
       PYTHONHASHSEED: "0"
-      CARVEOPS_OMIT_TIMESTAMP: "1"
       TOKENIZERS_PARALLELISM: "false"
-      HF_HUB_OFFLINE: "1"
-      TRANSFORMERS_OFFLINE: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,13 +43,21 @@ jobs:
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
 
+      - name: Bootstrap embedding model
+        run: python scripts/bootstrap_ci_embedding_model.py
+
       - name: Snapshot formal artifacts
+        id: formal-snapshot
         run: python scripts/verify_formal_artifacts_immutable.py snapshot
 
       - name: Run Python tests
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: python -m unittest discover tests
 
       - name: Verify formal artifacts unchanged
+        if: ${{ always() && steps.formal-snapshot.outcome == 'success' }}
         run: python scripts/verify_formal_artifacts_immutable.py verify
 
   frontend:

@@ -11,6 +11,9 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = PROJECT_ROOT / ".github" / "workflows" / "ci.yml"
 HELPER = PROJECT_ROOT / "scripts" / "verify_formal_artifacts_immutable.py"
+BOOTSTRAP = PROJECT_ROOT / "scripts" / "bootstrap_ci_embedding_model.py"
+ROOT_REQUIREMENTS = PROJECT_ROOT / "requirements.txt"
+BACKEND_REQUIREMENTS = PROJECT_ROOT / "backend" / "requirements.txt"
 
 
 def load_workflow() -> dict:
@@ -66,21 +69,40 @@ class CIWorkflowTests(unittest.TestCase):
         commands = "\n".join(run_commands(self.jobs["python"]))
         self.assertIn("python -m pip install -r requirements.txt", commands)
         self.assertIn("python -m unittest discover tests", commands)
+        root_pins = ROOT_REQUIREMENTS.read_text(encoding="utf-8").splitlines()
+        backend_pins = BACKEND_REQUIREMENTS.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(root_pins.count("fastapi==0.139.0"), 1)
+        self.assertEqual(backend_pins.count("fastapi==0.139.0"), 1)
 
     def test_07_python_job_sets_offline_and_deterministic_environment(self) -> None:
         env = self.jobs["python"]["env"]
         for key, value in {
             "PYTHONHASHSEED": "0",
-            "CARVEOPS_OMIT_TIMESTAMP": "1",
             "TOKENIZERS_PARALLELISM": "false",
-            "HF_HUB_OFFLINE": "1",
-            "TRANSFORMERS_OFFLINE": "1",
         }.items():
             self.assertEqual(env[key], value)
+        self.assertNotIn("CARVEOPS_OMIT_TIMESTAMP", env)
+        self.assertNotIn("HF_HUB_OFFLINE", env)
+        self.assertNotIn("TRANSFORMERS_OFFLINE", env)
+        test_step = next(step for step in self.jobs["python"]["steps"] if step.get("name") == "Run Python tests")
+        self.assertEqual(test_step["env"]["HF_HUB_OFFLINE"], "1")
+        self.assertEqual(test_step["env"]["TRANSFORMERS_OFFLINE"], "1")
+        self.assertNotIn("CARVEOPS_OMIT_TIMESTAMP", test_step.get("env", {}))
         for forbidden in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY", "GITHUB_TOKEN"]:
             self.assertNotIn(forbidden, self.workflow_text)
 
+    def test_07b_bootstrap_downloads_model_before_offline_tests(self) -> None:
+        commands = run_commands(self.jobs["python"])
+        bootstrap_index = commands.index("python scripts/bootstrap_ci_embedding_model.py")
+        test_index = commands.index("python -m unittest discover tests")
+        self.assertLess(bootstrap_index, test_index)
+
     def test_08_formal_artifact_immutability_check_wraps_python_tests(self) -> None:
+        steps = self.jobs["python"]["steps"]
+        snapshot_step = next(step for step in steps if step.get("name") == "Snapshot formal artifacts")
+        verify_step = next(step for step in steps if step.get("name") == "Verify formal artifacts unchanged")
+        self.assertEqual(snapshot_step["id"], "formal-snapshot")
+        self.assertEqual(verify_step["if"], "${{ always() && steps.formal-snapshot.outcome == 'success' }}")
         commands = run_commands(self.jobs["python"])
         snapshot_index = commands.index("python scripts/verify_formal_artifacts_immutable.py snapshot")
         test_index = commands.index("python -m unittest discover tests")
@@ -163,6 +185,19 @@ class CIWorkflowTests(unittest.TestCase):
         self.assertIn("tempfile.gettempdir()", helper_text)
         self.assertNotIn("write_reports", helper_text)
         self.assertNotIn("os.replace", helper_text)
+
+    def test_15_bootstrap_uses_pinned_model_revision(self) -> None:
+        module = ast.parse(BOOTSTRAP.read_text(encoding="utf-8"))
+        constants = {
+            target.id: ast.literal_eval(node.value)
+            for node in module.body
+            if isinstance(node, ast.Assign)
+            for target in node.targets
+            if isinstance(target, ast.Name)
+            if target.id in {"MODEL_ID", "MODEL_REVISION"}
+        }
+        self.assertEqual(constants["MODEL_ID"], "sentence-transformers/all-MiniLM-L6-v2")
+        self.assertRegex(constants["MODEL_REVISION"], r"^[0-9a-f]{40}$")
 
 
 if __name__ == "__main__":
