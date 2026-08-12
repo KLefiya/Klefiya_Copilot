@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import re
 import unittest
+from collections import Counter
 from pathlib import Path
 
 import yaml
@@ -25,6 +26,23 @@ def run_commands(job: dict) -> list[str]:
         step.get("run", "")
         for step in job.get("steps", [])
         if isinstance(step, dict) and step.get("run")
+    ]
+
+
+def action_uses_from_workflow(workflow: dict) -> list[str]:
+    return [
+        step["uses"]
+        for job in workflow.get("jobs", {}).values()
+        for step in job.get("steps", [])
+        if isinstance(step, dict) and step.get("uses")
+    ]
+
+
+def action_use_lines(workflow_text: str) -> list[str]:
+    return [
+        line.strip()
+        for line in workflow_text.splitlines()
+        if re.match(r"^\s*uses:\s+", line)
     ]
 
 
@@ -126,12 +144,29 @@ class CIWorkflowTests(unittest.TestCase):
         self.assertEqual(setup["with"]["cache"], "npm")
         self.assertEqual(setup["with"]["cache-dependency-path"], "frontend/package-lock.json")
 
-    def test_11_only_official_major_tag_actions_are_used(self) -> None:
-        uses = re.findall(r"uses:\s*([^\s#]+)", self.workflow_text)
-        self.assertEqual(
-            set(uses),
-            {"actions/checkout@v4", "actions/setup-python@v5", "actions/setup-node@v4"},
-        )
+    def test_11_only_official_sha_pinned_actions_are_used(self) -> None:
+        expected = Counter({
+            "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1": 2,
+            "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97": 1,
+            "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020": 1,
+        })
+        uses = action_uses_from_workflow(self.workflow)
+        self.assertEqual(Counter(uses), expected)
+        self.assertEqual(sum(expected.values()), 4)
+        for use in uses:
+            self.assertRegex(use, r"^actions/(checkout|setup-python|setup-node)@[0-9a-f]{40}$")
+        expected_lines = Counter({
+            "uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1": 2,
+            "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0": 1,
+            "uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0": 1,
+        })
+        self.assertEqual(Counter(action_use_lines(self.workflow_text)), expected_lines)
+        commented_text = self.workflow_text + "\n# uses: actions/evil@0000000000000000000000000000000000000000\n"
+        commented_text += "        # uses: actions/evil@0000000000000000000000000000000000000000\n"
+        commented_workflow = yaml.load(commented_text, Loader=yaml.BaseLoader)
+        self.assertEqual(Counter(action_uses_from_workflow(commented_workflow)), expected)
+        self.assertEqual(Counter(action_use_lines(commented_text)), expected_lines)
+        self.assertNotRegex(self.workflow_text, r"@(v4|v5|v7|main|master)\b")
 
     def test_12_workflow_does_not_rebuild_artifacts_commit_or_push(self) -> None:
         run_text = "\n".join(run_commands(self.jobs["python"]) + run_commands(self.jobs["frontend"])).lower()

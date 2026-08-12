@@ -333,6 +333,8 @@ The verification script is local. It does not fetch remote data, install depende
 
 [CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 43 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
 
+The CI workflow pins official GitHub Actions to immutable full commit SHA references to reduce supply-chain risk from movable tags. Human-readable versions remain in inline comments: `actions/checkout` v7.0.1, `actions/setup-python` v7.0.0, and `actions/setup-node` v7.0.0. Future action upgrades still require normal code review and CI verification; Dependabot automation is not configured yet.
+
 Fresh CI runners first bootstrap the public `sentence-transformers/all-MiniLM-L6-v2` files at pinned revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`. The bootstrap verifies that the public `main` revision currently resolves to that exact SHA, writes only the local Hugging Face cache ref needed by the production `local_files_only=True` loader, and then verifies local-only loading. The formal Python test step then runs with Hugging Face offline flags, so runtime inference remains local-only and does not use a hosted LLM or API key.
 
 FastAPI 0.139.0 is pinned in the root requirements because backend API and workspace API tests run from the root requirements installation.
