@@ -1,0 +1,450 @@
+{
+  "_meta": {
+    "benchmark_id": "schema_matching_v1",
+    "synthetic_demo": true,
+    "ground_truth_runtime_boundary": "evaluation_only",
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_evaluation": true,
+    "notes": [
+      "Splits are scenario-level placeholders for future expansion, not evidence that this data is sufficient to train a ranker.",
+      "Cases are derived only from committed evaluation-only ground truth files."
+    ]
+  },
+  "scenarios": [
+    {
+      "scenario_id": "generic_customer",
+      "split": "train",
+      "source_path": "data/examples/mapping/generic_customer/source_customer.csv",
+      "contract_path": "contracts/generic_customer/datapackage.yaml",
+      "data_root_path": "data/examples/generic_customer",
+      "answer_source_path": "data/examples/mapping/generic_customer/ground_truth.json",
+      "mapping_report_path": "data/synthetic/generic_customer_contract_mapping.json",
+      "evaluation_report_path": "data/synthetic/generic_customer_contract_mapping_evaluation.json",
+      "cases": [
+        {
+          "case_id": "generic_customer__legacy_client_id",
+          "source_field": "legacy_client_id",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__client_name",
+          "source_field": "client_name",
+          "expected_targets": [
+            "customer.customer_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__nation",
+          "source_field": "nation",
+          "expected_targets": [
+            "customer.country"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__contact_email",
+          "source_field": "contact_email",
+          "expected_targets": [
+            "customer.email"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__telephone_number",
+          "source_field": "telephone_number",
+          "expected_targets": [
+            "customer.phone"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__vat_registration_number",
+          "source_field": "vat_registration_number",
+          "expected_targets": [
+            "customer.tax_number"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__terms_code",
+          "source_field": "terms_code",
+          "expected_targets": [
+            "customer.payment_terms"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__bank_record_key",
+          "source_field": "bank_record_key",
+          "expected_targets": [
+            "customer_bank.bank_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__bank_customer_reference",
+          "source_field": "bank_customer_reference",
+          "expected_targets": [
+            "customer_bank.customer_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__bank_account_iban",
+          "source_field": "bank_account_iban",
+          "expected_targets": [
+            "customer_bank.iban"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__account_currency",
+          "source_field": "account_currency",
+          "expected_targets": [
+            "customer_bank.currency"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "generic_customer__marketing_opt_in",
+          "source_field": "marketing_opt_in",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "no_target"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario_id": "supplier_reference",
+      "split": "validation",
+      "source_path": "data/examples/mapping/sap_supplier_reference/source_supplier.csv",
+      "contract_path": "contracts/sap_supplier_reference/datapackage.yaml",
+      "data_root_path": "data/examples/sap_supplier_reference",
+      "answer_source_path": "data/examples/mapping/sap_supplier_reference/ground_truth.json",
+      "mapping_report_path": "data/synthetic/sap_supplier_reference_contract_mapping.json",
+      "evaluation_report_path": "data/synthetic/sap_supplier_reference_contract_mapping_evaluation.json",
+      "cases": [
+        {
+          "case_id": "supplier_reference__old_vendor_number",
+          "source_field": "old_vendor_number",
+          "expected_targets": [
+            "supplier_general.supplier_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__vendor_legal_name",
+          "source_field": "vendor_legal_name",
+          "expected_targets": [
+            "supplier_general.organization_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__partner_type",
+          "source_field": "partner_type",
+          "expected_targets": [
+            "supplier_general.business_partner_category"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__vendor_country",
+          "source_field": "vendor_country",
+          "expected_targets": [
+            "supplier_general.country_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__preferred_language",
+          "source_field": "preferred_language",
+          "expected_targets": [
+            "supplier_general.language_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__vat_number",
+          "source_field": "vat_number",
+          "expected_targets": [
+            "supplier_general.tax_number"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__company_assignment_key",
+          "source_field": "company_assignment_key",
+          "expected_targets": [
+            "supplier_company.assignment_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__company_vendor_reference",
+          "source_field": "company_vendor_reference",
+          "expected_targets": [
+            "supplier_company.supplier_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__legal_entity_code",
+          "source_field": "legal_entity_code",
+          "expected_targets": [
+            "supplier_company.company_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__recon_gl_account",
+          "source_field": "recon_gl_account",
+          "expected_targets": [
+            "supplier_company.reconciliation_account"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "alias_backed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__payment_condition",
+          "source_field": "payment_condition",
+          "expected_targets": [
+            "supplier_company.payment_terms"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "supplier_reference__legacy_created_by",
+          "source_field": "legacy_created_by",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "no_target"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario_id": "erpnext_item_price",
+      "split": "test",
+      "source_path": "data/examples/blind/erpnext_item_price/source_product_catalog.csv",
+      "contract_path": "contracts/erpnext_item_price_reference/datapackage.yaml",
+      "data_root_path": "data/examples/blind/erpnext_item_price",
+      "answer_source_path": "data/examples/blind/erpnext_item_price/ground_truth.json",
+      "mapping_report_path": "data/synthetic/erpnext_item_price_blind_mapping.json",
+      "evaluation_report_path": "data/synthetic/erpnext_item_price_blind_evaluation.json",
+      "cases": [
+        {
+          "case_id": "erpnext_item_price__article_number",
+          "source_field": "article_number",
+          "expected_targets": [
+            "item.item_code",
+            "item_price.item_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "multi_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__catalogue_caption",
+          "source_field": "catalogue_caption",
+          "expected_targets": [
+            "item.item_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__merchandise_family",
+          "source_field": "merchandise_family",
+          "expected_targets": [
+            "item.item_group"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__inventory_measure",
+          "source_field": "inventory_measure",
+          "expected_targets": [
+            "item.stock_uom",
+            "item_price.uom"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "multi_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__lifecycle_block",
+          "source_field": "lifecycle_block",
+          "expected_targets": [
+            "item.disabled"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__tariff_name",
+          "source_field": "tariff_name",
+          "expected_targets": [
+            "item_price.price_list"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "source_field": "retail_amount",
+          "expected_targets": [
+            "item_price.price_list_rate"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "source_field": "effective_start",
+          "expected_targets": [
+            "item_price.valid_from"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__effective_end",
+          "source_field": "effective_end",
+          "expected_targets": [
+            "item_price.valid_upto"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "semantic_only",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__data_steward",
+          "source_field": "data_steward",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "no_target"
+          ]
+        }
+      ]
+    }
+  ]
+}
