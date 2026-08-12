@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "purpose": "evaluation_only",
+    "synthetic": true,
+    "scenario_id": "bank_account",
+    "multi_target": true,
+    "must_not_be_read_by_mapping_engine": true,
+    "notes": [
+      "Benchmark-only synthetic ground truth for bank-account mapping evaluation.",
+      "No real bank, account, branch, or personal data is represented."
+    ]
+  },
+  "mappings": [
+    {
+      "source_field": "legacy_bank_ref",
+      "expected_targets": [
+        "bank_account.account_id"
+      ],
+      "evaluation_group": "abbreviation"
+    },
+    {
+      "source_field": "beneficiary_label",
+      "expected_targets": [
+        "bank_account.account_holder"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "domestic_account",
+      "expected_targets": [
+        "bank_account.account_number"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "international_account",
+      "expected_targets": [
+        "bank_account.iban"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "institution_ref",
+      "expected_targets": [
+        "bank_account.bank_key",
+        "bank_branch.bank_key"
+      ],
+      "evaluation_group": "multi_target"
+    },
+    {
+      "source_field": "settlement_ccy",
+      "expected_targets": [
+        "bank_account.currency_code"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "account_domicile",
+      "expected_targets": [
+        "bank_account.country_code"
+      ],
+      "evaluation_group": "target_table_context"
+    },
+    {
+      "source_field": "activation_date",
+      "expected_targets": [
+        "bank_account.valid_from"
+      ],
+      "evaluation_group": "temporal"
+    },
+    {
+      "source_field": "closure_date",
+      "expected_targets": [
+        "bank_account.valid_to"
+      ],
+      "evaluation_group": "temporal"
+    },
+    {
+      "source_field": "preferred_account",
+      "expected_targets": [
+        "bank_account.primary_flag"
+      ],
+      "evaluation_group": "boolean"
+    },
+    {
+      "source_field": "institution_name",
+      "expected_targets": [
+        "bank_branch.bank_name"
+      ],
+      "evaluation_group": "target_table_context"
+    },
+    {
+      "source_field": "swift_identifier",
+      "expected_targets": [
+        "bank_branch.bic"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "clearing_code",
+      "expected_targets": [
+        "bank_branch.routing_number"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "branch_domicile",
+      "expected_targets": [
+        "bank_branch.country_code"
+      ],
+      "evaluation_group": "target_table_context"
+    },
+    {
+      "source_field": "legacy_operator",
+      "expected_targets": [],
+      "evaluation_group": "no_target"
+    },
+    {
+      "source_field": "free_text_note",
+      "expected_targets": [],
+      "evaluation_group": "no_target"
+    }
+  ]
+}

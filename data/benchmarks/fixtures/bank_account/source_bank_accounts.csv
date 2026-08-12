@@ -1,0 +1,9 @@
+legacy_bank_ref,beneficiary_label,domestic_account,international_account,institution_ref,settlement_ccy,account_domicile,activation_date,closure_date,preferred_account,institution_name,swift_identifier,clearing_code,branch_domicile,legacy_operator,free_text_note
+BA-SYN-001,Orchid Demo Holdings,TST-ACCT-0001,ZZ00TEST000000000001,BR-SYN-100,USD,US,2024-01-01,2025-12-31,yes,Fictional Orchard Bank,ORCHZZ22XXX,TST000001,US,fixture_admin,synthetic onboarding note
+BA-SYN-002,Harbor Sample Components,TST-ACCT-0002,ZZ00TEST000000000002,BR-SYN-200,EUR,DE,2024-02-15,2025-11-30,no,Demo Harbor Finance,HARBZZ22XXX,TST000002,DE,fixture_user,internal demo comment
+BA-SYN-003,Maple Sandbox Trading,TST-ACCT-0003,ZZ00TEST000000000003,BR-SYN-300,GBP,GB,2024-03-10,2026-03-09,yes,Sample Maple Bank,MAPLZZ22XXX,TST000003,GB,fixture_admin,synthetic free text
+BA-SYN-004,Quartz Demo Services,TST-ACCT-0004,ZZ00TEST000000000004,BR-SYN-400,USD,US,2024-04-05,2026-04-04,no,Quartz Test Treasury,QTZZZZ22XXX,TST000004,US,fixture_user,non-mapping note
+BA-SYN-005,Lumen Sandbox Retail,TST-ACCT-0005,ZZ00TEST000000000005,BR-SYN-500,EUR,DE,2024-05-20,2026-05-19,yes,Lumen Example Bank,LUMNZZ22XXX,TST000005,DE,fixture_admin,synthetic review note
+BA-SYN-006,Cobalt Demo Supply,TST-ACCT-0006,ZZ00TEST000000000006,BR-SYN-600,GBP,GB,2024-06-18,2026-06-17,no,Cobalt Sample Finance,CBLTZZ22XXX,TST000006,GB,fixture_user,fixture-only memo
+BA-SYN-007,Juniper Sample Labs,TST-ACCT-0007,ZZ00TEST000000000007,BR-SYN-700,USD,US,2024-07-22,2026-07-21,yes,Juniper Demo Bank,JUNPZZ22XXX,TST000007,US,fixture_admin,synthetic operator note
+BA-SYN-008,Nova Sandbox Works,TST-ACCT-0008,ZZ00TEST000000000008,BR-SYN-800,EUR,DE,2024-08-30,2026-08-29,no,Nova Example Treasury,NOVAZZ22XXX,TST000008,DE,fixture_user,free text should not map

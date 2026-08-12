@@ -28,6 +28,10 @@ from src.core.mapping.benchmark import (
 
 
 BENCHMARK = PROJECT_ROOT / "data" / "benchmarks" / "schema_matching_v1.json"
+BANK_SOURCE = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "source_bank_accounts.csv"
+BANK_TRUTH = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "ground_truth.json"
+BANK_CONTRACT = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "contract" / "datapackage.yaml"
+BANK_TARGET = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "target"
 
 
 class FakeEmbeddingBackend:
@@ -121,13 +125,13 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
 
     def test_02_fixture_counts(self):
         benchmark = load_benchmark(BENCHMARK)
-        report = evaluate_benchmark(benchmark, _formal_candidate_reports())
-        self.assertEqual(report["overall"]["scenario_count"], 3)
-        self.assertEqual(report["overall"]["case_count"], 34)
-        self.assertEqual(report["overall"]["single_target_case_count"], 29)
-        self.assertEqual(report["overall"]["multi_target_case_count"], 2)
-        self.assertEqual(report["overall"]["no_target_case_count"], 3)
-        self.assertEqual(report["overall"]["expected_target_link_count"], 33)
+        counts = _fixture_counts(benchmark)
+        self.assertEqual(counts["scenario_count"], 4)
+        self.assertEqual(counts["case_count"], 50)
+        self.assertEqual(counts["single_target_case_count"], 42)
+        self.assertEqual(counts["multi_target_case_count"], 3)
+        self.assertEqual(counts["no_target_case_count"], 5)
+        self.assertEqual(counts["expected_target_link_count"], 48)
 
     def test_03_top1_rank2_missing_recall_and_mrr(self):
         benchmark = _benchmark(
@@ -242,11 +246,20 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
         with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "unknown targets"):
             load_benchmark(bad_target)
 
-    def test_09_duplicate_scenario_split_rejected(self):
+    def test_09_shared_train_split_allowed_duplicate_scenario_rejected_and_unknown_split_rejected(self):
         fixture = _benchmark([_case("one", "legacy_client_id", ["customer.customer_id"])])
         fixture["scenarios"].append(_scenario([_case("two", "client_name", ["customer.customer_name"])], "other", "train"))
-        with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Duplicate scenario split"):
-            load_benchmark(_temp_fixture(fixture))
+        loaded = load_benchmark(_temp_fixture(fixture))
+        self.assertEqual([scenario["split"] for scenario in loaded["scenarios"]], ["train", "train"])
+
+        duplicate = _benchmark([_case("one", "legacy_client_id", ["customer.customer_id"])])
+        duplicate["scenarios"].append(_scenario([_case("two", "client_name", ["customer.customer_name"])], "unit", "validation"))
+        with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Duplicate scenario_id"):
+            load_benchmark(_temp_fixture(duplicate))
+
+        unknown = _benchmark([_case("one", "legacy_client_id", ["customer.customer_id"])], split="holdout")
+        with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Unknown scenario split"):
+            load_benchmark(_temp_fixture(unknown))
 
     def test_10_deterministic_ordering_and_hash(self):
         fixture = _benchmark(
@@ -279,6 +292,53 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             self.assertFalse(report["_meta"]["ground_truth_used_for_candidate_generation"])
             self.assertTrue(report["_meta"]["ground_truth_used_for_evaluation"])
 
+    def test_12_bank_account_fixture_fields_targets_and_truth(self):
+        benchmark = load_benchmark(BENCHMARK)
+        scenario = next(item for item in benchmark["scenarios"] if item["scenario_id"] == "bank_account")
+        self.assertEqual(scenario["split"], "train")
+        self.assertEqual(len(scenario["cases"]), 16)
+        self.assertEqual(len(_csv_header(BANK_SOURCE)), 16)
+
+        truth = _read_json(BANK_TRUTH)
+        self.assertTrue(truth["_meta"]["synthetic"])
+        self.assertTrue(truth["_meta"]["must_not_be_read_by_mapping_engine"])
+        self.assertEqual(len(truth["mappings"]), 16)
+        self.assertEqual(_fixture_counts({"scenarios": [scenario]})["expected_target_link_count"], 15)
+        self.assertEqual(_fixture_counts({"scenarios": [scenario]})["single_target_case_count"], 13)
+        self.assertEqual(_fixture_counts({"scenarios": [scenario]})["multi_target_case_count"], 1)
+        self.assertEqual(_fixture_counts({"scenarios": [scenario]})["no_target_case_count"], 2)
+
+        targets = _target_names(BANK_CONTRACT)
+        source_fields = _csv_header(BANK_SOURCE)
+        for case in scenario["cases"]:
+            self.assertIn(case["source_field"], source_fields)
+            for target in case["expected_targets"]:
+                self.assertIn(target, targets)
+
+        fixture_tags = {tag for case in scenario["cases"] for tag in case["difficulty_tags"]}
+        self.assertTrue({
+            "abbreviation",
+            "value_pattern_needed",
+            "target_table_context",
+            "temporal",
+            "boolean",
+            "multi_target",
+            "no_target",
+            "single_target",
+        }.issubset(fixture_tags))
+
+    def test_13_bank_account_source_profiles_exercise_value_patterns(self):
+        from src.core.mapping.profiler import profile_source_csv
+
+        profiles, meta = profile_source_csv(BANK_SOURCE)
+        by_name = {profile.name: profile for profile in profiles}
+        self.assertEqual(meta["source_row_count"], 8)
+        self.assertEqual(by_name["activation_date"].inferred_kind, "date")
+        self.assertEqual(by_name["closure_date"].inferred_kind, "date")
+        self.assertEqual(by_name["preferred_account"].inferred_kind, "boolean")
+        self.assertEqual(by_name["settlement_ccy"].observed_max_length, 3)
+        self.assertEqual(by_name["account_domicile"].observed_max_length, 2)
+
 
 def _formal_candidate_reports() -> dict[str, dict]:
     return {
@@ -290,6 +350,40 @@ def _formal_candidate_reports() -> dict[str, dict]:
 
 def _read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _csv_header(path: Path) -> list[str]:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return next(csv.reader(handle))
+
+
+def _target_names(contract_path: Path) -> set[str]:
+    doc = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
+    return {
+        f"{resource['name']}.{field['name']}"
+        for resource in doc["resources"]
+        for field in resource["schema"]["fields"]
+    }
+
+
+def _fixture_counts(benchmark: dict) -> dict[str, int]:
+    counts = {
+        "scenario_count": len(benchmark["scenarios"]),
+        "case_count": 0,
+        "single_target_case_count": 0,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 0,
+        "expected_target_link_count": 0,
+    }
+    for scenario in benchmark["scenarios"]:
+        for case in scenario["cases"]:
+            target_count = len(case["expected_targets"])
+            counts["case_count"] += 1
+            counts["single_target_case_count"] += int(target_count == 1)
+            counts["multi_target_case_count"] += int(target_count > 1)
+            counts["no_target_case_count"] += int(target_count == 0)
+            counts["expected_target_link_count"] += target_count
+    return counts
 
 
 def _temp_fixture(document: dict) -> Path:

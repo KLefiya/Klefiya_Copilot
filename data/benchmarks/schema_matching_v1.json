@@ -445,6 +445,209 @@
           ]
         }
       ]
+    },
+    {
+      "scenario_id": "bank_account",
+      "split": "train",
+      "source_path": "data/benchmarks/fixtures/bank_account/source_bank_accounts.csv",
+      "contract_path": "data/benchmarks/fixtures/bank_account/contract/datapackage.yaml",
+      "data_root_path": "data/benchmarks/fixtures/bank_account/target",
+      "answer_source_path": "data/benchmarks/fixtures/bank_account/ground_truth.json",
+      "cases": [
+        {
+          "case_id": "bank_account__legacy_bank_ref",
+          "source_field": "legacy_bank_ref",
+          "expected_targets": [
+            "bank_account.account_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "abbreviation",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__beneficiary_label",
+          "source_field": "beneficiary_label",
+          "expected_targets": [
+            "bank_account.account_holder"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "target_table_context",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__domestic_account",
+          "source_field": "domestic_account",
+          "expected_targets": [
+            "bank_account.account_number"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "value_pattern_needed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__international_account",
+          "source_field": "international_account",
+          "expected_targets": [
+            "bank_account.iban"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "abbreviation",
+            "value_pattern_needed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "source_field": "institution_ref",
+          "expected_targets": [
+            "bank_account.bank_key",
+            "bank_branch.bank_key"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "multi_target",
+            "target_table_context"
+          ]
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "source_field": "settlement_ccy",
+          "expected_targets": [
+            "bank_account.currency_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "abbreviation",
+            "value_pattern_needed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__account_domicile",
+          "source_field": "account_domicile",
+          "expected_targets": [
+            "bank_account.country_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "value_pattern_needed",
+            "target_table_context",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__activation_date",
+          "source_field": "activation_date",
+          "expected_targets": [
+            "bank_account.valid_from"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "temporal",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__closure_date",
+          "source_field": "closure_date",
+          "expected_targets": [
+            "bank_account.valid_to"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "temporal",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__preferred_account",
+          "source_field": "preferred_account",
+          "expected_targets": [
+            "bank_account.primary_flag"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "boolean",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__institution_name",
+          "source_field": "institution_name",
+          "expected_targets": [
+            "bank_branch.bank_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "target_table_context",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "source_field": "swift_identifier",
+          "expected_targets": [
+            "bank_branch.bic"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "abbreviation",
+            "value_pattern_needed",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__clearing_code",
+          "source_field": "clearing_code",
+          "expected_targets": [
+            "bank_branch.routing_number"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "value_pattern_needed",
+            "target_table_context",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__branch_domicile",
+          "source_field": "branch_domicile",
+          "expected_targets": [
+            "bank_branch.country_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "value_pattern_needed",
+            "target_table_context",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__legacy_operator",
+          "source_field": "legacy_operator",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "bank_account__free_text_note",
+          "source_field": "free_text_note",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "no_target"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,127 @@
+profile: tabular-data-package
+name: bank-account-benchmark
+title: Bank Account Schema Matching Benchmark Contract
+version: 1.0.0
+description: Synthetic benchmark-only contract for bank-account and branch target tables.
+carveops:
+  contract_id: bank-account-benchmark-v1
+  adapter: benchmark_fixture
+  domain: synthetic_bank_account_benchmark
+  synthetic: true
+  authoritative: false
+  source_note: Synthetic benchmark fixture; no real bank, account, branch, or personal data.
+resources:
+  - profile: tabular-data-resource
+    name: bank_account
+    path: bank_account.csv
+    schema:
+      primaryKey:
+        - account_id
+      fields:
+        - name: account_id
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Stable account master identifier used by the target table.
+            aliases: []
+            semantic_type: identifier
+        - name: account_holder
+          type: string
+          carveops:
+            description: Legal name of the organization that owns the bank account.
+            aliases: []
+            semantic_type: organization_name
+        - name: account_number
+          type: string
+          carveops:
+            description: Domestic bank account reference used inside a local clearing network.
+            aliases: []
+            semantic_type: bank_account_number
+        - name: iban
+          type: string
+          carveops:
+            description: International bank account number style identifier for cross-border payment setup.
+            aliases: []
+            semantic_type: iban
+        - name: bank_key
+          type: string
+          carveops:
+            description: Key that links an account record to the financial institution branch reference.
+            aliases: []
+            semantic_type: bank_key
+        - name: currency_code
+          type: string
+          constraints:
+            maxLength: 3
+          carveops:
+            description: ISO-like currency code assigned to payments made from this account.
+            aliases: []
+            semantic_type: currency_code
+        - name: country_code
+          type: string
+          constraints:
+            maxLength: 2
+          carveops:
+            description: Country code for the account domicile.
+            aliases: []
+            semantic_type: country_code
+        - name: valid_from
+          type: date
+          carveops:
+            description: First calendar date on which the account may be used.
+            aliases: []
+            semantic_type: date
+        - name: valid_to
+          type: date
+          carveops:
+            description: Final calendar date on which the account may be used.
+            aliases: []
+            semantic_type: date
+        - name: primary_flag
+          type: boolean
+          carveops:
+            description: Indicator that marks the preferred account for payment proposals.
+            aliases: []
+            semantic_type: category_code
+  - profile: tabular-data-resource
+    name: bank_branch
+    path: bank_branch.csv
+    schema:
+      primaryKey:
+        - bank_key
+      fields:
+        - name: bank_key
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Branch-level institution identifier used by account master data.
+            aliases: []
+            semantic_type: bank_key
+        - name: bank_name
+          type: string
+          carveops:
+            description: Display name of the financial institution branch.
+            aliases: []
+            semantic_type: organization_name
+        - name: bic
+          type: string
+          carveops:
+            description: Bank identifier code style value used for international payment routing.
+            aliases: []
+            semantic_type: bic
+        - name: country_code
+          type: string
+          constraints:
+            maxLength: 2
+          carveops:
+            description: Country code for the institution branch location.
+            aliases: []
+            semantic_type: country_code
+        - name: routing_number
+          type: string
+          carveops:
+            description: Domestic clearing network identifier for the institution branch.
+            aliases: []
+            semantic_type: routing_number

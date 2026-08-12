@@ -120,8 +120,8 @@ def load_benchmark(path: Path) -> dict[str, Any]:
         raise SchemaMatchingBenchmarkError("unexpected_benchmark_id", "Benchmark id must be schema_matching_v1")
     scenarios = _require_list(benchmark.get("scenarios"), "scenarios")
     seen_scenario_ids: set[str] = set()
-    seen_splits: set[str] = set()
     seen_case_ids: set[str] = set()
+    allowed_splits = {"train", "validation", "test"}
     for scenario_value in scenarios:
         scenario = _require_mapping(scenario_value, "scenario")
         scenario_id = scenario.get("scenario_id")
@@ -133,9 +133,8 @@ def load_benchmark(path: Path) -> dict[str, Any]:
         seen_scenario_ids.add(scenario_id)
         if not isinstance(split, str) or not split:
             raise SchemaMatchingBenchmarkError("split_missing", f"{scenario_id} is missing split")
-        if split in seen_splits:
-            raise SchemaMatchingBenchmarkError("duplicate_split", f"Duplicate scenario split: {split}")
-        seen_splits.add(split)
+        if split not in allowed_splits:
+            raise SchemaMatchingBenchmarkError("unknown_split", f"Unknown scenario split: {split}")
         source_path = _project_path(str(scenario.get("source_path", "")), "source_path")
         contract_path = _project_path(str(scenario.get("contract_path", "")), "contract_path")
         data_root_path = _project_path(str(scenario.get("data_root_path", "")), "data_root_path")
