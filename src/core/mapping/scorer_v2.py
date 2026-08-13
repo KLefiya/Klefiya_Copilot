@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import Any
 
 from src.core.mapping.models import ContractTargetField, MappingCandidate, SourceFieldProfile
 from src.core.mapping.scorer import (
@@ -30,6 +31,31 @@ def score_source_field_v2(
     targets: list[ContractTargetField],
     backend: EmbeddingBackend,
 ) -> dict[str, object]:
+    ranked = score_all_candidates_v2(profile, targets, backend)
+    top = tuple(ranked[:TOP_N_CANDIDATES])
+    best = _candidate_from_dict(top[0])
+    basis = _basis(best)
+    status, band, reasons = _status(best, basis)
+    recommendation = best.target if status != "no_confident_target" else None
+    confidence = best.score if recommendation else 0.0
+    return {
+        "source_field": profile.name,
+        "status": status,
+        "recommendation": recommendation,
+        "confidence": confidence,
+        "band": band,
+        "mapping_basis": basis,
+        "source_profile": profile.to_dict(),
+        "review_reasons": list(reasons),
+        "top_candidates": list(top),
+    }
+
+
+def score_all_candidates_v2(
+    profile: SourceFieldProfile,
+    targets: list[ContractTargetField],
+    backend: EmbeddingBackend,
+) -> list[dict[str, Any]]:
     source_text = expanded_text(profile.name)
     semantic_scores = _embedding_scores(backend, source_text, [_target_text(target) for target in targets])
     candidates: list[MappingCandidate] = []
@@ -70,23 +96,22 @@ def score_source_field_v2(
         }
     ranked = sorted(candidates, key=lambda item: (-item.score, item.target))
     ranked = [replace(candidate, rank=index + 1) for index, candidate in enumerate(ranked)]
-    top = tuple(ranked[:TOP_N_CANDIDATES])
-    best = top[0]
-    basis = _basis(best)
-    status, band, reasons = _status(best, basis)
-    recommendation = best.target if status != "no_confident_target" else None
-    confidence = best.score if recommendation else 0.0
-    return {
-        "source_field": profile.name,
-        "status": status,
-        "recommendation": recommendation,
-        "confidence": confidence,
-        "band": band,
-        "mapping_basis": basis,
-        "source_profile": profile.to_dict(),
-        "review_reasons": list(reasons),
-        "top_candidates": [
-            {**candidate.to_dict(), **candidate_extras[candidate.target]}
-            for candidate in top
-        ],
-    }
+    return [
+        {**candidate.to_dict(), **candidate_extras[candidate.target]}
+        for candidate in ranked
+    ]
+
+
+def _candidate_from_dict(candidate: dict[str, Any]) -> MappingCandidate:
+    return MappingCandidate(
+        target=str(candidate["target"]),
+        rank=int(candidate["rank"]),
+        score=float(candidate["score"]),
+        semantic_score=float(candidate["semantic_score"]),
+        fuzzy_score=float(candidate["fuzzy_score"]),
+        alias_hit=bool(candidate["alias_hit"]),
+        alias_source=candidate["alias_source"],
+        lexical_overlap=float(candidate["lexical_overlap"]),
+        type_gate=float(candidate["type_gate"]),
+        warnings=tuple(candidate["warnings"]),
+    )

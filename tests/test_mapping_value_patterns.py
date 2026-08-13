@@ -13,7 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.core.mapping.models import ContractTargetField, SourceFieldProfile
 from src.core.mapping.scorer import score_source_field
-from src.core.mapping.scorer_v2 import VALUE_PATTERN_BONUS_WEIGHT, score_source_field_v2
+from src.core.mapping.scorer_v2 import VALUE_PATTERN_BONUS_WEIGHT, score_all_candidates_v2, score_source_field_v2
 from src.core.mapping.value_patterns import value_pattern_evidence
 
 
@@ -237,6 +237,19 @@ class MappingValuePatternTests(unittest.TestCase):
         experimental = score_source_field_v2(profile, targets, FakeEmbeddingBackend())
         self.assertEqual([item["target"] for item in experimental["top_candidates"]], [item["target"] for item in baseline["top_candidates"]])
         self.assertEqual(_behavior_view(experimental), _behavior_view(baseline))
+
+    def test_19_all_candidates_prefix_matches_v2_top3_behavior(self):
+        profile = _profile("client_name", ("Orchid Demo Holdings",))
+        targets = [
+            _target("account_holder", "organization_name"),
+            _target("bank_name", "organization_name"),
+            _target("primary_flag", "category_code", "boolean"),
+            _target("free_text", "description"),
+        ]
+        top3_report = score_source_field_v2(profile, targets, FakeEmbeddingBackend())
+        all_candidates = score_all_candidates_v2(profile, targets, FakeEmbeddingBackend())
+        self.assertEqual(all_candidates[:3], top3_report["top_candidates"])
+        self.assertEqual(_behavior_view(top3_report), _behavior_view(score_source_field_v2(profile, targets, FakeEmbeddingBackend())))
 
 
 def _behavior_view(report: dict) -> dict:

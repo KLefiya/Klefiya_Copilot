@@ -10,9 +10,13 @@ from typing import Any
 from src.core.contracts.loader import PROJECT_ROOT, load_migration_contract
 from src.core.hashing import canonical_json_content_sha256, provenance_text_or_raw_sha256
 from src.core.mapping.engine import suggest_contract_mappings
+from src.core.mapping.resource_context import FEATURE_VERSION as RESOURCE_CONTEXT_FEATURE_VERSION
 from src.core.mapping.scorer import DEFAULT_MODEL_NAME, EmbeddingBackend
 from src.core.mapping.scorer_v2 import SCORER_ID as VALUE_PATTERN_SCORER_ID
 from src.core.mapping.scorer_v2 import VALUE_PATTERN_BONUS_WEIGHT, score_source_field_v2
+from src.core.mapping.scorer_v3 import SCORER_ID as TARGET_CONTEXT_SCORER_ID
+from src.core.mapping.scorer_v3 import metadata as target_context_metadata
+from src.core.mapping.scorer_v3 import score_source_fields_v3
 from src.core.mapping.target_index import build_target_field_index
 from src.core.mapping.value_patterns import VALUE_PATTERN_FEATURE_VERSION
 from src.tools.data_profile import attach_run_info
@@ -26,7 +30,7 @@ class SchemaMatchingBenchmarkError(Exception):
 
 
 BASELINE_SCORER_ID = "baseline"
-ALLOWED_SCORERS = {BASELINE_SCORER_ID, VALUE_PATTERN_SCORER_ID}
+ALLOWED_SCORERS = {BASELINE_SCORER_ID, VALUE_PATTERN_SCORER_ID, TARGET_CONTEXT_SCORER_ID}
 
 
 def _project_path(value: str, label: str) -> Path:
@@ -199,8 +203,15 @@ def generate_candidate_reports(
                 model_name=model_name,
                 embedding_backend=embedding_backend,
             )
-        else:
+        elif scorer_variant == VALUE_PATTERN_SCORER_ID:
             reports[spec["scenario_id"]] = _suggest_contract_mappings_v2(
+                contract,
+                source_path,
+                model_name=model_name,
+                embedding_backend=embedding_backend,
+            )
+        else:
+            reports[spec["scenario_id"]] = _suggest_contract_mappings_v3(
                 contract,
                 source_path,
                 model_name=model_name,
@@ -392,7 +403,7 @@ def evaluate_benchmark(
             "ground_truth_used_for_candidate_generation": False,
             "ground_truth_used_for_evaluation": True,
             "scorer_variant": scorer_variant,
-            "feature_version": VALUE_PATTERN_FEATURE_VERSION if scorer_variant == VALUE_PATTERN_SCORER_ID else None,
+            "feature_version": _feature_version(scorer_variant),
             "source_reports": [
                 {
                     "scenario_id": scenario["scenario_id"],
@@ -423,10 +434,22 @@ def _candidate_result(base: dict[str, Any], candidate: dict[str, Any]) -> dict[s
         "value_pattern_score",
         "value_pattern_support",
         "value_pattern_evidence",
+        "v2_score",
+        "resource_context_score",
+        "resource_context_support",
+        "resource_context_evidence",
     ):
         if key in candidate:
             base[key] = candidate[key]
     return base
+
+
+def _feature_version(scorer_variant: str) -> str | None:
+    if scorer_variant == VALUE_PATTERN_SCORER_ID:
+        return VALUE_PATTERN_FEATURE_VERSION
+    if scorer_variant == TARGET_CONTEXT_SCORER_ID:
+        return RESOURCE_CONTEXT_FEATURE_VERSION
+    return None
 
 
 def _suggest_contract_mappings_v2(
@@ -464,6 +487,38 @@ def _suggest_contract_mappings_v2(
             "production_scorer_modified": False,
             "historical_blind_protocol_claimed": False,
             "value_pattern_bonus_weight": VALUE_PATTERN_BONUS_WEIGHT,
+        },
+        "mappings": mappings,
+    }
+    return attach_run_info(body)
+
+
+def _suggest_contract_mappings_v3(
+    contract,
+    source_path: Path,
+    *,
+    model_name: str,
+    embedding_backend: EmbeddingBackend | None,
+) -> dict[str, Any]:
+    from src.core.mapping.profiler import profile_source_csv
+    from src.core.mapping.scorer import load_embedding_backend
+
+    profiles, source_meta = profile_source_csv(source_path)
+    targets = build_target_field_index(contract)
+    backend = embedding_backend or load_embedding_backend(model_name)
+    mappings = score_source_fields_v3(profiles, targets, backend)
+    body = {
+        "_meta": {
+            "component": "contract_field_mapping",
+            "contract_id": contract.contract_id,
+            "contract_version": contract.version,
+            "contract_sha256": contract.descriptor_sha256,
+            "adapter": contract.adapter,
+            "domain": contract.domain,
+            **source_meta,
+            "target_field_count": len(targets),
+            "embedding_model": model_name,
+            **target_context_metadata(),
         },
         "mappings": mappings,
     }

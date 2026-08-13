@@ -315,6 +315,24 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             self.assertFalse(first_report["_meta"]["historical_blind_protocol_claimed"])
             self.assertFalse(first_report["_meta"]["ground_truth_used"])
 
+            v3_reports = generate_candidate_reports(
+                specs,
+                embedding_backend=FakeEmbeddingBackend(),
+                scorer_variant="target_context_v3",
+            )
+            v3 = evaluate_benchmark(benchmark, v3_reports, scorer_variant="target_context_v3")
+            self.assertEqual(v3["_meta"]["scorer_variant"], "target_context_v3")
+            self.assertEqual(v3["_meta"]["feature_version"], "target_resource_context_v1")
+            first_v3_report = next(iter(v3_reports.values()))
+            self.assertEqual(first_v3_report["_meta"]["parent_scorer"], "value_pattern_v2")
+            self.assertEqual(first_v3_report["_meta"]["context_window"], 2)
+            self.assertEqual(first_v3_report["_meta"]["anchor_score_min"], 0.45)
+            self.assertEqual(first_v3_report["_meta"]["anchor_margin_min"], 0.05)
+            self.assertEqual(first_v3_report["_meta"]["resource_support_min"], 0.60)
+            self.assertEqual(first_v3_report["_meta"]["resource_context_bonus_weight"], 0.10)
+            self.assertFalse(first_v3_report["_meta"]["production_scorer_modified"])
+            self.assertFalse(first_v3_report["_meta"]["ground_truth_used"])
+
             with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Unknown scorer variant"):
                 generate_candidate_reports(specs, embedding_backend=FakeEmbeddingBackend(), scorer_variant="future")
 
