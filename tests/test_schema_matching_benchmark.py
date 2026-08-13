@@ -292,6 +292,32 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             self.assertFalse(report["_meta"]["ground_truth_used_for_candidate_generation"])
             self.assertTrue(report["_meta"]["ground_truth_used_for_evaluation"])
 
+    def test_11b_scorer_variants_are_explicit_and_metadata_is_recorded(self):
+        with _contract_fixture() as fixture_path:
+            benchmark = load_benchmark(fixture_path)
+            specs = benchmark_run_specs(benchmark)
+            baseline_reports = generate_candidate_reports(specs, embedding_backend=FakeEmbeddingBackend())
+            baseline = evaluate_benchmark(benchmark, baseline_reports)
+            self.assertEqual(baseline["_meta"]["scorer_variant"], "baseline")
+            self.assertIsNone(baseline["_meta"]["feature_version"])
+
+            v2_reports = generate_candidate_reports(
+                specs,
+                embedding_backend=FakeEmbeddingBackend(),
+                scorer_variant="value_pattern_v2",
+            )
+            v2 = evaluate_benchmark(benchmark, v2_reports, scorer_variant="value_pattern_v2")
+            self.assertEqual(v2["_meta"]["scorer_variant"], "value_pattern_v2")
+            self.assertEqual(v2["_meta"]["feature_version"], "value_pattern_v1")
+            first_report = next(iter(v2_reports.values()))
+            self.assertTrue(first_report["_meta"]["experimental"])
+            self.assertFalse(first_report["_meta"]["production_scorer_modified"])
+            self.assertFalse(first_report["_meta"]["historical_blind_protocol_claimed"])
+            self.assertFalse(first_report["_meta"]["ground_truth_used"])
+
+            with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Unknown scorer variant"):
+                generate_candidate_reports(specs, embedding_backend=FakeEmbeddingBackend(), scorer_variant="future")
+
     def test_12_bank_account_fixture_fields_targets_and_truth(self):
         benchmark = load_benchmark(BENCHMARK)
         scenario = next(item for item in benchmark["scenarios"] if item["scenario_id"] == "bank_account")

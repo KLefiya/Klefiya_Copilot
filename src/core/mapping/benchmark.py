@@ -11,7 +11,11 @@ from src.core.contracts.loader import PROJECT_ROOT, load_migration_contract
 from src.core.hashing import canonical_json_content_sha256, provenance_text_or_raw_sha256
 from src.core.mapping.engine import suggest_contract_mappings
 from src.core.mapping.scorer import DEFAULT_MODEL_NAME, EmbeddingBackend
+from src.core.mapping.scorer_v2 import SCORER_ID as VALUE_PATTERN_SCORER_ID
+from src.core.mapping.scorer_v2 import VALUE_PATTERN_BONUS_WEIGHT, score_source_field_v2
 from src.core.mapping.target_index import build_target_field_index
+from src.core.mapping.value_patterns import VALUE_PATTERN_FEATURE_VERSION
+from src.tools.data_profile import attach_run_info
 
 
 class SchemaMatchingBenchmarkError(Exception):
@@ -19,6 +23,10 @@ class SchemaMatchingBenchmarkError(Exception):
         super().__init__(message)
         self.code = code
         self.message = message
+
+
+BASELINE_SCORER_ID = "baseline"
+ALLOWED_SCORERS = {BASELINE_SCORER_ID, VALUE_PATTERN_SCORER_ID}
 
 
 def _project_path(value: str, label: str) -> Path:
@@ -173,19 +181,31 @@ def generate_candidate_reports(
     *,
     model_name: str = DEFAULT_MODEL_NAME,
     embedding_backend: EmbeddingBackend | None = None,
+    scorer_variant: str = BASELINE_SCORER_ID,
 ) -> dict[str, dict[str, Any]]:
+    if scorer_variant not in ALLOWED_SCORERS:
+        raise SchemaMatchingBenchmarkError("unknown_scorer", f"Unknown scorer variant: {scorer_variant}")
     reports: dict[str, dict[str, Any]] = {}
     for spec in sorted(run_specs, key=lambda item: item["scenario_id"]):
         contract = load_migration_contract(
             _project_path(spec["contract_path"], "contract_path"),
             _project_path(spec["data_root_path"], "data_root_path"),
         )
-        reports[spec["scenario_id"]] = suggest_contract_mappings(
-            contract,
-            _project_path(spec["source_path"], "source_path"),
-            model_name=model_name,
-            embedding_backend=embedding_backend,
-        )
+        source_path = _project_path(spec["source_path"], "source_path")
+        if scorer_variant == BASELINE_SCORER_ID:
+            reports[spec["scenario_id"]] = suggest_contract_mappings(
+                contract,
+                source_path,
+                model_name=model_name,
+                embedding_backend=embedding_backend,
+            )
+        else:
+            reports[spec["scenario_id"]] = _suggest_contract_mappings_v2(
+                contract,
+                source_path,
+                model_name=model_name,
+                embedding_backend=embedding_backend,
+            )
     return reports
 
 
@@ -273,7 +293,14 @@ def _classify_case(
     return "expected_target_missing_from_top3", None, found_targets
 
 
-def evaluate_benchmark(benchmark: dict[str, Any], candidate_reports: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def evaluate_benchmark(
+    benchmark: dict[str, Any],
+    candidate_reports: dict[str, dict[str, Any]],
+    *,
+    scorer_variant: str = BASELINE_SCORER_ID,
+) -> dict[str, Any]:
+    if scorer_variant not in ALLOWED_SCORERS:
+        raise SchemaMatchingBenchmarkError("unknown_scorer", f"Unknown scorer variant: {scorer_variant}")
     overall_counts: dict[str, int | float] = _empty_counts()
     scenario_results: list[dict[str, Any]] = []
     case_results: list[dict[str, Any]] = []
@@ -331,12 +358,15 @@ def evaluate_benchmark(benchmark: dict[str, Any], candidate_reports: dict[str, d
                     "expected_targets": expected_targets,
                     "recommendation": recommendation,
                     "top_candidates": [
-                        {
+                        _candidate_result(
+                            {
                             "target": candidate.get("target"),
                             "rank": candidate.get("rank"),
                             "score": candidate.get("score"),
                             "mapping_basis": suggestion.get("mapping_basis"),
-                        }
+                            },
+                            candidate,
+                        )
                         for candidate in candidates
                     ],
                     "best_expected_rank": best_rank,
@@ -361,6 +391,8 @@ def evaluate_benchmark(benchmark: dict[str, Any], candidate_reports: dict[str, d
             "ground_truth_runtime_boundary": benchmark["_meta"].get("ground_truth_runtime_boundary"),
             "ground_truth_used_for_candidate_generation": False,
             "ground_truth_used_for_evaluation": True,
+            "scorer_variant": scorer_variant,
+            "feature_version": VALUE_PATTERN_FEATURE_VERSION if scorer_variant == VALUE_PATTERN_SCORER_ID else None,
             "source_reports": [
                 {
                     "scenario_id": scenario["scenario_id"],
@@ -380,6 +412,62 @@ def evaluate_benchmark(benchmark: dict[str, Any], candidate_reports: dict[str, d
         "error_count_by_difficulty_tag": dict(sorted(count_by_difficulty.items())),
     }
     return attach_content_sha(body)
+
+
+def _candidate_result(base: dict[str, Any], candidate: dict[str, Any]) -> dict[str, Any]:
+    for key in (
+        "base_score",
+        "base_blended",
+        "baseline_score",
+        "pattern_adjusted_blended",
+        "value_pattern_score",
+        "value_pattern_support",
+        "value_pattern_evidence",
+    ):
+        if key in candidate:
+            base[key] = candidate[key]
+    return base
+
+
+def _suggest_contract_mappings_v2(
+    contract,
+    source_path: Path,
+    *,
+    model_name: str,
+    embedding_backend: EmbeddingBackend | None,
+) -> dict[str, Any]:
+    from src.core.mapping.profiler import profile_source_csv
+    from src.core.mapping.scorer import load_embedding_backend
+
+    profiles, source_meta = profile_source_csv(source_path)
+    targets = build_target_field_index(contract)
+    backend = embedding_backend or load_embedding_backend(model_name)
+    mappings = [
+        score_source_field_v2(profile, targets, backend)
+        for profile in profiles
+    ]
+    body = {
+        "_meta": {
+            "component": "contract_field_mapping",
+            "contract_id": contract.contract_id,
+            "contract_version": contract.version,
+            "contract_sha256": contract.descriptor_sha256,
+            "adapter": contract.adapter,
+            "domain": contract.domain,
+            **source_meta,
+            "target_field_count": len(targets),
+            "embedding_model": model_name,
+            "ground_truth_used": False,
+            "scorer_variant": VALUE_PATTERN_SCORER_ID,
+            "feature_version": VALUE_PATTERN_FEATURE_VERSION,
+            "experimental": True,
+            "production_scorer_modified": False,
+            "historical_blind_protocol_claimed": False,
+            "value_pattern_bonus_weight": VALUE_PATTERN_BONUS_WEIGHT,
+        },
+        "mappings": mappings,
+    }
+    return attach_run_info(body)
 
 
 def attach_content_sha(report: dict[str, Any]) -> dict[str, Any]:

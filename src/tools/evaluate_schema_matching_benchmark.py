@@ -12,6 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.core.contracts.loader import ContractLoadError
 from src.core.mapping.benchmark import (
+    ALLOWED_SCORERS,
     SchemaMatchingBenchmarkError,
     benchmark_run_specs,
     evaluate_benchmark,
@@ -28,6 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--benchmark", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--model", default=DEFAULT_MODEL_NAME)
+    parser.add_argument("--scorer", default="baseline", choices=sorted(ALLOWED_SCORERS))
     return parser
 
 
@@ -38,8 +40,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         benchmark = load_benchmark(args.benchmark)
         run_specs = benchmark_run_specs(benchmark)
-        candidate_reports = generate_candidate_reports(run_specs, model_name=args.model)
-        report = evaluate_benchmark(benchmark, candidate_reports)
+        candidate_reports = generate_candidate_reports(run_specs, model_name=args.model, scorer_variant=args.scorer)
+        report = evaluate_benchmark(benchmark, candidate_reports, scorer_variant=args.scorer)
         output = write_benchmark_report(report, args.output)
     except (
         ContractLoadError,
