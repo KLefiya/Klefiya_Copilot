@@ -17,6 +17,9 @@ from src.core.mapping.scorer_v2 import VALUE_PATTERN_BONUS_WEIGHT, score_source_
 from src.core.mapping.scorer_v3 import SCORER_ID as TARGET_CONTEXT_SCORER_ID
 from src.core.mapping.scorer_v3 import metadata as target_context_metadata
 from src.core.mapping.scorer_v3 import score_source_fields_v3
+from src.core.mapping.scorer_v4 import SCORER_ID as PRECISION_TIERED_SCORER_ID
+from src.core.mapping.scorer_v4 import metadata as precision_tiered_metadata
+from src.core.mapping.scorer_v4 import suggest_contract_mappings_v4
 from src.core.mapping.target_index import build_target_field_index
 from src.core.mapping.value_patterns import VALUE_PATTERN_FEATURE_VERSION
 from src.tools.data_profile import attach_run_info
@@ -30,7 +33,7 @@ class SchemaMatchingBenchmarkError(Exception):
 
 
 BASELINE_SCORER_ID = "baseline"
-ALLOWED_SCORERS = {BASELINE_SCORER_ID, VALUE_PATTERN_SCORER_ID, TARGET_CONTEXT_SCORER_ID}
+ALLOWED_SCORERS = {BASELINE_SCORER_ID, VALUE_PATTERN_SCORER_ID, TARGET_CONTEXT_SCORER_ID, PRECISION_TIERED_SCORER_ID}
 
 
 def _project_path(value: str, label: str) -> Path:
@@ -210,8 +213,15 @@ def generate_candidate_reports(
                 model_name=model_name,
                 embedding_backend=embedding_backend,
             )
-        else:
+        elif scorer_variant == TARGET_CONTEXT_SCORER_ID:
             reports[spec["scenario_id"]] = _suggest_contract_mappings_v3(
+                contract,
+                source_path,
+                model_name=model_name,
+                embedding_backend=embedding_backend,
+            )
+        else:
+            reports[spec["scenario_id"]] = suggest_contract_mappings_v4(
                 contract,
                 source_path,
                 model_name=model_name,
@@ -404,6 +414,7 @@ def evaluate_benchmark(
             "ground_truth_used_for_evaluation": True,
             "scorer_variant": scorer_variant,
             "feature_version": _feature_version(scorer_variant),
+            **_scorer_metadata_for_evaluation(scorer_variant),
             "source_reports": [
                 {
                     "scenario_id": scenario["scenario_id"],
@@ -438,6 +449,14 @@ def _candidate_result(base: dict[str, Any], candidate: dict[str, Any]) -> dict[s
         "resource_context_score",
         "resource_context_support",
         "resource_context_evidence",
+        "v3_score",
+        "interaction_adjusted_score",
+        "activated_interactions",
+        "interaction_evidence",
+        "diagnostic_bonus",
+        "supportive_bonus",
+        "top1_eligible",
+        "top1_selection_reason",
     ):
         if key in candidate:
             base[key] = candidate[key]
@@ -449,7 +468,23 @@ def _feature_version(scorer_variant: str) -> str | None:
         return VALUE_PATTERN_FEATURE_VERSION
     if scorer_variant == TARGET_CONTEXT_SCORER_ID:
         return RESOURCE_CONTEXT_FEATURE_VERSION
+    if scorer_variant == PRECISION_TIERED_SCORER_ID:
+        return precision_tiered_metadata()["feature_version"]
     return None
+
+
+def _scorer_metadata_for_evaluation(scorer_variant: str) -> dict[str, Any]:
+    if scorer_variant != PRECISION_TIERED_SCORER_ID:
+        return {}
+    metadata = precision_tiered_metadata()
+    return {
+        "scorer_id": scorer_variant,
+        "interaction_configuration": metadata["interaction_configuration"],
+        "ground_truth_used_for_concept_extraction": metadata["ground_truth_used_for_concept_extraction"],
+        "ground_truth_used_for_interaction_activation": metadata["ground_truth_used_for_interaction_activation"],
+        "ground_truth_used_for_tier_decision": metadata["ground_truth_used_for_tier_decision"],
+        "ground_truth_used_for_scoring": metadata["ground_truth_used_for_scoring"],
+    }
 
 
 def _suggest_contract_mappings_v2(

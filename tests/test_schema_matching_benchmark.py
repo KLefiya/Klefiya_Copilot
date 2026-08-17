@@ -7,7 +7,8 @@ import shutil
 import sys
 import tempfile
 import unittest
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr
+from io import StringIO
 from pathlib import Path
 from typing import Iterator
 
@@ -19,6 +20,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.core.mapping.benchmark import (
+    ALLOWED_SCORERS,
+    BASELINE_SCORER_ID,
     SchemaMatchingBenchmarkError,
     benchmark_run_specs,
     evaluate_benchmark,
@@ -333,8 +336,67 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             self.assertFalse(first_v3_report["_meta"]["production_scorer_modified"])
             self.assertFalse(first_v3_report["_meta"]["ground_truth_used"])
 
+            v4_reports = generate_candidate_reports(
+                specs,
+                embedding_backend=FakeEmbeddingBackend(),
+                scorer_variant="precision_tiered_v4",
+            )
+            v4 = evaluate_benchmark(benchmark, v4_reports, scorer_variant="precision_tiered_v4")
+            self.assertEqual(v4["_meta"]["scorer_variant"], "precision_tiered_v4")
+            self.assertEqual(v4["_meta"]["scorer_id"], "precision_tiered_v4")
+            self.assertEqual(v4["_meta"]["feature_version"], "precision_tiered_interaction_v1")
+            self.assertFalse(v4["_meta"]["ground_truth_used_for_concept_extraction"])
+            first_v4_report = next(iter(v4_reports.values()))
+            self.assertEqual(first_v4_report["_meta"]["parent_scorer"], "target_context_v3")
+            self.assertFalse(first_v4_report["_meta"]["production_scorer_modified"])
+            self.assertFalse(first_v4_report["_meta"]["ground_truth_used_for_scoring"])
+
             with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Unknown scorer variant"):
                 generate_candidate_reports(specs, embedding_backend=FakeEmbeddingBackend(), scorer_variant="future")
+
+    def test_11c_cli_scorer_contract_matches_registry(self):
+        from src.tools.evaluate_schema_matching_benchmark import build_parser
+
+        expected = {
+            "baseline",
+            "value_pattern_v2",
+            "target_context_v3",
+            "precision_tiered_v4",
+        }
+        self.assertEqual(ALLOWED_SCORERS, expected)
+
+        parser = build_parser()
+        scorer_action = next(action for action in parser._actions if action.dest == "scorer")
+        self.assertEqual(set(scorer_action.choices), ALLOWED_SCORERS)
+        self.assertEqual(scorer_action.default, BASELINE_SCORER_ID)
+
+        with self.assertRaises(SystemExit), redirect_stderr(StringIO()):
+            parser.parse_args([
+                "--benchmark",
+                str(Path(tempfile.gettempdir()) / "benchmark.json"),
+                "--output",
+                str(Path(tempfile.gettempdir()) / "report.json"),
+                "--scorer",
+                "future",
+            ])
+
+        parsed = parser.parse_args([
+            "--benchmark",
+            str(Path(tempfile.gettempdir()) / "benchmark.json"),
+            "--output",
+            str(Path(tempfile.gettempdir()) / "report.json"),
+            "--scorer",
+            "precision_tiered_v4",
+        ])
+        self.assertEqual(parsed.scorer, "precision_tiered_v4")
+
+        defaulted = parser.parse_args([
+            "--benchmark",
+            str(Path(tempfile.gettempdir()) / "benchmark.json"),
+            "--output",
+            str(Path(tempfile.gettempdir()) / "report.json"),
+        ])
+        self.assertEqual(defaulted.scorer, BASELINE_SCORER_ID)
 
     def test_12_bank_account_fixture_fields_targets_and_truth(self):
         benchmark = load_benchmark(BENCHMARK)

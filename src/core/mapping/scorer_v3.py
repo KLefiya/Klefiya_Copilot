@@ -52,11 +52,7 @@ def score_source_field_v3(
     v2_candidates: list[dict[str, Any]],
     resource_context: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
-    ranked = sorted(
-        (_adjust_candidate(candidate, resource_context) for candidate in v2_candidates),
-        key=lambda item: (-float(item["score"]), str(item["target"])),
-    )
-    ranked = [{**candidate, "rank": index + 1} for index, candidate in enumerate(ranked)]
+    ranked = score_all_candidates_v3(profile, v2_candidates, resource_context)
     top = ranked[:TOP_N_CANDIDATES]
     best = _candidate_from_dict(top[0])
     basis = _basis(best)
@@ -74,6 +70,28 @@ def score_source_field_v3(
         "review_reasons": list(reasons),
         "top_candidates": top,
     }
+
+
+def score_all_candidates_v3(
+    profile: SourceFieldProfile,
+    v2_candidates: list[dict[str, Any]],
+    resource_context: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return the complete, deterministic V3 candidate list.
+
+    Sorting happens before the Top-3 truncation used by
+    score_source_field_v3(), which reuses this API and then slices the
+    suggestion candidates. Inputs are not modified; returned candidate dicts
+    are fresh objects safe for callers to use. Ordering is by (-score, target).
+    This supports experimental downstream rerankers without changing the V3
+    suggestion contract.
+    """
+    del profile
+    ranked = sorted(
+        (_adjust_candidate(candidate, resource_context) for candidate in v2_candidates),
+        key=lambda item: (-float(item["score"]), str(item["target"])),
+    )
+    return [{**candidate, "rank": index + 1} for index, candidate in enumerate(ranked)]
 
 
 def _adjust_candidate(candidate: dict[str, Any], resource_context: dict[str, dict[str, Any]]) -> dict[str, Any]:
