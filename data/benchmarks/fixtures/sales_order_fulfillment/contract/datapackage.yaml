@@ -1,0 +1,225 @@
+profile: tabular-data-package
+name: sales-order-fulfillment-benchmark
+title: Sales Order Fulfillment Schema Matching Holdout Contract
+version: 1.0.0
+description: Synthetic benchmark-only contract for sales order header, line, and delivery schedule target tables.
+carveops:
+  contract_id: sales-order-fulfillment-benchmark-v1
+  adapter: benchmark_fixture
+  domain: synthetic_sales_order_fulfillment_holdout
+  synthetic: true
+  authoritative: false
+  source_note: Synthetic holdout fixture; no real customer, person, organization, or company data.
+resources:
+  - profile: tabular-data-resource
+    name: sales_order_header
+    path: sales_order_header.csv
+    schema:
+      primaryKey:
+        - sales_order_id
+      fields:
+        - name: sales_order_id
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Stable sales order document identifier shared with related order detail records.
+            aliases:
+              - order_number
+              - order_id
+            semantic_type: identifier
+        - name: customer_purchase_order
+          type: string
+          carveops:
+            description: External buyer purchase order reference captured on the sales document.
+            aliases:
+              - buyer_order_number
+              - external_po
+            semantic_type: external_reference
+        - name: customer_id
+          type: string
+          carveops:
+            description: Synthetic sold-to account identifier assigned to the sales document.
+            aliases:
+              - sold_to_party
+              - buyer_account
+            semantic_type: customer_identifier
+        - name: order_date
+          type: date
+          carveops:
+            description: Calendar date when the sales document was created.
+            aliases:
+              - document_date
+              - created_date
+            semantic_type: date
+        - name: currency_code
+          type: string
+          constraints:
+            maxLength: 3
+          carveops:
+            description: ISO-style currency code used for monetary values on the order.
+            aliases:
+              - order_currency
+              - transaction_currency
+            semantic_type: currency_code
+        - name: distribution_channel
+          type: string
+          carveops:
+            description: Channel category used for sales fulfillment processing within the synthetic fixture.
+            aliases:
+              - sales_channel
+              - channel_code
+            semantic_type: category_code
+        - name: order_status
+          type: string
+          carveops:
+            description: Current processing state of the sales order header.
+            aliases:
+              - document_status
+            semantic_type: status_code
+  - profile: tabular-data-resource
+    name: sales_order_line
+    path: sales_order_line.csv
+    schema:
+      primaryKey:
+        - sales_order_id
+        - line_number
+      fields:
+        - name: sales_order_id
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Sales order document identifier carried by each line item.
+            aliases:
+              - order_number
+              - order_id
+            semantic_type: identifier
+        - name: line_number
+          type: integer
+          constraints:
+            required: true
+          carveops:
+            description: Numeric item position inside the sales order.
+            aliases:
+              - item_number
+              - position_number
+            semantic_type: line_identifier
+        - name: product_id
+          type: string
+          carveops:
+            description: Synthetic product identifier requested on the order line.
+            aliases:
+              - item_code
+              - material_number
+            semantic_type: product_identifier
+        - name: order_quantity
+          type: number
+          carveops:
+            description: Quantity requested by the buyer for the order line.
+            aliases:
+              - requested_quantity
+            semantic_type: quantity
+        - name: quantity_uom
+          type: string
+          carveops:
+            description: Unit of measure code for the requested quantity.
+            aliases:
+              - unit_of_measure
+              - sales_unit
+            semantic_type: unit_of_measure
+        - name: unit_price
+          type: number
+          carveops:
+            description: Price amount for one unit on the order line.
+            aliases:
+              - net_price
+              - price_per_unit
+            semantic_type: monetary_amount
+        - name: line_amount
+          type: number
+          carveops:
+            description: Extended monetary amount for the order line.
+            aliases:
+              - extended_amount
+              - line_value
+            semantic_type: monetary_amount
+        - name: item_description
+          type: string
+          carveops:
+            description: Short synthetic text describing the requested item.
+            aliases:
+              - product_description
+              - line_text
+            semantic_type: description
+  - profile: tabular-data-resource
+    name: delivery_schedule
+    path: delivery_schedule.csv
+    schema:
+      primaryKey:
+        - sales_order_id
+        - line_number
+        - schedule_number
+      fields:
+        - name: sales_order_id
+          type: string
+          constraints:
+            required: true
+          carveops:
+            description: Sales order document identifier shared with the related schedule record.
+            aliases:
+              - order_number
+              - order_id
+            semantic_type: identifier
+        - name: line_number
+          type: integer
+          constraints:
+            required: true
+          carveops:
+            description: Numeric item position linked to the schedule record.
+            aliases:
+              - item_number
+              - position_number
+            semantic_type: line_identifier
+        - name: schedule_number
+          type: integer
+          constraints:
+            required: true
+          carveops:
+            description: Sequence number for the delivery schedule entry.
+            aliases:
+              - schedule_sequence
+              - delivery_sequence
+            semantic_type: sequence_number
+        - name: requested_ship_date
+          type: date
+          carveops:
+            description: Date requested by the buyer for shipment.
+            aliases:
+              - requested_date
+              - planned_ship_date
+            semantic_type: date
+        - name: confirmed_ship_date
+          type: date
+          carveops:
+            description: Date committed for shipment in the schedule entry.
+            aliases:
+              - confirmed_date
+              - committed_ship_date
+            semantic_type: date
+        - name: confirmed_quantity
+          type: number
+          carveops:
+            description: Quantity committed for the schedule entry.
+            aliases:
+              - committed_quantity
+              - allocated_quantity
+            semantic_type: quantity
+        - name: fulfillment_status
+          type: string
+          carveops:
+            description: Delivery confirmation state for the schedule entry.
+            aliases:
+              - delivery_status
+              - confirmation_status
+            semantic_type: status_code

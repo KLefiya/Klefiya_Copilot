@@ -1,0 +1,2 @@
+sales_order_id,line_number,schedule_number,requested_ship_date,confirmed_ship_date,confirmed_quantity,fulfillment_status
+,,,,,,

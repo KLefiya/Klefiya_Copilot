@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "purpose": "evaluation_only",
+    "synthetic": true,
+    "scenario_id": "sales_order_fulfillment",
+    "multi_target": true,
+    "must_not_be_read_by_mapping_engine": true,
+    "frozen_before_first_evaluation": true,
+    "notes": [
+      "Benchmark-only synthetic ground truth for a sales order fulfillment holdout.",
+      "Created and frozen before the first evaluation; no real customer, person, organization, or company data is represented."
+    ]
+  },
+  "mappings": [
+    {
+      "source_field": "legacy_sales_order_id",
+      "expected_targets": [
+        "sales_order_header.sales_order_id",
+        "sales_order_line.sales_order_id",
+        "delivery_schedule.sales_order_id"
+      ],
+      "evaluation_group": "multi_target"
+    },
+    {
+      "source_field": "customer_po_ref",
+      "expected_targets": [
+        "sales_order_header.customer_purchase_order"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "sold_to_ref",
+      "expected_targets": [
+        "sales_order_header.customer_id"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "order_created_on",
+      "expected_targets": [
+        "sales_order_header.order_date"
+      ],
+      "evaluation_group": "temporal"
+    },
+    {
+      "source_field": "document_currency",
+      "expected_targets": [
+        "sales_order_header.currency_code"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "distribution_channel",
+      "expected_targets": [
+        "sales_order_header.distribution_channel"
+      ],
+      "evaluation_group": "categorical"
+    },
+    {
+      "source_field": "order_state",
+      "expected_targets": [
+        "sales_order_header.order_status"
+      ],
+      "evaluation_group": "categorical"
+    },
+    {
+      "source_field": "header_audit_marker",
+      "expected_targets": [],
+      "evaluation_group": "no_target"
+    },
+    {
+      "source_field": "legacy_line_item_no",
+      "expected_targets": [
+        "sales_order_line.line_number",
+        "delivery_schedule.line_number"
+      ],
+      "evaluation_group": "multi_target"
+    },
+    {
+      "source_field": "material_ref",
+      "expected_targets": [
+        "sales_order_line.product_id"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "ordered_qty",
+      "expected_targets": [
+        "sales_order_line.order_quantity"
+      ],
+      "evaluation_group": "numeric"
+    },
+    {
+      "source_field": "sales_uom",
+      "expected_targets": [
+        "sales_order_line.quantity_uom"
+      ],
+      "evaluation_group": "value_pattern"
+    },
+    {
+      "source_field": "net_unit_amount",
+      "expected_targets": [
+        "sales_order_line.unit_price"
+      ],
+      "evaluation_group": "numeric"
+    },
+    {
+      "source_field": "line_total_amount",
+      "expected_targets": [
+        "sales_order_line.line_amount"
+      ],
+      "evaluation_group": "numeric"
+    },
+    {
+      "source_field": "item_description",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "evaluation_group": "semantic_only"
+    },
+    {
+      "source_field": "line_analyst_note",
+      "expected_targets": [],
+      "evaluation_group": "no_target"
+    },
+    {
+      "source_field": "schedule_seq",
+      "expected_targets": [
+        "delivery_schedule.schedule_number"
+      ],
+      "evaluation_group": "numeric"
+    },
+    {
+      "source_field": "requested_ship_on",
+      "expected_targets": [
+        "delivery_schedule.requested_ship_date"
+      ],
+      "evaluation_group": "temporal"
+    },
+    {
+      "source_field": "confirmed_ship_on",
+      "expected_targets": [
+        "delivery_schedule.confirmed_ship_date"
+      ],
+      "evaluation_group": "temporal"
+    },
+    {
+      "source_field": "confirmed_qty",
+      "expected_targets": [
+        "delivery_schedule.confirmed_quantity"
+      ],
+      "evaluation_group": "numeric"
+    },
+    {
+      "source_field": "fulfillment_state",
+      "expected_targets": [
+        "delivery_schedule.fulfillment_status"
+      ],
+      "evaluation_group": "categorical"
+    },
+    {
+      "source_field": "migration_batch_label",
+      "expected_targets": [],
+      "evaluation_group": "no_target"
+    }
+  ]
+}

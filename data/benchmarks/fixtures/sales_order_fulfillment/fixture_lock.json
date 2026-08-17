@@ -1,0 +1,48 @@
+{
+  "scenario_id": "sales_order_fulfillment",
+  "split": "test",
+  "purpose": "independent_cross_domain_holdout",
+  "frozen_before_first_evaluation": true,
+  "evaluation_state_at_freeze": "not_run",
+  "fixture_changes_after_first_evaluation_forbidden": true,
+  "scenario_counts": {
+    "case_count": 22,
+    "single_target_case_count": 17,
+    "multi_target_case_count": 2,
+    "no_target_case_count": 3,
+    "expected_target_link_count": 22
+  },
+  "benchmark_expected_counts_after_registration": {
+    "scenario_count": 5,
+    "case_count": 72,
+    "single_target_case_count": 59,
+    "multi_target_case_count": 5,
+    "no_target_case_count": 8,
+    "expected_target_link_count": 70
+  },
+  "sha256_mode": "raw_file_bytes_sha256",
+  "frozen_file_sha256": {
+    "contract/datapackage.yaml": "e7da15c612dd7f46fd34b0d7702532b08bc4b3157bf28694ff7fdfcafcf2d28a",
+    "source_sales_order_fulfillment.csv": "856d68fceff90ce3d115f9f21913ddde4c560209b66f7bc1514c5b52ba85a6f1",
+    "ground_truth.json": "5b30528ebfa5cfb5f9a057df0eab54763901fffa0f9994573aa079d29008f545",
+    "target/sales_order_header.csv": "32309f93bc61615161c1a39096a8548b67146b69b92724e7be926cc1e2580a35",
+    "target/sales_order_line.csv": "7e0c1c818427e5d3e5a6a114a248d3e1af7faf68255f3512d57c8adcda68a751",
+    "target/delivery_schedule.csv": "ddfca703ff080cee2afdd3d77e55b4f5a5bbd6ccb19882040a8e8231d7b618d1"
+  },
+  "registered_next_evaluation_plan": {
+    "scorers": [
+      "baseline",
+      "value_pattern_v2",
+      "target_context_v3",
+      "precision_tiered_v4"
+    ],
+    "judgments": [
+      "Do not require V4 to outperform V3 on this holdout.",
+      "Do not set an accuracy threshold.",
+      "Because the fixture has no Bank interaction concepts, expected V4 activated interaction count is 0.",
+      "Expected V4 and V3 candidate ranking, scores, recommendation, and status are exactly identical for 22/22 cases in this scenario.",
+      "If future results violate the expectation, diagnose implementation or evidence propagation and do not modify the fixture to remove the failure.",
+      "After the first evaluation, do not rename fields, modify aliases, source values, contract, truth, or case tags to improve metrics."
+    ]
+  }
+}

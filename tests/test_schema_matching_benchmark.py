@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import math
 import shutil
@@ -35,6 +36,66 @@ BANK_SOURCE = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account"
 BANK_TRUTH = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "ground_truth.json"
 BANK_CONTRACT = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "contract" / "datapackage.yaml"
 BANK_TARGET = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "bank_account" / "target"
+SALES_ORDER_ROOT = PROJECT_ROOT / "data" / "benchmarks" / "fixtures" / "sales_order_fulfillment"
+SALES_ORDER_SOURCE = SALES_ORDER_ROOT / "source_sales_order_fulfillment.csv"
+SALES_ORDER_TRUTH = SALES_ORDER_ROOT / "ground_truth.json"
+SALES_ORDER_CONTRACT = SALES_ORDER_ROOT / "contract" / "datapackage.yaml"
+SALES_ORDER_LOCK = SALES_ORDER_ROOT / "fixture_lock.json"
+SALES_ORDER_TARGET = SALES_ORDER_ROOT / "target"
+SALES_ORDER_SOURCE_HEADER = [
+    "legacy_sales_order_id",
+    "customer_po_ref",
+    "sold_to_ref",
+    "order_created_on",
+    "document_currency",
+    "distribution_channel",
+    "order_state",
+    "header_audit_marker",
+    "legacy_line_item_no",
+    "material_ref",
+    "ordered_qty",
+    "sales_uom",
+    "net_unit_amount",
+    "line_total_amount",
+    "item_description",
+    "line_analyst_note",
+    "schedule_seq",
+    "requested_ship_on",
+    "confirmed_ship_on",
+    "confirmed_qty",
+    "fulfillment_state",
+    "migration_batch_label",
+]
+SALES_ORDER_TARGET_FIELDS = {
+    "sales_order_header": {
+        "sales_order_id",
+        "customer_purchase_order",
+        "customer_id",
+        "order_date",
+        "currency_code",
+        "distribution_channel",
+        "order_status",
+    },
+    "sales_order_line": {
+        "sales_order_id",
+        "line_number",
+        "product_id",
+        "order_quantity",
+        "quantity_uom",
+        "unit_price",
+        "line_amount",
+        "item_description",
+    },
+    "delivery_schedule": {
+        "sales_order_id",
+        "line_number",
+        "schedule_number",
+        "requested_ship_date",
+        "confirmed_ship_date",
+        "confirmed_quantity",
+        "fulfillment_status",
+    },
+}
 
 
 class FakeEmbeddingBackend:
@@ -129,12 +190,12 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
     def test_02_fixture_counts(self):
         benchmark = load_benchmark(BENCHMARK)
         counts = _fixture_counts(benchmark)
-        self.assertEqual(counts["scenario_count"], 4)
-        self.assertEqual(counts["case_count"], 50)
-        self.assertEqual(counts["single_target_case_count"], 42)
-        self.assertEqual(counts["multi_target_case_count"], 3)
-        self.assertEqual(counts["no_target_case_count"], 5)
-        self.assertEqual(counts["expected_target_link_count"], 48)
+        self.assertEqual(counts["scenario_count"], 5)
+        self.assertEqual(counts["case_count"], 72)
+        self.assertEqual(counts["single_target_case_count"], 59)
+        self.assertEqual(counts["multi_target_case_count"], 5)
+        self.assertEqual(counts["no_target_case_count"], 8)
+        self.assertEqual(counts["expected_target_link_count"], 70)
 
     def test_03_top1_rank2_missing_recall_and_mrr(self):
         benchmark = _benchmark(
@@ -445,6 +506,138 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
         self.assertEqual(by_name["settlement_ccy"].observed_max_length, 3)
         self.assertEqual(by_name["account_domicile"].observed_max_length, 2)
 
+    def test_14_sales_order_fulfillment_holdout_fixture_is_registered_and_frozen(self):
+        benchmark = load_benchmark(BENCHMARK)
+        scenario = next(item for item in benchmark["scenarios"] if item["scenario_id"] == "sales_order_fulfillment")
+        self.assertEqual(scenario["split"], "test")
+        self.assertEqual(
+            scenario["source_path"],
+            "data/benchmarks/fixtures/sales_order_fulfillment/source_sales_order_fulfillment.csv",
+        )
+        self.assertEqual(
+            scenario["contract_path"],
+            "data/benchmarks/fixtures/sales_order_fulfillment/contract/datapackage.yaml",
+        )
+        self.assertEqual(
+            scenario["data_root_path"],
+            "data/benchmarks/fixtures/sales_order_fulfillment/target",
+        )
+        self.assertEqual(
+            scenario["answer_source_path"],
+            "data/benchmarks/fixtures/sales_order_fulfillment/ground_truth.json",
+        )
+        self.assertNotIn("mapping_report_path", scenario)
+        self.assertNotIn("evaluation_report_path", scenario)
+
+        counts = _fixture_counts({"scenarios": [scenario]})
+        self.assertEqual(counts["case_count"], 22)
+        self.assertEqual(counts["single_target_case_count"], 17)
+        self.assertEqual(counts["multi_target_case_count"], 2)
+        self.assertEqual(counts["no_target_case_count"], 3)
+        self.assertEqual(counts["expected_target_link_count"], 22)
+        self.assertEqual(_csv_header(SALES_ORDER_SOURCE), SALES_ORDER_SOURCE_HEADER)
+        self.assertEqual(len(_csv_rows(SALES_ORDER_SOURCE)), 8)
+
+        resources = _resource_fields(SALES_ORDER_CONTRACT)
+        self.assertEqual(set(resources), set(SALES_ORDER_TARGET_FIELDS))
+        self.assertEqual(resources, SALES_ORDER_TARGET_FIELDS)
+        targets = _target_names(SALES_ORDER_CONTRACT)
+
+        truth = _read_json(SALES_ORDER_TRUTH)
+        self.assertEqual(truth["_meta"]["purpose"], "evaluation_only")
+        self.assertTrue(truth["_meta"]["synthetic"])
+        self.assertEqual(truth["_meta"]["scenario_id"], "sales_order_fulfillment")
+        self.assertTrue(truth["_meta"]["multi_target"])
+        self.assertTrue(truth["_meta"]["must_not_be_read_by_mapping_engine"])
+        self.assertTrue(truth["_meta"]["frozen_before_first_evaluation"])
+
+        mappings = truth["mappings"]
+        self.assertEqual(len(mappings), len(scenario["cases"]))
+        for case, mapping in zip(scenario["cases"], mappings):
+            self.assertEqual(case["source_field"], mapping["source_field"])
+            self.assertEqual(case["expected_targets"], mapping["expected_targets"])
+            self.assertEqual(case["expected_no_target"], not mapping["expected_targets"])
+            self.assertEqual(case["expected_no_target"], "no_target" in case["difficulty_tags"])
+            self.assertEqual(len(case["expected_targets"]) > 1, "multi_target" in case["difficulty_tags"])
+            self.assertEqual(len(case["expected_targets"]) == 1, "single_target" in case["difficulty_tags"])
+            for target in case["expected_targets"]:
+                self.assertIn(target, targets)
+
+        fixture_tags = {tag for case in scenario["cases"] for tag in case["difficulty_tags"]}
+        self.assertTrue({
+            "single_target",
+            "multi_target",
+            "no_target",
+            "cross_resource_key",
+            "target_table_context",
+            "semantic_only",
+            "temporal",
+            "numeric",
+            "categorical",
+            "value_pattern_needed",
+        }.issubset(fixture_tags))
+
+        lock = _read_json(SALES_ORDER_LOCK)
+        self.assertEqual(lock["scenario_id"], "sales_order_fulfillment")
+        self.assertEqual(lock["split"], "test")
+        self.assertEqual(lock["purpose"], "independent_cross_domain_holdout")
+        self.assertTrue(lock["frozen_before_first_evaluation"])
+        self.assertEqual(lock["evaluation_state_at_freeze"], "not_run")
+        self.assertTrue(lock["fixture_changes_after_first_evaluation_forbidden"])
+        self.assertEqual(lock["scenario_counts"], {
+            "case_count": 22,
+            "single_target_case_count": 17,
+            "multi_target_case_count": 2,
+            "no_target_case_count": 3,
+            "expected_target_link_count": 22,
+        })
+        self.assertEqual(lock["benchmark_expected_counts_after_registration"], {
+            "scenario_count": 5,
+            "case_count": 72,
+            "single_target_case_count": 59,
+            "multi_target_case_count": 5,
+            "no_target_case_count": 8,
+            "expected_target_link_count": 70,
+        })
+        self.assertEqual(lock["sha256_mode"], "raw_file_bytes_sha256")
+        frozen_paths = {
+            "contract/datapackage.yaml": SALES_ORDER_CONTRACT,
+            "source_sales_order_fulfillment.csv": SALES_ORDER_SOURCE,
+            "ground_truth.json": SALES_ORDER_TRUTH,
+            "target/sales_order_header.csv": SALES_ORDER_TARGET / "sales_order_header.csv",
+            "target/sales_order_line.csv": SALES_ORDER_TARGET / "sales_order_line.csv",
+            "target/delivery_schedule.csv": SALES_ORDER_TARGET / "delivery_schedule.csv",
+        }
+        self.assertEqual(
+            lock["frozen_file_sha256"],
+            {key: _raw_sha256(path) for key, path in frozen_paths.items()},
+        )
+
+    def test_15_sales_order_fulfillment_profiler_and_generation_boundary(self):
+        from src.core.mapping.profiler import profile_source_csv
+
+        profiles, meta = profile_source_csv(SALES_ORDER_SOURCE)
+        by_name = {profile.name: profile for profile in profiles}
+        self.assertEqual(meta["source_row_count"], 8)
+        self.assertEqual(meta["source_field_count"], 22)
+        self.assertEqual(by_name["order_created_on"].inferred_kind, "date")
+        self.assertEqual(by_name["requested_ship_on"].inferred_kind, "date")
+        self.assertEqual(by_name["confirmed_ship_on"].inferred_kind, "date")
+        self.assertEqual(by_name["legacy_line_item_no"].inferred_kind, "integer")
+        self.assertEqual(by_name["ordered_qty"].inferred_kind, "integer")
+        self.assertEqual(by_name["schedule_seq"].inferred_kind, "integer")
+        self.assertEqual(by_name["confirmed_qty"].inferred_kind, "integer")
+        self.assertEqual(by_name["net_unit_amount"].inferred_kind, "number")
+        self.assertEqual(by_name["line_total_amount"].inferred_kind, "number")
+
+        benchmark = load_benchmark(BENCHMARK)
+        spec = next(item for item in benchmark_run_specs(benchmark) if item["scenario_id"] == "sales_order_fulfillment")
+        self.assertEqual(set(spec), {"scenario_id", "split", "source_path", "contract_path", "data_root_path"})
+        self.assertNotIn("cases", spec)
+        self.assertNotIn("answer_source_path", spec)
+        self.assertNotIn("case_id", spec)
+        self.assertNotIn("expected_targets", spec)
+
 
 def _formal_candidate_reports() -> dict[str, dict]:
     return {
@@ -463,6 +656,13 @@ def _csv_header(path: Path) -> list[str]:
         return next(csv.reader(handle))
 
 
+def _csv_rows(path: Path) -> list[list[str]]:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.reader(handle)
+        next(reader)
+        return list(reader)
+
+
 def _target_names(contract_path: Path) -> set[str]:
     doc = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     return {
@@ -470,6 +670,18 @@ def _target_names(contract_path: Path) -> set[str]:
         for resource in doc["resources"]
         for field in resource["schema"]["fields"]
     }
+
+
+def _resource_fields(contract_path: Path) -> dict[str, set[str]]:
+    doc = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
+    return {
+        resource["name"]: {field["name"] for field in resource["schema"]["fields"]}
+        for resource in doc["resources"]
+    }
+
+
+def _raw_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _fixture_counts(benchmark: dict) -> dict[str, int]:
