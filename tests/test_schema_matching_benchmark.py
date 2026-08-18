@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import math
+import re
 import shutil
 import sys
 import tempfile
@@ -29,6 +30,8 @@ from src.core.mapping.benchmark import (
     generate_candidate_reports,
     load_benchmark,
 )
+from src.core.hashing import canonical_json_content_sha256
+from scripts.verify_formal_artifacts_immutable import FORMAL_ARTIFACTS
 
 
 BENCHMARK = PROJECT_ROOT / "data" / "benchmarks" / "schema_matching_v1.json"
@@ -42,6 +45,7 @@ SALES_ORDER_TRUTH = SALES_ORDER_ROOT / "ground_truth.json"
 SALES_ORDER_CONTRACT = SALES_ORDER_ROOT / "contract" / "datapackage.yaml"
 SALES_ORDER_LOCK = SALES_ORDER_ROOT / "fixture_lock.json"
 SALES_ORDER_TARGET = SALES_ORDER_ROOT / "target"
+FORMAL_V4_EVALUATION = PROJECT_ROOT / "data" / "synthetic" / "schema_matching_precision_tiered_v4_5scenario_evaluation.json"
 SALES_ORDER_SOURCE_HEADER = [
     "legacy_sales_order_id",
     "customer_po_ref",
@@ -638,6 +642,68 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
         self.assertNotIn("case_id", spec)
         self.assertNotIn("expected_targets", spec)
 
+    def test_16_precision_tiered_v4_formal_artifact_contract(self):
+        self.assertTrue(FORMAL_V4_EVALUATION.exists())
+        raw = FORMAL_V4_EVALUATION.read_bytes()
+        self.assertFalse(raw.startswith(b"\xef\xbb\xbf"))
+        self.assertNotIn(b"\r", raw)
+        self.assertTrue(raw.endswith(b"\n"))
+
+        text = raw.decode("utf-8")
+        report = json.loads(text)
+        self.assertEqual(
+            "data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json",
+            FORMAL_V4_EVALUATION.relative_to(PROJECT_ROOT).as_posix(),
+        )
+        self.assertIn(
+            FORMAL_V4_EVALUATION.relative_to(PROJECT_ROOT).as_posix(),
+            FORMAL_ARTIFACTS,
+        )
+
+        self.assertEqual(report["_meta"]["component"], "schema_matching_benchmark_evaluation")
+        self.assertEqual(report["_meta"]["benchmark_id"], "schema_matching_v1")
+        self.assertEqual(report["_meta"]["scorer_variant"], "precision_tiered_v4")
+        self.assertEqual(report["_meta"]["scorer_id"], "precision_tiered_v4")
+        self.assertEqual(report["_meta"]["feature_version"], "precision_tiered_interaction_v1")
+        self.assertFalse(report["_meta"]["ground_truth_used_for_candidate_generation"])
+        self.assertTrue(report["_meta"]["ground_truth_used_for_evaluation"])
+
+        self.assertEqual(report["overall"], {
+            "scenario_count": 5,
+            "case_count": 72,
+            "single_target_case_count": 59,
+            "multi_target_case_count": 5,
+            "no_target_case_count": 8,
+            "expected_target_link_count": 70,
+            "single_target_top1_accuracy": 0.9153,
+            "target_link_recall_at_1": 0.8286,
+            "target_link_recall_at_3": 0.9714,
+            "target_link_mrr": 0.8929,
+            "no_target_accuracy": 0.875,
+            "multi_target_full_coverage_at_3": 1.0,
+        })
+        self.assertEqual(
+            {item["scenario_id"]: item["split"] for item in report["by_scenario"]},
+            {
+                "generic_customer": "train",
+                "supplier_reference": "validation",
+                "erpnext_item_price": "test",
+                "bank_account": "train",
+                "sales_order_fulfillment": "test",
+            },
+        )
+
+        body = {key: value for key, value in report.items() if key != "_run_info"}
+        self.assertEqual(
+            report["_run_info"]["content_sha256"],
+            canonical_json_content_sha256(body),
+        )
+        self.assertNotRegex(text, r"([A-Za-z]:\\\\|/tmp/|AppData\\\\Local\\\\Temp|C:\\\\Users\\\\)")
+        self.assertNotIn("multi_target_exact_field_v1", text)
+        self.assertNotIn("multi_target_recommendation", text)
+        self.assertNotIn("rejected", text.lower())
+        self.assertFalse(any(re.search(r"(timestamp|uuid|machine|hostname|absolute_path|temp_path)", key, re.I) for key in _json_keys(report)))
+
 
 def _formal_candidate_reports() -> dict[str, dict]:
     return {
@@ -702,6 +768,22 @@ def _fixture_counts(benchmark: dict) -> dict[str, int]:
             counts["no_target_case_count"] += int(target_count == 0)
             counts["expected_target_link_count"] += target_count
     return counts
+
+
+def _json_keys(value, prefix: str = "") -> list[str]:
+    if isinstance(value, dict):
+        keys = []
+        for key, child in value.items():
+            path = f"{prefix}.{key}" if prefix else str(key)
+            keys.append(path)
+            keys.extend(_json_keys(child, path))
+        return keys
+    if isinstance(value, list):
+        keys = []
+        for child in value:
+            keys.extend(_json_keys(child, f"{prefix}[]"))
+        return keys
+    return []
 
 
 def _temp_fixture(document: dict) -> Path:

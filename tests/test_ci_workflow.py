@@ -181,7 +181,7 @@ class CIWorkflowTests(unittest.TestCase):
         ]:
             self.assertNotIn(forbidden, run_text)
 
-    def test_13_helper_uses_complete_43_file_inventory(self) -> None:
+    def test_13_helper_uses_complete_44_file_inventory(self) -> None:
         module = ast.parse(HELPER.read_text(encoding="utf-8"))
         assignment = next(
             node
@@ -189,7 +189,7 @@ class CIWorkflowTests(unittest.TestCase):
             if isinstance(node, ast.Assign) and any(getattr(target, "id", "") == "FORMAL_ARTIFACTS" for target in node.targets)
         )
         artifacts = ast.literal_eval(assignment.value)
-        self.assertEqual(len(artifacts), 43)
+        self.assertEqual(len(artifacts), 44)
         for required in [
             "data/generated/generic_customer/customer.csv",
             "data/generated/generic_customer/customer_bank.csv",
@@ -199,6 +199,7 @@ class CIWorkflowTests(unittest.TestCase):
             "data/generated/erpnext_item_price_multitarget/item_price.csv",
             "data/synthetic/cutover_status_updates.json",
             "data/synthetic/cutover_agent_trace.json",
+            "data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json",
         ]:
             self.assertIn(required, artifacts)
         self.assertEqual(

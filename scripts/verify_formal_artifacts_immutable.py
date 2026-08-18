@@ -52,6 +52,7 @@ FORMAL_ARTIFACTS = (
     "data/synthetic/sap_supplier_reference_contract_validation.json",
     "data/synthetic/sap_supplier_reference_generated_validation.json",
     "data/synthetic/sap_supplier_reference_package_build_report.json",
+    "data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json",
     "data/synthetic/vendor_duplicate_report.json",
     "data/synthetic/vendor_field_mapping.json",
     "data/synthetic/vendor_profile_report.json",
@@ -153,7 +154,7 @@ def verify_snapshot(path: Path) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Snapshot and verify the 43 formal CarveOps artifacts.")
+    parser = argparse.ArgumentParser(description="Snapshot and verify the 44 formal CarveOps artifacts.")
     parser.add_argument("command", choices=("snapshot", "verify"))
     parser.add_argument("--snapshot", type=Path, default=default_snapshot_path())
     args = parser.parse_args(argv)
