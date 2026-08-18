@@ -26,6 +26,7 @@ import { CutoverView } from './views/CutoverView'
 import { DuplicateView } from './views/DuplicateView'
 import { FitGapView } from './views/FitGapView'
 import { MappingView } from './views/MappingView'
+import { MappingJobView } from './views/MappingJobView'
 import { MigrationWorkspaceView } from './views/MigrationWorkspaceView'
 import { ProfileView } from './views/ProfileView'
 import { ValidationView } from './views/ValidationView'
@@ -41,6 +42,7 @@ interface NavItem {
 
 const MODULE_ONE: NavItem[] = [
   { key: 'migration-workspace', label: '迁移工作台', element: <MigrationWorkspaceView /> },
+  { key: 'mapping-job', label: '新建字段映射', element: <MappingJobView /> },
   { key: 'profile', label: '数据质量画像', report: 'vendor_profile_report', element: <ProfileView /> },
   { key: 'duplicate', label: '实体解析', report: 'vendor_duplicate_report', element: <DuplicateView /> },
   { key: 'mapping', label: '字段映射建议', report: 'vendor_field_mapping', element: <MappingView /> },
@@ -232,10 +234,10 @@ export default function App() {
         <AppShell.Section>
           <Box pt="sm" style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}>
             <Text size="xs" c="dimmed">
-              全部为合成数据
+              内置演示数据为合成数据
             </Text>
             <Text size="xs" c="dimmed" mt={2}>
-              示例均为合成数据，不连接真实目标系统
+              用户上传内容只写入本地 runtime，不连接真实目标系统
             </Text>
             {health && (
               <Text size="xs" c="dimmed" mt={6}>

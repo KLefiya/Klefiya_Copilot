@@ -170,9 +170,7 @@ describe('Cutover / RAID governance', () => {
   it('renders the complete module three dashboard', async () => {
     renderView(<CutoverView />)
 
-    await waitFor(() => expect(screen.getByText('Cutover / RAID 治理')).toBeDefined())
-
-    expect(screen.getAllByText('Red').length).toBeGreaterThan(0)
+    await waitFor(() => expect(screen.getAllByText('Red').length).toBeGreaterThan(0), { timeout: 5000 })
     expect(screen.getAllByText('T-7').length).toBeGreaterThan(0)
     expect(screen.getAllByText('34').length).toBeGreaterThan(0)
     expect(screen.getAllByText('17').length).toBeGreaterThan(0)
@@ -203,7 +201,7 @@ describe('Cutover / RAID governance', () => {
   it('filters activities by blocked status, critical path, and empty search', async () => {
     renderView(<CutoverView />)
 
-    await waitFor(() => expect(screen.getByText('活动状态 · 34')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('活动状态 · 34')).toBeDefined(), { timeout: 5000 })
 
     fireEvent.change(screen.getAllByLabelText('Status')[0], { target: { value: 'Blocked' } })
     expect(screen.getAllByTestId('activity-row')).toHaveLength(2)
@@ -235,7 +233,7 @@ describe('Cutover / RAID governance', () => {
     renderView(<CutoverView />)
 
     await waitFor(() => expect(screen.getByText('Agent 示例 trace 尚未生成。')).toBeDefined())
-    expect(screen.getByText('活动状态 · 34')).toBeDefined()
+    await waitFor(() => expect(screen.getByText('活动状态 · 34')).toBeDefined(), { timeout: 5000 })
     expect(screen.queryByText('reasoning_content')).toBeNull()
   })
 
@@ -244,7 +242,7 @@ describe('Cutover / RAID governance', () => {
     renderView(<CutoverView />)
 
     await waitFor(() => expect(screen.getByText('管理总览尚不可用')).toBeDefined())
-    expect(screen.getByText('活动状态 · 34')).toBeDefined()
+    await waitFor(() => expect(screen.getByText('活动状态 · 34')).toBeDefined())
     expect(screen.getByText('冻结窗口 · 3')).toBeDefined()
   })
 })

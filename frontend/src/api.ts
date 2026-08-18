@@ -5,6 +5,14 @@
  * （例如「报告尚未生成，请跑 xxx.py」），不要吞掉它。
  */
 
+// Report endpoints remain read-only. Migration workspaces and mapping jobs have scoped
+// local runtime writes; mapping job POST runs local schema matching and does not call a hosted LLM.
+import type {
+  CreateMappingJobPayload,
+  MappingContractCatalog,
+  MappingJobResponse,
+} from './lib/mappingJobs'
+
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000'
 
 export interface ReportInfo {
@@ -133,5 +141,16 @@ export const getMigrationLineage = (
     `/api/migration/workspaces/${encodeURIComponent(workspaceId)}/lineage${query ? `?${query}` : ''}`,
   )
 }
+
+export const getMappingContracts = () => request<MappingContractCatalog>('/api/mapping/contracts')
+
+export const createMappingJob = (payload: CreateMappingJobPayload) =>
+  request<MappingJobResponse>('/api/mapping/jobs', {
+    method: 'POST',
+    body: payload,
+  })
+
+export const getMappingJob = (jobId: string) =>
+  request<MappingJobResponse>(`/api/mapping/jobs/${encodeURIComponent(jobId)}`)
 
 export { API_BASE }
