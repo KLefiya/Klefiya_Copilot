@@ -5,6 +5,7 @@ import {
   Badge,
   Box,
   Button,
+  Checkbox,
   Code,
   FileInput,
   Group,
@@ -15,23 +16,35 @@ import {
   Table,
   Text,
   TextInput,
+  Textarea,
   Title,
   Tooltip,
 } from '@mantine/core'
-import { ApiError, createMappingJob, getMappingContracts, getMappingJob } from '../api'
+import { ApiError, createMappingJob, downloadMappingReviewExport, getMappingContracts, getMappingJob, saveMappingReview } from '../api'
 import { StatCard } from '../components/StatCard'
 import type {
   MappingCandidate,
   MappingContractSummary,
+  MappingExportFormat,
   MappingJobResponse,
   MappingResult,
+  MappingReviewAction,
+  MappingReviewDecision,
+  MappingReviewSummary,
   MappingScorer,
   MappingSourceProfile,
 } from '../lib/mappingJobs'
 import { STATUS } from '../lib/theme'
 
 const MAX_CSV_BYTES = 1024 * 1024
+const MAX_REVIEW_NOTE_LENGTH = 500
 const JOB_ID_PATTERN = /^[0-9a-f]{32}$/
+
+interface ReviewDraft {
+  action: MappingReviewAction | ''
+  target_fields: string[]
+  note: string
+}
 
 function errorText(error: unknown): string {
   if (error instanceof ApiError) {
@@ -94,6 +107,83 @@ function evidenceItems(value: unknown): string[] {
       .slice(0, 8)
   }
   return []
+}
+
+function actionLabel(action: MappingReviewAction | ''): string {
+  if (action === 'accept_suggestion') return '接受算法建议'
+  if (action === 'select_target') return '改选目标'
+  if (action === 'mark_unmapped') return '标记不映射'
+  return '待复核'
+}
+
+function hasControlCharacter(value: string): boolean {
+  return [...value].some((char) => {
+    const codePoint = char.codePointAt(0)
+    return codePoint !== undefined && ((codePoint >= 0 && codePoint <= 8) || (codePoint >= 10 && codePoint <= 31) || codePoint === 127)
+  })
+}
+
+function reviewDraftFromDecision(decision: MappingReviewDecision): ReviewDraft {
+  return {
+    action: decision.action,
+    target_fields: decision.target_fields ?? [],
+    note: decision.note ?? '',
+  }
+}
+
+function emptyReviewDraft(): ReviewDraft {
+  return { action: '', target_fields: [], note: '' }
+}
+
+function reviewDraftSignature(drafts: Record<string, ReviewDraft>, mappings: MappingResult[]): string {
+  return JSON.stringify(
+    mappings.map((mapping) => {
+      const draft = drafts[mapping.source_field] ?? emptyReviewDraft()
+      return [
+        mapping.source_field,
+        draft.action,
+        [...draft.target_fields].sort(),
+        draft.note,
+      ]
+    }),
+  )
+}
+
+function buildReviewDecisions(drafts: Record<string, ReviewDraft>, mappings: MappingResult[]): MappingReviewDecision[] {
+  return mappings
+    .map((mapping) => {
+      const draft = drafts[mapping.source_field]
+      if (!draft?.action) return null
+      const note = draft.note.trim()
+      const decision: MappingReviewDecision = {
+        source_field: mapping.source_field,
+        action: draft.action,
+      }
+      if (draft.action === 'select_target') decision.target_fields = draft.target_fields
+      if (draft.action === 'mark_unmapped') decision.target_fields = []
+      if (note) decision.note = note
+      return decision
+    })
+    .filter((decision): decision is MappingReviewDecision => decision !== null)
+}
+
+function reviewSummaryFromDrafts(
+  result: MappingJobResponse,
+  drafts: Record<string, ReviewDraft>,
+): MappingReviewSummary {
+  const decisions = buildReviewDecisions(drafts, result.mappings)
+  return {
+    mapping_report_sha256: result.job.mapping_report.content_sha256,
+    reviewed_fields: decisions.length,
+    total_fields: result.mappings.length,
+    pending_fields: result.mappings.length - decisions.length,
+    accepted_count: decisions.filter((decision) => decision.action === 'accept_suggestion').length,
+    overridden_count: decisions.filter((decision) => decision.action === 'select_target').length,
+    unmapped_count: decisions.filter((decision) => decision.action === 'mark_unmapped').length,
+    export_ready: decisions.length === result.mappings.length,
+    updated_at: result.review?.updated_at ?? null,
+    decisions,
+  }
 }
 
 function ErrorAlert({ message }: { message: string | null }) {
@@ -268,13 +358,233 @@ function MappingResults({ result }: { result: MappingJobResponse }) {
   return (
     <Stack gap="md">
       <Title order={3} size="h5">Mapping Results</Title>
-      <Accordion variant="separated" radius="md" chevronPosition="left" multiple>
+      <Accordion
+        variant="separated"
+        radius="md"
+        chevronPosition="left"
+        multiple
+        defaultValue={result.mappings.map((mapping) => mapping.source_field)}
+      >
         {result.mappings.map((mapping) => (
           <MappingItem key={mapping.source_field} mapping={mapping} />
         ))}
       </Accordion>
     </Stack>
   )
+}
+
+function ReviewPanel({
+  result,
+  drafts,
+  targetOptions,
+  targetOptionsAvailable,
+  isDirty,
+  saving,
+  downloading,
+  message,
+  error,
+  onDraftChange,
+  onSave,
+  onDownload,
+}: {
+  result: MappingJobResponse
+  drafts: Record<string, ReviewDraft>
+  targetOptions: string[]
+  targetOptionsAvailable: boolean
+  isDirty: boolean
+  saving: boolean
+  downloading: MappingExportFormat | null
+  message: string | null
+  error: string | null
+  onDraftChange: (sourceField: string, draft: ReviewDraft) => void
+  onSave: () => void
+  onDownload: (format: MappingExportFormat) => void
+}) {
+  const summary = reviewSummaryFromDrafts(result, drafts)
+  const canExport = summary.export_ready && !isDirty && !saving && downloading === null
+  const validationErrors = reviewValidationErrors(result, drafts)
+  const canSave = validationErrors.length === 0 && !saving
+  return (
+    <Stack gap="md">
+      <Title order={3} size="h5">人工复核</Title>
+      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+        <StatCard label="已复核" value={`${summary.reviewed_fields} / ${summary.total_fields}`} />
+        <StatCard label="待复核" value={summary.pending_fields} accent={summary.pending_fields ? STATUS.warning : STATUS.good} />
+        <StatCard label="接受建议" value={summary.accepted_count} />
+        <StatCard label="人工改选" value={summary.overridden_count} />
+        <StatCard label="标记不映射" value={summary.unmapped_count} />
+        <StatCard label="可导出" value={summary.export_ready ? 'Yes' : 'No'} accent={summary.export_ready ? STATUS.good : STATUS.warning} />
+        <StatCard label="未保存修改" value={isDirty ? 'Yes' : 'No'} accent={isDirty ? STATUS.warning : STATUS.good} />
+        <StatCard label="Review SHA" value={shortValue(result.job.mapping_report.content_sha256)} />
+      </SimpleGrid>
+
+      {message && <Alert color="green" variant="light">{message}</Alert>}
+      <ErrorAlert message={error} />
+      {validationErrors.length > 0 && (
+        <Alert color="yellow" variant="light">
+          {validationErrors[0]}
+        </Alert>
+      )}
+
+      <Group gap="sm">
+        <Button onClick={onSave} loading={saving} disabled={!canSave}>
+          保存复核
+        </Button>
+        <Button
+          variant="light"
+          onClick={() => onDownload('json')}
+          loading={downloading === 'json'}
+          disabled={!canExport}
+        >
+          下载 JSON
+        </Button>
+        <Button
+          variant="light"
+          onClick={() => onDownload('csv')}
+          loading={downloading === 'csv'}
+          disabled={!canExport}
+        >
+          下载 CSV
+        </Button>
+        {!summary.export_ready && (
+          <Text size="sm" c="dimmed">还剩 {summary.pending_fields} 个字段待复核</Text>
+        )}
+        {isDirty && (
+          <Text size="sm" c="orange">有未保存修改 · 请先保存复核后再导出</Text>
+        )}
+      </Group>
+
+      <Accordion
+        variant="separated"
+        radius="md"
+        multiple
+        defaultValue={result.mappings.map((mapping) => `review-${mapping.source_field}`)}
+      >
+        {result.mappings.map((mapping) => {
+          const draft = drafts[mapping.source_field] ?? emptyReviewDraft()
+          const acceptDisabled = !mapping.recommendation
+          const noteLength = draft.note.length
+          const selectDisabled = !targetOptionsAvailable
+          const visibleTargetOptions = targetOptionsAvailable ? targetOptions : draft.target_fields
+          return (
+            <Accordion.Item value={`review-${mapping.source_field}`} key={mapping.source_field}>
+              <Accordion.Control>
+                <Group justify="space-between" wrap="nowrap" pr="sm">
+                  <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                    <Code>{mapping.source_field}</Code>
+                    <Text size="sm" c="dimmed">{actionLabel(draft.action)}</Text>
+                  </Group>
+                  <Badge size="sm" variant="light">
+                    {draft.action ? 'reviewed' : 'pending'}
+                  </Badge>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <Badge variant="light" style={{ backgroundColor: `${statusColor(mapping.status)}22`, color: statusColor(mapping.status) }}>
+                      {mapping.status}
+                    </Badge>
+                    <Text size="sm">推荐目标: <Code>{mapping.recommendation ?? '-'}</Code></Text>
+                  </Group>
+
+                  <Checkbox
+                    label={mapping.recommendation ? `接受算法建议 ${mapping.recommendation}` : '接受算法建议不可用'}
+                    checked={draft.action === 'accept_suggestion'}
+                    disabled={acceptDisabled}
+                    description={acceptDisabled ? '该字段没有可接受的 recommendation' : undefined}
+                    onChange={(event) => {
+                      onDraftChange(mapping.source_field, {
+                        ...draft,
+                        action: event.currentTarget.checked ? 'accept_suggestion' : '',
+                        target_fields: [],
+                      })
+                    }}
+                  />
+                  <Checkbox
+                    label="改选目标"
+                    checked={draft.action === 'select_target'}
+                    disabled={selectDisabled}
+                    description={selectDisabled ? '当前 job 的 contract target allowlist 尚未加载或不匹配，不能猜测目标字段。' : undefined}
+                    onChange={(event) => {
+                      onDraftChange(mapping.source_field, {
+                        ...draft,
+                        action: event.currentTarget.checked ? 'select_target' : '',
+                        target_fields: event.currentTarget.checked ? draft.target_fields : [],
+                      })
+                    }}
+                  />
+                  {draft.action === 'select_target' && (
+                    <Checkbox.Group
+                      label="目标字段"
+                      description="来自当前 job contract 的完整 target field allowlist；Top-3 仅作为 evidence 展示。"
+                      value={draft.target_fields}
+                      onChange={(values) => onDraftChange(mapping.source_field, { ...draft, target_fields: values })}
+                    >
+                      <SimpleGrid cols={{ base: 1, md: 2 }} spacing={6} mt="xs">
+                        {visibleTargetOptions.map((target) => (
+                          <Checkbox key={`${mapping.source_field}-${target}`} value={target} label={target} disabled={!targetOptionsAvailable} />
+                        ))}
+                      </SimpleGrid>
+                    </Checkbox.Group>
+                  )}
+                  <Checkbox
+                    label="标记不映射"
+                    checked={draft.action === 'mark_unmapped'}
+                    onChange={(event) => {
+                      onDraftChange(mapping.source_field, {
+                        ...draft,
+                        action: event.currentTarget.checked ? 'mark_unmapped' : '',
+                        target_fields: [],
+                      })
+                    }}
+                  />
+                  <Textarea
+                    label="Note"
+                    value={draft.note}
+                    description={`${noteLength} / ${MAX_REVIEW_NOTE_LENGTH}`}
+                    error={hasControlCharacter(draft.note) ? 'note must not contain control characters' : undefined}
+                    maxLength={MAX_REVIEW_NOTE_LENGTH}
+                    onChange={(event) => onDraftChange(mapping.source_field, { ...draft, note: event.currentTarget.value })}
+                  />
+                  <CandidateTable candidates={(mapping.top_candidates ?? []).slice(0, 3)} />
+                </Stack>
+              </Accordion.Panel>
+            </Accordion.Item>
+          )
+        })}
+      </Accordion>
+    </Stack>
+  )
+}
+
+function reviewValidationErrors(result: MappingJobResponse, drafts: Record<string, ReviewDraft>): string[] {
+  const errors: string[] = []
+  for (const mapping of result.mappings) {
+    const draft = drafts[mapping.source_field]
+    if (!draft?.action) continue
+    if (draft.action === 'select_target' && draft.target_fields.length === 0) {
+      errors.push(`${mapping.source_field}: select_target requires at least one target field`)
+    }
+    if (hasControlCharacter(draft.note)) {
+      errors.push(`${mapping.source_field}: note must not contain control characters`)
+    }
+  }
+  return errors
+}
+
+function triggerDownload(download: { blob: Blob; filename: string }) {
+  const url = URL.createObjectURL(download.blob)
+  try {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = download.filename
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } finally {
+    URL.revokeObjectURL(url)
+  }
 }
 
 export function MappingJobView() {
@@ -287,6 +597,12 @@ export function MappingJobView() {
   const [loading, setLoading] = useState(false)
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [reviewDrafts, setReviewDrafts] = useState<Record<string, ReviewDraft>>({})
+  const [savedReviewSignature, setSavedReviewSignature] = useState(reviewDraftSignature({}, []))
+  const [reviewMessage, setReviewMessage] = useState<string | null>(null)
+  const [reviewError, setReviewError] = useState<string | null>(null)
+  const [savingReview, setSavingReview] = useState(false)
+  const [downloading, setDownloading] = useState<MappingExportFormat | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -307,13 +623,46 @@ export function MappingJobView() {
     () => contracts.map((contract) => ({ value: contract.contract_id, label: contract.title })),
     [contracts],
   )
+  const resultContract = useMemo(
+    () => (result ? contracts.find((contract) => contract.contract_id === result.job.contract_registry_id) ?? null : null),
+    [contracts, result],
+  )
+  const targetOptions = resultContract?.target_fields ?? []
+  const targetOptionsAvailable = targetOptions.length > 0
+  const currentReviewSignature = useMemo(
+    () => reviewDraftSignature(reviewDrafts, result?.mappings ?? []),
+    [result?.mappings, reviewDrafts],
+  )
+  const hasUnsavedReview = currentReviewSignature !== savedReviewSignature
   const canRun = Boolean(file && contractId && !loading && !catalogLoading)
   const canLoadJob = JOB_ID_PATTERN.test(jobId) && !loading
+
+  const resetReviewState = () => {
+    setReviewDrafts({})
+    setSavedReviewSignature(reviewDraftSignature({}, []))
+    setReviewMessage(null)
+    setReviewError(null)
+    setSavingReview(false)
+    setDownloading(null)
+  }
+
+  const applyResult = (next: MappingJobResponse) => {
+    const nextDrafts = Object.fromEntries(
+      (next.review?.decisions ?? []).map((decision) => [decision.source_field, reviewDraftFromDecision(decision)]),
+    )
+    setResult(next)
+    setReviewDrafts(nextDrafts)
+    setSavedReviewSignature(reviewDraftSignature(nextDrafts, next.mappings))
+    setReviewMessage(null)
+    setReviewError(null)
+    setDownloading(null)
+  }
 
   const onFileChange = (next: File | null) => {
     setFile(next)
     setResult(null)
     setError(null)
+    resetReviewState()
   }
 
   const validateFile = (selected: File): string | null => {
@@ -342,7 +691,7 @@ export function MappingJobView() {
         csv_text: csvText,
         scorer,
       })
-      setResult(next)
+      applyResult(next)
       setJobId(next.job.job_id)
     } catch (err) {
       setError(errorText(err))
@@ -359,11 +708,58 @@ export function MappingJobView() {
     setLoading(true)
     setError(null)
     try {
-      setResult(await getMappingJob(jobId))
+      applyResult(await getMappingJob(jobId))
     } catch (err) {
       setError(errorText(err))
     } finally {
       setLoading(false)
+    }
+  }
+
+  const updateReviewDraft = (sourceField: string, draft: ReviewDraft) => {
+    setReviewDrafts((current) => ({ ...current, [sourceField]: draft }))
+    setReviewMessage(null)
+    setReviewError(null)
+  }
+
+  const saveReview = async () => {
+    if (!result) return
+    setSavingReview(true)
+    setReviewError(null)
+    setReviewMessage(null)
+    try {
+      const response = await saveMappingReview(result.job.job_id, {
+        mapping_report_sha256: result.job.mapping_report.content_sha256,
+        decisions: buildReviewDecisions(reviewDrafts, result.mappings),
+      })
+      const next = { ...result, review: response.review }
+      const nextDrafts = Object.fromEntries(
+        response.review.decisions.map((decision) => [decision.source_field, reviewDraftFromDecision(decision)]),
+      )
+      setResult(next)
+      setReviewDrafts(nextDrafts)
+      setSavedReviewSignature(reviewDraftSignature(nextDrafts, next.mappings))
+      setReviewMessage('复核已保存')
+    } catch (err) {
+      setReviewError(errorText(err))
+    } finally {
+      setSavingReview(false)
+    }
+  }
+
+  const downloadReview = async (format: MappingExportFormat) => {
+    if (!result) return
+    setDownloading(format)
+    setReviewError(null)
+    setReviewMessage(null)
+    try {
+      const download = await downloadMappingReviewExport(result.job.job_id, format)
+      triggerDownload(download)
+      setReviewMessage(`${format.toUpperCase()} 导出已开始`)
+    } catch (err) {
+      setReviewError(errorText(err))
+    } finally {
+      setDownloading(null)
     }
   }
 
@@ -419,7 +815,9 @@ export function MappingJobView() {
             value={jobId}
             onChange={(event) => {
               setJobId(event.currentTarget.value.trim())
+              setResult(null)
               setError(null)
+              resetReviewState()
             }}
           />
           <Button variant="light" onClick={loadJob} disabled={!canLoadJob} loading={loading}>
@@ -440,6 +838,20 @@ export function MappingJobView() {
         <Stack gap="xl">
           <JobSummary result={result} />
           <MappingResults result={result} />
+          <ReviewPanel
+            result={result}
+            drafts={reviewDrafts}
+            targetOptions={targetOptions}
+            targetOptionsAvailable={targetOptionsAvailable}
+            isDirty={hasUnsavedReview}
+            saving={savingReview}
+            downloading={downloading}
+            message={reviewMessage}
+            error={reviewError}
+            onDraftChange={updateReviewDraft}
+            onSave={saveReview}
+            onDownload={downloadReview}
+          />
         </Stack>
       )}
     </Stack>

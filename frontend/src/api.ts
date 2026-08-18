@@ -9,8 +9,12 @@
 // local runtime writes; mapping job POST runs local schema matching and does not call a hosted LLM.
 import type {
   CreateMappingJobPayload,
+  MappingExportDownload,
+  MappingExportFormat,
   MappingContractCatalog,
   MappingJobResponse,
+  MappingReviewPayload,
+  MappingReviewResponse,
 } from './lib/mappingJobs'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000'
@@ -97,6 +101,42 @@ async function request<T>(
   return (await response.json()) as T
 }
 
+function filenameFromContentDisposition(value: string | null, fallback: string): string {
+  if (!value) return fallback
+  const utf8 = /filename\*=UTF-8''([^;]+)/i.exec(value)
+  if (utf8?.[1]) return decodeURIComponent(utf8[1].replace(/"/g, ''))
+  const plain = /filename="?([^";]+)"?/i.exec(value)
+  return plain?.[1] ? plain[1] : fallback
+}
+
+async function requestBlob(path: string, fallbackFilename: string): Promise<MappingExportDownload> {
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}${path}`)
+  } catch (cause) {
+    throw new ApiError(0, {
+      message: `Cannot reach backend ${API_BASE}.`,
+      cause: String(cause),
+    })
+  }
+
+  if (!response.ok) {
+    let detail: unknown = await response.text()
+    try {
+      detail = (JSON.parse(detail as string) as { detail?: unknown }).detail ?? detail
+    } catch {
+      detail = { message: `Request failed with HTTP ${response.status}.` }
+    }
+    throw new ApiError(response.status, detail)
+  }
+
+  return {
+    blob: await response.blob(),
+    filename: filenameFromContentDisposition(response.headers.get('content-disposition'), fallbackFilename),
+    contentType: response.headers.get('content-type') ?? 'application/octet-stream',
+  }
+}
+
 export const getHealth = () => request<Health>('/api/health')
 
 export const getReport = (name: string) => request<unknown>(`/api/reports/${name}`)
@@ -152,5 +192,17 @@ export const createMappingJob = (payload: CreateMappingJobPayload) =>
 
 export const getMappingJob = (jobId: string) =>
   request<MappingJobResponse>(`/api/mapping/jobs/${encodeURIComponent(jobId)}`)
+
+export const saveMappingReview = (jobId: string, payload: MappingReviewPayload) =>
+  request<MappingReviewResponse>(`/api/mapping/jobs/${encodeURIComponent(jobId)}/review`, {
+    method: 'PUT',
+    body: payload,
+  })
+
+export const downloadMappingReviewExport = (jobId: string, format: MappingExportFormat) =>
+  requestBlob(
+    `/api/mapping/jobs/${encodeURIComponent(jobId)}/export?format=${encodeURIComponent(format)}`,
+    `mapping-review-${jobId}.${format}`,
+  )
 
 export { API_BASE }

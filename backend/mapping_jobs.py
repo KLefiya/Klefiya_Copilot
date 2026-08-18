@@ -118,17 +118,11 @@ def _load_contract(spec: ContractSpec) -> LoadedMigrationContract:
 
 
 def _target_field_count(contract: LoadedMigrationContract) -> int:
-    count = 0
-    for resource in contract.descriptor.get("resources", []):
-        if not isinstance(resource, dict):
-            continue
-        schema = resource.get("schema", {})
-        if not isinstance(schema, dict):
-            continue
-        fields = schema.get("fields", [])
-        if isinstance(fields, list):
-            count += sum(1 for field in fields if isinstance(field, dict))
-    return count
+    return len(_target_field_names(contract))
+
+
+def _target_field_names(contract: LoadedMigrationContract) -> list[str]:
+    return list(dict.fromkeys(target.qualified_name for target in build_target_field_index(contract)))
 
 
 def _contract_summary(spec: ContractSpec) -> dict[str, Any]:
@@ -140,6 +134,7 @@ def _contract_summary(spec: ContractSpec) -> dict[str, Any]:
         "version": contract.version,
         "target_resource_count": len(contract.resource_names),
         "target_field_count": _target_field_count(contract),
+        "target_fields": _target_field_names(contract),
         "supported_scorers": sorted(SUPPORTED_RUNTIME_SCORERS),
     }
 
@@ -417,7 +412,7 @@ def _mapping_by_source(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
 def _target_allowlist(job: dict[str, Any]) -> set[str]:
     spec = _contract_spec_or_404(str(job.get("contract_registry_id", "")))
     contract = _load_contract(spec)
-    return {target.qualified_name for target in build_target_field_index(contract)}
+    return set(_target_field_names(contract))
 
 
 def _reject_if_control_chars(value: str, field: str) -> None:

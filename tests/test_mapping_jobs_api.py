@@ -185,9 +185,24 @@ class MappingJobsApiTests(unittest.TestCase):
         text = json.dumps(contracts)
         self.assertNotRegex(text, r"[A-Za-z]:[\\/]|/tmp/|ground_truth|sample")
         for item in contracts:
+            self.assertIn("contract_id", item)
+            self.assertIn("title", item)
+            self.assertIn("domain", item)
+            self.assertIn("version", item)
+            self.assertIn("target_resource_count", item)
+            self.assertIn("target_field_count", item)
+            self.assertIn("target_fields", item)
+            self.assertIn("supported_scorers", item)
             self.assertIn("precision_tiered_v4", item["supported_scorers"])
             self.assertGreater(item["target_resource_count"], 0)
             self.assertGreater(item["target_field_count"], 0)
+            self.assertEqual(len(item["target_fields"]), item["target_field_count"])
+            self.assertEqual(len(item["target_fields"]), len(set(item["target_fields"])))
+            self.assertTrue(all(isinstance(target, str) and "." in target for target in item["target_fields"]))
+        second = self.client.get("/api/mapping/contracts").json()["contracts"]
+        self.assertEqual(contracts, second)
+        by_id = {item["contract_id"]: item for item in contracts}
+        self.assertIn("customer.customer_id", by_id["generic-customer"]["target_fields"])
 
     def test_02_create_baseline_job_persists_files_and_filters_response(self):
         response = self._create()

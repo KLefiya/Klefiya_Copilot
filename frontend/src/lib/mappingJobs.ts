@@ -7,6 +7,7 @@ export interface MappingContractSummary {
   version: string
   target_resource_count: number
   target_field_count: number
+  target_fields: string[]
   supported_scorers: MappingScorer[]
 }
 
@@ -105,8 +106,48 @@ export interface MappingResult {
   top_candidates?: MappingCandidate[]
 }
 
+export type MappingReviewAction = 'accept_suggestion' | 'select_target' | 'mark_unmapped'
+
+export interface MappingReviewDecision {
+  source_field: string
+  action: MappingReviewAction
+  target_fields?: string[]
+  note?: string | null
+}
+
+export interface MappingReviewPayload {
+  mapping_report_sha256: string
+  decisions: MappingReviewDecision[]
+}
+
+export interface MappingReviewSummary {
+  mapping_report_sha256: string
+  reviewed_fields: number
+  total_fields: number
+  pending_fields: number
+  accepted_count: number
+  overridden_count: number
+  unmapped_count: number
+  export_ready: boolean
+  updated_at?: string | null
+  decisions: MappingReviewDecision[]
+}
+
+export interface MappingReviewResponse {
+  review: MappingReviewSummary
+}
+
+export type MappingExportFormat = 'json' | 'csv'
+
+export interface MappingExportDownload {
+  blob: Blob
+  filename: string
+  contentType: string
+}
+
 export interface MappingJobResponse {
   job: MappingJobMetadata
   summary: MappingJobSummary
   mappings: MappingResult[]
+  review?: MappingReviewSummary
 }
