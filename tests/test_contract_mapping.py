@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import math
+import os
 import subprocess
 import sys
 import tempfile
@@ -20,12 +21,21 @@ from src.core.contracts.loader import load_migration_contract
 from src.core.mapping.engine import suggest_contract_mappings, write_mapping_report
 from src.core.mapping.evaluator import evaluate_mapping_report
 from src.core.mapping.profiler import SourceProfileError, profile_source_csv
+from src.core.mapping.runtime import (
+    BASELINE_SCORER_ID,
+    SUPPORTED_RUNTIME_SCORERS,
+    RuntimeScorerError,
+    suggest_runtime_contract_mappings,
+)
 from src.core.mapping.scorer import (
     HIGH_CONFIDENCE,
     _type_gate,
     score_source_field,
 )
+from src.core.mapping.scorer_v4 import SCORER_ID as PRECISION_TIERED_V4_SCORER_ID
+from src.core.mapping.scorer_v4 import suggest_contract_mappings_v4
 from src.core.mapping.target_index import build_target_field_index
+from src.tools.suggest_contract_mappings import build_parser
 
 
 GENERIC_CONTRACT = PROJECT_ROOT / "contracts" / "generic_customer" / "datapackage.yaml"
@@ -267,6 +277,7 @@ class ContractMappingTests(unittest.TestCase):
             PROJECT_ROOT / "src/core/mapping/target_index.py",
             PROJECT_ROOT / "src/core/mapping/scorer.py",
             PROJECT_ROOT / "src/core/mapping/engine.py",
+            PROJECT_ROOT / "src/core/mapping/runtime.py",
             PROJECT_ROOT / "src/tools/suggest_contract_mappings.py",
         ]
         forbidden_patterns = ("ground_truth.json", "ground_truth_path", "ground-truth", "Ground Truth")
@@ -322,6 +333,123 @@ class ContractMappingTests(unittest.TestCase):
         before = _sha(GENERIC_SOURCE)
         _generic_report()
         self.assertEqual(before, _sha(GENERIC_SOURCE))
+
+    def test_35b_runtime_scorer_inventory_is_explicit(self):
+        self.assertEqual(SUPPORTED_RUNTIME_SCORERS, {"baseline", "precision_tiered_v4"})
+
+    def test_35c_cli_parser_defaults_to_baseline_and_accepts_v4(self):
+        parser = build_parser()
+        scorer_action = next(action for action in parser._actions if action.dest == "scorer")
+        self.assertEqual(scorer_action.default, BASELINE_SCORER_ID)
+        self.assertEqual(set(scorer_action.choices), SUPPORTED_RUNTIME_SCORERS)
+
+        parsed = parser.parse_args([
+            "--contract", str(GENERIC_CONTRACT),
+            "--data-root", str(GENERIC_DATA),
+            "--source", str(GENERIC_SOURCE),
+            "--output", str(Path(tempfile.gettempdir()) / "runtime-v4.json"),
+            "--scorer", PRECISION_TIERED_V4_SCORER_ID,
+        ])
+        self.assertEqual(parsed.scorer, PRECISION_TIERED_V4_SCORER_ID)
+
+        defaulted = parser.parse_args([
+            "--contract", str(GENERIC_CONTRACT),
+            "--data-root", str(GENERIC_DATA),
+            "--source", str(GENERIC_SOURCE),
+            "--output", str(Path(tempfile.gettempdir()) / "runtime-baseline.json"),
+        ])
+        self.assertEqual(defaulted.scorer, BASELINE_SCORER_ID)
+
+        with self.assertRaises(SystemExit):
+            parser.parse_args([
+                "--contract", str(GENERIC_CONTRACT),
+                "--data-root", str(GENERIC_DATA),
+                "--source", str(GENERIC_SOURCE),
+                "--output", str(Path(tempfile.gettempdir()) / "runtime-future.json"),
+                "--scorer", "future",
+            ])
+
+    def test_35d_unknown_runtime_scorer_rejected(self):
+        with self.assertRaises(RuntimeScorerError) as ctx:
+            suggest_runtime_contract_mappings(
+                _contract(),
+                GENERIC_SOURCE,
+                scorer_id="future",
+                embedding_backend=FakeEmbeddingBackend(),
+            )
+        self.assertEqual(ctx.exception.code, "unknown_runtime_scorer")
+
+    def test_35e_runtime_baseline_dispatch_matches_engine(self):
+        previous = os.environ.get("CARVEOPS_OMIT_TIMESTAMP")
+        os.environ["CARVEOPS_OMIT_TIMESTAMP"] = "1"
+        try:
+            direct = suggest_contract_mappings(
+                _contract(),
+                GENERIC_SOURCE,
+                embedding_backend=FakeEmbeddingBackend(),
+            )
+            dispatched = suggest_runtime_contract_mappings(
+                _contract(),
+                GENERIC_SOURCE,
+                scorer_id=BASELINE_SCORER_ID,
+                embedding_backend=FakeEmbeddingBackend(),
+            )
+        finally:
+            if previous is None:
+                os.environ.pop("CARVEOPS_OMIT_TIMESTAMP", None)
+            else:
+                os.environ["CARVEOPS_OMIT_TIMESTAMP"] = previous
+        self.assertEqual(dispatched, direct)
+
+    def test_35f_runtime_v4_dispatch_preserves_direct_v4_mappings(self):
+        direct = suggest_contract_mappings_v4(
+            _contract(),
+            GENERIC_SOURCE,
+            embedding_backend=FakeEmbeddingBackend(),
+        )
+        dispatched = suggest_runtime_contract_mappings(
+            _contract(),
+            GENERIC_SOURCE,
+            scorer_id=PRECISION_TIERED_V4_SCORER_ID,
+            embedding_backend=FakeEmbeddingBackend(),
+        )
+        self.assertEqual(dispatched["mappings"], direct["mappings"])
+        self.assertIn("summary", dispatched)
+        self.assertIn("unmapped_target_fields", dispatched)
+        self.assertIn("_run_info", dispatched)
+        self.assertEqual(dispatched["_meta"]["scorer_variant"], PRECISION_TIERED_V4_SCORER_ID)
+        self.assertEqual(dispatched["_meta"]["scorer_id"], PRECISION_TIERED_V4_SCORER_ID)
+        self.assertEqual(dispatched["_meta"]["feature_version"], "precision_tiered_interaction_v1")
+        self.assertFalse(dispatched["_meta"]["ground_truth_used"])
+        self.assertFalse(dispatched["_meta"]["ground_truth_used_for_candidate_generation"])
+        self.assertTrue(dispatched["_meta"]["experimental"])
+        self.assertFalse(dispatched["_meta"]["production_scorer_modified"])
+        for field in (
+            "suggested",
+            "needs_review",
+            "possible_false_friend",
+            "no_confident_target",
+            "alias_based",
+            "semantic_based",
+            "target_coverage",
+        ):
+            self.assertIn(field, dispatched["summary"])
+        body = {key: value for key, value in dispatched.items() if key != "_run_info"}
+        from src.core.hashing import canonical_json_content_sha256
+
+        self.assertEqual(dispatched["_run_info"]["content_sha256"], canonical_json_content_sha256(body))
+        text = json.dumps(dispatched, ensure_ascii=False)
+        self.assertNotIn("ground_truth.json", text)
+        self.assertNotIn("answer_source_path", text)
+        first_candidate = dispatched["mappings"][0]["top_candidates"][0]
+        for key in (
+            "activated_interactions",
+            "interaction_evidence",
+            "diagnostic_bonus",
+            "supportive_bonus",
+            "top1_selection_reason",
+        ):
+            self.assertIn(key, first_candidate)
 
     def test_36_top1_metric(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
