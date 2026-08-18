@@ -21,6 +21,7 @@ from src.core.contracts.loader import load_migration_contract
 from src.core.mapping.engine import suggest_contract_mappings, write_mapping_report
 from src.core.mapping.evaluator import evaluate_mapping_report
 from src.core.mapping.profiler import SourceProfileError, profile_source_csv
+from src.core.mapping.protocol_lock import load_json, normalized_text_sha256, validate_effective_protocol_lock
 from src.core.mapping.runtime import (
     BASELINE_SCORER_ID,
     SUPPORTED_RUNTIME_SCORERS,
@@ -35,7 +36,8 @@ from src.core.mapping.scorer import (
 from src.core.mapping.scorer_v4 import SCORER_ID as PRECISION_TIERED_V4_SCORER_ID
 from src.core.mapping.scorer_v4 import suggest_contract_mappings_v4
 from src.core.mapping.target_index import build_target_field_index
-from src.tools.suggest_contract_mappings import build_parser
+from src.tools.suggest_contract_mappings import build_parser as build_historical_parser
+from src.tools.suggest_runtime_contract_mappings import build_parser as build_runtime_parser
 
 
 GENERIC_CONTRACT = PROJECT_ROOT / "contracts" / "generic_customer" / "datapackage.yaml"
@@ -46,6 +48,11 @@ SUPPLIER_CONTRACT = PROJECT_ROOT / "contracts" / "sap_supplier_reference" / "dat
 SUPPLIER_DATA = PROJECT_ROOT / "data" / "examples" / "sap_supplier_reference"
 SUPPLIER_SOURCE = PROJECT_ROOT / "data" / "examples" / "mapping" / "sap_supplier_reference" / "source_supplier.csv"
 SUPPLIER_TRUTH = PROJECT_ROOT / "data" / "examples" / "mapping" / "sap_supplier_reference" / "ground_truth.json"
+ERP_BLIND_ROOT = PROJECT_ROOT / "data" / "examples" / "blind" / "erpnext_item_price"
+ERP_BLIND_LOCK = ERP_BLIND_ROOT / "blind_protocol_lock.json"
+ERP_BLIND_AMENDMENT = ERP_BLIND_ROOT / "blind_protocol_compatibility_amendment_v1.json"
+HISTORICAL_CLI = PROJECT_ROOT / "src" / "tools" / "suggest_contract_mappings.py"
+RUNTIME_CLI = PROJECT_ROOT / "src" / "tools" / "suggest_runtime_contract_mappings.py"
 
 
 def _sha(path: Path) -> str:
@@ -337,8 +344,21 @@ class ContractMappingTests(unittest.TestCase):
     def test_35b_runtime_scorer_inventory_is_explicit(self):
         self.assertEqual(SUPPORTED_RUNTIME_SCORERS, {"baseline", "precision_tiered_v4"})
 
-    def test_35c_cli_parser_defaults_to_baseline_and_accepts_v4(self):
-        parser = build_parser()
+    def test_35c_historical_cli_remains_baseline_only_and_protocol_locked(self):
+        parser = build_historical_parser()
+        self.assertNotIn("scorer", {action.dest for action in parser._actions})
+        self.assertNotIn("--scorer", HISTORICAL_CLI.read_text(encoding="utf-8"))
+        self.assertIn("suggest_contract_mappings(contract, args.source, model_name=args.model)", HISTORICAL_CLI.read_text(encoding="utf-8"))
+
+        lock = load_json(ERP_BLIND_LOCK, "protocol_lock")
+        self.assertEqual(
+            normalized_text_sha256(HISTORICAL_CLI),
+            lock["engine_files"]["src/tools/suggest_contract_mappings.py"],
+        )
+        self.assertEqual(validate_effective_protocol_lock(ERP_BLIND_LOCK, ERP_BLIND_AMENDMENT)["validation"], "valid")
+
+    def test_35d_runtime_cli_parser_defaults_to_baseline_and_accepts_v4(self):
+        parser = build_runtime_parser()
         scorer_action = next(action for action in parser._actions if action.dest == "scorer")
         self.assertEqual(scorer_action.default, BASELINE_SCORER_ID)
         self.assertEqual(set(scorer_action.choices), SUPPORTED_RUNTIME_SCORERS)
@@ -369,7 +389,7 @@ class ContractMappingTests(unittest.TestCase):
                 "--scorer", "future",
             ])
 
-    def test_35d_unknown_runtime_scorer_rejected(self):
+    def test_35e_unknown_runtime_scorer_rejected(self):
         with self.assertRaises(RuntimeScorerError) as ctx:
             suggest_runtime_contract_mappings(
                 _contract(),
@@ -379,7 +399,7 @@ class ContractMappingTests(unittest.TestCase):
             )
         self.assertEqual(ctx.exception.code, "unknown_runtime_scorer")
 
-    def test_35e_runtime_baseline_dispatch_matches_engine(self):
+    def test_35f_runtime_baseline_dispatch_matches_engine(self):
         previous = os.environ.get("CARVEOPS_OMIT_TIMESTAMP")
         os.environ["CARVEOPS_OMIT_TIMESTAMP"] = "1"
         try:
@@ -401,7 +421,7 @@ class ContractMappingTests(unittest.TestCase):
                 os.environ["CARVEOPS_OMIT_TIMESTAMP"] = previous
         self.assertEqual(dispatched, direct)
 
-    def test_35f_runtime_v4_dispatch_preserves_direct_v4_mappings(self):
+    def test_35g_runtime_v4_dispatch_preserves_direct_v4_mappings(self):
         direct = suggest_contract_mappings_v4(
             _contract(),
             GENERIC_SOURCE,
@@ -450,6 +470,12 @@ class ContractMappingTests(unittest.TestCase):
             "top1_selection_reason",
         ):
             self.assertIn(key, first_candidate)
+
+    def test_35h_runtime_cli_imports_dispatch_and_not_ground_truth(self):
+        text = RUNTIME_CLI.read_text(encoding="utf-8")
+        self.assertIn("suggest_runtime_contract_mappings", text)
+        for forbidden in ("ground_truth.json", "answer_source_path", "benchmark_run_specs", "evaluate_benchmark"):
+            self.assertNotIn(forbidden, text)
 
     def test_36_top1_metric(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
@@ -500,6 +526,7 @@ class ContractMappingTests(unittest.TestCase):
         files = list((PROJECT_ROOT / "src/core/mapping").glob("*.py"))
         files.extend([
             PROJECT_ROOT / "src/tools/suggest_contract_mappings.py",
+            PROJECT_ROOT / "src/tools/suggest_runtime_contract_mappings.py",
             PROJECT_ROOT / "src/tools/evaluate_contract_mappings.py",
             PROJECT_ROOT / "tests/test_contract_mapping.py",
             PROJECT_ROOT / "scripts/smoke_test_contract_mapping.py",
