@@ -14,11 +14,13 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from src.core.contracts.loader import PROJECT_ROOT, ContractLoadError, LoadedMigrationContract, load_migration_contract
 from src.core.hashing import raw_file_sha256
+from src.core.mapping.target_index import build_target_field_index
 
 
 router = APIRouter(prefix="/api/mapping", tags=["mapping-jobs"])
@@ -27,10 +29,12 @@ MAX_FILENAME_LENGTH = 128
 MAX_CSV_BYTES = 1024 * 1024
 MAX_DATA_ROWS = 10_000
 MAX_COLUMNS = 200
+MAX_REVIEW_NOTE_LENGTH = 500
 JOB_ID_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 RUNTIME_ROOT = PROJECT_ROOT / "data" / "runtime" / "mapping_jobs"
 JOB_LOCK = threading.Lock()
 SUPPORTED_RUNTIME_SCORERS = frozenset({"baseline", "precision_tiered_v4"})
+CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
 
 
 @dataclass(frozen=True)
@@ -68,6 +72,18 @@ class CreateMappingJobPayload(BaseModel):
     filename: str
     csv_text: str
     scorer: Literal["baseline", "precision_tiered_v4"]
+
+
+class MappingReviewDecisionPayload(BaseModel):
+    source_field: str
+    action: Literal["accept_suggestion", "select_target", "mark_unmapped"]
+    target_fields: list[str] | None = None
+    note: str | None = Field(default=None, max_length=MAX_REVIEW_NOTE_LENGTH)
+
+
+class MappingReviewPayload(BaseModel):
+    mapping_report_sha256: str
+    decisions: list[MappingReviewDecisionPayload]
 
 
 def suggest_runtime_contract_mappings(*args: Any, **kwargs: Any) -> dict[str, Any]:
@@ -236,6 +252,18 @@ def _job_dir(job_id: str) -> Path:
     return _ensure_under_runtime(_runtime_root() / job_id)
 
 
+def _job_paths(job_id: str) -> tuple[Path, Path, Path]:
+    job_dir = _job_dir(job_id)
+    if not job_dir.is_dir():
+        raise _http_error(404, "mapping_job_not_found", f"Mapping job `{job_id}` was not found.")
+    job_path = _ensure_under_runtime(job_dir / "job.json")
+    report_path = _ensure_under_runtime(job_dir / "mapping_report.json")
+    review_path = _ensure_under_runtime(job_dir / "review.json")
+    if not job_path.is_file() or not report_path.is_file():
+        raise _http_error(500, "malformed_mapping_job", "Mapping job files are incomplete.")
+    return job_path, report_path, review_path
+
+
 def _safe_source_profile(profile: Any) -> dict[str, Any] | None:
     if not isinstance(profile, dict):
         return None
@@ -316,8 +344,8 @@ def _safe_summary(report: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _job_response(job: dict[str, Any], report: dict[str, Any]) -> dict[str, Any]:
-    return {
+def _job_response(job: dict[str, Any], report: dict[str, Any], review: dict[str, Any] | None = None) -> dict[str, Any]:
+    body = {
         "job": deepcopy_json(job),
         "summary": _safe_summary(report),
         "mappings": [
@@ -326,6 +354,9 @@ def _job_response(job: dict[str, Any], report: dict[str, Any]) -> dict[str, Any]
             if isinstance(mapping, dict)
         ],
     }
+    if review is not None:
+        body["review"] = _review_summary(review, report)
+    return body
 
 
 def _is_runtime_scorer_error(exc: Exception) -> bool:
@@ -358,6 +389,252 @@ def _load_mapping_report(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise _http_error(500, "malformed_mapping_report", "Mapping report must be a JSON object.")
     return value
+
+
+def _load_review(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise _http_error(500, "malformed_mapping_review", "Mapping review is not readable JSON.") from exc
+    if not isinstance(value, dict):
+        raise _http_error(500, "malformed_mapping_review", "Mapping review must be a JSON object.")
+    return value
+
+
+def _mapping_by_source(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    mappings = report.get("mappings", [])
+    if not isinstance(mappings, list):
+        raise _http_error(500, "malformed_mapping_report", "Mapping report mappings must be a list.")
+    return {
+        mapping["source_field"]: mapping
+        for mapping in mappings
+        if isinstance(mapping, dict) and isinstance(mapping.get("source_field"), str)
+    }
+
+
+def _target_allowlist(job: dict[str, Any]) -> set[str]:
+    spec = _contract_spec_or_404(str(job.get("contract_registry_id", "")))
+    contract = _load_contract(spec)
+    return {target.qualified_name for target in build_target_field_index(contract)}
+
+
+def _reject_if_control_chars(value: str, field: str) -> None:
+    if any((ord(char) < 32 and char != "\t") or ord(char) == 127 for char in value):
+        raise _http_error(422, "invalid_mapping_review_note", f"{field} must not contain control characters.")
+
+
+def _unique_targets(target_fields: list[str] | None) -> list[str]:
+    return list(dict.fromkeys(target_fields or []))
+
+
+def _validate_review_payload(
+    payload: MappingReviewPayload,
+    job: dict[str, Any],
+    report: dict[str, Any],
+) -> list[dict[str, Any]]:
+    current_sha = job.get("mapping_report", {}).get("content_sha256")
+    if payload.mapping_report_sha256 != current_sha:
+        raise _http_error(409, "mapping_review_stale", "Mapping report SHA does not match the current job.")
+
+    mappings = _mapping_by_source(report)
+    allowlist = _target_allowlist(job)
+    seen: set[str] = set()
+    decisions: list[dict[str, Any]] = []
+    for item in payload.decisions:
+        source_field = item.source_field
+        if source_field in seen:
+            raise _http_error(422, "duplicate_mapping_review_source_field", f"Duplicate review decision for `{source_field}`.")
+        seen.add(source_field)
+        if source_field not in mappings:
+            raise _http_error(422, "unknown_mapping_source_field", f"Unknown source field `{source_field}`.")
+        if item.note is not None:
+            _reject_if_control_chars(item.note, "note")
+
+        original = mappings[source_field]
+        targets = _unique_targets(item.target_fields)
+        if item.action == "accept_suggestion":
+            if targets:
+                raise _http_error(422, "invalid_mapping_review_targets", "accept_suggestion must not include target_fields.")
+            recommendation = original.get("recommendation")
+            if not isinstance(recommendation, str) or not recommendation:
+                raise _http_error(422, "mapping_suggestion_unavailable", f"Source field `{source_field}` has no suggestion to accept.")
+            targets = [recommendation]
+        elif item.action == "select_target":
+            if not targets:
+                raise _http_error(422, "missing_mapping_review_target", "select_target requires at least one target field.")
+            unknown = [target for target in targets if target not in allowlist]
+            if unknown:
+                raise _http_error(
+                    422,
+                    "unknown_mapping_target_field",
+                    "Review target field is not allowed by the job contract.",
+                    {"target_fields": unknown},
+                )
+        elif item.action == "mark_unmapped":
+            if targets:
+                raise _http_error(422, "invalid_mapping_review_targets", "mark_unmapped must not include target_fields.")
+            targets = []
+
+        decisions.append(
+            {
+                "source_field": source_field,
+                "action": item.action,
+                "target_fields": targets,
+                "note": item.note,
+            }
+        )
+    return decisions
+
+
+def _review_summary(review: dict[str, Any], report: dict[str, Any]) -> dict[str, Any]:
+    total_fields = len(_mapping_by_source(report))
+    decisions = [
+        deepcopy_json(decision)
+        for decision in review.get("decisions", [])
+        if isinstance(decision, dict)
+    ]
+    accepted_count = sum(1 for item in decisions if item.get("action") == "accept_suggestion")
+    overridden_count = sum(1 for item in decisions if item.get("action") == "select_target")
+    unmapped_count = sum(1 for item in decisions if item.get("action") == "mark_unmapped")
+    reviewed_fields = len(decisions)
+    return {
+        "mapping_report_sha256": review.get("mapping_report_sha256"),
+        "reviewed_fields": reviewed_fields,
+        "total_fields": total_fields,
+        "pending_fields": max(0, total_fields - reviewed_fields),
+        "accepted_count": accepted_count,
+        "overridden_count": overridden_count,
+        "unmapped_count": unmapped_count,
+        "export_ready": reviewed_fields == total_fields,
+        "updated_at": review.get("updated_at"),
+        "decisions": decisions,
+    }
+
+
+def _review_document(
+    *,
+    job_id: str,
+    mapping_report_sha256: str,
+    decisions: list[dict[str, Any]],
+    previous: dict[str, Any] | None,
+) -> dict[str, Any]:
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return {
+        "schema": "carveops.mapping_review",
+        "version": "1.0.0",
+        "job_id": job_id,
+        "mapping_report_sha256": mapping_report_sha256,
+        "created_at": previous.get("created_at") if previous else now,
+        "updated_at": now,
+        "decisions": decisions,
+    }
+
+
+def _same_review_snapshot(left: dict[str, Any] | None, right: dict[str, Any]) -> bool:
+    if left is None:
+        return False
+    return (
+        left.get("mapping_report_sha256") == right.get("mapping_report_sha256")
+        and left.get("decisions") == right.get("decisions")
+    )
+
+
+def _final_mappings(review: dict[str, Any], report: dict[str, Any]) -> list[dict[str, Any]]:
+    mappings = _mapping_by_source(report)
+    result = []
+    for decision in review.get("decisions", []):
+        if not isinstance(decision, dict):
+            continue
+        source_field = str(decision.get("source_field", ""))
+        original = mappings.get(source_field, {})
+        result.append(
+            {
+                "source_field": source_field,
+                "action": decision.get("action"),
+                "final_target_fields": deepcopy_json(decision.get("target_fields", [])),
+                "original_recommendation": original.get("recommendation"),
+                "original_status": original.get("status"),
+                "reviewer_note": decision.get("note"),
+            }
+        )
+    return result
+
+
+def _export_document(job: dict[str, Any], review: dict[str, Any], report: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema": "carveops.mapping_review_export",
+        "version": "1.0.0",
+        "job_id": job.get("job_id"),
+        "contract": {
+            "contract_id": job.get("contract", {}).get("contract_id"),
+            "title": job.get("contract", {}).get("title"),
+            "version": job.get("contract", {}).get("version"),
+        },
+        "scorer": job.get("scorer"),
+        "mapping_report_sha256": review.get("mapping_report_sha256"),
+        "review_updated_at": review.get("updated_at"),
+        "final_mappings": _final_mappings(review, report),
+    }
+
+
+def _csv_safe(value: Any) -> str:
+    if value is None:
+        return ""
+    text = str(value)
+    if text.startswith(CSV_FORMULA_PREFIXES):
+        return "'" + text
+    return text
+
+
+def _export_csv(job: dict[str, Any], review: dict[str, Any], report: dict[str, Any]) -> str:
+    output = StringIO()
+    writer = csv.writer(output, lineterminator="\n")
+    writer.writerow(
+        [
+            "job_id",
+            "contract_id",
+            "contract_title",
+            "contract_version",
+            "scorer",
+            "mapping_report_sha256",
+            "review_updated_at",
+            "source_field",
+            "action",
+            "final_target_fields",
+            "original_recommendation",
+            "original_status",
+            "reviewer_note",
+        ]
+    )
+    document = _export_document(job, review, report)
+    contract = document["contract"]
+    for mapping in document["final_mappings"]:
+        writer.writerow(
+            [
+                _csv_safe(document["job_id"]),
+                _csv_safe(contract["contract_id"]),
+                _csv_safe(contract["title"]),
+                _csv_safe(contract["version"]),
+                _csv_safe(document["scorer"]),
+                _csv_safe(document["mapping_report_sha256"]),
+                _csv_safe(document["review_updated_at"]),
+                _csv_safe(mapping["source_field"]),
+                _csv_safe(mapping["action"]),
+                _csv_safe(";".join(mapping["final_target_fields"])),
+                _csv_safe(mapping["original_recommendation"]),
+                _csv_safe(mapping["original_status"]),
+                _csv_safe(mapping["reviewer_note"]),
+            ]
+        )
+    return output.getvalue()
+
+
+def _ensure_export_ready(review: dict[str, Any] | None, report: dict[str, Any]) -> dict[str, Any]:
+    if review is None or not _review_summary(review, report)["export_ready"]:
+        raise _http_error(409, "mapping_review_incomplete", "All source fields must be reviewed before export.")
+    return review
 
 
 def _job_metadata(
@@ -474,15 +751,57 @@ def create_mapping_job(payload: CreateMappingJobPayload) -> dict[str, Any]:
         JOB_LOCK.release()
 
 
-@router.get("/jobs/{job_id:path}")
-def get_mapping_job(job_id: str) -> dict[str, Any]:
-    job_dir = _job_dir(job_id)
-    if not job_dir.is_dir():
-        raise _http_error(404, "mapping_job_not_found", f"Mapping job `{job_id}` was not found.")
-    job_path = _ensure_under_runtime(job_dir / "job.json")
-    report_path = _ensure_under_runtime(job_dir / "mapping_report.json")
-    if not job_path.is_file() or not report_path.is_file():
-        raise _http_error(500, "malformed_mapping_job", "Mapping job files are incomplete.")
+@router.put("/jobs/{job_id}/review")
+def save_mapping_review(job_id: str, payload: MappingReviewPayload) -> dict[str, Any]:
+    job_path, report_path, review_path = _job_paths(job_id)
+    if not JOB_LOCK.acquire(blocking=False):
+        raise _http_error(409, "mapping_job_in_progress", "A mapping job or review update is already running in this process.")
+    try:
+        job = _load_job_json(job_path)
+        report = _load_mapping_report(report_path)
+        previous = _load_review(review_path)
+        decisions = _validate_review_payload(payload, job, report)
+        review = _review_document(
+            job_id=job_id,
+            mapping_report_sha256=payload.mapping_report_sha256,
+            decisions=decisions,
+            previous=previous,
+        )
+        if _same_review_snapshot(previous, review):
+            review = previous
+        else:
+            _write_json_atomic(review_path, review)
+        return {"review": _review_summary(review, report)}
+    finally:
+        JOB_LOCK.release()
+
+
+@router.get("/jobs/{job_id}/export")
+def export_mapping_review(
+    job_id: str,
+    format: Literal["json", "csv"] = Query(default="json"),
+) -> Any:
+    job_path, report_path, review_path = _job_paths(job_id)
     job = _load_job_json(job_path)
     report = _load_mapping_report(report_path)
-    return _job_response(job, report)
+    review = _ensure_export_ready(_load_review(review_path), report)
+    if format == "json":
+        return JSONResponse(
+            content=_export_document(job, review, report),
+            headers={"Content-Disposition": f'attachment; filename="mapping-review-{job_id}.json"'},
+        )
+    csv_text = _export_csv(job, review, report)
+    return Response(
+        content=csv_text,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="mapping-review-{job_id}.csv"'},
+    )
+
+
+@router.get("/jobs/{job_id:path}")
+def get_mapping_job(job_id: str) -> dict[str, Any]:
+    job_path, report_path, review_path = _job_paths(job_id)
+    job = _load_job_json(job_path)
+    report = _load_mapping_report(report_path)
+    review = _load_review(review_path)
+    return _job_response(job, report, review)

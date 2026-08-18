@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import csv
 import json
 import shutil
 import tempfile
 import threading
 import unittest
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -104,6 +106,37 @@ def _fake_report(scorer: str = "baseline") -> dict:
                         "diagnostic_bonus": 0.0,
                         "supportive_bonus": 0.01,
                         "top1_selection_reason": "v3_top1_locked_no_diagnostic_challenger",
+                        "warnings": [],
+                        "raw_value": SENTINEL,
+                    }
+                ],
+            },
+            {
+                "source_field": "client_name",
+                "status": "no_confident_target",
+                "recommendation": None,
+                "confidence": 0.0,
+                "band": "low",
+                "mapping_basis": "none",
+                "source_profile": {
+                    "name": "client_name",
+                    "inferred_kind": "string",
+                    "missing_ratio": 0.0,
+                    "distinct_ratio": 1.0,
+                    "observed_max_length": 18,
+                    "sample_values": [SENTINEL],
+                },
+                "review_reasons": ["best_score_below_threshold"],
+                "top_candidates": [
+                    {
+                        "target": "customer.customer_name",
+                        "rank": 1,
+                        "score": 0.39,
+                        "semantic_score": 0.4,
+                        "fuzzy_score": 0.5,
+                        "alias_hit": False,
+                        "lexical_overlap": 0.0,
+                        "type_gate": 1.0,
                         "warnings": [],
                         "raw_value": SENTINEL,
                     }
@@ -302,6 +335,296 @@ class MappingJobsApiTests(unittest.TestCase):
         text = Path("backend/mapping_jobs.py").read_text(encoding="utf-8")
         self.assertNotIn("SentenceTransformer(", text)
         self.assertNotIn("load_embedding_backend(", text)
+
+    def test_17_review_partial_snapshot_is_persisted_and_returned_by_get(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        response = self.client.put(
+            f"/api/mapping/jobs/{job_id}/review",
+            json={
+                "mapping_report_sha256": "baseline-content-sha",
+                "decisions": [
+                    {"source_field": "legacy_client_id", "action": "accept_suggestion", "note": "Confirmed by reviewer"}
+                ],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        review = response.json()["review"]
+        self.assertEqual(review["reviewed_fields"], 1)
+        self.assertEqual(review["total_fields"], 2)
+        self.assertEqual(review["pending_fields"], 1)
+        self.assertFalse(review["export_ready"])
+        review_path = mapping_jobs.RUNTIME_ROOT / job_id / "review.json"
+        self.assertTrue(review_path.is_file())
+        stored = json.loads(review_path.read_text(encoding="utf-8"))
+        self.assertEqual(stored["decisions"][0]["target_fields"], ["customer.customer_id"])
+
+        fetched = self.client.get(f"/api/mapping/jobs/{job_id}").json()
+        self.assertEqual(fetched["review"], review)
+        self.assert_no_private_response_data(fetched)
+
+    def test_18_review_repeated_put_is_idempotent(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        payload = {
+            "mapping_report_sha256": "baseline-content-sha",
+            "decisions": [
+                {"source_field": "legacy_client_id", "action": "accept_suggestion"},
+            ],
+        }
+        first = self.client.put(f"/api/mapping/jobs/{job_id}/review", json=payload)
+        second = self.client.put(f"/api/mapping/jobs/{job_id}/review", json=payload)
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(first.json(), second.json())
+
+    def test_19_review_accept_override_multi_target_and_mark_unmapped(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        response = self.client.put(
+            f"/api/mapping/jobs/{job_id}/review",
+            json={
+                "mapping_report_sha256": "baseline-content-sha",
+                "decisions": [
+                    {
+                        "source_field": "legacy_client_id",
+                        "action": "select_target",
+                        "target_fields": ["customer.customer_id", "customer.customer_id", "customer_bank.customer_id"],
+                        "note": "Manual multi-target correction",
+                    },
+                    {"source_field": "client_name", "action": "mark_unmapped"},
+                ],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        review = response.json()["review"]
+        self.assertTrue(review["export_ready"])
+        self.assertEqual(review["overridden_count"], 1)
+        self.assertEqual(review["unmapped_count"], 1)
+        self.assertEqual(
+            review["decisions"][0]["target_fields"],
+            ["customer.customer_id", "customer_bank.customer_id"],
+        )
+
+    def test_20_review_validation_rejects_bad_source_target_stale_and_action_contracts(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        cases = [
+            (
+                {
+                    "mapping_report_sha256": "wrong",
+                    "decisions": [{"source_field": "legacy_client_id", "action": "accept_suggestion"}],
+                },
+                409,
+                "mapping_review_stale",
+            ),
+            (
+                {
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [{"source_field": "missing", "action": "accept_suggestion"}],
+                },
+                422,
+                "unknown_mapping_source_field",
+            ),
+            (
+                {
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [
+                        {"source_field": "legacy_client_id", "action": "accept_suggestion"},
+                        {"source_field": "legacy_client_id", "action": "accept_suggestion"},
+                    ],
+                },
+                422,
+                "duplicate_mapping_review_source_field",
+            ),
+            (
+                {
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [
+                        {"source_field": "legacy_client_id", "action": "select_target", "target_fields": ["customer.nope"]}
+                    ],
+                },
+                422,
+                "unknown_mapping_target_field",
+            ),
+            (
+                {
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [{"source_field": "client_name", "action": "accept_suggestion"}],
+                },
+                422,
+                "mapping_suggestion_unavailable",
+            ),
+            (
+                {
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [
+                        {
+                            "source_field": "client_name",
+                            "action": "mark_unmapped",
+                            "target_fields": ["customer.customer_name"],
+                        }
+                    ],
+                },
+                422,
+                "invalid_mapping_review_targets",
+            ),
+            (
+                {
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [
+                        {
+                            "source_field": "legacy_client_id",
+                            "action": "accept_suggestion",
+                            "note": "bad\nnote",
+                        }
+                    ],
+                },
+                422,
+                "invalid_mapping_review_note",
+            ),
+        ]
+        for payload, status, error in cases:
+            with self.subTest(error=error):
+                response = self.client.put(f"/api/mapping/jobs/{job_id}/review", json=payload)
+                self.assertEqual(response.status_code, status)
+                self.assertEqual(response.json()["detail"]["error"], error)
+
+    def test_21_review_invalid_and_missing_job_ids_and_lock_busy(self):
+        invalid = self.client.put(
+            "/api/mapping/jobs/not-a-hex/review",
+            json={"mapping_report_sha256": "baseline-content-sha", "decisions": []},
+        )
+        self.assertEqual(invalid.status_code, 422)
+        self.assertEqual(invalid.json()["detail"]["error"], "invalid_mapping_job_id")
+
+        missing = self.client.put(
+            "/api/mapping/jobs/" + "0" * 32 + "/review",
+            json={"mapping_report_sha256": "baseline-content-sha", "decisions": []},
+        )
+        self.assertEqual(missing.status_code, 404)
+        self.assertEqual(missing.json()["detail"]["error"], "mapping_job_not_found")
+
+        created = self._create().json()
+        self.assertTrue(mapping_jobs.JOB_LOCK.acquire(blocking=False))
+        try:
+            busy = self.client.put(
+                f"/api/mapping/jobs/{created['job']['job_id']}/review",
+                json={"mapping_report_sha256": "baseline-content-sha", "decisions": []},
+            )
+        finally:
+            mapping_jobs.JOB_LOCK.release()
+        self.assertEqual(busy.status_code, 409)
+        self.assertEqual(busy.json()["detail"]["error"], "mapping_job_in_progress")
+
+    def test_22_incomplete_review_refuses_export(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        response = self.client.put(
+            f"/api/mapping/jobs/{job_id}/review",
+            json={
+                "mapping_report_sha256": "baseline-content-sha",
+                "decisions": [{"source_field": "legacy_client_id", "action": "accept_suggestion"}],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        export = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=json")
+        self.assertEqual(export.status_code, 409)
+        self.assertEqual(export.json()["detail"]["error"], "mapping_review_incomplete")
+
+    def test_23_completed_review_exports_json_without_rerunning_scorer(self):
+        created = self._create("precision_tiered_v4").json()
+        job_id = created["job"]["job_id"]
+        self._complete_review(job_id, sha="precision_tiered_v4-content-sha")
+        self.calls.clear()
+        response = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["content-disposition"],
+            f'attachment; filename="mapping-review-{job_id}.json"',
+        )
+        body = response.json()
+        self.assertEqual(body["job_id"], job_id)
+        self.assertEqual(body["scorer"], "precision_tiered_v4")
+        self.assertEqual(body["mapping_report_sha256"], "precision_tiered_v4-content-sha")
+        self.assertEqual(len(body["final_mappings"]), 2)
+        self.assertEqual(body["final_mappings"][0]["original_recommendation"], "customer.customer_id")
+        self.assertEqual(self.calls, [])
+        self.assert_no_private_response_data(body)
+
+    def test_24_completed_review_exports_csv_with_stable_columns_and_formula_protection(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        self._complete_review(job_id, note="=SUM(A1:A2)")
+        response = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=csv")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("text/csv", response.headers["content-type"])
+        self.assertEqual(
+            response.headers["content-disposition"],
+            f'attachment; filename="mapping-review-{job_id}.csv"',
+        )
+        rows = list(csv.reader(StringIO(response.text)))
+        self.assertEqual(
+            rows[0],
+            [
+                "job_id",
+                "contract_id",
+                "contract_title",
+                "contract_version",
+                "scorer",
+                "mapping_report_sha256",
+                "review_updated_at",
+                "source_field",
+                "action",
+                "final_target_fields",
+                "original_recommendation",
+                "original_status",
+                "reviewer_note",
+            ],
+        )
+        self.assertEqual(rows[1][-1], "'=SUM(A1:A2)")
+        self.assert_no_private_response_data({"csv": response.text})
+
+    def test_25_review_persistence_round_trip_and_export_format_validation(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        self._complete_review(job_id)
+        reloaded = self.client.get(f"/api/mapping/jobs/{job_id}").json()
+        self.assertTrue(reloaded["review"]["export_ready"])
+        self.assertEqual(reloaded["review"]["accepted_count"], 1)
+        self.assertEqual(reloaded["review"]["unmapped_count"], 1)
+
+        invalid = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=xlsx")
+        self.assertEqual(invalid.status_code, 422)
+
+    def test_26_atomic_review_write_failure_cleans_temp_file(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        job_dir = mapping_jobs.RUNTIME_ROOT / job_id
+        client = TestClient(app, raise_server_exceptions=False)
+        with patch.object(mapping_jobs.os, "replace", side_effect=OSError("disk full")):
+            response = client.put(
+                f"/api/mapping/jobs/{job_id}/review",
+                json={
+                    "mapping_report_sha256": "baseline-content-sha",
+                    "decisions": [{"source_field": "legacy_client_id", "action": "accept_suggestion"}],
+                },
+            )
+        self.assertEqual(response.status_code, 500)
+        self.assertFalse((job_dir / "review.json").exists())
+        self.assertEqual(list(job_dir.glob("*.tmp")), [])
+
+    def _complete_review(self, job_id: str, *, sha: str = "baseline-content-sha", note: str = "reviewed"):
+        return self.client.put(
+            f"/api/mapping/jobs/{job_id}/review",
+            json={
+                "mapping_report_sha256": sha,
+                "decisions": [
+                    {"source_field": "legacy_client_id", "action": "accept_suggestion", "note": note},
+                    {"source_field": "client_name", "action": "mark_unmapped"},
+                ],
+            },
+        )
 
     def assert_no_private_response_data(self, body: dict) -> None:
         text = json.dumps(body, ensure_ascii=False)
