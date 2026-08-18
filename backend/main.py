@@ -29,6 +29,7 @@ from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.mapping_jobs import router as mapping_jobs_router
 from backend.migration_workspace import router as migration_workspace_router
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -145,6 +146,7 @@ app.add_middleware(
 )
 
 app.include_router(migration_workspace_router)
+app.include_router(mapping_jobs_router)
 
 
 def _resolve(spec: ReportSpec) -> Path:
