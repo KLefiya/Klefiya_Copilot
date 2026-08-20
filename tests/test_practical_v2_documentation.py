@@ -26,9 +26,12 @@ class PracticalV2DocumentationTests(unittest.TestCase):
         cls.demo = read_text("docs/practical-v2-demo.md")
         cls.demo_lower = cls.demo.lower()
         cls.guide = read_text("docs/practical-v2-review-guide.md")
+        cls.schema_mapping = read_text("docs/schema-mapping.md")
+        cls.schema_mapping_lower = cls.schema_mapping.lower()
+        cls.customer_review_csv = read_text("examples/schema-matching/customer-review-demo.csv")
         cls.script = read_text("scripts/verify_practical_v2.ps1")
         cls.script_lower = cls.script.lower()
-        cls.docs_combined = "\n".join([cls.readme, cls.demo, cls.guide, cls.script])
+        cls.docs_combined = "\n".join([cls.readme, cls.demo, cls.guide, cls.schema_mapping, cls.script])
         cls.docs_lower = cls.docs_combined.lower()
 
     def test_01_readme_has_new_main_sections(self) -> None:
@@ -171,7 +174,7 @@ class PracticalV2DocumentationTests(unittest.TestCase):
         self.assertNotIn("27 failures", self.readme)
         self.assertNotIn("33 errors", self.readme)
         self.assertNotIn("483 tests passed", self.readme)
-        self.assertIn("Frontend tests: 45", self.readme)
+        self.assertIn("Frontend tests: 71", self.readme)
         self.assertIn("Workspace API tests: 38", self.readme)
         self.assertIn("Unable to parse full Python test count", self.script)
         self.assertIn("Python tests: $fullPythonCount", self.script)
@@ -273,6 +276,8 @@ class PracticalV2DocumentationTests(unittest.TestCase):
     def test_27_documentation_files_exist(self) -> None:
         self.assertTrue((ROOT / "docs/practical-v2-demo.md").is_file())
         self.assertTrue((ROOT / "docs/practical-v2-review-guide.md").is_file())
+        self.assertTrue((ROOT / "docs/schema-mapping.md").is_file())
+        self.assertTrue((ROOT / "examples/schema-matching/customer-review-demo.csv").is_file())
         self.assertTrue((ROOT / "scripts/verify_practical_v2.ps1").is_file())
 
     def test_28_reviewer_guide_records_current_report_shas(self) -> None:
@@ -310,3 +315,91 @@ class PracticalV2DocumentationTests(unittest.TestCase):
     def test_34_verification_script_cleans_runtime_and_frontend_dist(self) -> None:
         self.assertIn('Remove-TreeIfPresent "data/runtime"', self.script)
         self.assertIn('Remove-TreeIfPresent "frontend/dist"', self.script)
+
+    def test_35_schema_mapping_docs_record_runtime_contract_and_metrics(self) -> None:
+        self.assertIn("## Dynamic Schema Mapping", self.readme + self.schema_mapping)
+        for phrase in [
+            "GET  /api/mapping/contracts",
+            "POST /api/mapping/jobs",
+            "GET  /api/mapping/jobs/{job_id}",
+            "PUT  /api/mapping/jobs/{job_id}/review",
+            "GET  /api/mapping/jobs/{job_id}/export?format=json|csv",
+            "generic-customer",
+            "customer.customer_id",
+            "full 11-field contract target_fields",
+            "precision_tiered_v4",
+            "precision_tiered_interaction_v1",
+            "data/runtime/",
+            "新建字段映射",
+            "examples/schema-matching/customer-review-demo.csv",
+        ]:
+            self.assertIn(phrase, self.schema_mapping)
+        for phrase in [
+            "5 scenarios",
+            "72 cases",
+            "59 single-target",
+            "5 multi-target",
+            "8 no-target",
+            "70 target links",
+            "Top-1 accuracy: 0.9153",
+            "target recall@1: 0.8286",
+            "target recall@3: 0.9714",
+            "MRR: 0.8929",
+            "no-target accuracy: 0.8750",
+            "multi-target full recall@3: 1.0000",
+            "49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b",
+        ]:
+            self.assertIn(phrase, self.schema_mapping)
+
+    def test_36_schema_mapping_docs_keep_ground_truth_and_review_boundaries(self) -> None:
+        for phrase in [
+            "Ground truth is used only by benchmark evaluation.",
+            "Candidate generation, feature extraction, scoring, ranking, API job creation, review saving, and export do not read answer files.",
+            "Top-3 candidates remain visible",
+            "Manual target selection uses the full contract `target_fields` allowlist instead of the Top-3 list",
+            "Human review corrects and freezes a job result; it does not retrain the mapping model.",
+            "This example is not used to tune aliases or hard-code a special case.",
+        ]:
+            self.assertIn(phrase, self.docs_combined)
+        for forbidden in [
+            "fully autonomous",
+            "AI-powered platform",
+            "automatically solves migration mapping",
+            "human review retrains",
+        ]:
+            self.assertNotIn(forbidden.lower(), self.docs_lower)
+
+    def test_37_schema_mapping_mermaid_flow_is_basic_and_linear(self) -> None:
+        self.assertIn("```mermaid", self.schema_mapping)
+        self.assertIn("flowchart LR", self.schema_mapping)
+        for node in [
+            "CSV",
+            "Profiling",
+            "Embedding and candidate scoring",
+            "Confidence tier",
+            "Human review",
+            "Final export",
+        ]:
+            self.assertIn(node, self.schema_mapping)
+
+    def test_38_customer_review_demo_csv_is_synthetic_and_parseable(self) -> None:
+        import csv
+        from io import StringIO
+
+        rows = list(csv.reader(StringIO(self.customer_review_csv)))
+        self.assertEqual(
+            rows[0],
+            ["client_number", "full_name", "email_address", "mobile_phone", "country_code", "zip_code"],
+        )
+        self.assertEqual(len(rows) - 1, 5)
+        self.assertEqual(len(set(rows[0])), 6)
+        self.assertEqual({len(row) for row in rows}, {6})
+        self.assertTrue(self.customer_review_csv.endswith("\n"))
+        csv_lower = self.customer_review_csv.lower()
+        for forbidden in ["ground_truth", "expected_target", "answer_source", "customer.customer_id"]:
+            self.assertNotIn(forbidden, csv_lower)
+        for row in rows[1:]:
+            for value in row:
+                self.assertFalse(value.startswith(("=", "+", "-", "@")))
+        for marker in ["john", "jane", "example.com", "555-"]:
+            self.assertNotIn(marker, csv_lower)

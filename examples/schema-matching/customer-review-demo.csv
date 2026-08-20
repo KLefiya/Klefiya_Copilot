@@ -1,0 +1,6 @@
+client_number,full_name,email_address,mobile_phone,country_code,zip_code
+CUST-DEMO-001,Synthetic Customer Alpha,alpha@example.test,demo-mobile-001,US,ZIP-DEMO-001
+CUST-DEMO-002,Synthetic Customer Bravo,bravo@example.test,demo-mobile-002,DE,ZIP-DEMO-002
+CUST-DEMO-003,Synthetic Customer Charlie,charlie@example.test,demo-mobile-003,GB,ZIP-DEMO-003
+CUST-DEMO-004,Synthetic Customer Delta,delta@example.test,demo-mobile-004,US,ZIP-DEMO-004
+CUST-DEMO-005,Synthetic Customer Echo,echo@example.test,demo-mobile-005,DE,ZIP-DEMO-005

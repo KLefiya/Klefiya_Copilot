@@ -114,6 +114,23 @@ Second, generated output is checked after it is built. The package is not consid
 
 The source value hash in lineage helps explain the generated files without copying full values into every trace record. That is enough for this synthetic demo. A real project would need a stronger data handling policy, but the pattern keeps review and traceability separate from raw source exposure.
 
+## Dynamic Schema Mapping
+
+Dynamic Schema Mapping is the upload-and-review workflow for matching a local CSV to one of the registered target contracts. It takes CSV text, a contract id, and an explicit scorer selection, then returns safe job metadata, source profiling, Top-3 mapping candidates, confidence tiers, and an optional reviewer-approved export.
+
+```mermaid
+flowchart LR
+    A[CSV] --> B[Profiling]
+    B --> C[Embedding and candidate scoring]
+    C --> D[Confidence tier]
+    D --> E[Human review]
+    E --> F[Final export]
+```
+
+The React page is named `新建字段映射` and submits `precision_tiered_v4` explicitly. The core runtime and CLI keep `baseline` as their default scorer unless a caller opts into V4. Review decisions are saved under ignored `data/runtime/` job folders, and completed reviews can be exported as JSON or CSV. Human review corrects and freezes a job result; it does not retrain the mapping model.
+
+For the detailed architecture, formal V4 metrics, safety boundaries, and a synthetic review CSV, see [docs/schema-mapping.md](docs/schema-mapping.md) and [examples/schema-matching/customer-review-demo.csv](examples/schema-matching/customer-review-demo.csv).
+
 ## Migration Review Workspace
 
 The workspace is fixed:
@@ -205,6 +222,7 @@ data/generated/   Generated target resources, manifests, and lineage
 data/runtime/     Local workspace state; ignored by Git
 data/synthetic/   Reports, cached analysis outputs, and benchmark results
 docs/             Demo script and reviewer guide
+examples/         Small synthetic input files for docs and manual demos
 scripts/          Smoke tests and verification script
 src/core/         Contract, mapping, and package generation code
 src/tools/        CLI wrappers for the core workflows
@@ -247,6 +265,8 @@ http://127.0.0.1:5173/
 ```
 
 The default page is `迁移工作台`.
+
+To try Dynamic Schema Mapping, open `新建字段映射`, upload `examples/schema-matching/customer-review-demo.csv`, choose `generic-customer`, keep the page scorer at `precision_tiered_v4`, run the mapping job, review each source field, save the review, and download JSON or CSV. Existing jobs can be restored with their 32-character lowercase hex job id. The first local model load can be slower because the embedding model is loaded from the local cache.
 
 The demo does not require an LLM credential. It uses committed synthetic examples, does not connect to an external ERP system, and does not need the Fit-to-Standard report to be regenerated.
 
@@ -318,8 +338,8 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 549 tests, 0 failures, 0 errors
-Frontend tests: 45
+Full unittest discovery: 645 tests, 0 failures, 0 errors
+Frontend tests: 71
 Workspace API tests: 38
 ```
 
@@ -331,7 +351,7 @@ The verification script is local. It does not fetch remote data, install depende
 
 ## Continuous Integration
 
-[CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 43 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
+[CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 44 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
 
 The CI workflow pins official GitHub Actions to immutable full commit SHA references to reduce supply-chain risk from movable tags. Human-readable versions remain in inline comments: `actions/checkout` v7.0.1, `actions/setup-python` v7.0.0, and `actions/setup-node` v7.0.0. Future action upgrades still require normal code review and CI verification; Dependabot automation is not configured yet.
 
@@ -339,7 +359,7 @@ Fresh CI runners first bootstrap the public `sentence-transformers/all-MiniLM-L6
 
 FastAPI 0.139.0 is pinned in the root requirements because backend API and workspace API tests run from the root requirements installation.
 
-The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 45 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems. The artifact verification step is configured to run even when Python tests fail, as long as the pre-test snapshot was created.
+The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 71 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems. The artifact verification step is configured to run even when Python tests fail, as long as the pre-test snapshot was created.
 
 Local equivalents:
 

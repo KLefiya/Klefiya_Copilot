@@ -1,0 +1,198 @@
+# Dynamic Schema Mapping
+
+Dynamic Schema Mapping is a contract-aware workflow for turning an uploaded source CSV into reviewed field mappings. It is designed for inspection: the system proposes candidates, the reviewer makes final decisions, and exports contain the reviewed result plus enough metadata to understand the original recommendation.
+
+The workflow is separate from the fixed migration workspace documented in the README. Runtime job state is stored in ignored `data/runtime/` folders so local review work does not modify committed examples or formal benchmark artifacts.
+
+## Product Workflow
+
+1. Install Python requirements:
+
+   ```powershell
+   python -m pip install -r requirements.txt
+   python -m pip install -r backend/requirements.txt
+   ```
+
+2. Start the backend:
+
+   ```powershell
+   uvicorn backend.main:app --reload --port 8001
+   ```
+
+3. Start the frontend:
+
+   ```powershell
+   cd frontend
+   $env:VITE_API_BASE="http://127.0.0.1:8001"
+   npm run dev
+   ```
+
+4. Open `http://127.0.0.1:5173/` and select `新建字段映射`.
+5. Upload `examples/schema-matching/customer-review-demo.csv`.
+6. Choose contract `generic-customer`.
+7. Keep the page scorer at `precision_tiered_v4`.
+8. Run the mapping job.
+9. Review each source field: accept the suggestion, choose one or more targets, or mark it unmapped.
+10. Save the review, then download JSON or CSV after all fields are reviewed.
+11. To restore saved work, load an Existing Job with its 32-character lowercase hex job id.
+
+The first local model load can be slower because `sentence-transformers/all-MiniLM-L6-v2` is loaded from the local Hugging Face cache. The backend, runtime dispatcher, and CLI default scorer remain `baseline`; the React page explicitly submits `precision_tiered_v4` for this workflow.
+
+## API Contract
+
+The backend exposes the workflow through these routes:
+
+```text
+GET  /api/mapping/contracts
+POST /api/mapping/jobs
+GET  /api/mapping/jobs/{job_id}
+PUT  /api/mapping/jobs/{job_id}/review
+GET  /api/mapping/jobs/{job_id}/export?format=json|csv
+```
+
+`GET /api/mapping/contracts` returns registered contract summaries and a safe `target_fields` allowlist. For `generic-customer`, the allowlist has 11 stable target fields:
+
+```text
+customer.customer_id
+customer.customer_name
+customer.country
+customer.email
+customer.phone
+customer.tax_number
+customer.payment_terms
+customer_bank.bank_id
+customer_bank.customer_id
+customer_bank.iban
+customer_bank.currency
+```
+
+The catalog response does not expose contract file paths, raw schema file contents, answer data, ground truth, or internal Python objects.
+
+## Runtime Architecture
+
+```mermaid
+flowchart LR
+    A[CSV] --> B[Profiling]
+    B --> C[Embedding and candidate scoring]
+    C --> D[Confidence tier]
+    D --> E[Human review]
+    E --> F[Final export]
+```
+
+The runtime path uses a registered contract, writes the uploaded CSV and mapping report into a per-job directory under `data/runtime/mapping_jobs/`, and returns a sanitized job response. Job responses include source field names, source profile summaries, Top-3 candidates, status, confidence, recommendation, and the mapping report content SHA.
+
+The mapping report is created at `POST /api/mapping/jobs`. `PUT /api/mapping/jobs/{job_id}/review` saves a review snapshot against the mapping report SHA. A stale SHA is rejected to avoid overwriting a review for a different mapping report. `GET /api/mapping/jobs/{job_id}` restores the review view without rerunning scoring when a review file exists.
+
+## Ranking
+
+The baseline scorer combines field names, aliases, lexical similarity, semantic similarity, type evidence, and source profiling. The V4 scorer is `precision_tiered_v4` with feature version `precision_tiered_interaction_v1`. It keeps the same ground-truth boundary and adds precision-tiered sparse interactions for selected high-signal concept pairs.
+
+Candidate ranking is evidence for review, not an instruction to build target data. Top-3 candidates remain visible so a reviewer can see why the algorithm suggested a target. Manual target selection uses the full contract `target_fields` allowlist instead of the Top-3 list, because a correct target can be outside the first three candidates.
+
+The CLI with explicit scorer selection is:
+
+```powershell
+python src/tools/suggest_runtime_contract_mappings.py --contract contracts/generic_customer/datapackage.yaml --data-root data/examples/generic_customer --source examples/schema-matching/customer-review-demo.csv --output data/runtime/manual-schema-mapping.json --scorer precision_tiered_v4
+```
+
+The historical CLI remains available and uses the baseline scorer path:
+
+```powershell
+python src/tools/suggest_contract_mappings.py --contract contracts/generic_customer/datapackage.yaml --data-root data/examples/generic_customer --source examples/schema-matching/customer-review-demo.csv --output data/runtime/manual-schema-mapping.json
+```
+
+## Ground-Truth Boundary
+
+Ground truth is used only by benchmark evaluation. Candidate generation, feature extraction, scoring, ranking, API job creation, review saving, and export do not read answer files.
+
+The formal V4 artifact records:
+
+```text
+ground_truth_runtime_boundary = evaluation_only
+ground_truth_used_for_candidate_generation = false
+ground_truth_used_for_evaluation = true
+ground_truth_used_for_concept_extraction = false
+ground_truth_used_for_interaction_activation = false
+ground_truth_used_for_tier_decision = false
+ground_truth_used_for_scoring = false
+```
+
+## Formal Evaluation
+
+The formal V4 metrics are stored in `data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json`.
+
+```text
+Scorer ID: precision_tiered_v4
+Feature version: precision_tiered_interaction_v1
+Raw SHA-256: 49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b
+Content SHA-256: 4382ebc7db0f8cfd4664d4df290810a0db24666e79e9840034fcd553cf104679
+```
+
+```text
+5 scenarios
+72 cases
+59 single-target
+5 multi-target
+8 no-target
+70 target links
+Top-1 accuracy: 0.9153
+target recall@1: 0.8286
+target recall@3: 0.9714
+MRR: 0.8929
+no-target accuracy: 0.8750
+multi-target full recall@3: 1.0000
+```
+
+These numbers come from the repository synthetic/formal evaluation. They are not a guarantee of performance on unseen production data. A separate real runtime smoke check is useful for workflow validation, but it is not mixed into the formal benchmark metrics above.
+
+Useful validation commands for this artifact are:
+
+```powershell
+python -m unittest tests.test_schema_matching_benchmark
+python scripts/verify_formal_artifacts_immutable.py snapshot
+python scripts/verify_formal_artifacts_immutable.py verify
+git diff --check
+```
+
+## Human Review Example
+
+In a real end-to-end smoke check with the `generic-customer` contract, the source field `client_number` showed an identifier ambiguity:
+
+```text
+source field: client_number
+algorithm Top-1: customer.phone
+Top-3: did not include customer.customer_id
+status: needs_review
+reviewer decision: customer.customer_id
+allowlist source: full 11-field contract target_fields
+result: persisted and exported
+```
+
+The failure mode is understandable: short identifier-like fields can share weak lexical and value-shape evidence with other compact account or contact fields. The review workflow limits error propagation by keeping confidence/status visible, requiring an explicit reviewer decision, and validating manual targets against the server-provided contract allowlist. This example is not used to tune aliases or hard-code a special case.
+
+## Review And Export Semantics
+
+Review actions are mutually exclusive per source field:
+
+```text
+accept_suggestion
+select_target
+mark_unmapped
+```
+
+`select_target` supports one or more target fields from the contract allowlist. `mark_unmapped` clears targets. Notes are optional, limited to 500 characters, and reject control characters.
+
+Partial saves are allowed. Export is blocked with `mapping_review_incomplete` until every source field has a review decision. Completed reviews export JSON or CSV with final mappings, original recommendation, original status, scorer, contract metadata, and the mapping report SHA. Export payloads do not include uploaded row values.
+
+## Example CSV
+
+The example file is `examples/schema-matching/customer-review-demo.csv`. It is synthetic, has 5 data rows, and is not a formal artifact. It intentionally includes `client_number` so a reviewer can demonstrate choosing `customer.customer_id` from the complete contract allowlist even when the desired target is not present in a field's Top-3 evidence.
+
+## Limitations
+
+- Identifier aliases remain ambiguous when short source names and compact values look similar.
+- Domain shift can reduce ranking quality when source fields use naming conventions or value patterns absent from the synthetic contracts.
+- The first local embedding model load has startup cost.
+- Confidence tiers depend on thresholds and evidence distributions; low-confidence cases still require review.
+- Synthetic benchmark metrics do not guarantee behavior on private or production datasets.
+- Ambiguous fields need human review before export is treated as final.
