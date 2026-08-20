@@ -21,10 +21,12 @@ GET /api/reports/{report_name} 若把 report_name 直接拼进路径，
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,10 +39,51 @@ SYNTHETIC_DIR = PROJECT_ROOT / "data" / "synthetic"
 EVALUATION_ANSWER_FILENAME = "interview_notes_" + "ground" + "_" + "truth.json"
 
 # 前端开发服务器的来源。Vite 默认 5173。
-ALLOWED_ORIGINS = [
+CORS_ORIGINS_ENV = "CARVEOPS_CORS_ORIGINS"
+LOOPBACK_CORS_HOSTS = {"127.0.0.1", "localhost", "::1"}
+
+DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
+
+def _normalize_cors_origin(raw_origin: str) -> str:
+    value = raw_origin.strip()
+    if not value:
+        raise ValueError("CORS origin entries must not be empty.")
+    if value == "*":
+        raise ValueError("Wildcard CORS origin is not allowed.")
+    parts = urlsplit(value)
+    if parts.scheme not in {"http", "https"} or not parts.netloc:
+        raise ValueError(f"Invalid CORS origin `{value}`. Use http(s)://host[:port].")
+    if parts.username or parts.password:
+        raise ValueError("CORS origins must not contain credentials.")
+    if parts.query or parts.fragment:
+        raise ValueError("CORS origins must not contain query strings or fragments.")
+    if parts.path not in {"", "/"}:
+        raise ValueError("CORS origins must not contain a path.")
+    if parts.hostname not in LOOPBACK_CORS_HOSTS:
+        raise ValueError("CORS origins must use localhost or loopback addresses.")
+    return f"{parts.scheme.lower()}://{parts.netloc.lower()}"
+
+
+def _parse_extra_cors_origins(value: str | None) -> list[str]:
+    if value is None or not value.strip():
+        return []
+    return [_normalize_cors_origin(item) for item in value.split(",")]
+
+
+def _allowed_cors_origins(env_value: str | None = None) -> list[str]:
+    origins: list[str] = []
+    for origin in [*DEFAULT_ALLOWED_ORIGINS, *_parse_extra_cors_origins(env_value)]:
+        normalized = _normalize_cors_origin(origin)
+        if normalized not in origins:
+            origins.append(normalized)
+    return origins
+
+
+ALLOWED_ORIGINS = _allowed_cors_origins(os.environ.get(CORS_ORIGINS_ENV))
 
 
 @dataclass(frozen=True)

@@ -38,6 +38,26 @@ The workflow is separate from the fixed migration workspace documented in the RE
 
 The first local model load can be slower because `sentence-transformers/all-MiniLM-L6-v2` is loaded from the local Hugging Face cache. The backend, runtime dispatcher, and CLI default scorer remain `baseline`; the React page explicitly submits `precision_tiered_v4` for this workflow.
 
+For a one-command local demo, run:
+
+```powershell
+python scripts/run_local_demo.py
+```
+
+Optional launcher modes:
+
+```powershell
+python scripts/run_local_demo.py --open-browser
+python scripts/run_local_demo.py --offline-model
+python scripts/run_local_demo.py --smoke-test
+```
+
+The launcher checks Python 3.12+, `uvicorn`, Node, `npm`, `frontend/package.json`, `frontend/node_modules`, and the selected backend/frontend ports before starting services. Python 3.12 is the current minimum supported version because `.github/workflows/ci.yml` tests that version and the repository has no lower Python version declaration. It starts the backend with `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8001` by default, then starts the frontend with `npm run dev -- --host 127.0.0.1 --port 5173`, `VITE_API_BASE` pointing at the backend, and `CARVEOPS_CORS_ORIGINS` set to the exact frontend origin. It does not install dependencies or download the embedding model.
+
+`CARVEOPS_CORS_ORIGINS` is comma-separated and accepts only explicit `http` or `https` loopback origins such as `http://127.0.0.1:51987`. It rejects wildcard origins, credentials, paths other than `/`, query strings, fragments, malformed URLs, and public hosts. Without the environment variable, the backend keeps the existing default origins `http://localhost:5173` and `http://127.0.0.1:5173`.
+
+`--offline-model` sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`. Because the scorer loads `sentence-transformers/all-MiniLM-L6-v2` with local-files-only behavior, a missing local cache means V4 mapping cannot run until the model cache is prepared; the launcher reports that limitation instead of treating it as success. `--smoke-test` waits for backend and frontend HTTP readiness, probes backend CORS with the actual frontend Origin header, verifies another loopback origin is not allowed, does not create a mapping job, does not run the model, prints `Demo smoke test: PASS`, and then cleans up both child processes. `Ctrl+C`, startup failure, health timeout, and smoke completion all trigger child-process cleanup.
+
 ## API Contract
 
 The backend exposes the workflow through these routes:

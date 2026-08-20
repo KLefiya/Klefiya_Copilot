@@ -244,6 +244,24 @@ npm install
 cd ..
 ```
 
+### One-command Local Demo
+
+```powershell
+python scripts/run_local_demo.py
+```
+
+The launcher starts the FastAPI backend and Vite frontend, waits for `/api/health` and the frontend root to answer on localhost, then prints the backend URL, frontend URL, and the `新建字段映射` access path. Press `Ctrl+C` to stop both child processes.
+
+Useful options:
+
+```powershell
+python scripts/run_local_demo.py --open-browser
+python scripts/run_local_demo.py --offline-model
+python scripts/run_local_demo.py --smoke-test
+```
+
+The launcher checks Python 3.12 or newer, `uvicorn`, Node, `npm`, `frontend/package.json`, `frontend/node_modules`, and port availability before starting. Python 3.12 is the current minimum because it is the lowest version in the CI matrix. The launcher does not run `pip install`, `npm install`, download a model, create a mapping job, or write PID/log/runtime files. `--offline-model` sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`; if the local `sentence-transformers/all-MiniLM-L6-v2` cache is missing, V4 mapping remains unavailable until the cache is prepared. For custom frontend ports, the launcher passes the exact loopback origin to the backend through `CARVEOPS_CORS_ORIGINS`; wildcard or public origins are not allowed. `--smoke-test` starts both services, waits for HTTP readiness, verifies the backend CORS response for the frontend origin, prints `Demo smoke test: PASS`, and cleans up immediately.
+
 ### Start The API
 
 ```powershell
