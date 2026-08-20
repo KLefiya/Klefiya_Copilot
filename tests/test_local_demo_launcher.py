@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import io
 import os
 import re
+import signal
 import socket
 import subprocess
 import tempfile
@@ -144,17 +146,45 @@ class LocalDemoLauncherTests(unittest.TestCase):
         self.assertEqual(ctx.exception.label, "backend")
         self.assertEqual(ctx.exception.returncode, 2)
 
-    def test_cleanup_requests_process_tree_without_external_pids(self) -> None:
+    def test_cleanup_skips_already_exited_child(self) -> None:
         process = FakeProcess(returncode=0, pid=22222)
         launcher.cleanup_processes([("frontend", process)])
         self.assertEqual(process.wait_calls, 0)
+
+    def test_windows_cleanup_requests_child_process_tree_only(self) -> None:
         running = FakeProcess(returncode=None, pid=33333)
+        external_pid = "44444"
+
+        def fake_taskkill(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            running.returncode = -9
+            return subprocess.CompletedProcess(command, 0)
+
         with patch("scripts.run_local_demo.os.name", "nt"), \
+            patch("scripts.run_local_demo.signal.CTRL_BREAK_EVENT", 21, create=True), \
             patch("scripts.run_local_demo.os.kill"), \
-            patch("scripts.run_local_demo.subprocess.run") as taskkill:
+            patch("scripts.run_local_demo.subprocess.run", side_effect=fake_taskkill) as taskkill:
             launcher.terminate_process_tree("backend", running, grace_seconds=0.01)
             taskkill.assert_called_once()
-            self.assertIn(str(running.pid), taskkill.call_args.args[0])
+            command = taskkill.call_args.args[0]
+            self.assertIn(str(running.pid), command)
+            self.assertNotIn(external_pid, command)
+
+    def test_posix_cleanup_requests_child_process_group_only(self) -> None:
+        running = FakeProcess(returncode=None, pid=33333)
+        external_pid = 44444
+
+        def fake_killpg(pid: int, signum: int) -> None:
+            self.assertEqual(pid, running.pid)
+            self.assertNotEqual(pid, external_pid)
+            self.assertEqual(signum, signal.SIGTERM)
+            running.returncode = -15
+
+        with patch("scripts.run_local_demo.os.name", "posix"), \
+            patch("scripts.run_local_demo.os.killpg", side_effect=fake_killpg, create=True) as killpg, \
+            patch("scripts.run_local_demo.subprocess.run") as taskkill:
+            launcher.terminate_process_tree("backend", running, grace_seconds=0.01)
+            killpg.assert_called_once_with(running.pid, signal.SIGTERM)
+            taskkill.assert_not_called()
 
     def test_smoke_success_starts_real_commands_then_cleans_children(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -209,6 +239,23 @@ class LocalDemoLauncherTests(unittest.TestCase):
         self.assertNotIn("abc123", redacted)
         self.assertNotIn("def456", redacted)
         self.assertIn("[redacted]", redacted)
+
+    def test_startup_summary_is_ascii_and_cp1252_safe(self) -> None:
+        stream = io.StringIO()
+        with patch("sys.stdout", stream):
+            launcher.print_startup_summary(
+                "http://127.0.0.1:8001",
+                "http://127.0.0.1:5173",
+                "cached",
+                "local-cache",
+                True,
+            )
+        output = stream.getvalue()
+        output.encode("ascii", errors="strict")
+        output.encode("cp1252", errors="strict")
+        self.assertIn('select "New Schema Mapping"', output)
+        self.assertIn("frontend navigation", output)
+        self.assertNotIn("\u65b0\u5efa\u5b57\u6bb5\u6620\u5c04", output)
 
     def test_python_version_check_matches_ci_minimum(self) -> None:
         workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")

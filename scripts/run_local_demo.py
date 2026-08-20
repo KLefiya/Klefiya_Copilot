@@ -352,7 +352,7 @@ def print_startup_summary(backend_url: str, frontend_url: str, model_status: str
     print("CarveOps local demo is ready.")
     print(f"Backend URL : {backend_url}")
     print(f"Frontend URL: {frontend_url}")
-    print(f"Mapping page: open {frontend_url} and select `新建字段映射`")
+    print(f'Mapping page: open {frontend_url} and select "New Schema Mapping" in the frontend navigation.')
     print("Stop        : press Ctrl+C to stop backend and frontend")
     print(f"Model cache : {model_status} ({model_detail})")
     print(f"Offline env : {'enabled' if offline_model else 'not set by launcher'}")
