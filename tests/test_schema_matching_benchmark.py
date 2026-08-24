@@ -46,6 +46,10 @@ SALES_ORDER_CONTRACT = SALES_ORDER_ROOT / "contract" / "datapackage.yaml"
 SALES_ORDER_LOCK = SALES_ORDER_ROOT / "fixture_lock.json"
 SALES_ORDER_TARGET = SALES_ORDER_ROOT / "target"
 FORMAL_V4_EVALUATION = PROJECT_ROOT / "data" / "synthetic" / "schema_matching_precision_tiered_v4_5scenario_evaluation.json"
+FORMAL_V5_EVALUATION = PROJECT_ROOT / "data" / "synthetic" / "schema_matching_precision_tiered_v5_5scenario_evaluation.json"
+FORMAL_V4_RAW_SHA256 = "49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b"
+FORMAL_V5_RAW_SHA256 = "f44d07567ed9fa8b199780fff9990d1b577491709433ed554c7140f552386e57"
+FORMAL_V5_CONTENT_SHA256 = "32208506a7ad792a90b78bafeea9fa87c2df4a7a797afcf04cc015009be0a695"
 SALES_ORDER_SOURCE_HEADER = [
     "legacy_sales_order_id",
     "customer_po_ref",
@@ -416,6 +420,28 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             self.assertFalse(first_v4_report["_meta"]["production_scorer_modified"])
             self.assertFalse(first_v4_report["_meta"]["ground_truth_used_for_scoring"])
 
+            v5_reports = generate_candidate_reports(
+                specs,
+                embedding_backend=FakeEmbeddingBackend(),
+                scorer_variant="precision_tiered_v5",
+            )
+            v5 = evaluate_benchmark(benchmark, v5_reports, scorer_variant="precision_tiered_v5")
+            self.assertEqual(v5["_meta"]["scorer_variant"], "precision_tiered_v5")
+            self.assertEqual(v5["_meta"]["scorer_id"], "precision_tiered_v5")
+            self.assertEqual(v5["_meta"]["parent_scorer"], "precision_tiered_v4")
+            self.assertEqual(v5["_meta"]["feature_version"], "entity_identifier_interaction_v1")
+            self.assertTrue(v5["_meta"]["formal_evaluation"])
+            self.assertFalse(v5["_meta"]["ground_truth_used_for_runtime"])
+            self.assertFalse(v5["_meta"]["ground_truth_used_for_candidate_generation"])
+            self.assertFalse(v5["_meta"]["ground_truth_used_for_concept_extraction"])
+            self.assertFalse(v5["_meta"]["ground_truth_used_for_interaction_activation"])
+            self.assertFalse(v5["_meta"]["ground_truth_used_for_scoring"])
+            self.assertTrue(v5["_meta"]["ground_truth_used_for_evaluation"])
+            first_v5_report = next(iter(v5_reports.values()))
+            self.assertEqual(first_v5_report["_meta"]["parent_scorer"], "precision_tiered_v4")
+            self.assertFalse(first_v5_report["_meta"]["ground_truth_used_for_candidate_generation"])
+            self.assertFalse(first_v5_report["_meta"]["ground_truth_used_for_scoring"])
+
             with self.assertRaisesRegex(SchemaMatchingBenchmarkError, "Unknown scorer variant"):
                 generate_candidate_reports(specs, embedding_backend=FakeEmbeddingBackend(), scorer_variant="future")
 
@@ -427,6 +453,7 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             "value_pattern_v2",
             "target_context_v3",
             "precision_tiered_v4",
+            "precision_tiered_v5",
         }
         self.assertEqual(ALLOWED_SCORERS, expected)
 
@@ -451,9 +478,9 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
             "--output",
             str(Path(tempfile.gettempdir()) / "report.json"),
             "--scorer",
-            "precision_tiered_v4",
+            "precision_tiered_v5",
         ])
-        self.assertEqual(parsed.scorer, "precision_tiered_v4")
+        self.assertEqual(parsed.scorer, "precision_tiered_v5")
 
         defaulted = parser.parse_args([
             "--benchmark",
@@ -644,6 +671,7 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
 
     def test_16_precision_tiered_v4_formal_artifact_contract(self):
         self.assertTrue(FORMAL_V4_EVALUATION.exists())
+        self.assertEqual(_raw_sha256(FORMAL_V4_EVALUATION), FORMAL_V4_RAW_SHA256)
         raw = FORMAL_V4_EVALUATION.read_bytes()
         self.assertFalse(raw.startswith(b"\xef\xbb\xbf"))
         self.assertNotIn(b"\r", raw)
@@ -704,6 +732,133 @@ class SchemaMatchingBenchmarkTests(unittest.TestCase):
         self.assertNotIn("rejected", text.lower())
         self.assertFalse(any(re.search(r"(timestamp|uuid|machine|hostname|absolute_path|temp_path)", key, re.I) for key in _json_keys(report)))
 
+    def test_17_precision_tiered_v5_formal_artifact_contract(self):
+        self.assertTrue(FORMAL_V5_EVALUATION.exists())
+        self.assertEqual(_raw_sha256(FORMAL_V5_EVALUATION), FORMAL_V5_RAW_SHA256)
+
+        raw = FORMAL_V5_EVALUATION.read_bytes()
+        self.assertFalse(raw.startswith(b"\xef\xbb\xbf"))
+        self.assertNotIn(b"\r", raw)
+        self.assertTrue(raw.endswith(b"\n"))
+
+        text = raw.decode("utf-8")
+        report = json.loads(text)
+        v4_report = _read_json(FORMAL_V4_EVALUATION)
+        self.assertEqual(
+            "data/synthetic/schema_matching_precision_tiered_v5_5scenario_evaluation.json",
+            FORMAL_V5_EVALUATION.relative_to(PROJECT_ROOT).as_posix(),
+        )
+        self.assertIn(FORMAL_V5_EVALUATION.relative_to(PROJECT_ROOT).as_posix(), FORMAL_ARTIFACTS)
+        self.assertEqual(len(FORMAL_ARTIFACTS), 45)
+
+        self.assertEqual(report["_meta"]["component"], "schema_matching_benchmark_evaluation")
+        self.assertEqual(report["_meta"]["benchmark_id"], "schema_matching_v1")
+        self.assertTrue(report["_meta"]["formal_evaluation"])
+        self.assertEqual(report["_meta"]["scorer_variant"], "precision_tiered_v5")
+        self.assertEqual(report["_meta"]["scorer_id"], "precision_tiered_v5")
+        self.assertEqual(report["_meta"]["parent_scorer"], "precision_tiered_v4")
+        self.assertEqual(report["_meta"]["feature_version"], "entity_identifier_interaction_v1")
+        self.assertEqual(report["_meta"]["embedding_model"], "sentence-transformers/all-MiniLM-L6-v2")
+        self.assertEqual(
+            report["_meta"]["algorithm_source_sha256"],
+            {
+                "src/core/mapping/identifier_interactions.py": "2c4606240758e03a97056798bad63d0c94c93bf27a2a7aeb1038e24e23469b6f",
+                "src/core/mapping/scorer_v5.py": "9b21e0d4873e3cccf348d17f6996dd7d2471822ebc99fbe2bc684d309a3c8f78",
+            },
+        )
+        self.assertFalse(report["_meta"]["ground_truth_used"])
+        self.assertFalse(report["_meta"]["ground_truth_used_for_runtime"])
+        self.assertFalse(report["_meta"]["ground_truth_used_for_candidate_generation"])
+        self.assertFalse(report["_meta"]["ground_truth_used_for_concept_extraction"])
+        self.assertFalse(report["_meta"]["ground_truth_used_for_interaction_activation"])
+        self.assertFalse(report["_meta"]["ground_truth_used_for_scoring"])
+        self.assertTrue(report["_meta"]["ground_truth_used_for_evaluation"])
+        for source_report in report["_meta"]["source_reports"]:
+            self.assertEqual(
+                set(source_report),
+                {
+                    "scenario_id",
+                    "source_path",
+                    "source_sha256",
+                    "contract_path",
+                    "contract_sha256",
+                    "answer_source_path",
+                    "answer_source_sha256",
+                },
+            )
+            for path_key in ("source_path", "contract_path", "answer_source_path"):
+                self.assertFalse(Path(source_report[path_key]).is_absolute())
+            for sha_key in ("source_sha256", "contract_sha256", "answer_source_sha256"):
+                self.assertRegex(source_report[sha_key], r"^[0-9a-f]{64}$")
+
+        self.assertEqual(report["overall"], {
+            "scenario_count": 5,
+            "case_count": 72,
+            "single_target_case_count": 59,
+            "multi_target_case_count": 5,
+            "no_target_case_count": 8,
+            "expected_target_link_count": 70,
+            "single_target_top1_accuracy": 0.9322,
+            "target_link_recall_at_1": 0.8429,
+            "target_link_recall_at_3": 0.9857,
+            "target_link_mrr": 0.9095,
+            "no_target_accuracy": 0.875,
+            "multi_target_full_coverage_at_3": 1.0,
+        })
+        for metric in (
+            "single_target_top1_accuracy",
+            "target_link_recall_at_1",
+            "target_link_recall_at_3",
+            "target_link_mrr",
+            "no_target_accuracy",
+            "multi_target_full_coverage_at_3",
+        ):
+            self.assertGreaterEqual(report["overall"][metric], v4_report["overall"][metric])
+
+        body = {key: value for key, value in report.items() if key != "_run_info"}
+        self.assertEqual(report["_run_info"]["content_sha256"], FORMAL_V5_CONTENT_SHA256)
+        self.assertEqual(report["_run_info"]["content_sha256"], canonical_json_content_sha256(body))
+        self.assertNotRegex(text, r"([A-Za-z]:\\\\|/tmp/|AppData\\\\Local\\\\Temp|C:\\\\Users\\\\)")
+        self.assertNotRegex(text, r"(traceback|password|secret|HF_HUB_OFFLINE|TRANSFORMERS_OFFLINE)")
+        self.assertNotIn("schema_matching_precision_tiered_v5_holdout", text)
+        self.assertFalse(any(re.search(r"(timestamp|uuid|machine|hostname|absolute_path|temp_path)", key, re.I) for key in _json_keys(report)))
+
+        v4_cases = {case["case_id"]: case for case in v4_report["case_results"]}
+        v5_cases = {case["case_id"]: case for case in report["case_results"]}
+        improvements = [
+            case_id
+            for case_id, v5_case in v5_cases.items()
+            if _single_target_top1_correct(v4_cases[case_id]) is False
+            and _single_target_top1_correct(v5_case) is True
+        ]
+        top1_regressions = [
+            case_id
+            for case_id, v5_case in v5_cases.items()
+            if _single_target_top1_correct(v4_cases[case_id]) is True
+            and _single_target_top1_correct(v5_case) is False
+        ]
+        recall_regressions = [
+            case_id
+            for case_id, v5_case in v5_cases.items()
+            if _recall3_hit_count(v5_case) < _recall3_hit_count(v4_cases[case_id])
+        ]
+        self.assertEqual(improvements, ["sales_order_fulfillment__material_ref"])
+        self.assertEqual(top1_regressions, [])
+        self.assertEqual(recall_regressions, [])
+
+        for case_id, v5_case in v5_cases.items():
+            activated = any(candidate.get("identifier_interaction_evidence") for candidate in v5_case["top_candidates"])
+            if activated:
+                continue
+            v4_case = v4_cases[case_id]
+            self.assertEqual(v5_case["recommendation"], v4_case["recommendation"])
+            self.assertEqual(_top_targets(v5_case), _top_targets(v4_case))
+            self.assertEqual(_top_scores(v5_case), _top_scores(v4_case))
+
+        evaluator_text = (PROJECT_ROOT / "src" / "core" / "mapping" / "benchmark.py").read_text(encoding="utf-8")
+        self.assertNotIn("SentenceTransformer(", evaluator_text)
+        self.assertNotIn("schema_matching_precision_tiered_v5_holdout", evaluator_text)
+
 
 def _formal_candidate_reports() -> dict[str, dict]:
     return {
@@ -748,6 +903,27 @@ def _resource_fields(contract_path: Path) -> dict[str, set[str]]:
 
 def _raw_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _top_targets(case: dict) -> list[str]:
+    return [candidate["target"] for candidate in case["top_candidates"]]
+
+
+def _top_scores(case: dict) -> list[float]:
+    return [candidate["score"] for candidate in case["top_candidates"]]
+
+
+def _single_target_top1_correct(case: dict) -> bool | None:
+    expected = case["expected_targets"]
+    if len(expected) != 1:
+        return None
+    targets = _top_targets(case)
+    return bool(targets and targets[0] == expected[0])
+
+
+def _recall3_hit_count(case: dict) -> int:
+    targets = set(_top_targets(case)[:3])
+    return sum(1 for target in case["expected_targets"] if target in targets)
 
 
 def _fixture_counts(benchmark: dict) -> dict[str, int]:

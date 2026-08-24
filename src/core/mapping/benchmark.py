@@ -20,6 +20,9 @@ from src.core.mapping.scorer_v3 import score_source_fields_v3
 from src.core.mapping.scorer_v4 import SCORER_ID as PRECISION_TIERED_SCORER_ID
 from src.core.mapping.scorer_v4 import metadata as precision_tiered_metadata
 from src.core.mapping.scorer_v4 import suggest_contract_mappings_v4
+from src.core.mapping.scorer_v5 import SCORER_ID as PRECISION_TIERED_V5_SCORER_ID
+from src.core.mapping.scorer_v5 import metadata as precision_tiered_v5_metadata
+from src.core.mapping.scorer_v5 import suggest_contract_mappings_v5
 from src.core.mapping.target_index import build_target_field_index
 from src.core.mapping.value_patterns import VALUE_PATTERN_FEATURE_VERSION
 from src.tools.data_profile import attach_run_info
@@ -33,7 +36,13 @@ class SchemaMatchingBenchmarkError(Exception):
 
 
 BASELINE_SCORER_ID = "baseline"
-ALLOWED_SCORERS = {BASELINE_SCORER_ID, VALUE_PATTERN_SCORER_ID, TARGET_CONTEXT_SCORER_ID, PRECISION_TIERED_SCORER_ID}
+ALLOWED_SCORERS = {
+    BASELINE_SCORER_ID,
+    VALUE_PATTERN_SCORER_ID,
+    TARGET_CONTEXT_SCORER_ID,
+    PRECISION_TIERED_SCORER_ID,
+    PRECISION_TIERED_V5_SCORER_ID,
+}
 
 
 def _project_path(value: str, label: str) -> Path:
@@ -220,8 +229,15 @@ def generate_candidate_reports(
                 model_name=model_name,
                 embedding_backend=embedding_backend,
             )
-        else:
+        elif scorer_variant == PRECISION_TIERED_SCORER_ID:
             reports[spec["scenario_id"]] = suggest_contract_mappings_v4(
+                contract,
+                source_path,
+                model_name=model_name,
+                embedding_backend=embedding_backend,
+            )
+        else:
+            reports[spec["scenario_id"]] = suggest_contract_mappings_v5(
                 contract,
                 source_path,
                 model_name=model_name,
@@ -411,6 +427,7 @@ def evaluate_benchmark(
             "synthetic_demo": bool(benchmark["_meta"].get("synthetic_demo")),
             "ground_truth_runtime_boundary": benchmark["_meta"].get("ground_truth_runtime_boundary"),
             "ground_truth_used_for_candidate_generation": False,
+            "ground_truth_used_for_runtime": False,
             "ground_truth_used_for_evaluation": True,
             "scorer_variant": scorer_variant,
             "feature_version": _feature_version(scorer_variant),
@@ -419,7 +436,9 @@ def evaluate_benchmark(
                 {
                     "scenario_id": scenario["scenario_id"],
                     "source_path": scenario["source_path"],
+                    "source_sha256": provenance_text_or_raw_sha256(_project_path(scenario["source_path"], "source_path")),
                     "contract_path": scenario["contract_path"],
+                    "contract_sha256": provenance_text_or_raw_sha256(_project_path(scenario["contract_path"], "contract_path")),
                     "answer_source_path": scenario["answer_source_path"],
                     "answer_source_sha256": provenance_text_or_raw_sha256(_project_path(scenario["answer_source_path"], "answer_source_path")),
                 }
@@ -457,6 +476,12 @@ def _candidate_result(base: dict[str, Any], candidate: dict[str, Any]) -> dict[s
         "supportive_bonus",
         "top1_eligible",
         "top1_selection_reason",
+        "v4_score",
+        "identifier_interaction_evidence",
+        "identifier_bonus",
+        "identifier_adjusted_score",
+        "v5_top1_eligible",
+        "v5_top1_selection_reason",
     ):
         if key in candidate:
             base[key] = candidate[key]
@@ -470,19 +495,41 @@ def _feature_version(scorer_variant: str) -> str | None:
         return RESOURCE_CONTEXT_FEATURE_VERSION
     if scorer_variant == PRECISION_TIERED_SCORER_ID:
         return precision_tiered_metadata()["feature_version"]
+    if scorer_variant == PRECISION_TIERED_V5_SCORER_ID:
+        return precision_tiered_v5_metadata()["feature_version"]
     return None
 
 
 def _scorer_metadata_for_evaluation(scorer_variant: str) -> dict[str, Any]:
-    if scorer_variant != PRECISION_TIERED_SCORER_ID:
+    if scorer_variant == PRECISION_TIERED_SCORER_ID:
+        metadata = precision_tiered_metadata()
+        return {
+            "scorer_id": scorer_variant,
+            "interaction_configuration": metadata["interaction_configuration"],
+            "ground_truth_used_for_concept_extraction": metadata["ground_truth_used_for_concept_extraction"],
+            "ground_truth_used_for_interaction_activation": metadata["ground_truth_used_for_interaction_activation"],
+            "ground_truth_used_for_tier_decision": metadata["ground_truth_used_for_tier_decision"],
+            "ground_truth_used_for_scoring": metadata["ground_truth_used_for_scoring"],
+        }
+    if scorer_variant != PRECISION_TIERED_V5_SCORER_ID:
         return {}
-    metadata = precision_tiered_metadata()
+    metadata = precision_tiered_v5_metadata()
     return {
         "scorer_id": scorer_variant,
+        "formal_evaluation": True,
+        "embedding_model": DEFAULT_MODEL_NAME,
+        "parent_scorer": metadata["parent_scorer"],
+        "production_scorer_modified": metadata["production_scorer_modified"],
+        "synthetic_formal_scope": "Synthetic five-scenario schema matching benchmark; evaluation-only ground truth.",
+        "algorithm_source_sha256": {
+            "src/core/mapping/identifier_interactions.py": provenance_text_or_raw_sha256(PROJECT_ROOT / "src/core/mapping/identifier_interactions.py"),
+            "src/core/mapping/scorer_v5.py": provenance_text_or_raw_sha256(PROJECT_ROOT / "src/core/mapping/scorer_v5.py"),
+        },
         "interaction_configuration": metadata["interaction_configuration"],
+        "ground_truth_used": metadata["ground_truth_used"],
+        "ground_truth_used_for_candidate_generation": metadata["ground_truth_used_for_candidate_generation"],
         "ground_truth_used_for_concept_extraction": metadata["ground_truth_used_for_concept_extraction"],
         "ground_truth_used_for_interaction_activation": metadata["ground_truth_used_for_interaction_activation"],
-        "ground_truth_used_for_tier_decision": metadata["ground_truth_used_for_tier_decision"],
         "ground_truth_used_for_scoring": metadata["ground_truth_used_for_scoring"],
     }
 
@@ -580,5 +627,5 @@ def write_benchmark_report(report: dict[str, Any], output_path: Path) -> Path:
         output = output / "schema_matching_benchmark_report.json"
     else:
         output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     return output
