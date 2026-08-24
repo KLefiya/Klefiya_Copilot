@@ -1,0 +1,613 @@
+{
+  "_meta": {
+    "fixture_id": "schema_matching_identifier_robustness_v1",
+    "diagnostic": true,
+    "formal_benchmark_artifact": false,
+    "synthetic_data": true,
+    "ground_truth_runtime_boundary": "evaluation_only",
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_evaluation": true,
+    "model_output_used_to_select_expected_targets": false,
+    "frozen_before_first_evaluation": true,
+    "contracts": [
+      "generic-customer",
+      "supplier-reference",
+      "erpnext-item-price"
+    ]
+  },
+  "scenarios": [
+    {
+      "scenario_id": "identifier_robustness_generic_customer",
+      "contract_id": "generic-customer",
+      "cases": [
+        {
+          "case_id": "gc_format_customer_id",
+          "source_field": "customerID",
+          "category": "formatting",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "CUST-1001",
+            "CUST-1002",
+            "CUST-1003",
+            "CUST-1004"
+          ]
+        },
+        {
+          "case_id": "gc_format_customer_name",
+          "source_field": "CUSTOMER-NAME",
+          "category": "formatting",
+          "expected_targets": [
+            "customer.customer_name"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "Demo Customer A",
+            "Demo Customer B",
+            "Demo Customer C",
+            "Demo Customer D"
+          ]
+        },
+        {
+          "case_id": "gc_format_email_address",
+          "source_field": "emailAddress",
+          "category": "formatting",
+          "expected_targets": [
+            "customer.email"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "contact1@example.invalid",
+            "contact2@example.invalid",
+            "contact3@example.invalid",
+            "contact4@example.invalid"
+          ]
+        },
+        {
+          "case_id": "gc_format_mobile_phone",
+          "source_field": "mobile phone",
+          "category": "formatting",
+          "expected_targets": [
+            "customer.phone"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "+1-555-0101",
+            "+1-555-0102",
+            "+1-555-0103",
+            "+1-555-0104"
+          ]
+        },
+        {
+          "case_id": "gc_format_country_cd",
+          "source_field": "country_cd",
+          "category": "formatting",
+          "expected_targets": [
+            "customer.country"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "US",
+            "DE",
+            "FR",
+            "NL"
+          ]
+        },
+        {
+          "case_id": "gc_alias_client_number",
+          "source_field": "client_number",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "CLI-2001",
+            "CLI-2002",
+            "CLI-2003",
+            "CLI-2004"
+          ]
+        },
+        {
+          "case_id": "gc_alias_customer_no",
+          "source_field": "customer_no",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "CN-3001",
+            "CN-3002",
+            "CN-3003",
+            "CN-3004"
+          ]
+        },
+        {
+          "case_id": "gc_alias_cust_ref",
+          "source_field": "cust_ref",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "CR-4001",
+            "CR-4002",
+            "CR-4003",
+            "CR-4004"
+          ]
+        },
+        {
+          "case_id": "gc_alias_account_id",
+          "source_field": "account_id",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "customer_bank.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "ACCT-5001",
+            "ACCT-5002",
+            "ACCT-5003",
+            "ACCT-5004"
+          ]
+        },
+        {
+          "case_id": "gc_abbrev_cust_id",
+          "source_field": "cust_id",
+          "category": "abbreviation",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "CID-6001",
+            "CID-6002",
+            "CID-6003",
+            "CID-6004"
+          ]
+        },
+        {
+          "case_id": "gc_abbrev_tel_no",
+          "source_field": "tel_no",
+          "category": "abbreviation",
+          "expected_targets": [
+            "customer.phone"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "+1-555-0201",
+            "+1-555-0202",
+            "+1-555-0203",
+            "+1-555-0204"
+          ]
+        },
+        {
+          "case_id": "gc_abbrev_mail_addr",
+          "source_field": "mail_addr",
+          "category": "abbreviation",
+          "expected_targets": [
+            "customer.email"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "mail1@example.invalid",
+            "mail2@example.invalid",
+            "mail3@example.invalid",
+            "mail4@example.invalid"
+          ]
+        },
+        {
+          "case_id": "gc_abbrev_curr",
+          "source_field": "curr",
+          "category": "abbreviation",
+          "expected_targets": [
+            "customer_bank.currency"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "USD",
+            "EUR",
+            "GBP",
+            "JPY"
+          ]
+        },
+        {
+          "case_id": "gc_ambiguous_number",
+          "source_field": "number",
+          "category": "ambiguous_generic_name",
+          "expected_targets": [
+            "customer.customer_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "N-7001",
+            "N-7002",
+            "N-7003",
+            "N-7004"
+          ]
+        },
+        {
+          "case_id": "gc_no_target_legacy_status",
+          "source_field": "legacy_status",
+          "category": "no_target",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "sample_values": [
+            "ready",
+            "hold",
+            "ready",
+            "archived"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario_id": "identifier_robustness_supplier_reference",
+      "contract_id": "supplier-reference",
+      "cases": [
+        {
+          "case_id": "sr_format_supplier_name",
+          "source_field": "SUPPLIER-NAME",
+          "category": "formatting",
+          "expected_targets": [
+            "supplier_general.organization_name"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "Demo Supplier A",
+            "Demo Supplier B",
+            "Demo Supplier C",
+            "Demo Supplier D"
+          ]
+        },
+        {
+          "case_id": "sr_format_country_code",
+          "source_field": "country code",
+          "category": "formatting",
+          "expected_targets": [
+            "supplier_general.country_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "US",
+            "DE",
+            "FR",
+            "NL"
+          ]
+        },
+        {
+          "case_id": "sr_alias_vendor_no",
+          "source_field": "vendor_no",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "supplier_general.supplier_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "VEN-1001",
+            "VEN-1002",
+            "VEN-1003",
+            "VEN-1004"
+          ]
+        },
+        {
+          "case_id": "sr_alias_supplier_code",
+          "source_field": "supplier_code",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "supplier_general.supplier_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "SUP-2001",
+            "SUP-2002",
+            "SUP-2003",
+            "SUP-2004"
+          ]
+        },
+        {
+          "case_id": "sr_alias_account_id",
+          "source_field": "account_id",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "supplier_company.reconciliation_account"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "140000",
+            "141000",
+            "142000",
+            "143000"
+          ]
+        },
+        {
+          "case_id": "sr_abbrev_supp_ref",
+          "source_field": "supp_ref",
+          "category": "abbreviation",
+          "expected_targets": [
+            "supplier_general.supplier_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "SR-3001",
+            "SR-3002",
+            "SR-3003",
+            "SR-3004"
+          ]
+        },
+        {
+          "case_id": "sr_abbrev_ctry_cd",
+          "source_field": "ctry_cd",
+          "category": "abbreviation",
+          "expected_targets": [
+            "supplier_general.country_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "US",
+            "DE",
+            "FR",
+            "NL"
+          ]
+        },
+        {
+          "case_id": "sr_ambiguous_code",
+          "source_field": "code",
+          "category": "ambiguous_generic_name",
+          "expected_targets": [
+            "supplier_company.company_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "1000",
+            "2000",
+            "3000",
+            "4000"
+          ]
+        },
+        {
+          "case_id": "sr_ambiguous_reference",
+          "source_field": "reference",
+          "category": "ambiguous_generic_name",
+          "expected_targets": [
+            "supplier_general.supplier_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "REF-4001",
+            "REF-4002",
+            "REF-4003",
+            "REF-4004"
+          ]
+        },
+        {
+          "case_id": "sr_ambiguous_identifier",
+          "source_field": "identifier",
+          "category": "ambiguous_generic_name",
+          "expected_targets": [
+            "supplier_general.supplier_id"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "ID-5001",
+            "ID-5002",
+            "ID-5003",
+            "ID-5004"
+          ]
+        },
+        {
+          "case_id": "sr_no_target_migration_comment",
+          "source_field": "migration_comment",
+          "category": "no_target",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "sample_values": [
+            "Synthetic migration note A",
+            "Synthetic migration note B",
+            "Synthetic migration note C",
+            "Synthetic migration note D"
+          ]
+        },
+        {
+          "case_id": "sr_no_target_internal_flag",
+          "source_field": "internal_flag",
+          "category": "no_target",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "sample_values": [
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario_id": "identifier_robustness_erpnext_item_price",
+      "contract_id": "erpnext-item-price",
+      "cases": [
+        {
+          "case_id": "ei_format_item_price",
+          "source_field": "ItemPrice",
+          "category": "formatting",
+          "expected_targets": [
+            "item_price.price_list_rate"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "12.50",
+            "14.75",
+            "9.99",
+            "21.00"
+          ]
+        },
+        {
+          "case_id": "ei_format_price_list_rate",
+          "source_field": "priceListRate",
+          "category": "formatting",
+          "expected_targets": [
+            "item_price.price_list_rate"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "12.50",
+            "14.75",
+            "9.99",
+            "21.00"
+          ]
+        },
+        {
+          "case_id": "ei_format_valid_from",
+          "source_field": "valid from",
+          "category": "formatting",
+          "expected_targets": [
+            "item_price.valid_from"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "2026-01-01",
+            "2026-02-01",
+            "2026-03-01",
+            "2026-04-01"
+          ]
+        },
+        {
+          "case_id": "ei_alias_item_sku",
+          "source_field": "item_sku",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "item.item_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "SKU-1001",
+            "SKU-1002",
+            "SKU-1003",
+            "SKU-1004"
+          ]
+        },
+        {
+          "case_id": "ei_alias_product_code",
+          "source_field": "product_code",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "item.item_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "PROD-2001",
+            "PROD-2002",
+            "PROD-2003",
+            "PROD-2004"
+          ]
+        },
+        {
+          "case_id": "ei_alias_material_no",
+          "source_field": "material_no",
+          "category": "identifier_alias",
+          "expected_targets": [
+            "item.item_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "MAT-3001",
+            "MAT-3002",
+            "MAT-3003",
+            "MAT-3004"
+          ]
+        },
+        {
+          "case_id": "ei_abbrev_uom",
+          "source_field": "uom",
+          "category": "abbreviation",
+          "expected_targets": [
+            "item_price.uom"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "EA",
+            "BOX",
+            "KG",
+            "L"
+          ]
+        },
+        {
+          "case_id": "ei_abbrev_curr",
+          "source_field": "curr",
+          "category": "abbreviation",
+          "expected_targets": [
+            "item_price.price_list"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "USD Standard",
+            "EUR Standard",
+            "GBP Standard",
+            "JPY Standard"
+          ]
+        },
+        {
+          "case_id": "ei_ambiguous_code",
+          "source_field": "code",
+          "category": "ambiguous_generic_name",
+          "expected_targets": [
+            "item.item_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "CODE-4001",
+            "CODE-4002",
+            "CODE-4003",
+            "CODE-4004"
+          ]
+        },
+        {
+          "case_id": "ei_ambiguous_reference",
+          "source_field": "reference",
+          "category": "ambiguous_generic_name",
+          "expected_targets": [
+            "item_price.item_code"
+          ],
+          "expected_no_target": false,
+          "sample_values": [
+            "REF-5001",
+            "REF-5002",
+            "REF-5003",
+            "REF-5004"
+          ]
+        },
+        {
+          "case_id": "ei_no_target_source_row_number",
+          "source_field": "source_row_number",
+          "category": "no_target",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "sample_values": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ]
+        },
+        {
+          "case_id": "ei_no_target_legacy_status",
+          "source_field": "legacy_status",
+          "category": "no_target",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "sample_values": [
+            "ready",
+            "hold",
+            "ready",
+            "archived"
+          ]
+        }
+      ]
+    }
+  ]
+}
