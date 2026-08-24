@@ -23,7 +23,8 @@ FIXTURE_PATH = PROJECT_ROOT / "tests" / "fixtures" / "schema_matching_identifier
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 BASELINE_SCORER = "baseline"
 V4_SCORER = "precision_tiered_v4"
-SCORERS = (BASELINE_SCORER, V4_SCORER)
+V5_SCORER = "precision_tiered_v5"
+SCORERS = (BASELINE_SCORER, V4_SCORER, V5_SCORER)
 TAXONOMY = (
     "identifier_alias_confusion",
     "abbreviation_confusion",

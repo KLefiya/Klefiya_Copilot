@@ -9,12 +9,15 @@ from src.core.mapping.engine import suggest_contract_mappings
 from src.core.mapping.scorer import DEFAULT_MODEL_NAME, EmbeddingBackend
 from src.core.mapping.scorer_v4 import SCORER_ID as PRECISION_TIERED_V4_SCORER_ID
 from src.core.mapping.scorer_v4 import suggest_contract_mappings_v4
+from src.core.mapping.scorer_v5 import SCORER_ID as PRECISION_TIERED_V5_SCORER_ID
+from src.core.mapping.scorer_v5 import suggest_contract_mappings_v5
 from src.core.mapping.target_index import build_target_field_index
 from src.tools.data_profile import attach_run_info
 
 
 BASELINE_SCORER_ID = "baseline"
 SUPPORTED_RUNTIME_SCORERS = frozenset({BASELINE_SCORER_ID, PRECISION_TIERED_V4_SCORER_ID})
+EXPERIMENTAL_RUNTIME_SCORERS = frozenset({PRECISION_TIERED_V5_SCORER_ID})
 
 
 class RuntimeScorerError(ValueError):
@@ -41,6 +44,14 @@ def suggest_runtime_contract_mappings(
         )
     if scorer_id == PRECISION_TIERED_V4_SCORER_ID:
         report = suggest_contract_mappings_v4(
+            contract,
+            source_path,
+            model_name=model_name,
+            embedding_backend=embedding_backend,
+        )
+        return _runtime_report_with_summary(contract, report)
+    if scorer_id == PRECISION_TIERED_V5_SCORER_ID:
+        report = suggest_contract_mappings_v5(
             contract,
             source_path,
             model_name=model_name,

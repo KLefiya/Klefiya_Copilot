@@ -293,13 +293,13 @@ class IdentifierRobustnessEvaluatorTests(unittest.TestCase):
             fixture,
             fixture_path=FIXTURE,
             fixture_sha="abc",
-            reports_by_scorer={"baseline": reports, "precision_tiered_v4": reports},
+            reports_by_scorer={"baseline": reports, "precision_tiered_v4": reports, "precision_tiered_v5": reports},
         )
         second = robustness.build_diagnostic_report(
             fixture,
             fixture_path=FIXTURE,
             fixture_sha="abc",
-            reports_by_scorer={"baseline": reports, "precision_tiered_v4": reports},
+            reports_by_scorer={"baseline": reports, "precision_tiered_v4": reports, "precision_tiered_v5": reports},
         )
         self.assertEqual(json.dumps(first, sort_keys=True), json.dumps(second, sort_keys=True))
 
