@@ -14,11 +14,14 @@ from src.core.mapping.engine import write_mapping_report
 from src.core.mapping.profiler import SourceProfileError
 from src.core.mapping.runtime import (
     BASELINE_SCORER_ID,
+    EXPERIMENTAL_RUNTIME_SCORERS,
     SUPPORTED_RUNTIME_SCORERS,
     RuntimeScorerError,
     suggest_runtime_contract_mappings,
 )
 from src.core.mapping.scorer import DEFAULT_MODEL_NAME, MappingModelError
+
+RUNTIME_CLI_SCORERS = frozenset(SUPPORTED_RUNTIME_SCORERS | EXPERIMENTAL_RUNTIME_SCORERS)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -28,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--model", default=DEFAULT_MODEL_NAME)
-    parser.add_argument("--scorer", default=BASELINE_SCORER_ID, choices=sorted(SUPPORTED_RUNTIME_SCORERS))
+    parser.add_argument("--scorer", default=BASELINE_SCORER_ID, choices=sorted(RUNTIME_CLI_SCORERS))
     return parser
 
 

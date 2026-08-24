@@ -8,6 +8,7 @@ import type {
   MappingJobResponse,
   MappingReviewPayload,
   MappingReviewSummary,
+  MappingScorer,
 } from '../lib/mappingJobs'
 import { theme } from '../lib/theme'
 import { MappingJobView } from '../views/MappingJobView'
@@ -37,7 +38,7 @@ const catalog: MappingContractCatalog = {
         'customer_bank.iban',
         'customer_bank.currency',
       ],
-      supported_scorers: ['baseline', 'precision_tiered_v4'],
+      supported_scorers: ['baseline', 'precision_tiered_v4', 'precision_tiered_v5'],
     },
     {
       contract_id: 'supplier-reference',
@@ -59,7 +60,7 @@ const catalog: MappingContractCatalog = {
         'supplier_company.reconciliation_account',
         'supplier_company.payment_terms',
       ],
-      supported_scorers: ['baseline', 'precision_tiered_v4'],
+      supported_scorers: ['baseline', 'precision_tiered_v4', 'precision_tiered_v5'],
     },
     {
       contract_id: 'erpnext-item-price',
@@ -81,13 +82,13 @@ const catalog: MappingContractCatalog = {
         'item_price.valid_from',
         'item_price.valid_upto',
       ],
-      supported_scorers: ['baseline', 'precision_tiered_v4'],
+      supported_scorers: ['baseline', 'precision_tiered_v4', 'precision_tiered_v5'],
     },
   ],
 }
 
-function mappingJob(filename = 'customers.csv'): MappingJobResponse {
-  return {
+function mappingJob(filename = 'customers.csv', scorer: MappingScorer = 'precision_tiered_v4'): MappingJobResponse {
+  const job: MappingJobResponse = {
     job: {
       schema: 'carveops.mapping_job',
       version: '1.0.0',
@@ -104,7 +105,7 @@ function mappingJob(filename = 'customers.csv'): MappingJobResponse {
         target_resource_count: 2,
         target_field_count: 12,
       },
-      scorer: 'precision_tiered_v4',
+      scorer,
       source: {
         path: 'data/runtime/mapping_jobs/1234567890abcdef1234567890abcdef/source.csv',
         sha256: 's'.repeat(64),
@@ -202,10 +203,33 @@ function mappingJob(filename = 'customers.csv'): MappingJobResponse {
       },
     ],
   }
+  if (scorer === 'precision_tiered_v5') {
+    const candidate = job.mappings[0].top_candidates?.[0]
+    if (candidate) {
+      candidate.v4_score = 0.73
+      candidate.identifier_bonus = 0.14
+      candidate.identifier_adjusted_score = 0.87
+      candidate.v5_top1_eligible = true
+      candidate.v5_top1_selection_reason = 'identifier_adjusted_score_strictly_exceeded_v4_top1'
+      candidate.identifier_interaction_evidence = [
+        {
+          interaction_id: 'entity_identifier_support',
+          tier: 'entity_identifier',
+          source_concepts: ['client', 'identifier'],
+          target_concepts: ['customer', 'identifier'],
+          matched_entity_concepts: ['customer'],
+          bonus_weight: 0.4,
+          bonus: 0.14,
+          may_displace_v4_top1: true,
+        },
+      ]
+    }
+  }
+  return job
 }
 
 function mappingJobWithClientNumber(): MappingJobResponse {
-  const job = mappingJob('client-number.csv')
+  const job = mappingJob('client-number.csv', 'precision_tiered_v5')
   job.mappings[0] = {
     ...job.mappings[0],
     source_field: 'client_number',
@@ -265,6 +289,21 @@ function mappingJobWithReview() {
   return job
 }
 
+function mappingJobWithV5Review() {
+  const job = mappingJob('loaded-v5.csv', 'precision_tiered_v5')
+  job.review = reviewSummary({
+    mapping_report_sha256: 'm'.repeat(64),
+    decisions: [
+      {
+        source_field: 'routing_number',
+        action: 'accept_suggestion',
+      },
+      { source_field: 'notes', action: 'mark_unmapped' },
+    ],
+  })
+  return job
+}
+
 function installFetch(
   mode:
     | 'ok'
@@ -274,6 +313,7 @@ function installFetch(
     | 'reviewError'
     | 'downloadError'
     | 'clientNumber'
+    | 'existingV5'
     | 'contractsPending' = 'ok',
 ) {
   postPayload = null
@@ -307,7 +347,8 @@ function installFetch(
           })
         }
         if (mode === 'clientNumber') return Promise.resolve(response(mappingJobWithClientNumber(), 201))
-        return Promise.resolve(response(mappingJob('customers.csv'), 201))
+        const scorer = (postPayload as { scorer?: MappingScorer } | null)?.scorer ?? 'precision_tiered_v5'
+        return Promise.resolve(response(mappingJob('customers.csv', scorer), 201))
       }
       if (path === '/api/mapping/jobs/1234567890abcdef1234567890abcdef/review' && init?.method === 'PUT') {
         reviewCalls += 1
@@ -338,7 +379,7 @@ function installFetch(
       }
       if (path === '/api/mapping/jobs/1234567890abcdef1234567890abcdef') {
         getJobCalls += 1
-        return Promise.resolve(response(mappingJobWithReview()))
+        return Promise.resolve(response(mode === 'existingV5' ? mappingJobWithV5Review() : mappingJobWithReview()))
       }
       if (path === '/api/migration/workspaces/erpnext-item-price') {
         return Promise.resolve(response({ workspace: { title: 'ERPNext Item + Item Price' }, summary: {}, mappings: [], decisions: [], build: { available: false }, resources: [] }))
@@ -398,12 +439,17 @@ afterEach(() => {
 })
 
 describe('MappingJobView', () => {
-  it('loads the catalog, shows three contracts, and defaults to explicit V4', async () => {
+  it('loads the catalog, shows three contracts, and defaults to explicit V5', async () => {
     renderView()
     await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
     expect(screen.getByText('SAP Supplier Reference Migration Contract')).toBeDefined()
     expect(screen.getByText('ERPNext Item and Item Price Reference Contract')).toBeDefined()
     expect(catalog.contracts[0].target_fields).toContain('customer.customer_id')
+    expect(screen.getByText('Precision Tiered V5 — Identifier-aware')).toBeDefined()
+    expect(screen.getAllByText('Precision Tiered V4').length).toBeGreaterThan(0)
+    expect(screen.getByText('Baseline')).toBeDefined()
+    expect((screen.getByLabelText('Scorer') as HTMLSelectElement).value).toBe('precision_tiered_v5')
+    fireEvent.change(screen.getByLabelText('Scorer'), { target: { value: 'precision_tiered_v4' } })
     expect((screen.getByLabelText('Scorer') as HTMLSelectElement).value).toBe('precision_tiered_v4')
     fireEvent.change(screen.getByLabelText('Scorer'), { target: { value: 'baseline' } })
     expect((screen.getByLabelText('Scorer') as HTMLSelectElement).value).toBe('baseline')
@@ -439,19 +485,19 @@ describe('MappingJobView', () => {
     expect((screen.getByText('Run mapping job').closest('button') as HTMLButtonElement).disabled).toBe(true)
     expect(screen.getByText('正在分析字段并生成 Top-3...')).toBeDefined()
     await waitFor(() => expect(pendingPost).not.toBeNull())
-    pendingPost?.resolve(response(mappingJob('customers.csv'), 201))
+    pendingPost?.resolve(response(mappingJob('customers.csv', 'precision_tiered_v5'), 201))
     await waitFor(() => expect(screen.getByText('Mapping Results')).toBeDefined())
     expect(postPayload).toMatchObject({
       contract_id: 'generic-customer',
       filename: 'customers.csv',
       csv_text: `legacy_id,name\n1,${sentinel}\n`,
-      scorer: 'precision_tiered_v4',
+      scorer: 'precision_tiered_v5',
     })
     expect(screen.getByText('Target coverage')).toBeDefined()
     expect(screen.getByText('customer_master · v1.0.0')).toBeDefined()
   })
 
-  it('renders Top-3 candidates, ranking score, and V4 evidence without raw sentinel data', async () => {
+  it('renders Top-3 candidates, ranking score, and V5 evidence without raw sentinel data', async () => {
     renderView()
     await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
     upload(makeFile('customers.csv', `legacy_id,name\n1,${sentinel}\n`))
@@ -462,9 +508,27 @@ describe('MappingJobView', () => {
     expect(screen.getAllByText('routing_to_routing').length).toBeGreaterThan(0)
     expect(screen.getAllByText('diagnostic 0.120 · supportive 0.040').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Top-1 reason: precision tier and interaction support').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Identifier interaction: entity_identifier_support').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('tier entity_identifier 路 matched entity concepts customer').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('V4 score 0.730 路 identifier bonus 0.140').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('adjusted V5 score 0.870 路 Top-1 eligibility yes').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('V5 selection reason: identifier_adjusted_score_strictly_exceeded_v4_top1').length).toBeGreaterThan(0)
     expect(screen.queryByText(sentinel)).toBeNull()
     expect(screen.queryByText('ground_truth')).toBeNull()
     expect(screen.queryByText('expected_targets')).toBeNull()
+    expect(screen.queryByText('_internal_rank_key')).toBeNull()
+  })
+
+  it('does not show a fake V5 evidence panel for V4 jobs without identifier interaction', async () => {
+    renderView()
+    await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
+    fireEvent.change(screen.getByLabelText('Scorer'), { target: { value: 'precision_tiered_v4' } })
+    upload(makeFile('customers.csv', `legacy_id,name\n1,${sentinel}\n`))
+    fireEvent.click(screen.getByText('Run mapping job'))
+    await waitFor(() => expect(screen.getAllByText('routing_number').length).toBeGreaterThan(0))
+    expect(postPayload).toMatchObject({ scorer: 'precision_tiered_v4' })
+    expect(screen.queryByText(/Identifier interaction:/)).toBeNull()
+    expect(screen.getAllByText('Top-1 reason: precision tier and interaction support').length).toBeGreaterThan(0)
   })
 
   it('shows a manual review prompt when recommendation is null', async () => {
@@ -484,6 +548,19 @@ describe('MappingJobView', () => {
     await waitFor(() => expect(screen.getByText('loaded.csv')).toBeDefined())
     expect(getJobCalls).toBe(1)
     expect(screen.getAllByText('customer_bank.routing_number').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Precision Tiered V4').length).toBeGreaterThan(0)
+  })
+
+  it('loads an existing V5 job without overwriting its scorer', async () => {
+    installFetch('existingV5')
+    renderView()
+    await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
+    fireEvent.change(screen.getByLabelText('Scorer'), { target: { value: 'baseline' } })
+    fireEvent.change(screen.getByLabelText('Load existing job'), { target: { value: '1234567890abcdef1234567890abcdef' } })
+    fireEvent.click(screen.getByText('Load job'))
+    await waitFor(() => expect(screen.getByText('loaded-v5.csv')).toBeDefined())
+    expect(screen.getAllByText('Precision Tiered V5').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Identifier interaction: entity_identifier_support').length).toBeGreaterThan(0)
   })
 
   it('rejects invalid job IDs without sending GET', async () => {

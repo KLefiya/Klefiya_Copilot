@@ -57,10 +57,16 @@ def _fake_report(scorer: str = "baseline") -> dict:
             "target_field_count": 11,
             "scorer_variant": scorer,
             "scorer_id": scorer,
-            "feature_version": "precision_tiered_interaction_v1" if scorer == "precision_tiered_v4" else None,
+            "feature_version": (
+                "precision_tiered_interaction_v1"
+                if scorer == "precision_tiered_v4"
+                else "entity_identifier_interaction_v1"
+                if scorer == "precision_tiered_v5"
+                else None
+            ),
             "ground_truth_used": False,
             "ground_truth_used_for_candidate_generation": False,
-            "experimental": scorer == "precision_tiered_v4",
+            "experimental": scorer in {"precision_tiered_v4", "precision_tiered_v5"},
             "production_scorer_modified": False,
         },
         "summary": {
@@ -106,6 +112,34 @@ def _fake_report(scorer: str = "baseline") -> dict:
                         "diagnostic_bonus": 0.0,
                         "supportive_bonus": 0.01,
                         "top1_selection_reason": "v3_top1_locked_no_diagnostic_challenger",
+                        **(
+                            {
+                                "v4_score": 0.73,
+                                "identifier_bonus": 0.14,
+                                "identifier_adjusted_score": 0.87,
+                                "v5_top1_eligible": True,
+                                "v5_top1_selection_reason": "identifier_adjusted_score_strictly_exceeded_v4_top1",
+                                "identifier_interaction_evidence": [
+                                    {
+                                        "interaction_id": "entity_identifier_support",
+                                        "tier": "entity_identifier",
+                                        "source_concepts": ["client", "identifier"],
+                                        "target_concepts": ["customer", "identifier"],
+                                        "matched_entity_concepts": ["customer"],
+                                        "bonus_weight": 0.4,
+                                        "bonus": 0.14,
+                                        "may_displace_v4_top1": True,
+                                        "_internal_rank_key": "secret",
+                                        "expected_targets": ["customer.customer_id"],
+                                        "sample_values": [SENTINEL],
+                                        "case_id": "fixture-case",
+                                    }
+                                ],
+                                "_private_sort_key": "secret",
+                            }
+                            if scorer == "precision_tiered_v5"
+                            else {}
+                        ),
                         "warnings": [],
                         "raw_value": SENTINEL,
                     }
@@ -194,6 +228,8 @@ class MappingJobsApiTests(unittest.TestCase):
             self.assertIn("target_fields", item)
             self.assertIn("supported_scorers", item)
             self.assertIn("precision_tiered_v4", item["supported_scorers"])
+            self.assertIn("precision_tiered_v5", item["supported_scorers"])
+            self.assertEqual(set(item["supported_scorers"]), {"baseline", "precision_tiered_v4", "precision_tiered_v5"})
             self.assertGreater(item["target_resource_count"], 0)
             self.assertGreater(item["target_field_count"], 0)
             self.assertEqual(len(item["target_fields"]), item["target_field_count"])
@@ -237,6 +273,38 @@ class MappingJobsApiTests(unittest.TestCase):
         self.assertEqual(candidate["interaction_evidence"][0]["tier"], "supportive")
         self.assertIn("top1_selection_reason", candidate)
 
+    def test_03b_create_v5_job_preserves_safe_identifier_evidence(self):
+        response = self._create("precision_tiered_v5")
+        self.assertEqual(response.status_code, 201)
+        body = response.json()
+        self.assertEqual(body["job"]["scorer"], "precision_tiered_v5")
+        self.assertEqual(body["job"]["mapping_report"]["content_sha256"], "precision_tiered_v5-content-sha")
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(self.calls[0]["scorer_id"], "precision_tiered_v5")
+
+        candidate = body["mappings"][0]["top_candidates"][0]
+        self.assertEqual(candidate["v4_score"], 0.73)
+        self.assertEqual(candidate["identifier_bonus"], 0.14)
+        self.assertEqual(candidate["identifier_adjusted_score"], 0.87)
+        self.assertTrue(candidate["v5_top1_eligible"])
+        self.assertEqual(candidate["v5_top1_selection_reason"], "identifier_adjusted_score_strictly_exceeded_v4_top1")
+        self.assertEqual(
+            candidate["identifier_interaction_evidence"],
+            [
+                {
+                    "interaction_id": "entity_identifier_support",
+                    "tier": "entity_identifier",
+                    "source_concepts": ["client", "identifier"],
+                    "target_concepts": ["customer", "identifier"],
+                    "matched_entity_concepts": ["customer"],
+                    "bonus_weight": 0.4,
+                    "bonus": 0.14,
+                    "may_displace_v4_top1": True,
+                }
+            ],
+        )
+        self.assert_no_private_response_data(body)
+
     def test_04_get_returns_same_business_content_without_rerunning_scorer(self):
         created = self._create("precision_tiered_v4").json()
         self.calls.clear()
@@ -245,6 +313,17 @@ class MappingJobsApiTests(unittest.TestCase):
         fetched = response.json()
         self.assertEqual(fetched["job"], created["job"])
         self.assertEqual(fetched["summary"], created["summary"])
+        self.assertEqual(fetched["mappings"], created["mappings"])
+        self.assertEqual(self.calls, [])
+
+    def test_04b_get_returns_v5_job_without_rerunning_scorer(self):
+        created = self._create("precision_tiered_v5").json()
+        self.calls.clear()
+        response = self.client.get(f"/api/mapping/jobs/{created['job']['job_id']}")
+        self.assertEqual(response.status_code, 200)
+        fetched = response.json()
+        self.assertEqual(fetched["job"]["scorer"], "precision_tiered_v5")
+        self.assertEqual(fetched["job"], created["job"])
         self.assertEqual(fetched["mappings"], created["mappings"])
         self.assertEqual(self.calls, [])
 
@@ -567,6 +646,27 @@ class MappingJobsApiTests(unittest.TestCase):
         self.assertEqual(self.calls, [])
         self.assert_no_private_response_data(body)
 
+    def test_23b_completed_review_exports_v5_json_and_csv(self):
+        created = self._create("precision_tiered_v5").json()
+        job_id = created["job"]["job_id"]
+        self._complete_review(job_id, sha="precision_tiered_v5-content-sha")
+        self.calls.clear()
+
+        json_response = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=json")
+        self.assertEqual(json_response.status_code, 200)
+        document = json_response.json()
+        self.assertEqual(document["scorer"], "precision_tiered_v5")
+        self.assertEqual(document["mapping_report_sha256"], "precision_tiered_v5-content-sha")
+        self.assertEqual(self.calls, [])
+        self.assert_no_private_response_data(document)
+
+        csv_response = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=csv")
+        self.assertEqual(csv_response.status_code, 200)
+        rows = list(csv.reader(StringIO(csv_response.text)))
+        self.assertEqual(rows[1][4], "precision_tiered_v5")
+        self.assertEqual(rows[1][5], "precision_tiered_v5-content-sha")
+        self.assert_no_private_response_data({"csv": csv_response.text})
+
     def test_24_completed_review_exports_csv_with_stable_columns_and_formula_protection(self):
         created = self._create().json()
         job_id = created["job"]["job_id"]
@@ -650,6 +750,10 @@ class MappingJobsApiTests(unittest.TestCase):
         self.assertNotIn("expected_targets", text)
         self.assertNotIn("answer_source", text)
         self.assertNotIn("raw_value", text)
+        self.assertNotIn("sample_values", text)
+        self.assertNotIn("case_id", text)
+        self.assertNotIn("_private_sort_key", text)
+        self.assertNotIn("_internal_rank_key", text)
 
 
 if __name__ == "__main__":

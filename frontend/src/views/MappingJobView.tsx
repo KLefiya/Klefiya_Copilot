@@ -23,6 +23,7 @@ import {
 import { ApiError, createMappingJob, downloadMappingReviewExport, getMappingContracts, getMappingJob, saveMappingReview } from '../api'
 import { StatCard } from '../components/StatCard'
 import type {
+  IdentifierInteractionEvidence,
   MappingCandidate,
   MappingContractSummary,
   MappingExportFormat,
@@ -80,6 +81,12 @@ function statusColor(status: string): string {
   return STATUS.critical
 }
 
+function scorerLabel(scorer: MappingScorer): string {
+  if (scorer === 'precision_tiered_v5') return 'Precision Tiered V5'
+  if (scorer === 'precision_tiered_v4') return 'Precision Tiered V4'
+  return 'Baseline'
+}
+
 function primitiveText(value: unknown): string | null {
   if (typeof value === 'string') return value
   if (typeof value === 'number' || typeof value === 'boolean') return String(value)
@@ -107,6 +114,25 @@ function evidenceItems(value: unknown): string[] {
       .slice(0, 8)
   }
   return []
+}
+
+function conceptText(value: string[] | undefined): string {
+  return value && value.length > 0 ? value.join(', ') : '-'
+}
+
+function IdentifierEvidence({ evidence }: { evidence: IdentifierInteractionEvidence }) {
+  return (
+    <Stack gap={2}>
+      <Text size="xs" fw={600}>Identifier interaction: {evidence.interaction_id ?? '-'}</Text>
+      <Text size="xs">tier {evidence.tier ?? '-'} 路 matched entity concepts {conceptText(evidence.matched_entity_concepts)}</Text>
+      <Text size="xs">source concepts {conceptText(evidence.source_concepts)}</Text>
+      <Text size="xs">target concepts {conceptText(evidence.target_concepts)}</Text>
+      <Text size="xs">
+        bonus weight {numberText(evidence.bonus_weight)} 路 bonus {numberText(evidence.bonus)}
+      </Text>
+      <Text size="xs">may displace V4 Top-1: {evidence.may_displace_v4_top1 ? 'yes' : 'no'}</Text>
+    </Stack>
+  )
 }
 
 function actionLabel(action: MappingReviewAction | ''): string {
@@ -210,7 +236,7 @@ function JobSummary({ result }: { result: MappingJobResponse }) {
     <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
       <StatCard label="Original file" value={job.original_filename} hint={shortValue(job.job_id, 8, 6)} />
       <StatCard label="Contract" value={job.contract.title} hint={`${job.contract.domain} · v${job.contract.version}`} />
-      <StatCard label="Scorer" value={job.scorer === 'precision_tiered_v4' ? 'Precision-Tiered V4' : 'Baseline'} hint={job.status} />
+      <StatCard label="Scorer" value={scorerLabel(job.scorer)} hint={job.status} />
       <StatCard label="Rows" value={job.source.row_count} />
       <StatCard label="Source fields" value={job.source.field_count} />
       <StatCard label="Target fields" value={job.contract.target_field_count} />
@@ -259,6 +285,7 @@ function CandidateSignals({ candidate }: { candidate: MappingCandidate }) {
   const overlap = Array.isArray(candidate.lexical_overlap)
     ? candidate.lexical_overlap.join(', ')
     : candidate.lexical_overlap
+  const identifierEvidence = candidate.identifier_interaction_evidence ?? []
   return (
     <Stack gap={4}>
       <Text size="xs">semantic {numberText(candidate.semantic_score)} · fuzzy {numberText(candidate.fuzzy_score)}</Text>
@@ -277,6 +304,25 @@ function CandidateSignals({ candidate }: { candidate: MappingCandidate }) {
       )}
       {candidate.top1_selection_reason && (
         <Text size="xs" c="dimmed">Top-1 reason: {candidate.top1_selection_reason}</Text>
+      )}
+      {identifierEvidence.length > 0 && (
+        <Stack gap={4}>
+          {identifierEvidence.map((evidence, index) => (
+            <IdentifierEvidence
+              key={`${candidate.target ?? 'candidate'}-${evidence.interaction_id ?? index}`}
+              evidence={evidence}
+            />
+          ))}
+          <Text size="xs">
+            V4 score {numberText(candidate.v4_score)} 路 identifier bonus {numberText(candidate.identifier_bonus)}
+          </Text>
+          <Text size="xs">
+            adjusted V5 score {numberText(candidate.identifier_adjusted_score)} 路 Top-1 eligibility {candidate.v5_top1_eligible ? 'yes' : 'no'}
+          </Text>
+          {candidate.v5_top1_selection_reason && (
+            <Text size="xs" c="dimmed">V5 selection reason: {candidate.v5_top1_selection_reason}</Text>
+          )}
+        </Stack>
       )}
     </Stack>
   )
@@ -590,7 +636,7 @@ function triggerDownload(download: { blob: Blob; filename: string }) {
 export function MappingJobView() {
   const [contracts, setContracts] = useState<MappingContractSummary[]>([])
   const [contractId, setContractId] = useState('')
-  const [scorer, setScorer] = useState<MappingScorer>('precision_tiered_v4')
+  const [scorer, setScorer] = useState<MappingScorer>('precision_tiered_v5')
   const [file, setFile] = useState<File | null>(null)
   const [result, setResult] = useState<MappingJobResponse | null>(null)
   const [jobId, setJobId] = useState('')
@@ -792,7 +838,8 @@ export function MappingJobView() {
             value={scorer}
             onChange={(event) => setScorer(event.currentTarget.value as MappingScorer)}
             data={[
-              { value: 'precision_tiered_v4', label: 'Precision-Tiered V4, experimental, review required' },
+              { value: 'precision_tiered_v5', label: 'Precision Tiered V5 — Identifier-aware' },
+              { value: 'precision_tiered_v4', label: 'Precision Tiered V4' },
               { value: 'baseline', label: 'Baseline' },
             ]}
           />

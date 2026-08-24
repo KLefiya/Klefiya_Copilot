@@ -1,4 +1,4 @@
-export type MappingScorer = 'baseline' | 'precision_tiered_v4'
+export type MappingScorer = 'baseline' | 'precision_tiered_v4' | 'precision_tiered_v5'
 
 export interface MappingContractSummary {
   contract_id: string
@@ -75,6 +75,17 @@ export interface MappingSourceProfile {
   observed_max_length?: number | null
 }
 
+export interface IdentifierInteractionEvidence {
+  interaction_id?: string
+  tier?: string
+  source_concepts?: string[]
+  target_concepts?: string[]
+  matched_entity_concepts?: string[]
+  bonus_weight?: number
+  bonus?: number
+  may_displace_v4_top1?: boolean
+}
+
 export interface MappingCandidate {
   target?: string | null
   rank?: number
@@ -91,6 +102,12 @@ export interface MappingCandidate {
   diagnostic_bonus?: number
   supportive_bonus?: number
   top1_selection_reason?: string | null
+  v4_score?: number
+  identifier_bonus?: number
+  identifier_adjusted_score?: number
+  v5_top1_eligible?: boolean
+  v5_top1_selection_reason?: string | null
+  identifier_interaction_evidence?: IdentifierInteractionEvidence[]
   warnings?: string[]
 }
 

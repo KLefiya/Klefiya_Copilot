@@ -33,8 +33,18 @@ MAX_REVIEW_NOTE_LENGTH = 500
 JOB_ID_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 RUNTIME_ROOT = PROJECT_ROOT / "data" / "runtime" / "mapping_jobs"
 JOB_LOCK = threading.Lock()
-SUPPORTED_RUNTIME_SCORERS = frozenset({"baseline", "precision_tiered_v4"})
+SUPPORTED_RUNTIME_SCORERS = frozenset({"baseline", "precision_tiered_v4", "precision_tiered_v5"})
 CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
+IDENTIFIER_INTERACTION_EVIDENCE_KEYS = (
+    "interaction_id",
+    "tier",
+    "source_concepts",
+    "target_concepts",
+    "matched_entity_concepts",
+    "bonus_weight",
+    "bonus",
+    "may_displace_v4_top1",
+)
 
 
 @dataclass(frozen=True)
@@ -71,7 +81,7 @@ class CreateMappingJobPayload(BaseModel):
     contract_id: str
     filename: str
     csv_text: str
-    scorer: Literal["baseline", "precision_tiered_v4"]
+    scorer: Literal["baseline", "precision_tiered_v4", "precision_tiered_v5"]
 
 
 class MappingReviewDecisionPayload(BaseModel):
@@ -294,9 +304,35 @@ def _safe_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
         "diagnostic_bonus",
         "supportive_bonus",
         "top1_selection_reason",
+        "v4_score",
+        "identifier_bonus",
+        "identifier_adjusted_score",
+        "v5_top1_eligible",
+        "v5_top1_selection_reason",
         "warnings",
     )
-    return {key: deepcopy_json(candidate[key]) for key in allowed if key in candidate}
+    safe = {key: deepcopy_json(candidate[key]) for key in allowed if key in candidate}
+    identifier_evidence = _safe_identifier_interaction_evidence(candidate.get("identifier_interaction_evidence"))
+    if identifier_evidence:
+        safe["identifier_interaction_evidence"] = identifier_evidence
+    return safe
+
+
+def _safe_identifier_interaction_evidence(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    evidence: list[dict[str, Any]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        safe = {
+            key: deepcopy_json(item[key])
+            for key in IDENTIFIER_INTERACTION_EVIDENCE_KEYS
+            if key in item and not key.startswith("_")
+        }
+        if safe:
+            evidence.append(safe)
+    return evidence
 
 
 def deepcopy_json(value: Any) -> Any:

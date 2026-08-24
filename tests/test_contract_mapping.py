@@ -10,6 +10,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import yaml
 
@@ -35,8 +36,11 @@ from src.core.mapping.scorer import (
 )
 from src.core.mapping.scorer_v4 import SCORER_ID as PRECISION_TIERED_V4_SCORER_ID
 from src.core.mapping.scorer_v4 import suggest_contract_mappings_v4
+from src.core.mapping.scorer_v5 import SCORER_ID as PRECISION_TIERED_V5_SCORER_ID
 from src.core.mapping.target_index import build_target_field_index
 from src.tools.suggest_contract_mappings import build_parser as build_historical_parser
+import src.tools.suggest_runtime_contract_mappings as runtime_cli
+from src.tools.suggest_runtime_contract_mappings import RUNTIME_CLI_SCORERS
 from src.tools.suggest_runtime_contract_mappings import build_parser as build_runtime_parser
 
 
@@ -357,11 +361,13 @@ class ContractMappingTests(unittest.TestCase):
         )
         self.assertEqual(validate_effective_protocol_lock(ERP_BLIND_LOCK, ERP_BLIND_AMENDMENT)["validation"], "valid")
 
-    def test_35d_runtime_cli_parser_defaults_to_baseline_and_accepts_v4(self):
+    def test_35d_runtime_cli_parser_defaults_to_baseline_and_accepts_v4_and_v5(self):
         parser = build_runtime_parser()
         scorer_action = next(action for action in parser._actions if action.dest == "scorer")
         self.assertEqual(scorer_action.default, BASELINE_SCORER_ID)
-        self.assertEqual(set(scorer_action.choices), SUPPORTED_RUNTIME_SCORERS)
+        self.assertEqual(SUPPORTED_RUNTIME_SCORERS, {"baseline", "precision_tiered_v4"})
+        self.assertEqual(RUNTIME_CLI_SCORERS, {"baseline", "precision_tiered_v4", "precision_tiered_v5"})
+        self.assertEqual(set(scorer_action.choices), RUNTIME_CLI_SCORERS)
 
         parsed = parser.parse_args([
             "--contract", str(GENERIC_CONTRACT),
@@ -371,6 +377,15 @@ class ContractMappingTests(unittest.TestCase):
             "--scorer", PRECISION_TIERED_V4_SCORER_ID,
         ])
         self.assertEqual(parsed.scorer, PRECISION_TIERED_V4_SCORER_ID)
+
+        parsed_v5 = parser.parse_args([
+            "--contract", str(GENERIC_CONTRACT),
+            "--data-root", str(GENERIC_DATA),
+            "--source", str(GENERIC_SOURCE),
+            "--output", str(Path(tempfile.gettempdir()) / "runtime-v5.json"),
+            "--scorer", PRECISION_TIERED_V5_SCORER_ID,
+        ])
+        self.assertEqual(parsed_v5.scorer, PRECISION_TIERED_V5_SCORER_ID)
 
         defaulted = parser.parse_args([
             "--contract", str(GENERIC_CONTRACT),
@@ -476,6 +491,39 @@ class ContractMappingTests(unittest.TestCase):
         self.assertIn("suggest_runtime_contract_mappings", text)
         for forbidden in ("ground_truth.json", "answer_source_path", "benchmark_run_specs", "evaluate_benchmark"):
             self.assertNotIn(forbidden, text)
+
+    def test_35i_runtime_cli_v5_uses_runtime_dispatch_without_scoring_logic(self):
+        report = {
+            "_meta": {
+                "contract_id": "generic-customer-v1",
+                "source_row_count": 0,
+                "source_field_count": 0,
+                "target_field_count": 0,
+            },
+            "summary": {
+                "suggested": 0,
+                "needs_review": 0,
+                "no_confident_target": 0,
+            },
+            "_run_info": {"content_sha256": "c" * 64},
+        }
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
+            output = Path(temp_dir) / "runtime-v5.json"
+            with (
+                patch.object(runtime_cli, "load_migration_contract", return_value=_contract()),
+                patch.object(runtime_cli, "suggest_runtime_contract_mappings", return_value=report) as dispatch,
+                patch.object(runtime_cli, "write_mapping_report"),
+            ):
+                code = runtime_cli.main([
+                    "--contract", str(GENERIC_CONTRACT),
+                    "--data-root", str(GENERIC_DATA),
+                    "--source", str(GENERIC_SOURCE),
+                    "--output", str(output),
+                    "--scorer", PRECISION_TIERED_V5_SCORER_ID,
+                ])
+        self.assertEqual(code, 0)
+        self.assertEqual(dispatch.call_count, 1)
+        self.assertEqual(dispatch.call_args.kwargs["scorer_id"], PRECISION_TIERED_V5_SCORER_ID)
 
     def test_36_top1_metric(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:

@@ -174,7 +174,7 @@ class PracticalV2DocumentationTests(unittest.TestCase):
         self.assertNotIn("27 failures", self.readme)
         self.assertNotIn("33 errors", self.readme)
         self.assertNotIn("483 tests passed", self.readme)
-        self.assertIn("Frontend tests: 71", self.readme)
+        self.assertIn("Frontend tests: 73", self.readme)
         self.assertIn("Workspace API tests: 38", self.readme)
         self.assertIn("Unable to parse full Python test count", self.script)
         self.assertIn("Python tests: $fullPythonCount", self.script)
@@ -329,6 +329,8 @@ class PracticalV2DocumentationTests(unittest.TestCase):
             "full 11-field contract target_fields",
             "precision_tiered_v4",
             "precision_tiered_interaction_v1",
+            "precision_tiered_v5",
+            "entity_identifier_interaction_v1",
             "data/runtime/",
             "新建字段映射",
             "examples/schema-matching/customer-review-demo.csv",
@@ -341,13 +343,14 @@ class PracticalV2DocumentationTests(unittest.TestCase):
             "5 multi-target",
             "8 no-target",
             "70 target links",
-            "Top-1 accuracy: 0.9153",
-            "target recall@1: 0.8286",
-            "target recall@3: 0.9714",
-            "MRR: 0.8929",
+            "Top-1 accuracy: 0.9322",
+            "target recall@1: 0.8429",
+            "target recall@3: 0.9857",
+            "MRR: 0.9095",
             "no-target accuracy: 0.8750",
             "multi-target full recall@3: 1.0000",
             "49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b",
+            "f44d07567ed9fa8b199780fff9990d1b577491709433ed554c7140f552386e57",
         ]:
             self.assertIn(phrase, self.schema_mapping)
 

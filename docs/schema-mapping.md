@@ -30,13 +30,13 @@ The workflow is separate from the fixed migration workspace documented in the RE
 4. Open `http://127.0.0.1:5173/` and select `新建字段映射`.
 5. Upload `examples/schema-matching/customer-review-demo.csv`.
 6. Choose contract `generic-customer`.
-7. Keep the page scorer at `precision_tiered_v4`.
+7. Keep the page scorer at `precision_tiered_v5`.
 8. Run the mapping job.
 9. Review each source field: accept the suggestion, choose one or more targets, or mark it unmapped.
 10. Save the review, then download JSON or CSV after all fields are reviewed.
 11. To restore saved work, load an Existing Job with its 32-character lowercase hex job id.
 
-The first local model load can be slower because `sentence-transformers/all-MiniLM-L6-v2` is loaded from the local Hugging Face cache. The backend, runtime dispatcher, and CLI default scorer remain `baseline`; the React page explicitly submits `precision_tiered_v4` for this workflow.
+The first local model load can be slower because `sentence-transformers/all-MiniLM-L6-v2` is loaded from the local Hugging Face cache. The backend accepts `baseline`, `precision_tiered_v4`, and `precision_tiered_v5`; the runtime dispatcher and CLI default scorer remain `baseline`; the React page explicitly submits `precision_tiered_v5` for this workflow unless the user chooses V4 or baseline.
 
 For a one-command local demo, run:
 
@@ -56,7 +56,7 @@ The launcher checks Python 3.12+, `uvicorn`, Node, `npm`, `frontend/package.json
 
 `CARVEOPS_CORS_ORIGINS` is comma-separated and accepts only explicit `http` or `https` loopback origins such as `http://127.0.0.1:51987`. It rejects wildcard origins, credentials, paths other than `/`, query strings, fragments, malformed URLs, and public hosts. Without the environment variable, the backend keeps the existing default origins `http://localhost:5173` and `http://127.0.0.1:5173`.
 
-`--offline-model` sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`. Because the scorer loads `sentence-transformers/all-MiniLM-L6-v2` with local-files-only behavior, a missing local cache means V4 mapping cannot run until the model cache is prepared; the launcher reports that limitation instead of treating it as success. `--smoke-test` waits for backend and frontend HTTP readiness, probes backend CORS with the actual frontend Origin header, verifies another loopback origin is not allowed, does not create a mapping job, does not run the model, prints `Demo smoke test: PASS`, and then cleans up both child processes. `Ctrl+C`, startup failure, health timeout, and smoke completion all trigger child-process cleanup.
+`--offline-model` sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`. Because the scorer loads `sentence-transformers/all-MiniLM-L6-v2` with local-files-only behavior, a missing local cache means V4 or V5 mapping cannot run until the model cache is prepared; the launcher reports that limitation instead of treating it as success. `--smoke-test` waits for backend and frontend HTTP readiness, probes backend CORS with the actual frontend Origin header, verifies another loopback origin is not allowed, does not create a mapping job, does not run the model, prints `Demo smoke test: PASS`, and then cleans up both child processes. `Ctrl+C`, startup failure, health timeout, and smoke completion all trigger child-process cleanup.
 
 ## API Contract
 
@@ -105,14 +105,14 @@ The mapping report is created at `POST /api/mapping/jobs`. `PUT /api/mapping/job
 
 ## Ranking
 
-The baseline scorer combines field names, aliases, lexical similarity, semantic similarity, type evidence, and source profiling. The V4 scorer is `precision_tiered_v4` with feature version `precision_tiered_interaction_v1`. It keeps the same ground-truth boundary and adds precision-tiered sparse interactions for selected high-signal concept pairs.
+The baseline scorer combines field names, aliases, lexical similarity, semantic similarity, type evidence, and source profiling. The V4 scorer is `precision_tiered_v4` with feature version `precision_tiered_interaction_v1`. It keeps the same ground-truth boundary and adds precision-tiered sparse interactions for selected high-signal concept pairs. The V5 scorer is `precision_tiered_v5` with feature version `entity_identifier_interaction_v1`; it adds a gated entity + identifier interaction on top of V4 so short identifier fields can be reviewed with explicit identifier evidence.
 
 Candidate ranking is evidence for review, not an instruction to build target data. Top-3 candidates remain visible so a reviewer can see why the algorithm suggested a target. Manual target selection uses the full contract `target_fields` allowlist instead of the Top-3 list, because a correct target can be outside the first three candidates.
 
 The CLI with explicit scorer selection is:
 
 ```powershell
-python src/tools/suggest_runtime_contract_mappings.py --contract contracts/generic_customer/datapackage.yaml --data-root data/examples/generic_customer --source examples/schema-matching/customer-review-demo.csv --output data/runtime/manual-schema-mapping.json --scorer precision_tiered_v4
+python src/tools/suggest_runtime_contract_mappings.py --contract contracts/generic_customer/datapackage.yaml --data-root data/examples/generic_customer --source examples/schema-matching/customer-review-demo.csv --output data/runtime/manual-schema-mapping.json --scorer precision_tiered_v5
 ```
 
 The historical CLI remains available and uses the baseline scorer path:
@@ -139,13 +139,14 @@ ground_truth_used_for_scoring = false
 
 ## Formal Evaluation
 
-The formal V4 metrics are stored in `data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json`.
+The formal V5 metrics are stored in `data/synthetic/schema_matching_precision_tiered_v5_5scenario_evaluation.json`; the V4 artifact remains in `data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json` for comparison.
 
 ```text
-Scorer ID: precision_tiered_v4
-Feature version: precision_tiered_interaction_v1
-Raw SHA-256: 49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b
-Content SHA-256: 4382ebc7db0f8cfd4664d4df290810a0db24666e79e9840034fcd553cf104679
+Scorer ID: precision_tiered_v5
+Feature version: entity_identifier_interaction_v1
+Raw SHA-256: f44d07567ed9fa8b199780fff9990d1b577491709433ed554c7140f552386e57
+Content SHA-256: 32208506a7ad792a90b78bafeea9fa87c2df4a7a797afcf04cc015009be0a695
+V4 comparison raw SHA-256: 49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b
 ```
 
 ```text
@@ -155,10 +156,10 @@ Content SHA-256: 4382ebc7db0f8cfd4664d4df290810a0db24666e79e9840034fcd553cf10467
 5 multi-target
 8 no-target
 70 target links
-Top-1 accuracy: 0.9153
-target recall@1: 0.8286
-target recall@3: 0.9714
-MRR: 0.8929
+Top-1 accuracy: 0.9322
+target recall@1: 0.8429
+target recall@3: 0.9857
+MRR: 0.9095
 no-target accuracy: 0.8750
 multi-target full recall@3: 1.0000
 ```
