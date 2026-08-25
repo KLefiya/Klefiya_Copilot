@@ -20,7 +20,7 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core'
-import { ApiError, createMappingJob, downloadMappingReviewExport, getMappingContracts, getMappingJob, saveMappingReview } from '../api'
+import { ApiError, createMappingJob, deleteMappingJob, downloadMappingReviewExport, getMappingContracts, getMappingJob, saveMappingReview } from '../api'
 import { StatCard } from '../components/StatCard'
 import type {
   IdentifierInteractionEvidence,
@@ -250,6 +250,87 @@ function JobSummary({ result }: { result: MappingJobResponse }) {
   )
 }
 
+function DeleteJobPanel({
+  result,
+  deleting,
+  error,
+  onDelete,
+}: {
+  result: MappingJobResponse
+  deleting: boolean
+  error: string | null
+  onDelete: () => Promise<void>
+}) {
+  const [confirming, setConfirming] = useState(false)
+  const [confirmation, setConfirmation] = useState('')
+  const [confirmationError, setConfirmationError] = useState<string | null>(null)
+  const shortId = result.job.job_id.slice(0, 8)
+  const confirmationMatches = confirmation === shortId || confirmation === result.job.job_id
+
+  const requestDelete = async () => {
+    if (!confirmationMatches) {
+      setConfirmationError(`delete_confirmation_mismatch - Type ${shortId} or the full job id to confirm.`)
+      return
+    }
+    setConfirmationError(null)
+    await onDelete()
+  }
+
+  return (
+    <Alert color="red" variant="light" title="Delete Job">
+      <Stack gap="sm">
+        <Text size="sm">
+          Deletes this local runtime job, including source CSV, mapping report, review, metadata, and job-local temp files.
+        </Text>
+        {!confirming ? (
+          <Button
+            color="red"
+            variant="filled"
+            onClick={() => {
+              setConfirming(true)
+              setConfirmation('')
+              setConfirmationError(null)
+            }}
+            disabled={deleting}
+          >
+            Delete Job
+          </Button>
+        ) : (
+          <Stack gap="sm">
+            <TextInput
+              label={`Type ${shortId} or the full job id`}
+              value={confirmation}
+              onChange={(event) => {
+                setConfirmation(event.currentTarget.value.trim())
+                setConfirmationError(null)
+              }}
+              disabled={deleting}
+            />
+            <Group gap="sm">
+              <Button color="red" loading={deleting} disabled={deleting} onClick={requestDelete}>
+                Confirm delete job
+              </Button>
+              <Button
+                variant="subtle"
+                color="gray"
+                disabled={deleting}
+                onClick={() => {
+                  setConfirming(false)
+                  setConfirmation('')
+                  setConfirmationError(null)
+                }}
+              >
+                Cancel
+              </Button>
+            </Group>
+          </Stack>
+        )}
+        <ErrorAlert message={confirmationError ?? error} />
+      </Stack>
+    </Alert>
+  )
+}
+
 function SourceProfileStats({ profile }: { profile: MappingSourceProfile | undefined }) {
   if (!profile) return <Text size="sm" c="dimmed">No source profile statistics returned.</Text>
   return (
@@ -427,6 +508,7 @@ function ReviewPanel({
   isDirty,
   saving,
   downloading,
+  mutationDisabled,
   message,
   error,
   onDraftChange,
@@ -440,6 +522,7 @@ function ReviewPanel({
   isDirty: boolean
   saving: boolean
   downloading: MappingExportFormat | null
+  mutationDisabled: boolean
   message: string | null
   error: string | null
   onDraftChange: (sourceField: string, draft: ReviewDraft) => void
@@ -447,9 +530,9 @@ function ReviewPanel({
   onDownload: (format: MappingExportFormat) => void
 }) {
   const summary = reviewSummaryFromDrafts(result, drafts)
-  const canExport = summary.export_ready && !isDirty && !saving && downloading === null
+  const canExport = summary.export_ready && !isDirty && !saving && downloading === null && !mutationDisabled
   const validationErrors = reviewValidationErrors(result, drafts)
-  const canSave = validationErrors.length === 0 && !saving
+  const canSave = validationErrors.length === 0 && !saving && !mutationDisabled
   return (
     <Stack gap="md">
       <Title order={3} size="h5">人工复核</Title>
@@ -473,10 +556,11 @@ function ReviewPanel({
       )}
 
       <Group gap="sm">
-        <Button onClick={onSave} loading={saving} disabled={!canSave}>
+        <Button aria-label="Save review" onClick={onSave} loading={saving} disabled={!canSave}>
           保存复核
         </Button>
         <Button
+          aria-label="Download JSON export"
           variant="light"
           onClick={() => onDownload('json')}
           loading={downloading === 'json'}
@@ -485,6 +569,7 @@ function ReviewPanel({
           下载 JSON
         </Button>
         <Button
+          aria-label="Download CSV export"
           variant="light"
           onClick={() => onDownload('csv')}
           loading={downloading === 'csv'}
@@ -537,7 +622,7 @@ function ReviewPanel({
                   <Checkbox
                     label={mapping.recommendation ? `接受算法建议 ${mapping.recommendation}` : '接受算法建议不可用'}
                     checked={draft.action === 'accept_suggestion'}
-                    disabled={acceptDisabled}
+                    disabled={acceptDisabled || mutationDisabled}
                     description={acceptDisabled ? '该字段没有可接受的 recommendation' : undefined}
                     onChange={(event) => {
                       onDraftChange(mapping.source_field, {
@@ -550,7 +635,7 @@ function ReviewPanel({
                   <Checkbox
                     label="改选目标"
                     checked={draft.action === 'select_target'}
-                    disabled={selectDisabled}
+                    disabled={selectDisabled || mutationDisabled}
                     description={selectDisabled ? '当前 job 的 contract target allowlist 尚未加载或不匹配，不能猜测目标字段。' : undefined}
                     onChange={(event) => {
                       onDraftChange(mapping.source_field, {
@@ -569,7 +654,7 @@ function ReviewPanel({
                     >
                       <SimpleGrid cols={{ base: 1, md: 2 }} spacing={6} mt="xs">
                         {visibleTargetOptions.map((target) => (
-                          <Checkbox key={`${mapping.source_field}-${target}`} value={target} label={target} disabled={!targetOptionsAvailable} />
+                          <Checkbox key={`${mapping.source_field}-${target}`} value={target} label={target} disabled={!targetOptionsAvailable || mutationDisabled} />
                         ))}
                       </SimpleGrid>
                     </Checkbox.Group>
@@ -577,6 +662,7 @@ function ReviewPanel({
                   <Checkbox
                     label="标记不映射"
                     checked={draft.action === 'mark_unmapped'}
+                    disabled={mutationDisabled}
                     onChange={(event) => {
                       onDraftChange(mapping.source_field, {
                         ...draft,
@@ -591,6 +677,7 @@ function ReviewPanel({
                     description={`${noteLength} / ${MAX_REVIEW_NOTE_LENGTH}`}
                     error={hasControlCharacter(draft.note) ? 'note must not contain control characters' : undefined}
                     maxLength={MAX_REVIEW_NOTE_LENGTH}
+                    disabled={mutationDisabled}
                     onChange={(event) => onDraftChange(mapping.source_field, { ...draft, note: event.currentTarget.value })}
                   />
                   <CandidateTable candidates={(mapping.top_candidates ?? []).slice(0, 3)} />
@@ -649,6 +736,9 @@ export function MappingJobView() {
   const [reviewError, setReviewError] = useState<string | null>(null)
   const [savingReview, setSavingReview] = useState(false)
   const [downloading, setDownloading] = useState<MappingExportFormat | null>(null)
+  const [deletingJob, setDeletingJob] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteMessage, setDeleteMessage] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -680,8 +770,8 @@ export function MappingJobView() {
     [result?.mappings, reviewDrafts],
   )
   const hasUnsavedReview = currentReviewSignature !== savedReviewSignature
-  const canRun = Boolean(file && contractId && !loading && !catalogLoading)
-  const canLoadJob = JOB_ID_PATTERN.test(jobId) && !loading
+  const canRun = Boolean(file && contractId && !loading && !catalogLoading && !deletingJob)
+  const canLoadJob = JOB_ID_PATTERN.test(jobId) && !loading && !deletingJob
 
   const resetReviewState = () => {
     setReviewDrafts({})
@@ -690,6 +780,11 @@ export function MappingJobView() {
     setReviewError(null)
     setSavingReview(false)
     setDownloading(null)
+  }
+
+  const clearDeleteState = () => {
+    setDeleteError(null)
+    setDeleteMessage(null)
   }
 
   const applyResult = (next: MappingJobResponse) => {
@@ -702,6 +797,7 @@ export function MappingJobView() {
     setReviewMessage(null)
     setReviewError(null)
     setDownloading(null)
+    clearDeleteState()
   }
 
   const onFileChange = (next: File | null) => {
@@ -709,6 +805,7 @@ export function MappingJobView() {
     setResult(null)
     setError(null)
     resetReviewState()
+    clearDeleteState()
   }
 
   const validateFile = (selected: File): string | null => {
@@ -729,6 +826,7 @@ export function MappingJobView() {
     }
     setLoading(true)
     setError(null)
+    clearDeleteState()
     try {
       const csvText = await file.text()
       const next = await createMappingJob({
@@ -753,6 +851,7 @@ export function MappingJobView() {
     }
     setLoading(true)
     setError(null)
+    clearDeleteState()
     try {
       applyResult(await getMappingJob(jobId))
     } catch (err) {
@@ -766,6 +865,28 @@ export function MappingJobView() {
     setReviewDrafts((current) => ({ ...current, [sourceField]: draft }))
     setReviewMessage(null)
     setReviewError(null)
+  }
+
+  const deleteCurrentJob = async () => {
+    if (!result) return
+    setDeletingJob(true)
+    setDeleteError(null)
+    setDeleteMessage(null)
+    setReviewError(null)
+    setReviewMessage(null)
+    try {
+      await deleteMappingJob(result.job.job_id, {
+        mapping_report_sha256: result.job.mapping_report.content_sha256,
+      })
+      setResult(null)
+      setJobId('')
+      resetReviewState()
+      setDeleteMessage('Mapping job deleted.')
+    } catch (err) {
+      setDeleteError(errorText(err))
+    } finally {
+      setDeletingJob(false)
+    }
   }
 
   const saveReview = async () => {
@@ -825,18 +946,20 @@ export function MappingJobView() {
             onChange={onFileChange}
             accept=".csv,text/csv"
             clearable
+            disabled={loading || deletingJob}
           />
           <NativeSelect
             label="Contract"
             value={contractId}
             onChange={(event) => setContractId(event.currentTarget.value)}
-            disabled={catalogLoading || contracts.length === 0}
+            disabled={catalogLoading || contracts.length === 0 || loading || deletingJob}
             data={contractOptions}
           />
           <NativeSelect
             label="Scorer"
             value={scorer}
             onChange={(event) => setScorer(event.currentTarget.value as MappingScorer)}
+            disabled={loading || deletingJob}
             data={[
               { value: 'precision_tiered_v5', label: 'Precision Tiered V5 — Identifier-aware' },
               { value: 'precision_tiered_v4', label: 'Precision Tiered V4' },
@@ -865,7 +988,9 @@ export function MappingJobView() {
               setResult(null)
               setError(null)
               resetReviewState()
+              clearDeleteState()
             }}
+            disabled={deletingJob}
           />
           <Button variant="light" onClick={loadJob} disabled={!canLoadJob} loading={loading}>
             Load job
@@ -880,10 +1005,17 @@ export function MappingJobView() {
       </SimpleGrid>
 
       <ErrorAlert message={error} />
+      {deleteMessage && <Alert color="green" variant="light">{deleteMessage}</Alert>}
 
       {result && (
         <Stack gap="xl">
           <JobSummary result={result} />
+          <DeleteJobPanel
+            result={result}
+            deleting={deletingJob}
+            error={deleteError}
+            onDelete={deleteCurrentJob}
+          />
           <MappingResults result={result} />
           <ReviewPanel
             result={result}
@@ -893,6 +1025,7 @@ export function MappingJobView() {
             isDirty={hasUnsavedReview}
             saving={savingReview}
             downloading={downloading}
+            mutationDisabled={deletingJob}
             message={reviewMessage}
             error={reviewError}
             onDraftChange={updateReviewDraft}

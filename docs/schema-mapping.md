@@ -68,6 +68,7 @@ POST /api/mapping/jobs
 GET  /api/mapping/jobs/{job_id}
 PUT  /api/mapping/jobs/{job_id}/review
 GET  /api/mapping/jobs/{job_id}/export?format=json|csv
+DELETE /api/mapping/jobs/{job_id}
 ```
 
 `GET /api/mapping/contracts` returns registered contract summaries and a safe `target_fields` allowlist. For `generic-customer`, the allowlist has 11 stable target fields:
@@ -102,6 +103,10 @@ flowchart LR
 The runtime path uses a registered contract, writes the uploaded CSV and mapping report into a per-job directory under `data/runtime/mapping_jobs/`, and returns a sanitized job response. Job responses include source field names, source profile summaries, Top-3 candidates, status, confidence, recommendation, and the mapping report content SHA.
 
 The mapping report is created at `POST /api/mapping/jobs`. `PUT /api/mapping/jobs/{job_id}/review` saves a review snapshot against the mapping report SHA. A stale SHA is rejected to avoid overwriting a review for a different mapping report. `GET /api/mapping/jobs/{job_id}` restores the review view without rerunning scoring when a review file exists.
+
+`DELETE /api/mapping/jobs/{job_id}` accepts a typed JSON body with the current `mapping_report_sha256` and returns `204 No Content` on success. The backend never accepts a client-supplied filesystem path or delete directory; it constructs the target from the server-side runtime root plus a validated 32-character lowercase hex job id, rejects symlink/reparse escape candidates, and deletes only that job directory. A stale SHA returns `409 mapping_job_delete_stale`; a busy process-local job lock returns `409 mapping_job_in_progress`; missing jobs return `404 mapping_job_not_found`.
+
+Runtime jobs are local durable working files under ignored `data/runtime/mapping_jobs/`. Explicit deletion removes the uploaded source CSV, `mapping_report.json`, `job.json`, `review.json` when present, and job-local temporary files. It does not remove formal artifacts, contracts, examples, generated package outputs, or any file outside the runtime job directory. The current implementation has no automatic cloud sync, and it should not be described as satisfying complete production compliance or statutory data-retention requirements.
 
 ## Ranking
 

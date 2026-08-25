@@ -137,6 +137,10 @@ export interface MappingReviewPayload {
   decisions: MappingReviewDecision[]
 }
 
+export interface DeleteMappingJobPayload {
+  mapping_report_sha256: string
+}
+
 export interface MappingReviewSummary {
   mapping_report_sha256: string
   reviewed_fields: number

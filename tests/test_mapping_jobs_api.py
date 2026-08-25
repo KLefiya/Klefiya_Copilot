@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import shutil
 import tempfile
 import threading
 import unittest
+from contextlib import nullcontext
 from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
@@ -728,6 +730,198 @@ class MappingJobsApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertFalse((job_dir / "review.json").exists())
         self.assertEqual(list(job_dir.glob("*.tmp")), [])
+
+    def test_27_delete_completed_job_returns_204_and_removes_directory(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        job_dir = mapping_jobs.RUNTIME_ROOT / job_id
+        response = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{job_id}",
+            json={"mapping_report_sha256": "baseline-content-sha"},
+        )
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.content, b"")
+        self.assertFalse(job_dir.exists())
+
+        missing = self.client.get(f"/api/mapping/jobs/{job_id}")
+        self.assertEqual(missing.status_code, 404)
+        self.assertEqual(missing.json()["detail"]["error"], "mapping_job_not_found")
+
+    def test_28_delete_job_with_review_then_review_and_export_return_404(self):
+        created = self._create("precision_tiered_v5").json()
+        job_id = created["job"]["job_id"]
+        review = self._complete_review(job_id, sha="precision_tiered_v5-content-sha")
+        self.assertEqual(review.status_code, 200)
+        self.assertTrue((mapping_jobs.RUNTIME_ROOT / job_id / "review.json").is_file())
+
+        deleted = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{job_id}",
+            json={"mapping_report_sha256": "precision_tiered_v5-content-sha"},
+        )
+        self.assertEqual(deleted.status_code, 204)
+
+        review_after_delete = self.client.put(
+            f"/api/mapping/jobs/{job_id}/review",
+            json={"mapping_report_sha256": "precision_tiered_v5-content-sha", "decisions": []},
+        )
+        export_after_delete = self.client.get(f"/api/mapping/jobs/{job_id}/export?format=json")
+        self.assertEqual(review_after_delete.status_code, 404)
+        self.assertEqual(export_after_delete.status_code, 404)
+
+    def test_29_delete_invalid_path_traversal_and_missing_ids(self):
+        payload = {"mapping_report_sha256": "baseline-content-sha"}
+        invalid_cases = [
+            "/api/mapping/jobs/not-a-hex",
+            "/api/mapping/jobs/" + "0" * 31 + "g",
+            "/api/mapping/jobs/..%2F" + "0" * 32,
+        ]
+        for path in invalid_cases:
+            with self.subTest(path=path):
+                response = self.client.request("DELETE", path, json=payload)
+                self.assertEqual(response.status_code, 422)
+                self.assertEqual(response.json()["detail"]["error"], "invalid_mapping_job_id")
+
+        missing = self.client.request(
+            "DELETE",
+            "/api/mapping/jobs/" + "0" * 32,
+            json=payload,
+        )
+        self.assertEqual(missing.status_code, 404)
+        self.assertEqual(missing.json()["detail"]["error"], "mapping_job_not_found")
+
+    def test_30_delete_stale_sha_returns_409_and_keeps_job(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        response = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{job_id}",
+            json={"mapping_report_sha256": "wrong-sha"},
+        )
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["detail"]["error"], "mapping_job_delete_stale")
+        self.assertTrue((mapping_jobs.RUNTIME_ROOT / job_id).is_dir())
+
+    def test_31_delete_lock_busy_returns_409_and_keeps_job(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        self.assertTrue(mapping_jobs.JOB_LOCK.acquire(blocking=False))
+        try:
+            response = self.client.request(
+                "DELETE",
+                f"/api/mapping/jobs/{job_id}",
+                json={"mapping_report_sha256": "baseline-content-sha"},
+            )
+        finally:
+            mapping_jobs.JOB_LOCK.release()
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["detail"]["error"], "mapping_job_in_progress")
+        self.assertTrue((mapping_jobs.RUNTIME_ROOT / job_id).is_dir())
+
+    def test_32_delete_corrupted_job_or_report_returns_safe_500(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        job_dir = mapping_jobs.RUNTIME_ROOT / job_id
+        (job_dir / "job.json").write_text("{bad", encoding="utf-8")
+        response = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{job_id}",
+            json={"mapping_report_sha256": "baseline-content-sha"},
+        )
+        self.assertEqual(response.status_code, 500)
+        text = json.dumps(response.json())
+        self.assertIn("malformed_mapping_job", text)
+        self.assertNotIn(str(mapping_jobs.RUNTIME_ROOT), text)
+
+        (job_dir / "job.json").write_text(json.dumps(created["job"]), encoding="utf-8")
+        (job_dir / "mapping_report.json").write_text("{bad", encoding="utf-8")
+        response = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{job_id}",
+            json={"mapping_report_sha256": "baseline-content-sha"},
+        )
+        self.assertEqual(response.status_code, 500)
+        text = json.dumps(response.json())
+        self.assertIn("malformed_mapping_report", text)
+        self.assertNotIn(str(mapping_jobs.RUNTIME_ROOT), text)
+
+    def test_33_delete_failure_returns_safe_500_and_keeps_job(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        client = TestClient(app, raise_server_exceptions=False)
+        with patch.object(mapping_jobs.shutil, "rmtree", side_effect=OSError("permission denied")):
+            response = client.request(
+                "DELETE",
+                f"/api/mapping/jobs/{job_id}",
+                json={"mapping_report_sha256": "baseline-content-sha"},
+            )
+        self.assertEqual(response.status_code, 500)
+        text = json.dumps(response.json())
+        self.assertIn("mapping_job_delete_failed", text)
+        self.assertNotIn(str(mapping_jobs.RUNTIME_ROOT), text)
+        self.assertTrue((mapping_jobs.RUNTIME_ROOT / job_id).is_dir())
+
+    def test_34_delete_rejects_symlink_or_reparse_escape(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        job_dir = mapping_jobs.RUNTIME_ROOT / job_id
+        external = Path(self._temp_dir.name) / "external.txt"
+        external.write_text("do not delete", encoding="utf-8")
+        link = job_dir / "evil_link"
+        simulated = False
+        try:
+            os.symlink(external, link)
+        except (OSError, NotImplementedError):
+            simulated = True
+            link.write_text("simulated reparse point", encoding="utf-8")
+
+        def is_reparse_or_symlink(path: Path) -> bool:
+            return path == link or (not simulated and mapping_jobs.Path(path).is_symlink())
+
+        patcher = patch.object(mapping_jobs, "_is_reparse_or_symlink", side_effect=is_reparse_or_symlink) if simulated else nullcontext()
+        with patcher:
+            response = self.client.request(
+                "DELETE",
+                f"/api/mapping/jobs/{job_id}",
+                json={"mapping_report_sha256": "baseline-content-sha"},
+            )
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json()["detail"]["error"], "mapping_job_delete_failed")
+        self.assertTrue(external.exists())
+        self.assertTrue(job_dir.exists())
+
+    def test_35_delete_only_removes_target_job_and_preserves_other_jobs(self):
+        first = self._create("baseline").json()
+        second = self._create("precision_tiered_v4").json()
+        response = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{first['job']['job_id']}",
+            json={"mapping_report_sha256": "baseline-content-sha"},
+        )
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse((mapping_jobs.RUNTIME_ROOT / first["job"]["job_id"]).exists())
+        self.assertTrue((mapping_jobs.RUNTIME_ROOT / second["job"]["job_id"]).is_dir())
+        still_available = self.client.get(f"/api/mapping/jobs/{second['job']['job_id']}")
+        self.assertEqual(still_available.status_code, 200)
+        self.assertEqual(still_available.json()["job"]["scorer"], "precision_tiered_v4")
+
+    def test_36_delete_does_not_call_scorer_or_model(self):
+        created = self._create().json()
+        job_id = created["job"]["job_id"]
+        self.calls.clear()
+
+        def fail_if_called(*args, **kwargs):
+            raise AssertionError("delete must not run schema matching")
+
+        with patch.object(mapping_jobs, "suggest_runtime_contract_mappings", fail_if_called):
+            response = self.client.request(
+                "DELETE",
+                f"/api/mapping/jobs/{job_id}",
+                json={"mapping_report_sha256": "baseline-content-sha"},
+            )
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(self.calls, [])
 
     def _complete_review(self, job_id: str, *, sha: str = "baseline-content-sha", note: str = "reviewed"):
         return self.client.put(

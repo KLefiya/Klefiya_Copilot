@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import tempfile
 import threading
 from dataclasses import dataclass
@@ -94,6 +95,10 @@ class MappingReviewDecisionPayload(BaseModel):
 class MappingReviewPayload(BaseModel):
     mapping_report_sha256: str
     decisions: list[MappingReviewDecisionPayload]
+
+
+class DeleteMappingJobPayload(BaseModel):
+    mapping_report_sha256: str
 
 
 def suggest_runtime_contract_mappings(*args: Any, **kwargs: Any) -> dict[str, Any]:
@@ -257,6 +262,12 @@ def _job_dir(job_id: str) -> Path:
     return _ensure_under_runtime(_runtime_root() / job_id)
 
 
+def _raw_job_dir(job_id: str) -> Path:
+    if not JOB_ID_PATTERN.fullmatch(job_id):
+        raise _http_error(422, "invalid_mapping_job_id", "Mapping job id must be a lowercase 32-character hex string.")
+    return _runtime_root() / job_id
+
+
 def _job_paths(job_id: str) -> tuple[Path, Path, Path]:
     job_dir = _job_dir(job_id)
     if not job_dir.is_dir():
@@ -267,6 +278,65 @@ def _job_paths(job_id: str) -> tuple[Path, Path, Path]:
     if not job_path.is_file() or not report_path.is_file():
         raise _http_error(500, "malformed_mapping_job", "Mapping job files are incomplete.")
     return job_path, report_path, review_path
+
+
+def _is_reparse_or_symlink(path: Path) -> bool:
+    try:
+        if path.is_symlink():
+            return True
+        reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        if not reparse_flag:
+            return False
+        return bool(getattr(os.lstat(path), "st_file_attributes", 0) & reparse_flag)
+    except OSError as exc:
+        raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target could not be inspected.") from exc
+
+
+def _delete_job_paths(job_id: str) -> tuple[Path, Path, Path]:
+    job_dir = _raw_job_dir(job_id)
+    root = _runtime_root()
+    try:
+        job_dir.resolve().relative_to(root)
+    except (OSError, ValueError) as exc:
+        raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target is not a safe runtime directory.") from exc
+    if not job_dir.exists():
+        raise _http_error(404, "mapping_job_not_found", f"Mapping job `{job_id}` was not found.")
+    if _is_reparse_or_symlink(job_dir) or not job_dir.is_dir():
+        raise _http_error(500, "malformed_mapping_job", "Mapping job target is not a normal directory.")
+
+    job_path = job_dir / "job.json"
+    report_path = job_dir / "mapping_report.json"
+    review_path = job_dir / "review.json"
+    for path in (job_path, report_path):
+        if _is_reparse_or_symlink(path) or not path.is_file():
+            raise _http_error(500, "malformed_mapping_job", "Mapping job files are incomplete.")
+        try:
+            path.resolve().relative_to(job_dir.resolve())
+        except (OSError, ValueError) as exc:
+            raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target is not a safe runtime directory.") from exc
+    return job_dir, job_path, report_path
+
+
+def _assert_delete_tree_safe(job_dir: Path) -> None:
+    root = _runtime_root()
+    try:
+        resolved_job_dir = job_dir.resolve()
+        resolved_job_dir.relative_to(root)
+    except (OSError, ValueError) as exc:
+        raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target is not a safe runtime directory.") from exc
+    if _is_reparse_or_symlink(job_dir):
+        raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target is not a safe runtime directory.")
+    try:
+        children = list(job_dir.rglob("*"))
+    except OSError as exc:
+        raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target could not be inspected.") from exc
+    for child in children:
+        if _is_reparse_or_symlink(child):
+            raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target is not a safe runtime directory.")
+        try:
+            child.resolve().relative_to(resolved_job_dir)
+        except (OSError, ValueError) as exc:
+            raise _http_error(500, "mapping_job_delete_failed", "Mapping job delete target is not a safe runtime directory.") from exc
 
 
 def _safe_source_profile(profile: Any) -> dict[str, Any] | None:
@@ -803,6 +873,29 @@ def save_mapping_review(job_id: str, payload: MappingReviewPayload) -> dict[str,
         else:
             _write_json_atomic(review_path, review)
         return {"review": _review_summary(review, report)}
+    finally:
+        JOB_LOCK.release()
+
+
+@router.delete("/jobs/{job_id:path}", status_code=204)
+def delete_mapping_job(job_id: str, payload: DeleteMappingJobPayload) -> Response:
+    job_dir, job_path, report_path = _delete_job_paths(job_id)
+    if not JOB_LOCK.acquire(blocking=False):
+        raise _http_error(409, "mapping_job_in_progress", "A mapping job or review update is already running in this process.")
+    try:
+        job = _load_job_json(job_path)
+        if job.get("job_id") != job_id:
+            raise _http_error(500, "malformed_mapping_job", "Mapping job metadata does not match the requested job.")
+        report = _load_mapping_report(report_path)
+        current_sha = job.get("mapping_report", {}).get("content_sha256")
+        if payload.mapping_report_sha256 != current_sha:
+            raise _http_error(409, "mapping_job_delete_stale", "Mapping report SHA does not match the current job.")
+        _assert_delete_tree_safe(job_dir)
+        try:
+            shutil.rmtree(job_dir)
+        except OSError as exc:
+            raise _http_error(500, "mapping_job_delete_failed", "Mapping job directory could not be deleted.") from exc
+        return Response(status_code=204)
     finally:
         JOB_LOCK.release()
 

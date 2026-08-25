@@ -127,7 +127,7 @@ flowchart LR
     E --> F[Final export]
 ```
 
-The React page is named `新建字段映射` and submits `precision_tiered_v5` explicitly by default. The core runtime and CLI keep `baseline` as their default scorer unless a caller opts into V4 or V5, and the backend accepts `baseline`, `precision_tiered_v4`, and `precision_tiered_v5`. Review decisions are saved under ignored `data/runtime/` job folders, and completed reviews can be exported as JSON or CSV. Human review corrects and freezes a job result; it does not retrain the mapping model.
+The React page is named `新建字段映射` and submits `precision_tiered_v5` explicitly by default. The core runtime and CLI keep `baseline` as their default scorer unless a caller opts into V4 or V5, and the backend accepts `baseline`, `precision_tiered_v4`, and `precision_tiered_v5`. Review decisions are saved under ignored `data/runtime/` job folders, and completed reviews can be exported as JSON or CSV. A completed local job can also be explicitly deleted with `DELETE /api/mapping/jobs/{job_id}` by sending the current `mapping_report_sha256`; deletion removes that job's source CSV, mapping report, review, metadata, and job-local temporary files. Human review corrects and freezes a job result; it does not retrain the mapping model.
 
 For the detailed architecture, formal V4/V5 metrics, safety boundaries, and a synthetic review CSV, see [docs/schema-mapping.md](docs/schema-mapping.md) and [examples/schema-matching/customer-review-demo.csv](examples/schema-matching/customer-review-demo.csv).
 
@@ -284,7 +284,7 @@ http://127.0.0.1:5173/
 
 The default page is `迁移工作台`.
 
-To try Dynamic Schema Mapping, open `新建字段映射`, upload `examples/schema-matching/customer-review-demo.csv`, choose `generic-customer`, keep the page scorer at `precision_tiered_v5`, run the mapping job, review each source field, save the review, and download JSON or CSV. Existing jobs can be restored with their 32-character lowercase hex job id. V4 and baseline remain selectable for comparison. The first local model load can be slower because the embedding model is loaded from the local cache.
+To try Dynamic Schema Mapping, open `新建字段映射`, upload `examples/schema-matching/customer-review-demo.csv`, choose `generic-customer`, keep the page scorer at `precision_tiered_v5`, run the mapping job, review each source field, save the review, and download JSON or CSV. Existing jobs can be restored with their 32-character lowercase hex job id. Runtime jobs persist locally under ignored `data/runtime/mapping_jobs/` until the user explicitly deletes them; deletion requires the current mapping report SHA to prevent stale deletion. There is no automatic cloud sync for runtime jobs, and this workflow is not a complete production compliance or statutory data-retention system. V4 and baseline remain selectable for comparison. The first local model load can be slower because the embedding model is loaded from the local cache.
 
 The demo does not require an LLM credential. It uses committed synthetic examples, does not connect to an external ERP system, and does not need the Fit-to-Standard report to be regenerated.
 

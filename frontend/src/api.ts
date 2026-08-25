@@ -9,6 +9,7 @@
 // local runtime writes; mapping job POST runs local schema matching and does not call a hosted LLM.
 import type {
   CreateMappingJobPayload,
+  DeleteMappingJobPayload,
   MappingExportDownload,
   MappingExportFormat,
   MappingContractCatalog,
@@ -69,7 +70,7 @@ export class ApiError extends Error {
 async function request<T>(
   path: string,
   options?: {
-    method?: 'GET' | 'PUT' | 'POST'
+    method?: 'GET' | 'PUT' | 'POST' | 'DELETE'
     body?: unknown
   },
 ): Promise<T> {
@@ -96,6 +97,10 @@ async function request<T>(
       // 不是 JSON，就把原始文本当 detail
     }
     throw new ApiError(response.status, detail)
+  }
+
+  if (response.status === 204) {
+    return undefined as T
   }
 
   return (await response.json()) as T
@@ -192,6 +197,12 @@ export const createMappingJob = (payload: CreateMappingJobPayload) =>
 
 export const getMappingJob = (jobId: string) =>
   request<MappingJobResponse>(`/api/mapping/jobs/${encodeURIComponent(jobId)}`)
+
+export const deleteMappingJob = (jobId: string, payload: DeleteMappingJobPayload) =>
+  request<void>(`/api/mapping/jobs/${encodeURIComponent(jobId)}`, {
+    method: 'DELETE',
+    body: payload,
+  })
 
 export const saveMappingReview = (jobId: string, payload: MappingReviewPayload) =>
   request<MappingReviewResponse>(`/api/mapping/jobs/${encodeURIComponent(jobId)}/review`, {

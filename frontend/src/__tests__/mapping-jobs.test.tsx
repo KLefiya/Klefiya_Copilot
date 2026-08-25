@@ -241,12 +241,16 @@ function mappingJobWithClientNumber(): MappingJobResponse {
 
 let postPayload: unknown
 let reviewPayload: MappingReviewPayload | null = null
+let deletePayload: unknown
 let postCalls = 0
 let getJobCalls = 0
 let reviewCalls = 0
+let deleteCalls = 0
 let exportCalls: string[] = []
+let deleteCallsByPath: string[] = []
 let pendingPost: { resolve: (value: Response) => void } | null = null
 let pendingReview: { resolve: (value: Response) => void } | null = null
+let pendingDelete: { resolve: (value: Response) => void } | null = null
 let localSetItem: ReturnType<typeof vi.fn>
 let sessionSetItem: ReturnType<typeof vi.fn>
 let createObjectURL: ReturnType<typeof vi.fn>
@@ -312,18 +316,26 @@ function installFetch(
     | 'reviewPending'
     | 'reviewError'
     | 'downloadError'
+    | 'deletePending'
+    | 'deleteStale'
+    | 'deleteMissing'
+    | 'deleteBusy'
     | 'clientNumber'
     | 'existingV5'
     | 'contractsPending' = 'ok',
 ) {
   postPayload = null
   reviewPayload = null
+  deletePayload = null
   postCalls = 0
   getJobCalls = 0
   reviewCalls = 0
+  deleteCalls = 0
   exportCalls = []
+  deleteCallsByPath = []
   pendingPost = null
   pendingReview = null
+  pendingDelete = null
   vi.stubGlobal(
     'fetch',
     vi.fn((url: string, init?: RequestInit) => {
@@ -362,6 +374,26 @@ function installFetch(
           })
         }
         return Promise.resolve(response({ review: reviewSummary(reviewPayload as MappingReviewPayload) }))
+      }
+      if (path === '/api/mapping/jobs/1234567890abcdef1234567890abcdef' && init?.method === 'DELETE') {
+        deleteCalls += 1
+        deleteCallsByPath.push(path)
+        deletePayload = JSON.parse(String(init.body))
+        if (mode === 'deleteStale') {
+          return Promise.resolve(response({ detail: { error: 'mapping_job_delete_stale', message: 'Mapping report SHA does not match the current job.' } }, 409))
+        }
+        if (mode === 'deleteMissing') {
+          return Promise.resolve(response({ detail: { error: 'mapping_job_not_found', message: 'Mapping job was not found.' } }, 404))
+        }
+        if (mode === 'deleteBusy') {
+          return Promise.resolve(response({ detail: { error: 'mapping_job_in_progress', message: 'A mapping job or review update is already running in this process.' } }, 409))
+        }
+        if (mode === 'deletePending') {
+          return new Promise<Response>((resolve) => {
+            pendingDelete = { resolve }
+          })
+        }
+        return Promise.resolve(new Response(null, { status: 204 }))
       }
       if (path.startsWith('/api/mapping/jobs/1234567890abcdef1234567890abcdef/export')) {
         exportCalls.push(path)
@@ -561,6 +593,87 @@ describe('MappingJobView', () => {
     await waitFor(() => expect(screen.getByText('loaded-v5.csv')).toBeDefined())
     expect(screen.getAllByText('Precision Tiered V5').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Identifier interaction: entity_identifier_support').length).toBeGreaterThan(0)
+  })
+
+  it('shows delete only for a completed job and requires explicit confirmation', async () => {
+    renderView()
+    await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
+    expect(screen.queryByRole('button', { name: 'Delete Job' })).toBeNull()
+    upload(makeFile('customers.csv', `legacy_id,name\n1,${sentinel}\n`))
+    fireEvent.click(screen.getByText('Run mapping job'))
+    await waitFor(() => expect(screen.getByText('Mapping Results')).toBeDefined())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Job' }))
+    expect(screen.getByLabelText('Type 12345678 or the full job id')).toBeDefined()
+    fireEvent.change(screen.getByLabelText('Type 12345678 or the full job id'), { target: { value: 'wrong' } })
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    expect(screen.getByText('delete_confirmation_mismatch - Type 12345678 or the full job id to confirm.')).toBeDefined()
+    expect(deleteCalls).toBe(0)
+  })
+
+  it('sends delete with job id and report SHA, handles 204, and clears job state', async () => {
+    await runMappingJob()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Job' }))
+    fireEvent.change(screen.getByLabelText('Type 12345678 or the full job id'), { target: { value: '12345678' } })
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    await waitFor(() => expect(deleteCalls).toBe(1))
+    expect(deleteCallsByPath).toEqual(['/api/mapping/jobs/1234567890abcdef1234567890abcdef'])
+    expect(deletePayload).toEqual({ mapping_report_sha256: 'm'.repeat(64) })
+    expect(await screen.findByText('Mapping job deleted.')).toBeDefined()
+    expect(screen.queryByText('Mapping Results')).toBeNull()
+    expect(screen.queryByText('浜哄伐澶嶆牳')).toBeNull()
+    expect((screen.getByLabelText('Load existing job') as HTMLInputElement).disabled).toBe(false)
+  })
+
+  it('disables job mutations, review save, and export while delete is pending', async () => {
+    installFetch('deletePending')
+    renderView()
+    await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
+    fireEvent.change(screen.getByLabelText('Load existing job'), { target: { value: '1234567890abcdef1234567890abcdef' } })
+    fireEvent.click(screen.getByText('Load job'))
+    await waitFor(() => expect(screen.getByText('2 / 2')).toBeDefined())
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Job' }))
+    fireEvent.change(screen.getByLabelText('Type 12345678 or the full job id'), { target: { value: '1234567890abcdef1234567890abcdef' } })
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    await waitFor(() => expect(pendingDelete).not.toBeNull())
+    expect((screen.getByText('Run mapping job').closest('button') as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByText('Load job').closest('button') as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByRole('button', { name: 'Save review' }) as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByRole('button', { name: 'Download JSON export' }) as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    expect(deleteCalls).toBe(1)
+    pendingDelete?.resolve(new Response(null, { status: 204 }))
+    await waitFor(() => expect(screen.getByText('Mapping job deleted.')).toBeDefined())
+  })
+
+  it.each([
+    ['deleteStale', 'mapping_job_delete_stale'],
+    ['deleteMissing', 'mapping_job_not_found'],
+    ['deleteBusy', 'mapping_job_in_progress'],
+  ] as const)('shows structured %s delete errors and keeps the current job', async (mode, errorCode) => {
+    installFetch(mode)
+    await runMappingJob()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Job' }))
+    fireEvent.change(screen.getByLabelText('Type 12345678 or the full job id'), { target: { value: '12345678' } })
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    await waitFor(() => expect(deleteCalls).toBe(1))
+    expect(await screen.findByText((text) => text.includes(errorCode))).toBeDefined()
+    expect(screen.getByText('Mapping Results')).toBeDefined()
+    expect(screen.getByRole('button', { name: 'Confirm delete job' })).toBeDefined()
+    expect(screen.queryByText('Traceback')).toBeNull()
+  })
+
+  it.each(['precision_tiered_v5', 'precision_tiered_v4', 'baseline'] as const)('can delete %s jobs', async (scorer) => {
+    renderView()
+    await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
+    fireEvent.change(screen.getByLabelText('Scorer'), { target: { value: scorer } })
+    upload(makeFile(`${scorer}.csv`, `legacy_id,name\n1,${sentinel}\n`))
+    fireEvent.click(screen.getByText('Run mapping job'))
+    await waitFor(() => expect(postPayload).toMatchObject({ scorer }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Job' }))
+    fireEvent.change(screen.getByLabelText('Type 12345678 or the full job id'), { target: { value: '1234567890abcdef1234567890abcdef' } })
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    await waitFor(() => expect(screen.getByText('Mapping job deleted.')).toBeDefined())
   })
 
   it('rejects invalid job IDs without sending GET', async () => {
@@ -763,12 +876,16 @@ describe('MappingJobView', () => {
     expect(screen.queryByText('人工复核')).toBeNull()
   })
 
-  it('does not use browser storage or console logging for review and export content', async () => {
+  it('does not use browser storage or console logging for review, export, or delete content', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined)
     await runMappingJob()
     fireEvent.click(screen.getByLabelText('接受算法建议 customer_bank.routing_number'))
     fireEvent.click(screen.getByText('保存复核'))
     await waitFor(() => expect(reviewCalls).toBe(1))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Job' }))
+    fireEvent.change(screen.getByLabelText('Type 12345678 or the full job id'), { target: { value: '12345678' } })
+    fireEvent.click(screen.getByText('Confirm delete job'))
+    await waitFor(() => expect(deleteCalls).toBe(1))
     expect(localSetItem).not.toHaveBeenCalled()
     expect(sessionSetItem).not.toHaveBeenCalled()
     expect(log).not.toHaveBeenCalled()
