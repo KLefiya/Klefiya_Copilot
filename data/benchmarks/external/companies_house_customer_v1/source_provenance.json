@@ -1,0 +1,185 @@
+{
+  "allowed_columns": [
+    "CompanyName",
+    "CompanyNumber",
+    "RegAddress.Country",
+    "CompanyCategory",
+    "CompanyStatus",
+    "IncorporationDate",
+    "Accounts.AccountCategory",
+    "Accounts.NextDueDate",
+    "SICCode.SicText_1",
+    "ConfStmtNextDueDate",
+    "Mortgages.NumMortCharges",
+    "URI"
+  ],
+  "allowed_raw_to_logical_header_mapping": [
+    {
+      "logical": "CompanyName",
+      "raw": "CompanyName"
+    },
+    {
+      "logical": "CompanyNumber",
+      "raw": " CompanyNumber"
+    },
+    {
+      "logical": "RegAddress.Country",
+      "raw": "RegAddress.Country"
+    },
+    {
+      "logical": "CompanyCategory",
+      "raw": "CompanyCategory"
+    },
+    {
+      "logical": "CompanyStatus",
+      "raw": "CompanyStatus"
+    },
+    {
+      "logical": "IncorporationDate",
+      "raw": "IncorporationDate"
+    },
+    {
+      "logical": "Accounts.AccountCategory",
+      "raw": "Accounts.AccountCategory"
+    },
+    {
+      "logical": "Accounts.NextDueDate",
+      "raw": "Accounts.NextDueDate"
+    },
+    {
+      "logical": "SICCode.SicText_1",
+      "raw": "SICCode.SicText_1"
+    },
+    {
+      "logical": "ConfStmtNextDueDate",
+      "raw": "ConfStmtNextDueDate"
+    },
+    {
+      "logical": "Mortgages.NumMortCharges",
+      "raw": "Mortgages.NumMortCharges"
+    },
+    {
+      "logical": "URI",
+      "raw": "URI"
+    }
+  ],
+  "archive_byte_size": 73151480,
+  "archive_filename": "BasicCompanyData-2026-08-01-part1_7.zip",
+  "archive_raw_sha256": "30559c7da4c7e627e7c6566b973bcdf38f3867d36d25bda8d4b9889b84b157e1",
+  "exact_download_url": "https://download.companieshouse.gov.uk/BasicCompanyData-2026-08-01-part1_7.zip",
+  "excluded_personal_address_categories": [
+    "full registered office address lines",
+    "care-of and PO box",
+    "town, county, and postcode",
+    "previous company names",
+    "officer, director, PSC, or natural-person fields",
+    "phone",
+    "email",
+    "all non-allowlisted source columns"
+  ],
+  "final_column_count": 12,
+  "final_source_fixture_path": "data/benchmarks/external/companies_house_customer_v1/source_companies_house_customer.csv",
+  "final_source_fixture_raw_sha256": "e4b3f0b7a3ee4fe497fc6e8de2ad1fa5fc9d46209022c8aa36300800eabe0be4",
+  "header_normalization_collision_count": 0,
+  "header_normalization_frozen_before_first_evaluation": true,
+  "header_normalization_reads_target_aliases_ground_truth_or_predictions": false,
+  "header_normalization_rule": "strip ASCII space (0x20) from header boundaries only",
+  "license_name": "Open Government Licence v3.0",
+  "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+  "local_paths_recorded": false,
+  "official_download_page": "https://download.companieshouse.gov.uk/",
+  "official_product_url": "https://www.gov.uk/guidance/companies-house-data-products",
+  "preparation_script_path": "scripts/prepare_companies_house_external_fixture.py",
+  "preparation_script_raw_sha256": "aad5978d7387a89ce53b2108bcec97566603241af8e563004f6ef946ce68e79c",
+  "product_title": "Companies House Free Company Data Product",
+  "provider": "Companies House",
+  "raw_header": [
+    "CompanyName",
+    " CompanyNumber",
+    "RegAddress.CareOf",
+    "RegAddress.POBox",
+    "RegAddress.AddressLine1",
+    " RegAddress.AddressLine2",
+    "RegAddress.PostTown",
+    "RegAddress.County",
+    "RegAddress.Country",
+    "RegAddress.PostCode",
+    "CompanyCategory",
+    "CompanyStatus",
+    "CountryOfOrigin",
+    "DissolutionDate",
+    "IncorporationDate",
+    "Accounts.AccountRefDay",
+    "Accounts.AccountRefMonth",
+    "Accounts.NextDueDate",
+    "Accounts.LastMadeUpDate",
+    "Accounts.AccountCategory",
+    "Returns.NextDueDate",
+    "Returns.LastMadeUpDate",
+    "Mortgages.NumMortCharges",
+    "Mortgages.NumMortOutstanding",
+    "Mortgages.NumMortPartSatisfied",
+    "Mortgages.NumMortSatisfied",
+    "SICCode.SicText_1",
+    "SICCode.SicText_2",
+    "SICCode.SicText_3",
+    "SICCode.SicText_4",
+    "LimitedPartnerships.NumGenPartners",
+    "LimitedPartnerships.NumLimPartners",
+    "URI",
+    "PreviousName_1.CONDATE",
+    " PreviousName_1.CompanyName",
+    " PreviousName_2.CONDATE",
+    " PreviousName_2.CompanyName",
+    "PreviousName_3.CONDATE",
+    " PreviousName_3.CompanyName",
+    "PreviousName_4.CONDATE",
+    " PreviousName_4.CompanyName",
+    "PreviousName_5.CONDATE",
+    " PreviousName_5.CompanyName",
+    "PreviousName_6.CONDATE",
+    " PreviousName_6.CompanyName",
+    "PreviousName_7.CONDATE",
+    " PreviousName_7.CompanyName",
+    "PreviousName_8.CONDATE",
+    " PreviousName_8.CompanyName",
+    "PreviousName_9.CONDATE",
+    " PreviousName_9.CompanyName",
+    "PreviousName_10.CONDATE",
+    " PreviousName_10.CompanyName",
+    "ConfStmtNextDueDate",
+    " ConfStmtLastMadeUpDate"
+  ],
+  "required_attribution": "Contains Companies House information licensed under the Open Government Licence v3.0.",
+  "response_content_type": "application/zip",
+  "response_final_url": "https://download.companieshouse.gov.uk/BasicCompanyData-2026-08-01-part1_7.zip",
+  "response_status": 200,
+  "retrieval_utc_timestamp": "2026-08-25T07:09:49.585588Z",
+  "selected_csv_member_name": "BasicCompanyData-2026-08-01-part1_7.csv",
+  "selected_member_byte_size": 418427081,
+  "selected_member_raw_sha256": "a3e684ef24940628aa9cc4f97c8b96c089638a2059337e831f8295550c580c2e",
+  "selected_row_count": 128,
+  "selection_filter_order_rules": [
+    "Stream the official CSV member without loading the full dataset into memory.",
+    "Require CompanyName, CompanyNumber, and RegAddress.Country to be non-empty.",
+    "Deduplicate by exact CompanyNumber, keeping the first encountered official row.",
+    "Compute SHA256('companies_house_customer_v1|' + CompanyNumber) using the original CompanyNumber text.",
+    "Sort by that hash ascending, then CompanyNumber ascending.",
+    "Select the first 128 rows.",
+    "Write rows in the selected order with exactly the 12 allowlisted source columns.",
+    "Preserve official source values without case changes, filling, semantic cleaning, value mapping, or manual edits.",
+    "Write UTF-8 CSV with LF line endings and deterministic CSV quoting."
+  ],
+  "selection_seed_string": "companies_house_customer_v1|",
+  "snapshot_date": "2026-08-01",
+  "snapshot_part": "part1_7",
+  "source_universe_limited_to_snapshot_part": "part1_7",
+  "source_values_manually_edited": false,
+  "source_values_normalized": false,
+  "transformations_performed": [
+    "column minimization to the preregistered 12 source fields",
+    "eligibility filtering on non-empty CompanyName, CompanyNumber, and RegAddress.Country",
+    "deterministic deduplication and hash ordering",
+    "CSV serialization as UTF-8 with LF line endings"
+  ]
+}

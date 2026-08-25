@@ -1,0 +1,145 @@
+{
+  "algorithm_baseline_commit": "23add9d90fe93c590f32e946f471fb929cb88ac3",
+  "allowed_raw_to_logical_header_mapping": [
+    {
+      "logical": "CompanyName",
+      "raw": "CompanyName"
+    },
+    {
+      "logical": "CompanyNumber",
+      "raw": " CompanyNumber"
+    },
+    {
+      "logical": "RegAddress.Country",
+      "raw": "RegAddress.Country"
+    },
+    {
+      "logical": "CompanyCategory",
+      "raw": "CompanyCategory"
+    },
+    {
+      "logical": "CompanyStatus",
+      "raw": "CompanyStatus"
+    },
+    {
+      "logical": "IncorporationDate",
+      "raw": "IncorporationDate"
+    },
+    {
+      "logical": "Accounts.AccountCategory",
+      "raw": "Accounts.AccountCategory"
+    },
+    {
+      "logical": "Accounts.NextDueDate",
+      "raw": "Accounts.NextDueDate"
+    },
+    {
+      "logical": "SICCode.SicText_1",
+      "raw": "SICCode.SicText_1"
+    },
+    {
+      "logical": "ConfStmtNextDueDate",
+      "raw": "ConfStmtNextDueDate"
+    },
+    {
+      "logical": "Mortgages.NumMortCharges",
+      "raw": "Mortgages.NumMortCharges"
+    },
+    {
+      "logical": "URI",
+      "raw": "URI"
+    }
+  ],
+  "evaluation_artifact": null,
+  "evaluation_output": null,
+  "expected_target_link_count": 3,
+  "first_evaluation_status": "not_run",
+  "freeze_rules": [
+    "Do not change source, ground truth, contract, scorer, aliases, weights, or thresholds after viewing first evaluation results.",
+    "Future fixes require a new protocol/version and cannot rewrite this result."
+  ],
+  "freeze_utc_timestamp": "2026-08-25T07:09:49.779678Z",
+  "ground_truth": {
+    "path": "data/benchmarks/external/companies_house_customer_v1/ground_truth.json",
+    "raw_sha256": "fcb01c248ff403d2d13d6d31a551a80055c329d692b4698beb2028b30d705f05"
+  },
+  "ground_truth_case_count": 12,
+  "header_normalization_collision_count": 0,
+  "header_normalization_frozen_before_first_evaluation": true,
+  "header_normalization_reads_target_aliases_ground_truth_or_predictions": false,
+  "header_normalization_rule": "strip ASCII space (0x20) from header boundaries only",
+  "multi_target_case_count": 0,
+  "no_target_case_count": 9,
+  "notes": [
+    "Real public source data from Companies House monthly Free Company Data Product, limited to snapshot part1_7.",
+    "Pre-existing synthetic reference target contract; not production customer validation and not evidence that the target contract is authoritative.",
+    "This is not a representative sample of all UK companies.",
+    "The protocol lock intentionally does not record its own SHA-256."
+  ],
+  "planned_metrics": [
+    "single-target Top-1",
+    "target-link Recall@1",
+    "target-link Recall@3",
+    "MRR",
+    "no-target accuracy",
+    "coverage/review status counts"
+  ],
+  "planned_scorers": [
+    "baseline",
+    "precision_tiered_v4",
+    "precision_tiered_v5"
+  ],
+  "positive_single_target_case_count": 3,
+  "preparation_script": {
+    "path": "scripts/prepare_companies_house_external_fixture.py",
+    "raw_sha256": "aad5978d7387a89ce53b2108bcec97566603241af8e563004f6ef946ce68e79c"
+  },
+  "protocol_id": "companies_house_customer_external_holdout",
+  "protocol_version": "v1",
+  "scenario_id": "companies_house_customer_external_v1",
+  "scorer_source_file_hashes": {
+    "baseline": {
+      "path": "src/core/mapping/scorer.py",
+      "raw_sha256": "e3cf5f6656ca2a7b143b784657ed08303fd819e5147c99303c26b716253abd67"
+    },
+    "precision_tiered_v4": {
+      "path": "src/core/mapping/scorer_v4.py",
+      "raw_sha256": "e619fa4c6df9ae10e902c2722c7b1a21ffc28d8cdb6fd82e1ac647247c24ee83"
+    },
+    "precision_tiered_v5": {
+      "path": "src/core/mapping/scorer_v5.py",
+      "raw_sha256": "9b21e0d4873e3cccf348d17f6996dd7d2471822ebc99fbe2bc684d309a3c8f78"
+    }
+  },
+  "source_field_order": [
+    "CompanyName",
+    "CompanyNumber",
+    "RegAddress.Country",
+    "CompanyCategory",
+    "CompanyStatus",
+    "IncorporationDate",
+    "Accounts.AccountCategory",
+    "Accounts.NextDueDate",
+    "SICCode.SicText_1",
+    "ConfStmtNextDueDate",
+    "Mortgages.NumMortCharges",
+    "URI"
+  ],
+  "source_fixture": {
+    "path": "data/benchmarks/external/companies_house_customer_v1/source_companies_house_customer.csv",
+    "raw_sha256": "e4b3f0b7a3ee4fe497fc6e8de2ad1fa5fc9d46209022c8aa36300800eabe0be4"
+  },
+  "source_provenance": {
+    "path": "data/benchmarks/external/companies_house_customer_v1/source_provenance.json",
+    "raw_sha256": "365e24eca399a26ae8dbad85c73db0cb51137dbef11d047e44b977e1da3444be"
+  },
+  "source_values_normalized": false,
+  "target_contract": {
+    "target_contract_git_blob_content_sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792",
+    "target_contract_orphan_cr_count": 0,
+    "target_contract_path": "contracts/generic_customer/datapackage.yaml",
+    "target_contract_worktree_differs_only_by_crlf": true,
+    "target_contract_worktree_lf_normalized_sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792",
+    "target_contract_worktree_raw_sha256": "1adc520c8c653959da77e69c9e511b9fd352d0ae4decc10a6d7aad08d4b4a73e"
+  }
+}

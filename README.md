@@ -356,7 +356,7 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 745 tests, 0 failures, 0 errors
+Full unittest discovery: 758 tests, 0 failures, 0 errors
 Frontend tests: 88
 Workspace API tests: 38
 ```

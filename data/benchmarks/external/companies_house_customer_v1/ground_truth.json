@@ -1,0 +1,149 @@
+{
+  "cases": [
+    {
+      "case_type": "single_target",
+      "expected_targets": [
+        "customer.customer_name"
+      ],
+      "notes": "Legal or trading company name maps at schema level to the synthetic customer name field.",
+      "source_field": "CompanyName"
+    },
+    {
+      "case_type": "single_target",
+      "expected_targets": [
+        "customer.customer_id"
+      ],
+      "notes": "Companies House company number is the stable public company identifier for this source fixture; it must not be mapped to customer.tax_number or customer_bank.customer_id.",
+      "source_field": "CompanyNumber"
+    },
+    {
+      "case_type": "single_target",
+      "expected_targets": [
+        "customer.country"
+      ],
+      "notes": "Schema-level semantic match. Source values may require normalization into the target contract's two-letter country codes; matching correctness does not imply raw-copy compatibility.",
+      "source_field": "RegAddress.Country"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "CompanyCategory"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "CompanyStatus"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "IncorporationDate"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "Accounts.AccountCategory"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "Accounts.NextDueDate"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "SICCode.SicText_1"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "ConfStmtNextDueDate"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "Mortgages.NumMortCharges"
+    },
+    {
+      "case_type": "no_target",
+      "expected_targets": [],
+      "notes": "No target field is preregistered for this Companies House source field in the existing synthetic generic customer contract.",
+      "source_field": "URI"
+    }
+  ],
+  "counts": {
+    "multi_target_cases": 0,
+    "no_target_cases": 9,
+    "single_target_cases": 3,
+    "target_links": 3
+  },
+  "forbidden_mappings": [
+    {
+      "source_field": "CompanyNumber",
+      "target": "customer.tax_number"
+    },
+    {
+      "source_field": "CompanyNumber",
+      "target": "customer_bank.customer_id"
+    },
+    {
+      "source_field": "CompanyStatus",
+      "target": "customer.payment_terms"
+    },
+    {
+      "source_field": "SICCode.SicText_1",
+      "target": "customer.customer_name"
+    },
+    {
+      "source_field": "URI",
+      "target": "customer.email"
+    }
+  ],
+  "metadata": {
+    "first_evaluation_run": false,
+    "frozen_before_first_evaluation": true,
+    "must_not_be_read_by_mapping_engine": true,
+    "production_validation": false,
+    "purpose": "evaluation_only",
+    "real_public_source_data": true,
+    "scenario_id": "companies_house_customer_external_v1",
+    "synthetic_source_data": false,
+    "target_contract_is_synthetic_reference": true
+  },
+  "source_fields": [
+    "CompanyName",
+    "CompanyNumber",
+    "RegAddress.Country",
+    "CompanyCategory",
+    "CompanyStatus",
+    "IncorporationDate",
+    "Accounts.AccountCategory",
+    "Accounts.NextDueDate",
+    "SICCode.SicText_1",
+    "ConfStmtNextDueDate",
+    "Mortgages.NumMortCharges",
+    "URI"
+  ],
+  "target_allowlist": [
+    "customer.customer_id",
+    "customer.customer_name",
+    "customer.country",
+    "customer.email",
+    "customer.phone",
+    "customer.tax_number",
+    "customer.payment_terms",
+    "customer_bank.bank_id",
+    "customer_bank.customer_id",
+    "customer_bank.iban",
+    "customer_bank.currency"
+  ],
+  "target_contract_path": "contracts/generic_customer/datapackage.yaml"
+}
