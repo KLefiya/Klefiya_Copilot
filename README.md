@@ -356,8 +356,8 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 645 tests, 0 failures, 0 errors
-Frontend tests: 73
+Full unittest discovery: 734 tests, 0 failures, 0 errors
+Frontend tests: 82
 Workspace API tests: 38
 ```
 
@@ -369,7 +369,7 @@ The verification script is local. It does not fetch remote data, install depende
 
 ## Continuous Integration
 
-[CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 44 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
+[CI runs](https://github.com/KLefiya/Klefiya_Copilot/actions/workflows/ci.yml) cover Linux and Windows Python validation plus the frontend check. The workflow uses Python 3.12, runs full unittest discovery, and checks that the 45 formal generated artifacts are byte-identical before and after the test run. It sets offline model environment variables and does not configure real LLM or API credentials.
 
 The CI workflow pins official GitHub Actions to immutable full commit SHA references to reduce supply-chain risk from movable tags. Human-readable versions remain in inline comments: `actions/checkout` v7.0.1, `actions/setup-python` v7.0.0, and `actions/setup-node` v7.0.0. Future action upgrades still require normal code review and CI verification; Dependabot automation is not configured yet.
 
@@ -377,7 +377,7 @@ Fresh CI runners first bootstrap the public `sentence-transformers/all-MiniLM-L6
 
 FastAPI 0.139.0 is pinned in the root requirements because backend API and workspace API tests run from the root requirements installation.
 
-The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 71 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems. The artifact verification step is configured to run even when Python tests fail, as long as the pre-test snapshot was created.
+The frontend CI job runs from `frontend/package-lock.json` with `npm ci`, then runs lint, 82 frontend tests, and build. Historical blind lock and compatibility amendment checks run through the Python suite on both operating systems. The artifact verification step is configured to run even when Python tests fail, as long as the pre-test snapshot was created.
 
 Local equivalents:
 
