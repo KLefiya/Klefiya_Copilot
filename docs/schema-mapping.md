@@ -65,6 +65,7 @@ The backend exposes the workflow through these routes:
 ```text
 GET  /api/mapping/contracts
 POST /api/mapping/jobs
+GET  /api/mapping/jobs?limit=1..100
 GET  /api/mapping/jobs/{job_id}
 PUT  /api/mapping/jobs/{job_id}/review
 GET  /api/mapping/jobs/{job_id}/export?format=json|csv
@@ -103,6 +104,8 @@ flowchart LR
 The runtime path uses a registered contract, writes the uploaded CSV and mapping report into a per-job directory under `data/runtime/mapping_jobs/`, and returns a sanitized job response. Job responses include source field names, source profile summaries, Top-3 candidates, status, confidence, recommendation, and the mapping report content SHA.
 
 The mapping report is created at `POST /api/mapping/jobs`. `PUT /api/mapping/jobs/{job_id}/review` saves a review snapshot against the mapping report SHA. A stale SHA is rejected to avoid overwriting a review for a different mapping report. `GET /api/mapping/jobs/{job_id}` restores the review view without rerunning scoring when a review file exists.
+
+`GET /api/mapping/jobs?limit=1..100` lists recent local jobs from direct children of the server-side runtime root whose directory names are valid 32-character lowercase hex job ids. The endpoint returns only safe metadata: job id, creation time, contract id/title/version, scorer, status, source row and field counts, and an aggregate review status. It sorts by trusted `job.json` creation time newest first, applies the limit after safe filtering, skips malformed jobs, rejects symlink/reparse escape candidates, and does not call scoring, model inference, report regeneration, or evaluation. It never accepts client filesystem paths and never returns raw CSV values, source field names, candidate evidence, decisions, notes, paths, reports, contract file contents, ground truth, or traceback details.
 
 `DELETE /api/mapping/jobs/{job_id}` accepts a typed JSON body with the current `mapping_report_sha256` and returns `204 No Content` on success. The backend never accepts a client-supplied filesystem path or delete directory; it constructs the target from the server-side runtime root plus a validated 32-character lowercase hex job id, rejects symlink/reparse escape candidates, and deletes only that job directory. A stale SHA returns `409 mapping_job_delete_stale`; a busy process-local job lock returns `409 mapping_job_in_progress`; missing jobs return `404 mapping_job_not_found`.
 

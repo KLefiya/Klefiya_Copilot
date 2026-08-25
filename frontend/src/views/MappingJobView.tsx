@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Accordion,
   Alert,
@@ -20,7 +20,7 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core'
-import { ApiError, createMappingJob, deleteMappingJob, downloadMappingReviewExport, getMappingContracts, getMappingJob, saveMappingReview } from '../api'
+import { ApiError, createMappingJob, deleteMappingJob, downloadMappingReviewExport, getMappingContracts, getMappingJob, getRecentMappingJobs, saveMappingReview } from '../api'
 import { StatCard } from '../components/StatCard'
 import type {
   IdentifierInteractionEvidence,
@@ -34,11 +34,13 @@ import type {
   MappingReviewSummary,
   MappingScorer,
   MappingSourceProfile,
+  RecentMappingJob,
 } from '../lib/mappingJobs'
 import { STATUS } from '../lib/theme'
 
 const MAX_CSV_BYTES = 1024 * 1024
 const MAX_REVIEW_NOTE_LENGTH = 500
+const RECENT_JOBS_LIMIT = 10
 const JOB_ID_PATTERN = /^[0-9a-f]{32}$/
 
 interface ReviewDraft {
@@ -500,6 +502,88 @@ function MappingResults({ result }: { result: MappingJobResponse }) {
   )
 }
 
+function reviewStatusText(job: RecentMappingJob): string {
+  return `${job.review.status} ${job.review.reviewed_count}/${job.review.total_fields}`
+}
+
+function RecentJobsPanel({
+  jobs,
+  loading,
+  loadingJobId,
+  error,
+  hasMore,
+  onRefresh,
+  onLoad,
+}: {
+  jobs: RecentMappingJob[]
+  loading: boolean
+  loadingJobId: string | null
+  error: string | null
+  hasMore: boolean
+  onRefresh: () => void
+  onLoad: (jobId: string) => void
+}) {
+  return (
+    <Stack gap="sm">
+      <Group justify="space-between" align="center">
+        <Title order={3} size="h5">Recent Jobs</Title>
+        <Button variant="light" size="xs" onClick={onRefresh} loading={loading} disabled={loading}>
+          Refresh
+        </Button>
+      </Group>
+      <ErrorAlert message={error} />
+      {jobs.length === 0 ? (
+        <Text size="sm" c="dimmed">No local runtime mapping jobs found.</Text>
+      ) : (
+        <Box style={{ overflowX: 'auto' }}>
+          <Table striped highlightOnHover verticalSpacing="xs" miw={760}>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Job</Table.Th>
+                <Table.Th>Created</Table.Th>
+                <Table.Th>Contract</Table.Th>
+                <Table.Th>Scorer</Table.Th>
+                <Table.Th>Rows/Fields</Table.Th>
+                <Table.Th>Review</Table.Th>
+                <Table.Th>Action</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {jobs.map((job) => {
+                const contractLabel = job.contract.title || job.contract.contract_id || '-'
+                const loadLabel = `Load ${job.job_id.slice(0, 8)}`
+                return (
+                  <Table.Tr key={job.job_id}>
+                    <Table.Td><Code>{job.job_id.slice(0, 8)}</Code></Table.Td>
+                    <Table.Td>{job.created_at}</Table.Td>
+                    <Table.Td>{contractLabel}</Table.Td>
+                    <Table.Td>{job.scorer ?? '-'}</Table.Td>
+                    <Table.Td>{job.source.row_count}/{job.source.field_count}</Table.Td>
+                    <Table.Td>{reviewStatusText(job)}</Table.Td>
+                    <Table.Td>
+                      <Button
+                        size="xs"
+                        variant="light"
+                        aria-label={loadLabel}
+                        loading={loadingJobId === job.job_id}
+                        disabled={loading || loadingJobId !== null}
+                        onClick={() => onLoad(job.job_id)}
+                      >
+                        Load
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                )
+              })}
+            </Table.Tbody>
+          </Table>
+        </Box>
+      )}
+      {hasMore && <Text size="xs" c="dimmed">More local jobs exist. Use Refresh after deleting older jobs or load by full id below.</Text>}
+    </Stack>
+  )
+}
+
 function ReviewPanel({
   result,
   drafts,
@@ -739,6 +823,25 @@ export function MappingJobView() {
   const [deletingJob, setDeletingJob] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [deleteMessage, setDeleteMessage] = useState<string | null>(null)
+  const [recentJobs, setRecentJobs] = useState<RecentMappingJob[]>([])
+  const [recentHasMore, setRecentHasMore] = useState(false)
+  const [recentLoading, setRecentLoading] = useState(false)
+  const [recentLoadingJobId, setRecentLoadingJobId] = useState<string | null>(null)
+  const [recentError, setRecentError] = useState<string | null>(null)
+
+  const refreshRecentJobs = useCallback(async () => {
+    setRecentLoading(true)
+    setRecentError(null)
+    try {
+      const response = await getRecentMappingJobs(RECENT_JOBS_LIMIT)
+      setRecentJobs(response.jobs)
+      setRecentHasMore(response.has_more)
+    } catch (err) {
+      setRecentError(errorText(err))
+    } finally {
+      setRecentLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -755,6 +858,10 @@ export function MappingJobView() {
     }
   }, [])
 
+  useEffect(() => {
+    void refreshRecentJobs()
+  }, [refreshRecentJobs])
+
   const contractOptions = useMemo(
     () => contracts.map((contract) => ({ value: contract.contract_id, label: contract.title })),
     [contracts],
@@ -770,8 +877,8 @@ export function MappingJobView() {
     [result?.mappings, reviewDrafts],
   )
   const hasUnsavedReview = currentReviewSignature !== savedReviewSignature
-  const canRun = Boolean(file && contractId && !loading && !catalogLoading && !deletingJob)
-  const canLoadJob = JOB_ID_PATTERN.test(jobId) && !loading && !deletingJob
+  const canRun = Boolean(file && contractId && !loading && !catalogLoading && !deletingJob && recentLoadingJobId === null)
+  const canLoadJob = JOB_ID_PATTERN.test(jobId) && !loading && !deletingJob && recentLoadingJobId === null
 
   const resetReviewState = () => {
     setReviewDrafts({})
@@ -837,6 +944,7 @@ export function MappingJobView() {
       })
       applyResult(next)
       setJobId(next.job.job_id)
+      void refreshRecentJobs()
     } catch (err) {
       setError(errorText(err))
     } finally {
@@ -861,6 +969,21 @@ export function MappingJobView() {
     }
   }
 
+  const loadRecentJob = async (nextJobId: string) => {
+    if (!JOB_ID_PATTERN.test(nextJobId)) return
+    setRecentLoadingJobId(nextJobId)
+    setRecentError(null)
+    clearDeleteState()
+    try {
+      applyResult(await getMappingJob(nextJobId))
+      setJobId(nextJobId)
+    } catch (err) {
+      setRecentError(errorText(err))
+    } finally {
+      setRecentLoadingJobId(null)
+    }
+  }
+
   const updateReviewDraft = (sourceField: string, draft: ReviewDraft) => {
     setReviewDrafts((current) => ({ ...current, [sourceField]: draft }))
     setReviewMessage(null)
@@ -881,6 +1004,8 @@ export function MappingJobView() {
       setResult(null)
       setJobId('')
       resetReviewState()
+      setRecentJobs((current) => current.filter((job) => job.job_id !== result.job.job_id))
+      void refreshRecentJobs()
       setDeleteMessage('Mapping job deleted.')
     } catch (err) {
       setDeleteError(errorText(err))
@@ -906,6 +1031,7 @@ export function MappingJobView() {
       setResult(next)
       setReviewDrafts(nextDrafts)
       setSavedReviewSignature(reviewDraftSignature(nextDrafts, next.mappings))
+      void refreshRecentJobs()
       setReviewMessage('复核已保存')
     } catch (err) {
       setReviewError(errorText(err))
@@ -979,6 +1105,15 @@ export function MappingJobView() {
         </Stack>
 
         <Stack gap="md">
+          <RecentJobsPanel
+            jobs={recentJobs}
+            loading={recentLoading || loading || deletingJob || savingReview || downloading !== null}
+            loadingJobId={recentLoadingJobId}
+            error={recentError}
+            hasMore={recentHasMore}
+            onRefresh={() => void refreshRecentJobs()}
+            onLoad={(nextJobId) => void loadRecentJob(nextJobId)}
+          />
           <TextInput
             label="Load existing job"
             placeholder="32 lowercase hex job ID"

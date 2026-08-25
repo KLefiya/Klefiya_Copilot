@@ -504,6 +504,150 @@ def _load_review(path: Path) -> dict[str, Any] | None:
     return value
 
 
+def _safe_runtime_child(path: Path, parent: Path) -> bool:
+    try:
+        if _is_reparse_or_symlink(path):
+            return False
+        path.resolve().relative_to(parent.resolve())
+    except (HTTPException, OSError, ValueError):
+        return False
+    return True
+
+
+def _safe_job_file(path: Path, job_dir: Path) -> bool:
+    return _safe_runtime_child(path, job_dir) and path.exists() and path.is_file()
+
+
+def _safe_optional_job_file(path: Path, job_dir: Path) -> bool:
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        return True
+    except OSError:
+        return False
+    return _safe_job_file(path, job_dir)
+
+
+def _safe_load_job_for_listing(job_path: Path) -> dict[str, Any] | None:
+    try:
+        value = json.loads(job_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _safe_load_review_for_listing(review_path: Path) -> dict[str, Any] | None:
+    if not review_path.exists():
+        return None
+    try:
+        value = json.loads(review_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _source_field_count_for_listing(job: dict[str, Any]) -> int:
+    value = job.get("source", {}).get("field_count")
+    return value if isinstance(value, int) and value >= 0 else 0
+
+
+def _review_listing_summary(job: dict[str, Any], review: dict[str, Any] | None) -> dict[str, Any]:
+    total_fields = _source_field_count_for_listing(job)
+    if review is None:
+        return {
+            "status": "not_started",
+            "reviewed_count": 0,
+            "total_fields": total_fields,
+            "updated_at": None,
+        }
+    decisions = review.get("decisions")
+    if not isinstance(decisions, list):
+        raise ValueError("Malformed review decisions.")
+    reviewed_count = sum(1 for decision in decisions if isinstance(decision, dict))
+    status = "complete" if total_fields > 0 and reviewed_count >= total_fields else "partial"
+    return {
+        "status": status,
+        "reviewed_count": reviewed_count,
+        "total_fields": total_fields,
+        "updated_at": review.get("updated_at") if isinstance(review.get("updated_at"), str) else None,
+    }
+
+
+def _job_listing_item(job_id: str, job_dir: Path, root: Path) -> dict[str, Any] | None:
+    if not _safe_runtime_child(job_dir, root) or not job_dir.is_dir():
+        return None
+    job_path = job_dir / "job.json"
+    report_path = job_dir / "mapping_report.json"
+    review_path = job_dir / "review.json"
+    if not _safe_job_file(job_path, job_dir) or not _safe_job_file(report_path, job_dir):
+        return None
+    if not _safe_optional_job_file(review_path, job_dir):
+        return None
+
+    job = _safe_load_job_for_listing(job_path)
+    if job is None or job.get("job_id") != job_id:
+        return None
+    if job.get("status") != "completed":
+        return None
+    created_at = job.get("created_at")
+    contract = job.get("contract")
+    source = job.get("source")
+    if not isinstance(created_at, str) or not isinstance(contract, dict) or not isinstance(source, dict):
+        return None
+    review = _safe_load_review_for_listing(review_path)
+    if review_path.exists() and review is None:
+        return None
+    try:
+        review_summary = _review_listing_summary(job, review)
+    except ValueError:
+        return None
+
+    return {
+        "job_id": job_id,
+        "created_at": created_at,
+        "contract": {
+            "contract_id": contract.get("contract_id"),
+            "title": contract.get("title"),
+            "version": contract.get("version"),
+        },
+        "scorer": job.get("scorer"),
+        "status": job.get("status"),
+        "source": {
+            "row_count": source.get("row_count") if isinstance(source.get("row_count"), int) else 0,
+            "field_count": _source_field_count_for_listing(job),
+        },
+        "review": review_summary,
+    }
+
+
+def _list_mapping_jobs(limit: int) -> dict[str, Any]:
+    root = _runtime_root()
+    if not root.exists():
+        return {"jobs": [], "returned_count": 0, "has_more": False}
+    if not root.is_dir() or not _safe_runtime_child(root, root):
+        raise _http_error(500, "mapping_job_list_unavailable", "Mapping job runtime root is not a safe directory.")
+
+    jobs: list[dict[str, Any]] = []
+    try:
+        children = list(root.iterdir())
+    except OSError as exc:
+        raise _http_error(500, "mapping_job_list_unavailable", "Mapping job runtime root could not be read.") from exc
+    for child in children:
+        job_id = child.name
+        if not JOB_ID_PATTERN.fullmatch(job_id):
+            continue
+        item = _job_listing_item(job_id, child, root)
+        if item is not None:
+            jobs.append(item)
+    jobs.sort(key=lambda item: (str(item["created_at"]), str(item["job_id"])), reverse=True)
+    limited = jobs[:limit]
+    return {
+        "jobs": limited,
+        "returned_count": len(limited),
+        "has_more": len(jobs) > limit,
+    }
+
+
 def _mapping_by_source(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
     mappings = report.get("mappings", [])
     if not isinstance(mappings, list):
@@ -786,6 +930,16 @@ def _job_metadata(
 @router.get("/contracts")
 def list_contracts() -> dict[str, Any]:
     return {"contracts": [_contract_summary(spec) for spec in CONTRACTS.values()]}
+
+
+@router.get("/jobs")
+def list_mapping_jobs(limit: int = Query(default=10, ge=1, le=100)) -> dict[str, Any]:
+    if not JOB_LOCK.acquire(blocking=False):
+        raise _http_error(409, "mapping_job_in_progress", "A mapping job or review update is already running in this process.")
+    try:
+        return _list_mapping_jobs(limit)
+    finally:
+        JOB_LOCK.release()
 
 
 @router.post("/jobs", status_code=201)

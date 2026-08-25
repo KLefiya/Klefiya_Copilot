@@ -174,7 +174,7 @@ class PracticalV2DocumentationTests(unittest.TestCase):
         self.assertNotIn("27 failures", self.readme)
         self.assertNotIn("33 errors", self.readme)
         self.assertNotIn("483 tests passed", self.readme)
-        self.assertIn("Frontend tests: 82", self.readme)
+        self.assertIn("Frontend tests: 88", self.readme)
         self.assertIn("Workspace API tests: 38", self.readme)
         self.assertIn("Unable to parse full Python test count", self.script)
         self.assertIn("Python tests: $fullPythonCount", self.script)

@@ -16,6 +16,7 @@ import type {
   MappingJobResponse,
   MappingReviewPayload,
   MappingReviewResponse,
+  RecentMappingJobsResponse,
 } from './lib/mappingJobs'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000'
@@ -197,6 +198,9 @@ export const createMappingJob = (payload: CreateMappingJobPayload) =>
 
 export const getMappingJob = (jobId: string) =>
   request<MappingJobResponse>(`/api/mapping/jobs/${encodeURIComponent(jobId)}`)
+
+export const getRecentMappingJobs = (limit = 10) =>
+  request<RecentMappingJobsResponse>(`/api/mapping/jobs?limit=${encodeURIComponent(String(limit))}`)
 
 export const deleteMappingJob = (jobId: string, payload: DeleteMappingJobPayload) =>
   request<void>(`/api/mapping/jobs/${encodeURIComponent(jobId)}`, {

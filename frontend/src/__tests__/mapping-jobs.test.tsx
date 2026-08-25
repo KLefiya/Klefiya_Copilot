@@ -9,6 +9,7 @@ import type {
   MappingReviewPayload,
   MappingReviewSummary,
   MappingScorer,
+  RecentMappingJobsResponse,
 } from '../lib/mappingJobs'
 import { theme } from '../lib/theme'
 import { MappingJobView } from '../views/MappingJobView'
@@ -246,6 +247,7 @@ let postCalls = 0
 let getJobCalls = 0
 let reviewCalls = 0
 let deleteCalls = 0
+let recentCalls = 0
 let exportCalls: string[] = []
 let deleteCallsByPath: string[] = []
 let pendingPost: { resolve: (value: Response) => void } | null = null
@@ -308,11 +310,76 @@ function mappingJobWithV5Review() {
   return job
 }
 
+function recentJobsResponse(kind: 'default' | 'empty' | 'afterCreate' | 'afterReview' | 'afterDelete' = 'default'): RecentMappingJobsResponse {
+  const base = [
+    {
+      job_id: '1234567890abcdef1234567890abcdef',
+      created_at: '2026-08-25T10:00:00+00:00',
+      contract: {
+        contract_id: 'generic-customer-v1',
+        title: 'Recent Generic Contract',
+        version: '1.0.0',
+      },
+      scorer: 'precision_tiered_v5',
+      status: 'completed',
+      source: { row_count: 2, field_count: 2 },
+      review: { status: 'partial', reviewed_count: 1, total_fields: 2, updated_at: '2026-08-25T10:05:00+00:00' },
+    },
+    {
+      job_id: 'abcdefabcdefabcdefabcdefabcdefab',
+      created_at: '2026-08-24T09:00:00+00:00',
+      contract: {
+        contract_id: 'supplier-reference-v1',
+        title: 'Supplier Reference Contract',
+        version: '1.0.0',
+      },
+      scorer: 'baseline',
+      status: 'completed',
+      source: { row_count: 4, field_count: 3 },
+      review: { status: 'not_started', reviewed_count: 0, total_fields: 3, updated_at: null },
+    },
+  ] satisfies RecentMappingJobsResponse['jobs']
+  if (kind === 'empty') return { jobs: [], returned_count: 0, has_more: false }
+  if (kind === 'afterCreate') {
+    return {
+      jobs: [
+        {
+          ...base[0],
+          review: { status: 'not_started', reviewed_count: 0, total_fields: 2, updated_at: null },
+        },
+        base[1],
+      ],
+      returned_count: 2,
+      has_more: false,
+    }
+  }
+  if (kind === 'afterReview') {
+    return {
+      jobs: [
+        {
+          ...base[0],
+          review: { status: 'complete', reviewed_count: 2, total_fields: 2, updated_at: '2026-08-25T10:10:00+00:00' },
+        },
+        base[1],
+      ],
+      returned_count: 2,
+      has_more: false,
+    }
+  }
+  if (kind === 'afterDelete') {
+    return { jobs: [base[1]], returned_count: 1, has_more: false }
+  }
+  return { jobs: base, returned_count: base.length, has_more: false }
+}
+
 function installFetch(
   mode:
     | 'ok'
     | 'pending'
     | 'error'
+    | 'recentEmpty'
+    | 'recentError'
+    | 'recentLoadError'
     | 'reviewPending'
     | 'reviewError'
     | 'downloadError'
@@ -331,6 +398,7 @@ function installFetch(
   getJobCalls = 0
   reviewCalls = 0
   deleteCalls = 0
+  recentCalls = 0
   exportCalls = []
   deleteCallsByPath = []
   pendingPost = null
@@ -346,6 +414,17 @@ function installFetch(
       if (path === '/api/mapping/contracts') {
         if (mode === 'contractsPending') return new Promise<Response>(() => undefined)
         return Promise.resolve(response(catalog))
+      }
+      if (path === '/api/mapping/jobs?limit=10' && (!init || init.method === undefined || init.method === 'GET')) {
+        recentCalls += 1
+        if (mode === 'recentError') {
+          return Promise.resolve(response({ detail: { error: 'mapping_job_list_unavailable', message: 'Recent jobs are unavailable.' } }, 500))
+        }
+        if (mode === 'recentEmpty') return Promise.resolve(response(recentJobsResponse('empty')))
+        if (deleteCalls > 0) return Promise.resolve(response(recentJobsResponse('afterDelete')))
+        if (reviewCalls > 0) return Promise.resolve(response(recentJobsResponse('afterReview')))
+        if (postCalls > 0) return Promise.resolve(response(recentJobsResponse('afterCreate')))
+        return Promise.resolve(response(recentJobsResponse()))
       }
       if (path === '/api/mapping/jobs' && init?.method === 'POST') {
         postCalls += 1
@@ -411,6 +490,9 @@ function installFetch(
       }
       if (path === '/api/mapping/jobs/1234567890abcdef1234567890abcdef') {
         getJobCalls += 1
+        if (mode === 'recentLoadError') {
+          return Promise.resolve(response({ detail: { error: 'mapping_job_not_found', message: 'Mapping job was not found.' } }, 404))
+        }
         return Promise.resolve(response(mode === 'existingV5' ? mappingJobWithV5Review() : mappingJobWithReview()))
       }
       if (path === '/api/migration/workspaces/erpnext-item-price') {
@@ -595,6 +677,73 @@ describe('MappingJobView', () => {
     expect(screen.getAllByText('Identifier interaction: entity_identifier_support').length).toBeGreaterThan(0)
   })
 
+  it('shows recent jobs in server order without private fields', async () => {
+    renderView()
+    await waitFor(() => expect(screen.getByText('Recent Jobs')).toBeDefined())
+    expect(screen.getByText('12345678')).toBeDefined()
+    expect(screen.getByText('abcdefab')).toBeDefined()
+    const text = document.body.textContent ?? ''
+    expect(text.indexOf('12345678')).toBeLessThan(text.indexOf('abcdefab'))
+    expect(screen.getByText('Recent Generic Contract')).toBeDefined()
+    expect(screen.getByText('precision_tiered_v5')).toBeDefined()
+    expect(screen.getByText('2/2')).toBeDefined()
+    expect(screen.getByText('partial 1/2')).toBeDefined()
+    expect(screen.queryByText('customers.csv')).toBeNull()
+    expect(screen.queryByText('routing_number')).toBeNull()
+    expect(screen.queryByText('customer_bank.routing_number')).toBeNull()
+    expect(screen.queryByText(sentinel)).toBeNull()
+  })
+
+  it('loads a recent job through the existing full job GET flow', async () => {
+    renderView()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Load 12345678' })).toBeDefined())
+    fireEvent.click(screen.getByRole('button', { name: 'Load 12345678' }))
+    await waitFor(() => expect(getJobCalls).toBe(1))
+    expect(await screen.findByText('loaded.csv')).toBeDefined()
+    expect(screen.getAllByText('customer_bank.routing_number').length).toBeGreaterThan(0)
+  })
+
+  it('keeps manual Existing Job loading available with the recent list present', async () => {
+    renderView()
+    await waitFor(() => expect(screen.getByText('Recent Jobs')).toBeDefined())
+    fireEvent.change(screen.getByLabelText('Load existing job'), { target: { value: '1234567890abcdef1234567890abcdef' } })
+    fireEvent.click(screen.getByText('Load job'))
+    await waitFor(() => expect(getJobCalls).toBe(1))
+    expect(screen.getByText('loaded.csv')).toBeDefined()
+  })
+
+  it('keeps the current job and review state when recent refresh fails', async () => {
+    installFetch('recentError')
+    await runMappingJob()
+    fireEvent.click(screen.getByLabelText('接受算法建议 customer_bank.routing_number'))
+    expect(screen.getByText(/有未保存修改/)).toBeDefined()
+    fireEvent.click(screen.getByText('Refresh'))
+    expect(await screen.findByText(/mapping_job_list_unavailable.*Recent jobs are unavailable/)).toBeDefined()
+    expect(screen.getByText('Mapping Results')).toBeDefined()
+    expect(screen.getByText(/有未保存修改/)).toBeDefined()
+    expect(screen.getAllByText('customers.csv').length).toBeGreaterThan(0)
+  })
+
+  it('keeps the current job and recent list when recent load fails', async () => {
+    installFetch('recentLoadError')
+    await runMappingJob()
+    fireEvent.click(screen.getByRole('button', { name: 'Load 12345678' }))
+    await waitFor(() => expect(getJobCalls).toBe(1))
+    expect(await screen.findByText(/mapping_job_not_found.*Mapping job was not found/)).toBeDefined()
+    expect(screen.getAllByText('customers.csv').length).toBeGreaterThan(0)
+    expect(screen.getByText('12345678')).toBeDefined()
+  })
+
+  it('syncs recent jobs after create and review save', async () => {
+    await runMappingJob()
+    await waitFor(() => expect(screen.getByText('not_started 0/2')).toBeDefined())
+    fireEvent.click(screen.getByLabelText('接受算法建议 customer_bank.routing_number'))
+    fireEvent.click(screen.getAllByLabelText('标记不映射')[1])
+    fireEvent.click(screen.getByRole('button', { name: 'Save review' }))
+    await waitFor(() => expect(reviewCalls).toBe(1))
+    await waitFor(() => expect(screen.getByText('complete 2/2')).toBeDefined())
+  })
+
   it('shows delete only for a completed job and requires explicit confirmation', async () => {
     renderView()
     await waitFor(() => expect(screen.getByText('Generic Customer Migration Contract')).toBeDefined())
@@ -622,6 +771,8 @@ describe('MappingJobView', () => {
     expect(await screen.findByText('Mapping job deleted.')).toBeDefined()
     expect(screen.queryByText('Mapping Results')).toBeNull()
     expect(screen.queryByText('浜哄伐澶嶆牳')).toBeNull()
+    expect(screen.queryByText('12345678')).toBeNull()
+    expect(screen.getByText('abcdefab')).toBeDefined()
     expect((screen.getByLabelText('Load existing job') as HTMLInputElement).disabled).toBe(false)
   })
 

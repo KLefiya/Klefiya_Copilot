@@ -923,6 +923,161 @@ class MappingJobsApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(self.calls, [])
 
+    def test_37_recent_jobs_empty_runtime_returns_empty_list(self):
+        response = self.client.get("/api/mapping/jobs")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"jobs": [], "returned_count": 0, "has_more": False})
+
+    def test_38_recent_jobs_sort_limit_and_has_more_after_safe_filtering(self):
+        first = self._create("baseline").json()
+        second = self._create("precision_tiered_v4").json()
+        third = self._create("precision_tiered_v5").json()
+        self._set_created_at(first["job"]["job_id"], "2026-08-20T10:00:00+00:00")
+        self._set_created_at(second["job"]["job_id"], "2026-08-22T10:00:00+00:00")
+        self._set_created_at(third["job"]["job_id"], "2026-08-22T10:00:00+00:00")
+        (mapping_jobs.RUNTIME_ROOT / "not-a-job").mkdir()
+        (mapping_jobs.RUNTIME_ROOT / ("f" * 32)).mkdir()
+        (mapping_jobs.RUNTIME_ROOT / ("f" * 32) / "job.json").write_text("{bad", encoding="utf-8")
+
+        response = self.client.get("/api/mapping/jobs?limit=2")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["returned_count"], 2)
+        self.assertTrue(body["has_more"])
+        self.assertEqual(
+            [item["job_id"] for item in body["jobs"]],
+            sorted([second["job"]["job_id"], third["job"]["job_id"]], reverse=True),
+        )
+
+    def test_39_recent_jobs_limit_validation(self):
+        for value in ("0", "101", "not-an-int"):
+            with self.subTest(limit=value):
+                response = self.client.get(f"/api/mapping/jobs?limit={value}")
+                self.assertEqual(response.status_code, 422)
+
+    def test_40_recent_jobs_lists_all_scorers_without_calling_model(self):
+        for scorer in ("baseline", "precision_tiered_v4", "precision_tiered_v5"):
+            self._create(scorer)
+        self.calls.clear()
+
+        def fail_if_called(*args, **kwargs):
+            raise AssertionError("recent jobs must not run schema matching")
+
+        with patch.object(mapping_jobs, "suggest_runtime_contract_mappings", fail_if_called):
+            response = self.client.get("/api/mapping/jobs")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual({item["scorer"] for item in response.json()["jobs"]}, {"baseline", "precision_tiered_v4", "precision_tiered_v5"})
+        self.assertEqual(self.calls, [])
+
+    def test_41_recent_jobs_review_status_not_started_partial_and_complete(self):
+        not_started = self._create("baseline").json()
+        partial = self._create("precision_tiered_v4").json()
+        complete = self._create("precision_tiered_v5").json()
+        self.client.put(
+            f"/api/mapping/jobs/{partial['job']['job_id']}/review",
+            json={
+                "mapping_report_sha256": "precision_tiered_v4-content-sha",
+                "decisions": [{"source_field": "legacy_client_id", "action": "accept_suggestion"}],
+            },
+        )
+        self._complete_review(complete["job"]["job_id"], sha="precision_tiered_v5-content-sha")
+
+        items = {item["job_id"]: item for item in self.client.get("/api/mapping/jobs").json()["jobs"]}
+        self.assertEqual(items[not_started["job"]["job_id"]]["review"]["status"], "not_started")
+        self.assertEqual(items[not_started["job"]["job_id"]]["review"]["reviewed_count"], 0)
+        self.assertEqual(items[partial["job"]["job_id"]]["review"]["status"], "partial")
+        self.assertEqual(items[partial["job"]["job_id"]]["review"]["reviewed_count"], 1)
+        self.assertEqual(items[complete["job"]["job_id"]]["review"]["status"], "complete")
+        self.assertEqual(items[complete["job"]["job_id"]]["review"]["reviewed_count"], 2)
+        self.assertIsNotNone(items[complete["job"]["job_id"]]["review"]["updated_at"])
+
+    def test_42_recent_jobs_response_excludes_private_fields(self):
+        created = self._create("precision_tiered_v5").json()
+        self._complete_review(created["job"]["job_id"], sha="precision_tiered_v5-content-sha", note="secret note")
+        body = self.client.get("/api/mapping/jobs").json()
+        self.assertEqual(body["returned_count"], 1)
+        text = json.dumps(body, ensure_ascii=False)
+        self.assertNotIn("customers.csv", text)
+        self.assertNotIn("source.csv", text)
+        self.assertNotIn("mapping_report.json", text)
+        self.assertNotIn("review.json", text)
+        self.assertNotIn("legacy_client_id", text)
+        self.assertNotIn("customer.customer_id", text)
+        self.assertNotIn("identifier_interaction_evidence", text)
+        self.assertNotIn("secret note", text)
+        self.assertNotIn(SENTINEL, text)
+        self.assertNotIn("ground_truth", text)
+        self.assertNotRegex(text, r"[A-Za-z]:[\\/]|/tmp/")
+
+    def test_43_recent_jobs_ignores_non_job_files_invalid_dirs_and_temp_files(self):
+        healthy = self._create().json()
+        mapping_jobs.RUNTIME_ROOT.mkdir(parents=True, exist_ok=True)
+        (mapping_jobs.RUNTIME_ROOT / "plain-file").write_text("nope", encoding="utf-8")
+        (mapping_jobs.RUNTIME_ROOT / ".mapping_report.json.tmp").write_text("tmp", encoding="utf-8")
+        (mapping_jobs.RUNTIME_ROOT / ("x" * 32)).write_text("not a dir", encoding="utf-8")
+        (mapping_jobs.RUNTIME_ROOT / "UPPERCASE000000000000000000000").mkdir()
+        body = self.client.get("/api/mapping/jobs").json()
+        self.assertEqual([item["job_id"] for item in body["jobs"]], [healthy["job"]["job_id"]])
+
+    def test_44_recent_jobs_malformed_job_does_not_hide_healthy_jobs(self):
+        healthy = self._create().json()
+        bad_id = "a" * 32
+        bad_dir = mapping_jobs.RUNTIME_ROOT / bad_id
+        bad_dir.mkdir()
+        (bad_dir / "job.json").write_text(json.dumps({"job_id": bad_id, "created_at": "2026-08-20T00:00:00+00:00"}), encoding="utf-8")
+        (bad_dir / "mapping_report.json").write_text("{}", encoding="utf-8")
+        corrupt_review = "b" * 32
+        corrupt_dir = mapping_jobs.RUNTIME_ROOT / corrupt_review
+        shutil.copytree(mapping_jobs.RUNTIME_ROOT / healthy["job"]["job_id"], corrupt_dir)
+        self._set_job_id(corrupt_review)
+        (corrupt_dir / "review.json").write_text("{bad", encoding="utf-8")
+
+        body = self.client.get("/api/mapping/jobs").json()
+        self.assertEqual(body["returned_count"], 1)
+        self.assertEqual(body["jobs"][0]["job_id"], healthy["job"]["job_id"])
+
+    def test_45_recent_jobs_does_not_follow_symlink_or_reparse_candidates(self):
+        healthy = self._create().json()
+        external = Path(self._temp_dir.name) / "external_job"
+        external.mkdir()
+        (external / "job.json").write_text(json.dumps({"job_id": "c" * 32, "created_at": "2099-01-01T00:00:00+00:00"}), encoding="utf-8")
+        link = mapping_jobs.RUNTIME_ROOT / ("c" * 32)
+        simulated = False
+        try:
+            os.symlink(external, link, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            simulated = True
+            link.mkdir()
+
+        def is_reparse_or_symlink(path: Path) -> bool:
+            return path == link or (not simulated and mapping_jobs.Path(path).is_symlink())
+
+        patcher = patch.object(mapping_jobs, "_is_reparse_or_symlink", side_effect=is_reparse_or_symlink) if simulated else nullcontext()
+        with patcher:
+            body = self.client.get("/api/mapping/jobs").json()
+        self.assertEqual([item["job_id"] for item in body["jobs"]], [healthy["job"]["job_id"]])
+
+    def test_46_recent_jobs_lock_busy_returns_409(self):
+        self.assertTrue(mapping_jobs.JOB_LOCK.acquire(blocking=False))
+        try:
+            response = self.client.get("/api/mapping/jobs")
+        finally:
+            mapping_jobs.JOB_LOCK.release()
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["detail"]["error"], "mapping_job_in_progress")
+
+    def test_47_recent_jobs_after_delete_removes_deleted_job_and_keeps_other_job(self):
+        first = self._create("baseline").json()
+        second = self._create("precision_tiered_v5").json()
+        deleted = self.client.request(
+            "DELETE",
+            f"/api/mapping/jobs/{first['job']['job_id']}",
+            json={"mapping_report_sha256": "baseline-content-sha"},
+        )
+        self.assertEqual(deleted.status_code, 204)
+        body = self.client.get("/api/mapping/jobs").json()
+        self.assertEqual([item["job_id"] for item in body["jobs"]], [second["job"]["job_id"]])
+
     def _complete_review(self, job_id: str, *, sha: str = "baseline-content-sha", note: str = "reviewed"):
         return self.client.put(
             f"/api/mapping/jobs/{job_id}/review",
@@ -934,6 +1089,18 @@ class MappingJobsApiTests(unittest.TestCase):
                 ],
             },
         )
+
+    def _set_created_at(self, job_id: str, created_at: str) -> None:
+        path = mapping_jobs.RUNTIME_ROOT / job_id / "job.json"
+        job = json.loads(path.read_text(encoding="utf-8"))
+        job["created_at"] = created_at
+        path.write_text(json.dumps(job), encoding="utf-8")
+
+    def _set_job_id(self, job_id: str) -> None:
+        path = mapping_jobs.RUNTIME_ROOT / job_id / "job.json"
+        job = json.loads(path.read_text(encoding="utf-8"))
+        job["job_id"] = job_id
+        path.write_text(json.dumps(job), encoding="utf-8")
 
     def assert_no_private_response_data(self, body: dict) -> None:
         text = json.dumps(body, ensure_ascii=False)

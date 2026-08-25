@@ -141,6 +141,36 @@ export interface DeleteMappingJobPayload {
   mapping_report_sha256: string
 }
 
+export type MappingJobReviewStatus = 'not_started' | 'partial' | 'complete'
+
+export interface RecentMappingJob {
+  job_id: string
+  created_at: string
+  contract: {
+    contract_id?: string | null
+    title?: string | null
+    version?: string | null
+  }
+  scorer?: MappingScorer | string | null
+  status?: string | null
+  source: {
+    row_count: number
+    field_count: number
+  }
+  review: {
+    status: MappingJobReviewStatus
+    reviewed_count: number
+    total_fields: number
+    updated_at?: string | null
+  }
+}
+
+export interface RecentMappingJobsResponse {
+  jobs: RecentMappingJob[]
+  returned_count: number
+  has_more: boolean
+}
+
 export interface MappingReviewSummary {
   mapping_report_sha256: string
   reviewed_fields: number
