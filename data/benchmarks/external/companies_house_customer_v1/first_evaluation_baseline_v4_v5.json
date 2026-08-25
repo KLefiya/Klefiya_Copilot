@@ -1,0 +1,1121 @@
+{
+  "algorithm_baseline_commit": "23add9d90fe93c590f32e946f471fb929cb88ac3",
+  "artifact_type": "companies_house_external_benchmark_first_evaluation",
+  "artifact_version": "1.0",
+  "case_counts": {
+    "multi_target_cases": 0,
+    "no_target_cases": 9,
+    "single_target_cases": 3,
+    "target_links": 3
+  },
+  "evaluation_ordinal": 1,
+  "evaluation_runner": {
+    "path": "scripts/evaluate_companies_house_external_benchmark.py",
+    "raw_sha256": "11618569e69c1bd360f1b738e6d72388c146add504f257f056fc22d30302edb4"
+  },
+  "evaluation_status": "completed",
+  "execution_history": {
+    "pre_prediction_infrastructure_aborts": [
+      {
+        "artifact_created": false,
+        "candidate_generation_started": false,
+        "error_code": "module_not_found_src",
+        "model_loaded": false,
+        "predictions_computed": false,
+        "scorer_execution_started": false,
+        "stage": "canonical_benchmark_import"
+      }
+    ],
+    "substantive_evaluation_ordinal": 1
+  },
+  "first_evaluation_contract": {
+    "ground_truth_loaded_after_all_scorer_predictions": true,
+    "protocol_file_left_unmodified": true,
+    "result_does_not_update_algorithm_fixture_ground_truth_or_protocol": true
+  },
+  "frozen_inputs": {
+    "fixture_readme": {
+      "path": "data/benchmarks/external/companies_house_customer_v1/README.md",
+      "raw_sha256": "2ea5e5391867a0f31db16a4c6481ba58c474f32badac918962b6730290763789"
+    },
+    "ground_truth": {
+      "path": "data/benchmarks/external/companies_house_customer_v1/ground_truth.json",
+      "raw_sha256": "fcb01c248ff403d2d13d6d31a551a80055c329d692b4698beb2028b30d705f05"
+    },
+    "preparation_script": {
+      "path": "scripts/prepare_companies_house_external_fixture.py",
+      "raw_sha256": "aad5978d7387a89ce53b2108bcec97566603241af8e563004f6ef946ce68e79c"
+    },
+    "protocol": {
+      "path": "data/benchmarks/external/companies_house_customer_v1/protocol_lock.json",
+      "raw_sha256": "99dca725014b056bd47a879dc9461009935a2416b5ab7100859dfca3aa65e723"
+    },
+    "source_fixture": {
+      "path": "data/benchmarks/external/companies_house_customer_v1/source_companies_house_customer.csv",
+      "raw_sha256": "e4b3f0b7a3ee4fe497fc6e8de2ad1fa5fc9d46209022c8aa36300800eabe0be4"
+    },
+    "source_provenance": {
+      "path": "data/benchmarks/external/companies_house_customer_v1/source_provenance.json",
+      "raw_sha256": "365e24eca399a26ae8dbad85c73db0cb51137dbef11d047e44b977e1da3444be"
+    },
+    "target_contract": {
+      "path": "contracts/generic_customer/datapackage.yaml",
+      "target_contract_git_blob_content_sha256": "8fe32d08f23a2c97dedea8d43d37d96925003766acbd4f69326b7646b90da792"
+    }
+  },
+  "header_normalization": {
+    "frozen_before_first_evaluation": true,
+    "reads_target_aliases_ground_truth_or_predictions": false,
+    "rule": "strip ASCII space (0x20) from header boundaries only",
+    "source_values_normalized": false
+  },
+  "model_execution": {
+    "encode_call_count": 36,
+    "encoded_sentence_count": 432,
+    "hf_hub_offline_enabled": true,
+    "local_files_only": true,
+    "model_load_count": 1,
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "transformers_offline_enabled": true
+  },
+  "planned_scorers": [
+    "baseline",
+    "precision_tiered_v4",
+    "precision_tiered_v5"
+  ],
+  "privacy": {
+    "contains_company_names": false,
+    "contains_company_numbers": false,
+    "contains_local_absolute_paths": false,
+    "contains_row_source_values": false,
+    "prediction_payload_fields": [
+      "source_field",
+      "status",
+      "recommendation",
+      "confidence",
+      "top_candidates.rank",
+      "top_candidates.target",
+      "top_candidates.score"
+    ]
+  },
+  "registration_commit": "66ae6fe8f55bd9efc782820622eb27c0c6e1f4ef",
+  "scenario_id": "companies_house_customer_external_v1",
+  "scorer_source_file_hashes": {
+    "baseline": {
+      "path": "src/core/mapping/scorer.py",
+      "raw_sha256": "e3cf5f6656ca2a7b143b784657ed08303fd819e5147c99303c26b716253abd67"
+    },
+    "precision_tiered_v4": {
+      "path": "src/core/mapping/scorer_v4.py",
+      "raw_sha256": "e619fa4c6df9ae10e902c2722c7b1a21ffc28d8cdb6fd82e1ac647247c24ee83"
+    },
+    "precision_tiered_v5": {
+      "path": "src/core/mapping/scorer_v5.py",
+      "raw_sha256": "9b21e0d4873e3cccf348d17f6996dd7d2471822ebc99fbe2bc684d309a3c8f78"
+    }
+  },
+  "scorers": {
+    "baseline": {
+      "metrics": {
+        "coverage": {
+          "has_top3": 12
+        },
+        "mean_reciprocal_rank": {
+          "denominator": 3,
+          "numerator": 2.0,
+          "value": 0.6667
+        },
+        "multi_target_full_recall_at_3": {
+          "denominator": 0,
+          "numerator": 0,
+          "status": "not_applicable",
+          "value": null
+        },
+        "no_target_accuracy": {
+          "denominator": 9,
+          "numerator": 9,
+          "value": 1.0
+        },
+        "recommendation_counts": {
+          "no_recommendation": 10,
+          "recommended": 2
+        },
+        "single_target_top1_accuracy": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        },
+        "status_counts": {
+          "needs_review": 2,
+          "no_confident_target": 10
+        },
+        "target_link_recall_at_1": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        },
+        "target_link_recall_at_3": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        }
+      },
+      "model_runtime": {
+        "encode_call_count": 12,
+        "encoded_sentence_count": 144
+      },
+      "predictions": [
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Accounts.AccountCategory",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.3497,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.338,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 3,
+              "score": 0.3131,
+              "target": "customer_bank.currency"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Accounts.NextDueDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2875,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 2,
+              "score": 0.2702,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.2465,
+              "target": "customer_bank.bank_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyCategory",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4066,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.2719,
+              "target": "customer.country"
+            },
+            {
+              "rank": 3,
+              "score": 0.233,
+              "target": "customer.phone"
+            }
+          ]
+        },
+        {
+          "confidence": 0.4927,
+          "recommendation": "customer.customer_name",
+          "source_field": "CompanyName",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4927,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.293,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.2156,
+              "target": "customer.email"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyNumber",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4178,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.3588,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.3587,
+              "target": "customer.country"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyStatus",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.428,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.2239,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.2046,
+              "target": "customer.customer_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "ConfStmtNextDueDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.1727,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 2,
+              "score": 0.1464,
+              "target": "customer.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.1451,
+              "target": "customer.payment_terms"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "IncorporationDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2876,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.191,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.1847,
+              "target": "customer.tax_number"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Mortgages.NumMortCharges",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.246,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.2385,
+              "target": "customer.payment_terms"
+            },
+            {
+              "rank": 3,
+              "score": 0.2265,
+              "target": "customer_bank.bank_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.5475,
+          "recommendation": "customer.country",
+          "source_field": "RegAddress.Country",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.5475,
+              "target": "customer.country"
+            },
+            {
+              "rank": 2,
+              "score": 0.2742,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 3,
+              "score": 0.2539,
+              "target": "customer_bank.currency"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "SICCode.SicText_1",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2669,
+              "target": "customer.country"
+            },
+            {
+              "rank": 2,
+              "score": 0.2505,
+              "target": "customer_bank.currency"
+            },
+            {
+              "rank": 3,
+              "score": 0.2301,
+              "target": "customer.tax_number"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "URI",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.1857,
+              "target": "customer.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.1529,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.1468,
+              "target": "customer.phone"
+            }
+          ]
+        }
+      ],
+      "scorer_metadata": {
+        "feature_version": null,
+        "parent_scorer": null,
+        "scorer_id": "baseline"
+      },
+      "source_fields_evaluated": 12
+    },
+    "precision_tiered_v4": {
+      "metrics": {
+        "coverage": {
+          "has_top3": 12
+        },
+        "mean_reciprocal_rank": {
+          "denominator": 3,
+          "numerator": 2.0,
+          "value": 0.6667
+        },
+        "multi_target_full_recall_at_3": {
+          "denominator": 0,
+          "numerator": 0,
+          "status": "not_applicable",
+          "value": null
+        },
+        "no_target_accuracy": {
+          "denominator": 9,
+          "numerator": 9,
+          "value": 1.0
+        },
+        "recommendation_counts": {
+          "no_recommendation": 9,
+          "recommended": 3
+        },
+        "single_target_top1_accuracy": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        },
+        "status_counts": {
+          "needs_review": 3,
+          "no_confident_target": 9
+        },
+        "target_link_recall_at_1": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        },
+        "target_link_recall_at_3": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        }
+      },
+      "model_runtime": {
+        "encode_call_count": 12,
+        "encoded_sentence_count": 144
+      },
+      "predictions": [
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Accounts.AccountCategory",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.3497,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.338,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 3,
+              "score": 0.3131,
+              "target": "customer_bank.currency"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Accounts.NextDueDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2875,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 2,
+              "score": 0.2702,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.2465,
+              "target": "customer_bank.bank_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyCategory",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4066,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.2719,
+              "target": "customer.country"
+            },
+            {
+              "rank": 3,
+              "score": 0.233,
+              "target": "customer.phone"
+            }
+          ]
+        },
+        {
+          "confidence": 0.4927,
+          "recommendation": "customer.customer_name",
+          "source_field": "CompanyName",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4927,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.293,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.2156,
+              "target": "customer.email"
+            }
+          ]
+        },
+        {
+          "confidence": 0.476,
+          "recommendation": "customer.customer_name",
+          "source_field": "CompanyNumber",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.476,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.4229,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.4228,
+              "target": "customer.country"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyStatus",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.428,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.2239,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.2046,
+              "target": "customer.customer_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "ConfStmtNextDueDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.1727,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 2,
+              "score": 0.1464,
+              "target": "customer.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.1451,
+              "target": "customer.payment_terms"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "IncorporationDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2876,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.191,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.1847,
+              "target": "customer.tax_number"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Mortgages.NumMortCharges",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.246,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.2385,
+              "target": "customer.payment_terms"
+            },
+            {
+              "rank": 3,
+              "score": 0.2265,
+              "target": "customer_bank.bank_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.5475,
+          "recommendation": "customer.country",
+          "source_field": "RegAddress.Country",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.5475,
+              "target": "customer.country"
+            },
+            {
+              "rank": 2,
+              "score": 0.2742,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 3,
+              "score": 0.2539,
+              "target": "customer_bank.currency"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "SICCode.SicText_1",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2669,
+              "target": "customer.country"
+            },
+            {
+              "rank": 2,
+              "score": 0.2505,
+              "target": "customer_bank.currency"
+            },
+            {
+              "rank": 3,
+              "score": 0.2301,
+              "target": "customer.tax_number"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "URI",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.1857,
+              "target": "customer.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.1529,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.1468,
+              "target": "customer.phone"
+            }
+          ]
+        }
+      ],
+      "scorer_metadata": {
+        "feature_version": "precision_tiered_interaction_v1",
+        "parent_scorer": "target_context_v3",
+        "scorer_id": "precision_tiered_v4"
+      },
+      "source_fields_evaluated": 12
+    },
+    "precision_tiered_v5": {
+      "metrics": {
+        "coverage": {
+          "has_top3": 12
+        },
+        "mean_reciprocal_rank": {
+          "denominator": 3,
+          "numerator": 2.0,
+          "value": 0.6667
+        },
+        "multi_target_full_recall_at_3": {
+          "denominator": 0,
+          "numerator": 0,
+          "status": "not_applicable",
+          "value": null
+        },
+        "no_target_accuracy": {
+          "denominator": 9,
+          "numerator": 9,
+          "value": 1.0
+        },
+        "recommendation_counts": {
+          "no_recommendation": 9,
+          "recommended": 3
+        },
+        "single_target_top1_accuracy": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        },
+        "status_counts": {
+          "needs_review": 3,
+          "no_confident_target": 9
+        },
+        "target_link_recall_at_1": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        },
+        "target_link_recall_at_3": {
+          "denominator": 3,
+          "numerator": 2,
+          "value": 0.6667
+        }
+      },
+      "model_runtime": {
+        "encode_call_count": 12,
+        "encoded_sentence_count": 144
+      },
+      "predictions": [
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Accounts.AccountCategory",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.3497,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.338,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 3,
+              "score": 0.3131,
+              "target": "customer_bank.currency"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Accounts.NextDueDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2875,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 2,
+              "score": 0.2702,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.2465,
+              "target": "customer_bank.bank_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyCategory",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4066,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.2719,
+              "target": "customer.country"
+            },
+            {
+              "rank": 3,
+              "score": 0.233,
+              "target": "customer.phone"
+            }
+          ]
+        },
+        {
+          "confidence": 0.4927,
+          "recommendation": "customer.customer_name",
+          "source_field": "CompanyName",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.4927,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.293,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.2156,
+              "target": "customer.email"
+            }
+          ]
+        },
+        {
+          "confidence": 0.476,
+          "recommendation": "customer.customer_name",
+          "source_field": "CompanyNumber",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.476,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.4229,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.4228,
+              "target": "customer.country"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "CompanyStatus",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.428,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.2239,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.2046,
+              "target": "customer.customer_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "ConfStmtNextDueDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.1727,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 2,
+              "score": 0.1464,
+              "target": "customer.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.1451,
+              "target": "customer.payment_terms"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "IncorporationDate",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2876,
+              "target": "customer.customer_name"
+            },
+            {
+              "rank": 2,
+              "score": 0.191,
+              "target": "customer.phone"
+            },
+            {
+              "rank": 3,
+              "score": 0.1847,
+              "target": "customer.tax_number"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "Mortgages.NumMortCharges",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.246,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.2385,
+              "target": "customer.payment_terms"
+            },
+            {
+              "rank": 3,
+              "score": 0.2265,
+              "target": "customer_bank.bank_id"
+            }
+          ]
+        },
+        {
+          "confidence": 0.5475,
+          "recommendation": "customer.country",
+          "source_field": "RegAddress.Country",
+          "status": "needs_review",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.5475,
+              "target": "customer.country"
+            },
+            {
+              "rank": 2,
+              "score": 0.2742,
+              "target": "customer_bank.iban"
+            },
+            {
+              "rank": 3,
+              "score": 0.2539,
+              "target": "customer_bank.currency"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "SICCode.SicText_1",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.2669,
+              "target": "customer.country"
+            },
+            {
+              "rank": 2,
+              "score": 0.2505,
+              "target": "customer_bank.currency"
+            },
+            {
+              "rank": 3,
+              "score": 0.2301,
+              "target": "customer.tax_number"
+            }
+          ]
+        },
+        {
+          "confidence": 0.0,
+          "recommendation": null,
+          "source_field": "URI",
+          "status": "no_confident_target",
+          "top_candidates": [
+            {
+              "rank": 1,
+              "score": 0.1857,
+              "target": "customer.customer_id"
+            },
+            {
+              "rank": 2,
+              "score": 0.1529,
+              "target": "customer_bank.customer_id"
+            },
+            {
+              "rank": 3,
+              "score": 0.1468,
+              "target": "customer.phone"
+            }
+          ]
+        }
+      ],
+      "scorer_metadata": {
+        "feature_version": "entity_identifier_interaction_v1",
+        "parent_scorer": "precision_tiered_v4",
+        "scorer_id": "precision_tiered_v5"
+      },
+      "source_fields_evaluated": 12
+    }
+  }
+}

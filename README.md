@@ -346,6 +346,10 @@ Cutover agent trace = ac99965064bd5900686ebbb9cb1762eebdfcf63ba5dff66f45ae82a61e
 
 The smoke scripts default to temporary output locations when they are used as tests. The formal rebuild order above is only for controlled artifact maintenance.
 
+## Companies House External Benchmark
+
+The first Companies House external evaluation uses public monthly snapshot `BasicCompanyData-2026-08-01-part1_7.zip` as a 128-row value sample with 12 source fields. The preregistered fixture has 3 single-target fields, 0 multi-target fields, and 9 no-target fields, evaluated against the existing synthetic generic customer target contract. Baseline, V4, and V5 produced the same external metrics: Top-1 2/3, Recall@1 2/3, Recall@3 2/3, MRR 2/3, no-target accuracy 9/9, and multi-target N/A with denominator 0. `CompanyName` and `RegAddress.Country` had the correct target at rank 1; `CompanyNumber` did not place `customer.customer_id` in the Top-3. This small external sample is useful as a frozen public-data check, but it does not prove production-data generalization or a statistically significant improvement. See the [fixture](data/benchmarks/external/companies_house_customer_v1/source_companies_house_customer.csv), [protocol](data/benchmarks/external/companies_house_customer_v1/protocol_lock.json), [runner](scripts/evaluate_companies_house_external_benchmark.py), and [first evaluation artifact](data/benchmarks/external/companies_house_customer_v1/first_evaluation_baseline_v4_v5.json).
+
 ## Run The Verification Suite
 
 ```powershell
@@ -356,7 +360,7 @@ Current local verification counts:
 
 ```text
 Scoped Migration/Cutover tests: 238 passed
-Full unittest discovery: 758 tests, 0 failures, 0 errors
+Full unittest discovery: 770 tests, 0 failures, 0 errors
 Frontend tests: 88
 Workspace API tests: 38
 ```
