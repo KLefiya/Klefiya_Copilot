@@ -1,0 +1,115 @@
+{
+  "benchmark_id": "fdic_bankfind_locations_v1",
+  "sealed_holdout": true,
+  "development_benchmark": false,
+  "formal_evaluation": false,
+  "first_evaluation_status": "not_run",
+  "source_name": "FDIC BankFind Suite locations endpoint",
+  "source_domain": "public_banking_reference",
+  "source_homepage": "https://banks.data.fdic.gov/bankfind-suite",
+  "source_api_documentation": "https://api.fdic.gov/banks/docs",
+  "source_openapi_specification": "https://api.fdic.gov/banks/docs/swagger.yaml",
+  "source_data_gov_catalog": "https://catalog.data.gov/dataset/fdic-bankfind-suite-api",
+  "source_api_endpoint": "https://api.fdic.gov/banks/locations",
+  "source_index_name": "locations_20260825141534",
+  "source_total_after_filter": 71935,
+  "api_query": {
+    "filters": "SERVTYPE:11",
+    "fields": [
+      "CERT",
+      "UNINUM",
+      "NAME",
+      "OFFNAME",
+      "CITY",
+      "STNAME",
+      "STALP",
+      "ZIP",
+      "COUNTY",
+      "SERVTYPE",
+      "SERVTYPE_DESC",
+      "RUNDATE",
+      "OFFDOM",
+      "MAINOFF"
+    ],
+    "sort_by": "UNINUM",
+    "sort_order": "ASC",
+    "limit": 128,
+    "offset": 0,
+    "format": "json"
+  },
+  "source_sample": {
+    "path": "data/benchmarks/sealed/fdic_bankfind_locations_v1/source_sample.csv",
+    "format": "csv",
+    "encoding": "utf-8",
+    "line_endings": "lf",
+    "row_count": 128,
+    "field_count": 14,
+    "raw_sha256": "775dbdac1a7c02bad64b8e1f4af117e227b43bf85d3e6e15e26db10c3f915da1"
+  },
+  "license": {
+    "name": "U.S. Public Domain Mark 1.0",
+    "url": "https://www.usa.gov/publicdomain/label/1.0/",
+    "basis": "The Data.gov catalog entry for FDIC BankFind Suite API lists accessLevel as public and the license as the U.S. public-domain label.",
+    "attribution": "Source data from the Federal Deposit Insurance Corporation BankFind Suite API."
+  },
+  "candidate_dataset_comparison": [
+    {
+      "name": "FDIC BankFind Suite locations",
+      "source": "https://api.fdic.gov/banks/docs",
+      "domain": "public_banking_reference",
+      "decision": "selected",
+      "fit": "Branch/location records naturally test the synthetic bank_branch target contract, include identifiers and organization names, and are distinct from the food, procurement, and Companies House corpora already used.",
+      "privacy": "The fixture excludes street addresses, telephone numbers, email addresses, websites, and contact names."
+    },
+    {
+      "name": "FDIC BankFind Suite institutions",
+      "source": "https://api.fdic.gov/banks/docs",
+      "domain": "public_banking_reference",
+      "decision": "not_selected",
+      "fit": "Institution-level records are public and stable, but provide fewer branch-level target-bearing fields than the locations endpoint for the existing bank_branch target contract."
+    },
+    {
+      "name": "World Bank Documents and Reports API",
+      "source": "https://documents.worldbank.org/en/publication/documents-reports/api",
+      "domain": "public_project_documents",
+      "decision": "not_selected",
+      "fit": "The API is public and well documented, but document metadata overlaps less directly with the existing target contracts and would lean toward another procurement/project-management scenario after a procurement public-development benchmark already exists."
+    }
+  ],
+  "sampling": {
+    "method": "Call the FDIC BankFind Suite locations endpoint with SERVTYPE:11, project the fixed field list, sort by UNINUM ascending, and keep the first 128 returned rows.",
+    "row_selection_key": "UNINUM",
+    "deduplication": "The selected sample is unique by UNINUM.",
+    "field_name_normalization": "none; source headers are copied exactly from the selected FDIC API fields",
+    "source_value_normalization": "none; values are written as returned by the FDIC API except UTF-8 CSV serialization and CSV escaping",
+    "excluded_public_columns": [
+      "ADDRESS",
+      "ADDRESS2",
+      "BKMO",
+      "BKMO_DESC",
+      "CBSA",
+      "CSA",
+      "CSA_NO",
+      "FI_UNINUM",
+      "MAINOFFICE",
+      "PHONE",
+      "WEBSITE"
+    ],
+    "sensitive_column_handling": "No street address, phone, website, person name, email, account number, or routing-number-like operational value is copied into this sealed fixture."
+  },
+  "target_contract": {
+    "path": "data/benchmarks/fixtures/bank_account/contract/datapackage.yaml",
+    "data_root_path": "data/benchmarks/fixtures/bank_account/target",
+    "synthetic": true,
+    "authoritative": false,
+    "raw_sha256": "5a6552fc04358c7c25f03225ed55a00f2655a9d46a53e144ad005541b9ee0e08"
+  },
+  "leakage_controls": {
+    "ground_truth_runtime_boundary": "future_evaluation_only",
+    "ground_truth_used_for_sampling": false,
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_runtime": false,
+    "ground_truth_used_for_threshold_selection": false,
+    "source_values_used_for_ground_truth": false
+  }
+}

@@ -356,6 +356,8 @@ The public development benchmark work is collected in [schema_matching_public_de
 
 The [pairwise LTR v1 experiment](data/experiments/schema_matching_pairwise_ltr_v1/README.md) is retained as a negative ML result: grouped validation showed some gains over baseline, but it did not beat V5. The [V5 correctness calibration experiment](data/experiments/schema_matching_v5_correctness_calibration_v1/README.md), its [OOF predictions](data/experiments/schema_matching_v5_correctness_calibration_v1/outer_oof_predictions.json), and [failure analysis](data/experiments/schema_matching_v5_correctness_calibration_v1/failure_analysis.json) evaluate a different question: whether V5 Top-1 recommendations should be auto-accepted or sent to human review. Existing V5 policy accepted 23/107 cases with 23 correct and 0 incorrect. The score-only 95% development policy accepted 51/107 cases with 50 correct and 1 incorrect, outperforming the multifeature calibrator in this development evidence. These calibration results are contract-family-out development evidence, not sealed holdout evidence, and no runtime promotion has been made.
 
+The [FDIC sealed holdout protocol](data/benchmarks/sealed/fdic_bankfind_locations_v1/protocol.json) is preregistered for a future single evaluation against a new public banking source. Its evaluation status is `not_run`, and the repository does not contain sealed metrics or sealed result artifacts.
+
 ## Run The Verification Suite
 
 ```powershell

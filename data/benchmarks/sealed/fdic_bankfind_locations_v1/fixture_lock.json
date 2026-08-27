@@ -1,0 +1,39 @@
+{
+  "benchmark_id": "fdic_bankfind_locations_v1",
+  "lock_version": 1,
+  "sealed_holdout": true,
+  "first_evaluation_status": "not_run",
+  "self_hash_included": false,
+  "source_sample_shape": {
+    "rows": 128,
+    "columns": 14
+  },
+  "ground_truth_counts": {
+    "single_target_case_count": 3,
+    "multi_target_case_count": 0,
+    "no_target_case_count": 11,
+    "expected_target_link_count": 3
+  },
+  "raw_sha256": {
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/source_sample.csv": "775dbdac1a7c02bad64b8e1f4af117e227b43bf85d3e6e15e26db10c3f915da1",
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/source_metadata.json": "26046319da20dab17d4a0e73d7e35404dd1fc2049131d027cf80685eb80d5acf",
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/ground_truth.json": "9c8a1417176f1ca4b60b910d2afbd3169df44b834105265cea71933fab8929f9",
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/protocol.json": "9ee72d856ee331a6dae25328e2d117c645ec46e17497beccb1fb4acf8a59df5f",
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/README.md": "8bd759add6c68619b43b7489984c476da9a5fbc481c1fa5a64b25a64b505550d",
+    "data/benchmarks/schema_matching_public_sealed_v1.json": "0688c12a7d50fec417e8a03df441491cadc4f85b62f833e31819b3a261dc0f97",
+    "data/benchmarks/fixtures/bank_account/contract/datapackage.yaml": "5a6552fc04358c7c25f03225ed55a00f2655a9d46a53e144ad005541b9ee0e08",
+    "data/experiments/schema_matching_v5_correctness_calibration_v1/development_model.json": "73b6597a8ee1fb81555c189bfd01aa0a39115251824ce4b1ce7737d5b1bf70b2",
+    "data/experiments/schema_matching_v5_correctness_calibration_v1/feature_schema.json": "b0dd0aa958e4cfd6462da1d2e7217d98c3c06dd8fb00faa85d5bd561e70e5d18",
+    "data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json": "49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b",
+    "data/synthetic/schema_matching_precision_tiered_v5_5scenario_evaluation.json": "f44d07567ed9fa8b199780fff9990d1b577491709433ed554c7140f552386e57",
+    "data/benchmarks/external/companies_house_customer_v1/first_evaluation_baseline_v4_v5.json": "d08584b1e77e59ba5362586d851e225e9d746f52eb01c2b268ffe2b68dc7edd8"
+  },
+  "freeze_assertions": {
+    "no_first_evaluation_artifact": true,
+    "no_results_directory": true,
+    "no_model_output_for_sealed_holdout": true,
+    "no_source_value_normalization": true,
+    "no_field_name_normalization": true,
+    "no_absolute_local_paths": true
+  }
+}

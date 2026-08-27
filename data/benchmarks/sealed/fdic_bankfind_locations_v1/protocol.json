@@ -1,0 +1,207 @@
+{
+  "protocol_id": "fdic_bankfind_locations_v1_protocol",
+  "benchmark_id": "fdic_bankfind_locations_v1",
+  "sealed_holdout": true,
+  "development_benchmark": false,
+  "formal_evaluation": false,
+  "first_evaluation_status": "not_run",
+  "result_artifact_path": null,
+  "comparison_artifact_path": null,
+  "failure_analysis_artifact_path": null,
+  "protocol_freeze_scope": [
+    "source selection",
+    "source sample",
+    "target contract",
+    "ground truth",
+    "candidate systems",
+    "metrics",
+    "acceptance policies",
+    "promotion decision rule"
+  ],
+  "source_freeze": {
+    "source_name": "FDIC BankFind Suite locations endpoint",
+    "source_index_name": "locations_20260825141534",
+    "source_api_endpoint": "https://api.fdic.gov/banks/locations",
+    "query": {
+      "filters": "SERVTYPE:11",
+      "fields": [
+        "CERT",
+        "UNINUM",
+        "NAME",
+        "OFFNAME",
+        "CITY",
+        "STNAME",
+        "STALP",
+        "ZIP",
+        "COUNTY",
+        "SERVTYPE",
+        "SERVTYPE_DESC",
+        "RUNDATE",
+        "OFFDOM",
+        "MAINOFF"
+      ],
+      "sort_by": "UNINUM",
+      "sort_order": "ASC",
+      "limit": 128,
+      "offset": 0,
+      "format": "json"
+    },
+    "source_sample_path": "data/benchmarks/sealed/fdic_bankfind_locations_v1/source_sample.csv",
+    "source_sample_raw_sha256": "775dbdac1a7c02bad64b8e1f4af117e227b43bf85d3e6e15e26db10c3f915da1",
+    "row_count": 128,
+    "field_count": 14,
+    "field_name_normalization": "none",
+    "source_value_normalization": "none"
+  },
+  "target_contract": {
+    "path": "data/benchmarks/fixtures/bank_account/contract/datapackage.yaml",
+    "data_root_path": "data/benchmarks/fixtures/bank_account/target",
+    "synthetic": true,
+    "authoritative": false,
+    "raw_sha256": "5a6552fc04358c7c25f03225ed55a00f2655a9d46a53e144ad005541b9ee0e08"
+  },
+  "ground_truth": {
+    "path": "data/benchmarks/sealed/fdic_bankfind_locations_v1/ground_truth.json",
+    "case_count": 14,
+    "single_target_case_count": 3,
+    "multi_target_case_count": 0,
+    "no_target_case_count": 11,
+    "expected_target_link_count": 3,
+    "labeling_boundary": "manual_preregistration_before_first_sealed_evaluation",
+    "ground_truth_used_for_runtime": false,
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_threshold_selection": false
+  },
+  "candidate_systems": [
+    {
+      "system_id": "baseline",
+      "type": "ranking",
+      "description": "Existing baseline schema matcher.",
+      "frozen_parameters": "current main implementation at the future first-evaluation commit",
+      "trained_on_sealed_holdout": false
+    },
+    {
+      "system_id": "precision_tiered_v4",
+      "type": "ranking",
+      "description": "Existing precision-tiered V4 scorer.",
+      "formal_reference_sha256": "49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b",
+      "trained_on_sealed_holdout": false
+    },
+    {
+      "system_id": "precision_tiered_v5",
+      "type": "ranking",
+      "description": "Existing V5 scorer used as the strongest current ranking baseline.",
+      "formal_reference_sha256": "f44d07567ed9fa8b199780fff9990d1b577491709433ed554c7140f552386e57",
+      "trained_on_sealed_holdout": false
+    },
+    {
+      "system_id": "existing_v5_policy",
+      "type": "selective_acceptance",
+      "description": "Current V5 eligibility/confidence/recommendation rule with no learned calibration.",
+      "parent_system": "precision_tiered_v5",
+      "trained_on_sealed_holdout": false
+    },
+    {
+      "system_id": "score_only_calibrator_target_precision_95",
+      "type": "selective_acceptance",
+      "description": "Development-only score-only V5 Top-1 correctness calibrator, frozen before this sealed holdout.",
+      "parent_system": "precision_tiered_v5",
+      "model_path": "data/experiments/schema_matching_v5_correctness_calibration_v1/development_model.json",
+      "model_raw_sha256": "73b6597a8ee1fb81555c189bfd01aa0a39115251824ce4b1ce7737d5b1bf70b2",
+      "feature_schema_raw_sha256": "b0dd0aa958e4cfd6462da1d2e7217d98c3c06dd8fb00faa85d5bd561e70e5d18",
+      "feature_order": [
+        "top1_v5_score",
+        "v5_score_margin_top1_top2"
+      ],
+      "threshold": 0.68142199,
+      "threshold_source": "development_contract_family_oof_predictions",
+      "trained_on_sealed_holdout": false
+    },
+    {
+      "system_id": "multifeature_calibrator_target_precision_95",
+      "type": "selective_acceptance_secondary",
+      "description": "Development-only multifeature V5 Top-1 correctness calibrator retained as a preregistered secondary comparator.",
+      "parent_system": "precision_tiered_v5",
+      "model_path": "data/experiments/schema_matching_v5_correctness_calibration_v1/development_model.json",
+      "model_raw_sha256": "73b6597a8ee1fb81555c189bfd01aa0a39115251824ce4b1ce7737d5b1bf70b2",
+      "feature_schema_raw_sha256": "b0dd0aa958e4cfd6462da1d2e7217d98c3c06dd8fb00faa85d5bd561e70e5d18",
+      "threshold": 0.95143512,
+      "threshold_source": "development_contract_family_oof_predictions",
+      "trained_on_sealed_holdout": false
+    }
+  ],
+  "metrics": {
+    "ranking_metrics": [
+      "single_target_top1_accuracy",
+      "target_link_recall_at_1",
+      "target_link_recall_at_3",
+      "target_link_mrr",
+      "no_target_accuracy",
+      "multi_target_full_coverage_at_3"
+    ],
+    "selective_acceptance_metrics": [
+      "coverage",
+      "review_rate",
+      "accepted_precision",
+      "accepted_correct_count",
+      "accepted_incorrect_count",
+      "target_bearing_auto_map_recall",
+      "no_target_accepted_count",
+      "no_target_rejection_rate",
+      "wrong_target_accepted_count"
+    ],
+    "calibration_metrics": [
+      "brier_score",
+      "log_loss",
+      "roc_auc_if_defined",
+      "average_precision",
+      "ece_5_bin_fixed_width_0.2",
+      "aurc"
+    ]
+  },
+  "evaluation_roles": {
+    "primary_decision_comparison": [
+      "existing_v5_policy",
+      "score_only_calibrator_target_precision_95"
+    ],
+    "secondary_diagnostics": [
+      "baseline",
+      "precision_tiered_v4",
+      "precision_tiered_v5",
+      "multifeature_calibrator_target_precision_95"
+    ],
+    "secondary_diagnostic_limits": [
+      "precision_tiered_v4 is not the current promotion candidate.",
+      "multifeature_calibrator_target_precision_95 is not the current promotion candidate.",
+      "Secondary diagnostic results must not override the primary decision rule."
+    ]
+  },
+  "primary_decision_rule": {
+    "primary_candidate": "score_only_calibrator_target_precision_95",
+    "baseline_comparator": "existing_v5_policy",
+    "decision": "After the single future sealed evaluation, consider runtime integration only if the primary candidate increases accepted coverage over the existing V5 policy without increasing accepted incorrect count and without reducing accepted precision. If the rule is not met, keep all results as sealed evidence and do not promote.",
+    "no_tuning_after_unseal": true,
+    "sealed_holdout_may_not_be_reused_for_threshold_selection": true,
+    "negative_result_policy": "Retain and report unfavorable results without feature, threshold, scorer, or label changes."
+  },
+  "limitations": {
+    "positive_bearing_case_count": 3,
+    "ranking_metric_resolution": "low; target-bearing ranking metrics are based on only 3 positive-bearing source fields",
+    "no_target_focus": "The 11 no-target cases make this holdout especially useful for observing false acceptance of no-target source fields.",
+    "source_novelty": "The source is an unseen public banking source.",
+    "contract_family_novelty": "The bank_account contract family already appears in the development corpus, so this is an unseen-source holdout, not an unseen-contract-family holdout.",
+    "multi_target_metrics": "N/A because the frozen denominator is 0.",
+    "population_precision_claim": "This small sealed holdout cannot by itself support broad generalization or precise 95% population precision claims.",
+    "evaluation_status": "not_run",
+    "post_unseal_tuning_allowed": false
+  },
+  "leakage_prevention": {
+    "sample_frozen_before_first_evaluation": true,
+    "ground_truth_frozen_before_first_evaluation": true,
+    "candidate_systems_frozen_before_first_evaluation": true,
+    "thresholds_frozen_before_first_evaluation": true,
+    "no_model_training_on_sealed_holdout": true,
+    "no_threshold_selection_on_sealed_holdout": true,
+    "no_result_artifact_exists": true
+  }
+}

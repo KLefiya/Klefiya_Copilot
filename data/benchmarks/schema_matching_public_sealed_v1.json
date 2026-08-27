@@ -1,0 +1,211 @@
+{
+  "_meta": {
+    "benchmark_id": "schema_matching_public_sealed_v1",
+    "sealed_holdout": true,
+    "development_benchmark": false,
+    "formal_evaluation": false,
+    "repeated_evaluation_allowed": false,
+    "first_evaluation_status": "not_run",
+    "result_artifact_path": null,
+    "comparison_artifact_path": null,
+    "failure_analysis_artifact_path": null,
+    "source_dataset": "fdic_bankfind_locations_v1",
+    "ground_truth_runtime_boundary": "future_evaluation_only",
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_runtime": false,
+    "ground_truth_used_for_threshold_selection": false,
+    "notes": [
+      "Independent public sealed holdout registry.",
+      "Not part of the public development benchmark registry.",
+      "Not part of the five-scenario synthetic formal benchmark.",
+      "No first evaluation has been run."
+    ]
+  },
+  "scenarios": [
+    {
+      "scenario_id": "fdic_bankfind_locations",
+      "split": "sealed_holdout",
+      "source_path": "data/benchmarks/sealed/fdic_bankfind_locations_v1/source_sample.csv",
+      "contract_path": "data/benchmarks/fixtures/bank_account/contract/datapackage.yaml",
+      "data_root_path": "data/benchmarks/fixtures/bank_account/target",
+      "answer_source_path": "data/benchmarks/sealed/fdic_bankfind_locations_v1/ground_truth.json",
+      "protocol_path": "data/benchmarks/sealed/fdic_bankfind_locations_v1/protocol.json",
+      "cases": [
+        {
+          "case_id": "fdic_bankfind_locations__CERT",
+          "source_field": "CERT",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "institution_identifier_not_branch_identifier",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__UNINUM",
+          "source_field": "UNINUM",
+          "expected_targets": [
+            "bank_branch.bank_key"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "identifier",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__NAME",
+          "source_field": "NAME",
+          "expected_targets": [
+            "bank_branch.bank_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "organization_name",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__OFFNAME",
+          "source_field": "OFFNAME",
+          "expected_targets": [
+            "bank_branch.bank_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "branch_name",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__CITY",
+          "source_field": "CITY",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "location_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__STNAME",
+          "source_field": "STNAME",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "state_not_country",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__STALP",
+          "source_field": "STALP",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "state_not_country",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__ZIP",
+          "source_field": "ZIP",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "location_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__COUNTY",
+          "source_field": "COUNTY",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "location_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__SERVTYPE",
+          "source_field": "SERVTYPE",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "service_type_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__SERVTYPE_DESC",
+          "source_field": "SERVTYPE_DESC",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "service_type_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__RUNDATE",
+          "source_field": "RUNDATE",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "extract_metadata",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__OFFDOM",
+          "source_field": "OFFDOM",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "office_attribute_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "fdic_bankfind_locations__MAINOFF",
+          "source_field": "MAINOFF",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "banking_reference",
+            "office_attribute_without_target",
+            "no_target"
+          ]
+        }
+      ]
+    }
+  ]
+}

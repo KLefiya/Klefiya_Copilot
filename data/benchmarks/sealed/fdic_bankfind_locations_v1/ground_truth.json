@@ -1,0 +1,130 @@
+{
+  "benchmark_id": "fdic_bankfind_locations_v1",
+  "sealed_holdout": true,
+  "first_evaluation_status": "not_run",
+  "ground_truth_method": "Manual schema-semantics preregistration from public FDIC field definitions and the frozen synthetic bank_account benchmark contract. No scorer output, model prediction, calibration result, or source row value was read to assign labels.",
+  "counts": {
+    "row_count": 128,
+    "source_field_count": 14,
+    "case_count": 14,
+    "target_bearing_source_field_count": 3,
+    "single_target_case_count": 3,
+    "multi_target_case_count": 0,
+    "no_target_case_count": 11,
+    "expected_target_link_count": 3,
+    "excluded_source_field_count": 0
+  },
+  "target_contract": {
+    "path": "data/benchmarks/fixtures/bank_account/contract/datapackage.yaml",
+    "synthetic": true
+  },
+  "mappings": [
+    {
+      "source_field": "CERT",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "FDIC certificate identifies the institution, not the branch-level key used by the synthetic target contract."
+    },
+    {
+      "source_field": "UNINUM",
+      "expected_targets": [
+        "bank_branch.bank_key"
+      ],
+      "expected_no_target": false,
+      "label_rationale": "FDIC UNINUM is the unique office/location identifier and is the closest semantic match for the branch key."
+    },
+    {
+      "source_field": "NAME",
+      "expected_targets": [
+        "bank_branch.bank_name"
+      ],
+      "expected_no_target": false,
+      "label_rationale": "FDIC institution display name is an organization-name field suitable for the bank branch display-name target."
+    },
+    {
+      "source_field": "OFFNAME",
+      "expected_targets": [
+        "bank_branch.bank_name"
+      ],
+      "expected_no_target": false,
+      "label_rationale": "FDIC office name is a branch display-name field and maps to the bank branch name target."
+    },
+    {
+      "source_field": "CITY",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "The target contract has country code only; city is intentionally absent."
+    },
+    {
+      "source_field": "STNAME",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "U.S. state name is not a country code and no state/province target exists."
+    },
+    {
+      "source_field": "STALP",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "U.S. state abbreviation is not a country code and no state/province target exists."
+    },
+    {
+      "source_field": "ZIP",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "Postal code is intentionally absent from the target contract."
+    },
+    {
+      "source_field": "COUNTY",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "County is intentionally absent from the target contract."
+    },
+    {
+      "source_field": "SERVTYPE",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "Service type code describes office service category, not any account or branch target field."
+    },
+    {
+      "source_field": "SERVTYPE_DESC",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "Service type description is a categorical label with no target field."
+    },
+    {
+      "source_field": "RUNDATE",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "FDIC data run date is extract metadata, not account validity or branch master data."
+    },
+    {
+      "source_field": "OFFDOM",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "Domestic office indicator/count semantics do not match any branch or account target."
+    },
+    {
+      "source_field": "MAINOFF",
+      "expected_targets": [],
+      "expected_no_target": true,
+      "label_rationale": "Main-office flag is not the account primary payment flag in the target contract."
+    }
+  ],
+  "explicit_exclusions": [
+    {
+      "source_field": "CERT",
+      "excluded_target": "bank_branch.bank_key",
+      "reason": "CERT is institution-level while UNINUM is the frozen branch/location identifier."
+    },
+    {
+      "source_field": "MAINOFF",
+      "excluded_target": "bank_account.primary_flag",
+      "reason": "MAINOFF marks institution office role, not preferred account usage."
+    },
+    {
+      "source_field": "STALP",
+      "excluded_target": "bank_branch.country_code",
+      "reason": "STALP is a U.S. state abbreviation and must not be treated as a country code."
+    }
+  ]
+}
