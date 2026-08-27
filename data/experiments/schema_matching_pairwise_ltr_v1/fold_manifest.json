@@ -1,0 +1,360 @@
+{
+  "_run_info": {
+    "content_sha256": "a1a71d7406967e6904fd91fc76201f05663e5807ba44908f1af20b862396ae33",
+    "note": "_run_info is deterministic for LTR v1 artifacts; compare content_sha256 for report body reproducibility."
+  },
+  "experiment_id": "schema_matching_pairwise_ltr_v1",
+  "leakage_controls": {
+    "scenario_folds_are_grouped": true,
+    "contract_family_folds_are_grouped": true,
+    "scaler_fit_scope": "train_fold_only",
+    "ranker_fit_scope": "train_fold_only",
+    "held_out_labels_used_for_training": false,
+    "field_level_random_split": false,
+    "identity_features_used": false
+  },
+  "leave_one_scenario_out": [
+    {
+      "fold_id": "leave_one_scenario__bank_account",
+      "train_scenarios": [
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "bank_account"
+      ],
+      "train_contract_families": [
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "bank_account"
+      ],
+      "train_cases": 91,
+      "held_out_cases": 16,
+      "train_positive_links": 80,
+      "held_out_positive_links": 15,
+      "pair_count": 2454
+    },
+    {
+      "fold_id": "leave_one_scenario__contracts_finder_procurement_2026",
+      "train_scenarios": [
+        "bank_account",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "contracts_finder_procurement_2026"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "sales_order_fulfillment"
+      ],
+      "train_cases": 84,
+      "held_out_cases": 23,
+      "train_positive_links": 76,
+      "held_out_positive_links": 19,
+      "pair_count": 2088
+    },
+    {
+      "fold_id": "leave_one_scenario__erpnext_item_price",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "generic_customer",
+        "open_food_facts_products",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "erpnext_item_price"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "item_item_price"
+      ],
+      "train_cases": 97,
+      "held_out_cases": 10,
+      "train_positive_links": 84,
+      "held_out_positive_links": 11,
+      "pair_count": 2658
+    },
+    {
+      "fold_id": "leave_one_scenario__generic_customer",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "open_food_facts_products",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "generic_customer"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "generic_customer"
+      ],
+      "train_cases": 95,
+      "held_out_cases": 12,
+      "train_positive_links": 84,
+      "held_out_positive_links": 11,
+      "pair_count": 2650
+    },
+    {
+      "fold_id": "leave_one_scenario__open_food_facts_products",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "generic_customer",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "open_food_facts_products"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "item_item_price"
+      ],
+      "train_cases": 95,
+      "held_out_cases": 12,
+      "train_positive_links": 89,
+      "held_out_positive_links": 6,
+      "pair_count": 2758
+    },
+    {
+      "fold_id": "leave_one_scenario__sales_order_fulfillment",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "sales_order_fulfillment"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "sales_order_fulfillment"
+      ],
+      "train_cases": 85,
+      "held_out_cases": 22,
+      "train_positive_links": 73,
+      "held_out_positive_links": 22,
+      "pair_count": 1962
+    },
+    {
+      "fold_id": "leave_one_scenario__supplier_reference",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "sales_order_fulfillment"
+      ],
+      "held_out_scenarios": [
+        "supplier_reference"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment"
+      ],
+      "held_out_contract_families": [
+        "supplier_reference"
+      ],
+      "train_cases": 95,
+      "held_out_cases": 12,
+      "train_positive_links": 84,
+      "held_out_positive_links": 11,
+      "pair_count": 2650
+    }
+  ],
+  "leave_one_contract_out": [
+    {
+      "fold_id": "leave_one_contract_family__bank_account",
+      "train_scenarios": [
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "bank_account"
+      ],
+      "train_contract_families": [
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "bank_account"
+      ],
+      "train_cases": 91,
+      "held_out_cases": 16,
+      "train_positive_links": 80,
+      "held_out_positive_links": 15,
+      "pair_count": 2454
+    },
+    {
+      "fold_id": "leave_one_contract_family__generic_customer",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "open_food_facts_products",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "generic_customer"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "generic_customer"
+      ],
+      "train_cases": 95,
+      "held_out_cases": 12,
+      "train_positive_links": 84,
+      "held_out_positive_links": 11,
+      "pair_count": 2650
+    },
+    {
+      "fold_id": "leave_one_contract_family__item_item_price",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "generic_customer",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "erpnext_item_price",
+        "open_food_facts_products"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "item_item_price"
+      ],
+      "train_cases": 85,
+      "held_out_cases": 22,
+      "train_positive_links": 78,
+      "held_out_positive_links": 17,
+      "pair_count": 2546
+    },
+    {
+      "fold_id": "leave_one_contract_family__sales_order_fulfillment",
+      "train_scenarios": [
+        "bank_account",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "supplier_reference"
+      ],
+      "held_out_scenarios": [
+        "contracts_finder_procurement_2026",
+        "sales_order_fulfillment"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "supplier_reference"
+      ],
+      "held_out_contract_families": [
+        "sales_order_fulfillment"
+      ],
+      "train_cases": 62,
+      "held_out_cases": 45,
+      "train_positive_links": 54,
+      "held_out_positive_links": 41,
+      "pair_count": 1180
+    },
+    {
+      "fold_id": "leave_one_contract_family__supplier_reference",
+      "train_scenarios": [
+        "bank_account",
+        "contracts_finder_procurement_2026",
+        "erpnext_item_price",
+        "generic_customer",
+        "open_food_facts_products",
+        "sales_order_fulfillment"
+      ],
+      "held_out_scenarios": [
+        "supplier_reference"
+      ],
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment"
+      ],
+      "held_out_contract_families": [
+        "supplier_reference"
+      ],
+      "train_cases": 95,
+      "held_out_cases": 12,
+      "train_positive_links": 84,
+      "held_out_positive_links": 11,
+      "pair_count": 2650
+    }
+  ]
+}

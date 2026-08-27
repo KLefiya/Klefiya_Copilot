@@ -1,0 +1,47 @@
+{
+  "api_request_url": "https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=50&page=1&json=1&fields=code,product_name,generic_name,quantity,categories,brands,countries,nutrition_grades,nova_group,packaging,stores,ingredients_text",
+  "benchmark_flags": {
+    "development_benchmark": true,
+    "formal_evaluation": false,
+    "not_evidence_of_unseen_generalization": true,
+    "repeated_evaluation_allowed": true,
+    "sealed_holdout": false
+  },
+  "candidate_dataset_comparison": [
+    {
+      "fit": "Selected: public food/product catalog with barcode, product name, category, and package quantity fields that naturally exercise the ERPNext Item and Item Price contract.",
+      "license": "ODbL database; Database Contents License for individual contents.",
+      "name": "Open Food Facts",
+      "source": "https://openfoodfacts.github.io/openfoodfacts-server/api/"
+    },
+    {
+      "fit": "Considered but not selected: excellent public food-composition source, CC0/public-domain data, but its core fields are nutrition-composition oriented and provide fewer natural links to the existing product-and-pricing target contract without inventing target semantics.",
+      "license": "CC0/public domain.",
+      "name": "USDA FoodData Central",
+      "source": "https://fdc.nal.usda.gov/api-guide/"
+    }
+  ],
+  "dataset_id": "open_food_facts_products_v1",
+  "license": {
+    "attribution": "Open Food Facts contributors",
+    "contents": "Database Contents License",
+    "database": "Open Database License (ODbL)",
+    "license_reference": "https://openfoodfacts.github.io/openfoodfacts-server/api/"
+  },
+  "retrieved_date": "2026-08-27",
+  "sampling": {
+    "field_count": 12,
+    "method": "Query Open Food Facts search API sorted by unique_scans_n, then keep the first 24 products with non-empty code, product_name, quantity, and categories.",
+    "row_count": 24,
+    "source_value_normalization": "none; API values are written as returned, except CSV escaping performed by Python csv module"
+  },
+  "source_api_documentation": "https://openfoodfacts.github.io/openfoodfacts-server/api/",
+  "source_download_page": "https://world.openfoodfacts.org/data",
+  "source_homepage": "https://world.openfoodfacts.org/",
+  "source_name": "Open Food Facts product search API",
+  "target_contract": {
+    "authoritative": false,
+    "path": "contracts/erpnext_item_price_reference/datapackage.yaml",
+    "synthetic": true
+  }
+}

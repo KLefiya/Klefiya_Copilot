@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "dataset_id": "open_food_facts_products_v1",
+    "development_benchmark": true,
+    "formal_evaluation": false,
+    "sealed_holdout": false,
+    "repeated_evaluation_allowed": true,
+    "not_evidence_of_unseen_generalization": true,
+    "must_not_be_read_by_mapping_engine": true,
+    "target_contract": "contracts/erpnext_item_price_reference/datapackage.yaml",
+    "target_contract_synthetic": true
+  },
+  "counts": {
+    "case_count": 12,
+    "single_target_case_count": 2,
+    "multi_target_case_count": 2,
+    "no_target_case_count": 8,
+    "expected_target_link_count": 6
+  },
+  "mappings": [
+    {
+      "source_field": "code",
+      "expected_targets": [
+        "item.item_code",
+        "item_price.item_code"
+      ],
+      "evaluation_group": "multi_target",
+      "rationale": "Open Food Facts code is the product barcode or product identifier. It can identify the Item and the related Item Price row."
+    },
+    {
+      "source_field": "product_name",
+      "expected_targets": [
+        "item.item_name"
+      ],
+      "evaluation_group": "single_target",
+      "rationale": "The public product name is the human-readable item name."
+    },
+    {
+      "source_field": "generic_name",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no generic product description field."
+    },
+    {
+      "source_field": "quantity",
+      "expected_targets": [
+        "item.stock_uom",
+        "item_price.uom"
+      ],
+      "evaluation_group": "multi_target",
+      "rationale": "Package quantity contains unit-of-measure evidence for stock and price units, but the raw values still require parsing before loading."
+    },
+    {
+      "source_field": "categories",
+      "expected_targets": [
+        "item.item_group"
+      ],
+      "evaluation_group": "single_target",
+      "rationale": "Open Food Facts categories are product classification labels."
+    },
+    {
+      "source_field": "brands",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract does not include a brand or manufacturer field."
+    },
+    {
+      "source_field": "countries",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no market country field."
+    },
+    {
+      "source_field": "nutrition_grades",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no nutrition grade field."
+    },
+    {
+      "source_field": "nova_group",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no food processing classification field."
+    },
+    {
+      "source_field": "packaging",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no packaging material or packaging description field."
+    },
+    {
+      "source_field": "stores",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no retailer or store field."
+    },
+    {
+      "source_field": "ingredients_text",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "rationale": "The reference contract has no ingredients or formulation text field."
+    }
+  ]
+}

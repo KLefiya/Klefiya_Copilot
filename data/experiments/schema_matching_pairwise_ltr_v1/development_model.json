@@ -1,0 +1,149 @@
+{
+  "_run_info": {
+    "content_sha256": "9cbbefd5af99432a49c1cf6e961a69568bda847c8e34bfae0d87e07c2dfa1fd2",
+    "note": "_run_info is deterministic for LTR v1 artifacts; compare content_sha256 for report body reproducibility."
+  },
+  "_meta": {
+    "experiment_id": "schema_matching_pairwise_ltr_v1",
+    "component": "schema_matching_development_pairwise_ltr_model",
+    "production_model": false,
+    "sealed_holdout_evaluated": false,
+    "formal_evaluation": false,
+    "development_corpus_only": true,
+    "no_abstention_or_calibration": true
+  },
+  "feature_order": [
+    "semantic_score",
+    "fuzzy_score",
+    "lexical_overlap",
+    "alias_hit",
+    "type_gate",
+    "baseline_score",
+    "value_pattern_score",
+    "resource_context_score",
+    "resource_context_support",
+    "v3_score",
+    "diagnostic_bonus",
+    "supportive_bonus",
+    "top1_eligible",
+    "v4_score",
+    "identifier_bonus",
+    "identifier_adjusted_score",
+    "v5_top1_eligible"
+  ],
+  "scaler_mean": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "scaler_scale": [
+    0.34067495,
+    0.28029465,
+    0.16108492,
+    0.27686649,
+    0.07437732,
+    0.32011946,
+    0.45942321,
+    0.47572346,
+    0.47572346,
+    0.34244028,
+    0.00729735,
+    0.00925583,
+    0.09877296,
+    0.34322536,
+    0.04389985,
+    0.3511414,
+    0.28061654
+  ],
+  "linear_coefficients": [
+    0.82043567,
+    0.32275513,
+    0.62587929,
+    0.0399106,
+    0.17129848,
+    0.64548588,
+    0.44698902,
+    0.18199734,
+    0.18199734,
+    0.68139587,
+    0.13439246,
+    0.17222569,
+    0.13439246,
+    0.68733428,
+    0.29027906,
+    0.70813086,
+    0.28363157
+  ],
+  "intercept": -0.0,
+  "training": {
+    "pair_count": 2870,
+    "target_bearing_case_count": 84,
+    "positive_link_count": 95,
+    "no_target_cases_excluded_from_pair_training": 23,
+    "scaler_fit_scope": "train_fold_only",
+    "ranker_fit_scope": "train_fold_only",
+    "l2_penalty": 0.02,
+    "epochs": 700,
+    "learning_rate": 0.18,
+    "scenario_count": 7,
+    "contract_family_count": 5,
+    "case_count": 107,
+    "expected_target_link_count": 95
+  },
+  "development_metrics_on_training_corpus": {
+    "case_count": 107,
+    "target_bearing_case_count": 84,
+    "single_target_case_count": 75,
+    "multi_target_case_count": 9,
+    "no_target_case_count": 23,
+    "expected_target_link_count": 95,
+    "single_target_top1_accuracy": 0.8667,
+    "target_link_recall_at_1": 0.7579,
+    "target_link_recall_at_3": 0.9579,
+    "target_link_mrr": 0.8456,
+    "multi_target_full_coverage_at_3": 0.8889,
+    "no_target_accuracy": "not_applicable",
+    "abstention_learning": "not_implemented_in_ltr_v1",
+    "expected_target_missing_from_top3_cases": [
+      {
+        "case_id": "bank_account__legacy_bank_ref",
+        "scenario_id": "bank_account",
+        "source_field": "legacy_bank_ref",
+        "missing_expected_targets": [
+          "bank_account.account_id"
+        ]
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__id",
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "id",
+        "missing_expected_targets": [
+          "sales_order_header.sales_order_id",
+          "delivery_schedule.sales_order_id"
+        ]
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_id",
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_id",
+        "missing_expected_targets": [
+          "sales_order_header.customer_purchase_order"
+        ]
+      }
+    ]
+  }
+}

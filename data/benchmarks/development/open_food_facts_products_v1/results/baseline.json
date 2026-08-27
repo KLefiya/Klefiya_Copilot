@@ -1,0 +1,527 @@
+{
+  "_run_info": {
+    "content_sha256": "7cc7d47e355b2a5126f1f5dee47eace01c0e1b4bc9684980e26e2d775cc3ceb4",
+    "note": "_run_info is excluded from semantic benchmark content comparisons."
+  },
+  "_meta": {
+    "component": "schema_matching_benchmark_evaluation",
+    "benchmark_id": "schema_matching_public_dev_v1",
+    "synthetic_demo": false,
+    "ground_truth_runtime_boundary": "evaluation_only",
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_runtime": false,
+    "ground_truth_used_for_evaluation": true,
+    "scorer_variant": "baseline",
+    "feature_version": null,
+    "source_reports": [
+      {
+        "scenario_id": "open_food_facts_products",
+        "source_path": "data/benchmarks/development/open_food_facts_products_v1/source_open_food_facts_products.csv",
+        "source_sha256": "c3adb731498096087adfd78c10f9f8fc18f91fe3ed8c98c1e414ec3f2f534325",
+        "contract_path": "contracts/erpnext_item_price_reference/datapackage.yaml",
+        "contract_sha256": "091dd55c2181411440de824d154202f0b28130ee706c2d9c0b7f3a5c9926db0d",
+        "answer_source_path": "data/benchmarks/development/open_food_facts_products_v1/ground_truth.json",
+        "answer_source_sha256": "0c19821758d3de03c4b161594965bf725813d81ae2426ab1ed10f449d5ce0193"
+      }
+    ],
+    "development_benchmark": true,
+    "sealed_holdout": false,
+    "repeated_evaluation_allowed": true,
+    "not_evidence_of_unseen_generalization": true,
+    "formal_evaluation": false
+  },
+  "overall": {
+    "scenario_count": 1,
+    "case_count": 12,
+    "single_target_case_count": 2,
+    "multi_target_case_count": 2,
+    "no_target_case_count": 8,
+    "expected_target_link_count": 6,
+    "single_target_top1_accuracy": 1.0,
+    "target_link_recall_at_1": 0.6667,
+    "target_link_recall_at_3": 1.0,
+    "target_link_mrr": 0.8333,
+    "no_target_accuracy": 1.0,
+    "multi_target_full_coverage_at_3": 1.0
+  },
+  "by_scenario": [
+    {
+      "scenario_id": "open_food_facts_products",
+      "split": "development",
+      "metrics": {
+        "scenario_count": 1,
+        "case_count": 12,
+        "single_target_case_count": 2,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 8,
+        "expected_target_link_count": 6,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 0.6667,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.8333,
+        "no_target_accuracy": 1.0,
+        "multi_target_full_coverage_at_3": 1.0
+      }
+    }
+  ],
+  "case_results": [
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__brands",
+      "source_field": "brands",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.2885,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.uom",
+          "rank": 2,
+          "score": 0.1872,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.stock_uom",
+          "rank": 3,
+          "score": 0.1758,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.1013,
+      "difficulty_tags": [
+        "public_data",
+        "brand_without_target",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__categories",
+      "source_field": "categories",
+      "expected_targets": [
+        "item.item_group"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_group",
+          "rank": 1,
+          "score": 0.4322,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "item_price.price_list",
+          "rank": 2,
+          "score": 0.2249,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "item_price.item_code",
+          "rank": 3,
+          "score": 0.2045,
+          "mapping_basis": "mixed"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.2073,
+      "difficulty_tags": [
+        "public_data",
+        "classification",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__code",
+      "source_field": "code",
+      "expected_targets": [
+        "item.item_code",
+        "item_price.item_code"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item_price.item_code",
+          "rank": 1,
+          "score": 0.3698,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_code",
+          "rank": 2,
+          "score": 0.351,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_name",
+          "rank": 3,
+          "score": 0.1511,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "multi_target_fully_covered",
+      "score_margin_top1_top2": 0.0188,
+      "difficulty_tags": [
+        "public_data",
+        "identifier",
+        "multi_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__countries",
+      "source_field": "countries",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_group",
+          "rank": 1,
+          "score": 0.1627,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.price_list",
+          "rank": 2,
+          "score": 0.1501,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.valid_from",
+          "rank": 3,
+          "score": 0.1315,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0126,
+      "difficulty_tags": [
+        "public_data",
+        "country_without_target",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__generic_name",
+      "source_field": "generic_name",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.3952,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.price_list",
+          "rank": 2,
+          "score": 0.2832,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_code",
+          "rank": 3,
+          "score": 0.2326,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.112,
+      "difficulty_tags": [
+        "public_data",
+        "description_gap",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__ingredients_text",
+      "source_field": "ingredients_text",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.2965,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_code",
+          "rank": 2,
+          "score": 0.2443,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.item_code",
+          "rank": 3,
+          "score": 0.2176,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0522,
+      "difficulty_tags": [
+        "public_data",
+        "long_text_without_target",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__nova_group",
+      "source_field": "nova_group",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_group",
+          "rank": 1,
+          "score": 0.3503,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.stock_uom",
+          "rank": 2,
+          "score": 0.1759,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.valid_from",
+          "rank": 3,
+          "score": 0.1504,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.1744,
+      "difficulty_tags": [
+        "public_data",
+        "classification_without_target",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__nutrition_grades",
+      "source_field": "nutrition_grades",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item_price.price_list",
+          "rank": 1,
+          "score": 0.2019,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.uom",
+          "rank": 2,
+          "score": 0.1991,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.valid_from",
+          "rank": 3,
+          "score": 0.1969,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0028,
+      "difficulty_tags": [
+        "public_data",
+        "nutrition_without_target",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__packaging",
+      "source_field": "packaging",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.2177,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_code",
+          "rank": 2,
+          "score": 0.2105,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_group",
+          "rank": 3,
+          "score": 0.1677,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0072,
+      "difficulty_tags": [
+        "public_data",
+        "packaging_without_target",
+        "no_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__product_name",
+      "source_field": "product_name",
+      "expected_targets": [
+        "item.item_name"
+      ],
+      "recommendation": "item.item_name",
+      "top_candidates": [
+        {
+          "target": "item.item_name",
+          "rank": 1,
+          "score": 0.6762,
+          "mapping_basis": "fuzzy"
+        },
+        {
+          "target": "item.item_code",
+          "rank": 2,
+          "score": 0.4346,
+          "mapping_basis": "fuzzy"
+        },
+        {
+          "target": "item_price.item_code",
+          "rank": 3,
+          "score": 0.4172,
+          "mapping_basis": "fuzzy"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.2416,
+      "difficulty_tags": [
+        "public_data",
+        "product_name",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__quantity",
+      "source_field": "quantity",
+      "expected_targets": [
+        "item.stock_uom",
+        "item_price.uom"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item_price.uom",
+          "rank": 1,
+          "score": 0.2907,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.stock_uom",
+          "rank": 2,
+          "score": 0.2874,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.price_list_rate",
+          "rank": 3,
+          "score": 0.2823,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "multi_target_fully_covered",
+      "score_margin_top1_top2": 0.0033,
+      "difficulty_tags": [
+        "public_data",
+        "unit_of_measure",
+        "value_parsing_needed",
+        "multi_target"
+      ]
+    },
+    {
+      "scenario_id": "open_food_facts_products",
+      "case_id": "open_food_facts_products__stores",
+      "source_field": "stores",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "item_price.price_list",
+          "rank": 1,
+          "score": 0.1951,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item_price.valid_from",
+          "rank": 2,
+          "score": 0.1921,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "item.item_name",
+          "rank": 3,
+          "score": 0.1592,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.003,
+      "difficulty_tags": [
+        "public_data",
+        "retailer_without_target",
+        "no_target"
+      ]
+    }
+  ],
+  "error_count_by_type": {
+    "correct_no_target": 8,
+    "correct_top1": 2,
+    "multi_target_fully_covered": 2
+  },
+  "error_count_by_scenario": {
+    "open_food_facts_products": 12
+  },
+  "error_count_by_difficulty_tag": {
+    "brand_without_target": 1,
+    "classification": 1,
+    "classification_without_target": 1,
+    "country_without_target": 1,
+    "description_gap": 1,
+    "identifier": 1,
+    "long_text_without_target": 1,
+    "multi_target": 2,
+    "no_target": 8,
+    "nutrition_without_target": 1,
+    "packaging_without_target": 1,
+    "product_name": 1,
+    "public_data": 12,
+    "retailer_without_target": 1,
+    "single_target": 2,
+    "unit_of_measure": 1,
+    "value_parsing_needed": 1
+  }
+}

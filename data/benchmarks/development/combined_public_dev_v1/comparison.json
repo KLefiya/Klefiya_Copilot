@@ -1,0 +1,580 @@
+{
+  "benchmark_id": "schema_matching_public_dev_v1",
+  "development_benchmark": true,
+  "formal_evaluation": false,
+  "sealed_holdout": false,
+  "repeated_evaluation_allowed": true,
+  "scenarios": [
+    "open_food_facts_products",
+    "contracts_finder_procurement_2026"
+  ],
+  "scenario_counts": {
+    "open_food_facts_products": {
+      "case_count": 12,
+      "target_bearing_source_field_count": 4,
+      "expected_target_link_count": 6,
+      "multi_target_case_count": 2,
+      "no_target_case_count": 8
+    },
+    "contracts_finder_procurement_2026": {
+      "case_count": 23,
+      "target_bearing_source_field_count": 16,
+      "expected_target_link_count": 19,
+      "multi_target_case_count": 2,
+      "no_target_case_count": 7
+    }
+  },
+  "scorer_metrics": {
+    "baseline": {
+      "overall": {
+        "scenario_count": 2,
+        "case_count": 35,
+        "single_target_case_count": 16,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 15,
+        "expected_target_link_count": 25,
+        "single_target_top1_accuracy": 0.625,
+        "target_link_recall_at_1": 0.52,
+        "target_link_recall_at_3": 0.88,
+        "target_link_mrr": 0.6667,
+        "no_target_accuracy": 1.0,
+        "multi_target_full_coverage_at_3": 0.75
+      },
+      "by_scenario": {
+        "contracts_finder_procurement_2026": {
+          "scenario_count": 1,
+          "case_count": 23,
+          "single_target_case_count": 14,
+          "multi_target_case_count": 2,
+          "no_target_case_count": 7,
+          "expected_target_link_count": 19,
+          "single_target_top1_accuracy": 0.5714,
+          "target_link_recall_at_1": 0.4737,
+          "target_link_recall_at_3": 0.8421,
+          "target_link_mrr": 0.614,
+          "no_target_accuracy": 1.0,
+          "multi_target_full_coverage_at_3": 0.5
+        },
+        "open_food_facts_products": {
+          "scenario_count": 1,
+          "case_count": 12,
+          "single_target_case_count": 2,
+          "multi_target_case_count": 2,
+          "no_target_case_count": 8,
+          "expected_target_link_count": 6,
+          "single_target_top1_accuracy": 1.0,
+          "target_link_recall_at_1": 0.6667,
+          "target_link_recall_at_3": 1.0,
+          "target_link_mrr": 0.8333,
+          "no_target_accuracy": 1.0,
+          "multi_target_full_coverage_at_3": 1.0
+        }
+      }
+    },
+    "precision_tiered_v4": {
+      "overall": {
+        "scenario_count": 2,
+        "case_count": 35,
+        "single_target_case_count": 16,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 15,
+        "expected_target_link_count": 25,
+        "single_target_top1_accuracy": 0.625,
+        "target_link_recall_at_1": 0.52,
+        "target_link_recall_at_3": 0.88,
+        "target_link_mrr": 0.6667,
+        "no_target_accuracy": 1.0,
+        "multi_target_full_coverage_at_3": 0.75
+      },
+      "by_scenario": {
+        "contracts_finder_procurement_2026": {
+          "scenario_count": 1,
+          "case_count": 23,
+          "single_target_case_count": 14,
+          "multi_target_case_count": 2,
+          "no_target_case_count": 7,
+          "expected_target_link_count": 19,
+          "single_target_top1_accuracy": 0.5714,
+          "target_link_recall_at_1": 0.4737,
+          "target_link_recall_at_3": 0.8421,
+          "target_link_mrr": 0.614,
+          "no_target_accuracy": 1.0,
+          "multi_target_full_coverage_at_3": 0.5
+        },
+        "open_food_facts_products": {
+          "scenario_count": 1,
+          "case_count": 12,
+          "single_target_case_count": 2,
+          "multi_target_case_count": 2,
+          "no_target_case_count": 8,
+          "expected_target_link_count": 6,
+          "single_target_top1_accuracy": 1.0,
+          "target_link_recall_at_1": 0.6667,
+          "target_link_recall_at_3": 1.0,
+          "target_link_mrr": 0.8333,
+          "no_target_accuracy": 1.0,
+          "multi_target_full_coverage_at_3": 1.0
+        }
+      }
+    },
+    "precision_tiered_v5": {
+      "overall": {
+        "scenario_count": 2,
+        "case_count": 35,
+        "single_target_case_count": 16,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 15,
+        "expected_target_link_count": 25,
+        "single_target_top1_accuracy": 0.625,
+        "target_link_recall_at_1": 0.52,
+        "target_link_recall_at_3": 0.88,
+        "target_link_mrr": 0.6667,
+        "no_target_accuracy": 1.0,
+        "multi_target_full_coverage_at_3": 0.75
+      },
+      "by_scenario": {
+        "contracts_finder_procurement_2026": {
+          "scenario_count": 1,
+          "case_count": 23,
+          "single_target_case_count": 14,
+          "multi_target_case_count": 2,
+          "no_target_case_count": 7,
+          "expected_target_link_count": 19,
+          "single_target_top1_accuracy": 0.5714,
+          "target_link_recall_at_1": 0.4737,
+          "target_link_recall_at_3": 0.8421,
+          "target_link_mrr": 0.614,
+          "no_target_accuracy": 1.0,
+          "multi_target_full_coverage_at_3": 0.5
+        },
+        "open_food_facts_products": {
+          "scenario_count": 1,
+          "case_count": 12,
+          "single_target_case_count": 2,
+          "multi_target_case_count": 2,
+          "no_target_case_count": 8,
+          "expected_target_link_count": 6,
+          "single_target_top1_accuracy": 1.0,
+          "target_link_recall_at_1": 0.6667,
+          "target_link_recall_at_3": 1.0,
+          "target_link_mrr": 0.8333,
+          "no_target_accuracy": 1.0,
+          "multi_target_full_coverage_at_3": 1.0
+        }
+      }
+    }
+  },
+  "top1_different_cases": [
+    {
+      "case": "contracts_finder_procurement_2026::tender_classification_scheme",
+      "top1": {
+        "baseline": [
+          "sales_order_header.distribution_channel"
+        ],
+        "precision_tiered_v4": [
+          "sales_order_header.currency_code"
+        ],
+        "precision_tiered_v5": [
+          "sales_order_header.currency_code"
+        ]
+      },
+      "error_type": {
+        "baseline": "correct_no_target",
+        "precision_tiered_v4": "correct_no_target",
+        "precision_tiered_v5": "correct_no_target"
+      }
+    }
+  ],
+  "top3_order_different_cases": [
+    {
+      "case": "contracts_finder_procurement_2026::tender_classification_scheme",
+      "top3": {
+        "baseline": [
+          "sales_order_header.distribution_channel",
+          "sales_order_header.currency_code",
+          "sales_order_header.customer_id"
+        ],
+        "precision_tiered_v4": [
+          "sales_order_header.currency_code",
+          "sales_order_header.distribution_channel",
+          "sales_order_header.customer_id"
+        ],
+        "precision_tiered_v5": [
+          "sales_order_header.currency_code",
+          "sales_order_header.distribution_channel",
+          "sales_order_header.customer_id"
+        ]
+      },
+      "error_type": {
+        "baseline": "correct_no_target",
+        "precision_tiered_v4": "correct_no_target",
+        "precision_tiered_v5": "correct_no_target"
+      }
+    }
+  ],
+  "v4_improved_cases": [],
+  "v4_regressed_cases": [],
+  "v5_improved_cases": [],
+  "v5_regressed_cases": [],
+  "fully_consistent_cases": [
+    {
+      "case": "contracts_finder_procurement_2026::buyer_id",
+      "top3": [
+        "sales_order_header.customer_id",
+        "sales_order_line.order_quantity",
+        "sales_order_line.sales_order_id"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::buyer_name",
+      "top3": [
+        "sales_order_line.order_quantity",
+        "delivery_schedule.requested_ship_date",
+        "sales_order_header.customer_id"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::date",
+      "top3": [
+        "delivery_schedule.requested_ship_date",
+        "delivery_schedule.confirmed_ship_date",
+        "sales_order_header.order_date"
+      ],
+      "error_type": "correct_but_ranked_2_or_3"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::id",
+      "top3": [
+        "sales_order_header.customer_id",
+        "sales_order_line.product_id",
+        "sales_order_line.sales_order_id"
+      ],
+      "error_type": "multi_target_partially_covered"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::initiationType",
+      "top3": [
+        "delivery_schedule.confirmed_quantity",
+        "delivery_schedule.fulfillment_status",
+        "sales_order_line.item_description"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::language",
+      "top3": [
+        "sales_order_line.item_description",
+        "sales_order_header.distribution_channel",
+        "sales_order_line.quantity_uom"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::ocid",
+      "top3": [
+        "sales_order_line.product_id",
+        "sales_order_header.customer_id",
+        "sales_order_header.distribution_channel"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_classification_description",
+      "top3": [
+        "sales_order_line.item_description",
+        "sales_order_header.customer_id",
+        "delivery_schedule.confirmed_quantity"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_classification_id",
+      "top3": [
+        "sales_order_header.customer_id",
+        "sales_order_line.sales_order_id",
+        "sales_order_line.product_id"
+      ],
+      "error_type": "correct_but_ranked_2_or_3"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_contractPeriod_endDate",
+      "top3": [
+        "delivery_schedule.confirmed_ship_date",
+        "sales_order_header.order_date",
+        "delivery_schedule.requested_ship_date"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_contractPeriod_startDate",
+      "top3": [
+        "delivery_schedule.confirmed_ship_date",
+        "sales_order_header.order_date",
+        "delivery_schedule.requested_ship_date"
+      ],
+      "error_type": "correct_but_ranked_2_or_3"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_datePublished",
+      "top3": [
+        "delivery_schedule.requested_ship_date",
+        "delivery_schedule.confirmed_ship_date",
+        "sales_order_header.order_date"
+      ],
+      "error_type": "correct_but_ranked_2_or_3"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_description",
+      "top3": [
+        "sales_order_line.item_description",
+        "delivery_schedule.confirmed_quantity",
+        "sales_order_line.unit_price"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_id",
+      "top3": [
+        "sales_order_header.customer_id",
+        "sales_order_header.sales_order_id",
+        "sales_order_line.sales_order_id"
+      ],
+      "error_type": "expected_target_missing_from_top3"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_mainProcurementCategory",
+      "top3": [
+        "sales_order_header.distribution_channel",
+        "delivery_schedule.confirmed_quantity",
+        "sales_order_header.customer_id"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_procurementMethod",
+      "top3": [
+        "sales_order_line.unit_price",
+        "sales_order_line.order_quantity",
+        "delivery_schedule.confirmed_quantity"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_status",
+      "top3": [
+        "delivery_schedule.fulfillment_status",
+        "sales_order_header.order_status",
+        "delivery_schedule.confirmed_quantity"
+      ],
+      "error_type": "multi_target_fully_covered"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_tenderPeriod_endDate",
+      "top3": [
+        "delivery_schedule.confirmed_ship_date",
+        "sales_order_header.order_date",
+        "delivery_schedule.requested_ship_date"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_title",
+      "top3": [
+        "sales_order_line.item_description",
+        "sales_order_header.customer_id",
+        "sales_order_line.order_quantity"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_value_amount",
+      "top3": [
+        "sales_order_line.unit_price",
+        "sales_order_line.line_amount",
+        "sales_order_header.currency_code"
+      ],
+      "error_type": "correct_but_ranked_2_or_3"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_value_currency",
+      "top3": [
+        "sales_order_header.currency_code",
+        "sales_order_line.unit_price",
+        "sales_order_line.line_amount"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "contracts_finder_procurement_2026::title",
+      "top3": [
+        "sales_order_line.item_description",
+        "delivery_schedule.requested_ship_date",
+        "delivery_schedule.line_number"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "open_food_facts_products::brands",
+      "top3": [
+        "item.item_name",
+        "item_price.uom",
+        "item.stock_uom"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::categories",
+      "top3": [
+        "item.item_group",
+        "item_price.price_list",
+        "item_price.item_code"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "open_food_facts_products::code",
+      "top3": [
+        "item_price.item_code",
+        "item.item_code",
+        "item.item_name"
+      ],
+      "error_type": "multi_target_fully_covered"
+    },
+    {
+      "case": "open_food_facts_products::countries",
+      "top3": [
+        "item.item_group",
+        "item_price.price_list",
+        "item_price.valid_from"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::generic_name",
+      "top3": [
+        "item.item_name",
+        "item_price.price_list",
+        "item.item_code"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::ingredients_text",
+      "top3": [
+        "item.item_name",
+        "item.item_code",
+        "item_price.item_code"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::nova_group",
+      "top3": [
+        "item.item_group",
+        "item.stock_uom",
+        "item_price.valid_from"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::nutrition_grades",
+      "top3": [
+        "item_price.price_list",
+        "item_price.uom",
+        "item_price.valid_from"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::packaging",
+      "top3": [
+        "item.item_name",
+        "item.item_code",
+        "item.item_group"
+      ],
+      "error_type": "correct_no_target"
+    },
+    {
+      "case": "open_food_facts_products::product_name",
+      "top3": [
+        "item.item_name",
+        "item.item_code",
+        "item_price.item_code"
+      ],
+      "error_type": "correct_top1"
+    },
+    {
+      "case": "open_food_facts_products::quantity",
+      "top3": [
+        "item_price.uom",
+        "item.stock_uom",
+        "item_price.price_list_rate"
+      ],
+      "error_type": "multi_target_fully_covered"
+    },
+    {
+      "case": "open_food_facts_products::stores",
+      "top3": [
+        "item_price.price_list",
+        "item_price.valid_from",
+        "item.item_name"
+      ],
+      "error_type": "correct_no_target"
+    }
+  ],
+  "common_failure_cases": [
+    {
+      "case": "contracts_finder_procurement_2026::date",
+      "error_type": "correct_but_ranked_2_or_3",
+      "best_expected_rank": 3
+    },
+    {
+      "case": "contracts_finder_procurement_2026::id",
+      "error_type": "multi_target_partially_covered",
+      "best_expected_rank": 3
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_classification_id",
+      "error_type": "correct_but_ranked_2_or_3",
+      "best_expected_rank": 3
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_contractPeriod_startDate",
+      "error_type": "correct_but_ranked_2_or_3",
+      "best_expected_rank": 3
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_datePublished",
+      "error_type": "correct_but_ranked_2_or_3",
+      "best_expected_rank": 3
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_id",
+      "error_type": "expected_target_missing_from_top3",
+      "best_expected_rank": null
+    },
+    {
+      "case": "contracts_finder_procurement_2026::tender_value_amount",
+      "error_type": "correct_but_ranked_2_or_3",
+      "best_expected_rank": 2
+    }
+  ],
+  "repeated_error_type_counts": {
+    "correct_but_ranked_2_or_3": 5,
+    "expected_target_missing_from_top3": 1,
+    "multi_target_partially_covered": 1
+  },
+  "negative_result_summary": "Baseline, V4, and V5 produce identical aggregate metrics on both current public development scenarios; the retained negative result is that no V4/V5 case-level improvement appears yet.",
+  "learning_to_rank_readiness": {
+    "ready": false,
+    "reason": "The public development set is still too small for interpretable learning-to-rank experiments.",
+    "current_case_count": 35,
+    "current_expected_target_link_count": 25,
+    "minimum_suggested_case_count": 100,
+    "minimum_suggested_expected_target_link_count": 80,
+    "additional_cases_needed": 65,
+    "additional_expected_target_links_needed": 55
+  }
+}

@@ -1,0 +1,276 @@
+{
+  "_run_info": {
+    "content_sha256": "60e6ef92f7965a7550845bbcffc9040e5f11cf446be20aa895c0353169e91388",
+    "note": "_run_info is deterministic for V5 correctness calibration artifacts."
+  },
+  "experiment_id": "schema_matching_v5_correctness_calibration_v1",
+  "contract_families": [
+    "bank_account",
+    "generic_customer",
+    "item_item_price",
+    "sales_order_fulfillment",
+    "supplier_reference"
+  ],
+  "outer_cv": "leave_one_contract_family_out",
+  "inner_cv": "leave_one_contract_family_out_within_outer_training_families",
+  "leakage_controls": {
+    "outer_held_out_used_for_training": false,
+    "outer_held_out_used_for_scaling": false,
+    "outer_held_out_used_for_threshold_selection": false,
+    "threshold_source": "inner_oof_predictions_only",
+    "field_level_random_split": false,
+    "identity_features_used": false
+  },
+  "folds": [
+    {
+      "fold_id": "leave_one_contract_family__bank_account",
+      "held_out_contract_family": "bank_account",
+      "train_contract_families": [
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "train_case_count": 91,
+      "held_out_case_count": 16,
+      "strategy_thresholds": {
+        "score_only_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.57981006,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 53,
+            "accepted_precision": 0.90566038,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.65146171,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 47,
+            "accepted_precision": 0.95744681,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        },
+        "multifeature_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.69353031,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 50,
+            "accepted_precision": 0.9,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.81407369,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 41,
+            "accepted_precision": 0.95121951,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__generic_customer",
+      "held_out_contract_family": "generic_customer",
+      "train_contract_families": [
+        "bank_account",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "train_case_count": 95,
+      "held_out_case_count": 12,
+      "strategy_thresholds": {
+        "score_only_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.66696432,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 47,
+            "accepted_precision": 0.91489362,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.69129544,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 41,
+            "accepted_precision": 0.95121951,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        },
+        "multifeature_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.91056949,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 31,
+            "accepted_precision": 0.90322581,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.95525032,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 26,
+            "accepted_precision": 0.96153846,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__item_item_price",
+      "held_out_contract_family": "item_item_price",
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "train_case_count": 85,
+      "held_out_case_count": 22,
+      "strategy_thresholds": {
+        "score_only_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.71664112,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 51,
+            "accepted_precision": 0.90196078,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.73484299,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 46,
+            "accepted_precision": 0.95652174,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        },
+        "multifeature_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.85441082,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 43,
+            "accepted_precision": 0.90697674,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.9032539,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 37,
+            "accepted_precision": 0.97297297,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__sales_order_fulfillment",
+      "held_out_contract_family": "sales_order_fulfillment",
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "supplier_reference"
+      ],
+      "train_case_count": 62,
+      "held_out_case_count": 45,
+      "strategy_thresholds": {
+        "score_only_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.6001878,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 43,
+            "accepted_precision": 0.90697674,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.72698825,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 33,
+            "accepted_precision": 0.96969697,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        },
+        "multifeature_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.47418741,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 44,
+            "accepted_precision": 0.90909091,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.59765792,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 41,
+            "accepted_precision": 0.95121951,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__supplier_reference",
+      "held_out_contract_family": "supplier_reference",
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment"
+      ],
+      "train_case_count": 95,
+      "held_out_case_count": 12,
+      "strategy_thresholds": {
+        "score_only_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.66382138,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 47,
+            "accepted_precision": 0.91489362,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.68788352,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 42,
+            "accepted_precision": 0.95238095,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        },
+        "multifeature_calibrator": {
+          "target_precision_90": {
+            "target_precision": 0.9,
+            "threshold": 0.91578375,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 30,
+            "accepted_precision": 0.9,
+            "selection_source": "inner_contract_family_oof_predictions"
+          },
+          "target_precision_95": {
+            "target_precision": 0.95,
+            "threshold": 0.93630215,
+            "policy": "accept_probability_at_or_above_threshold",
+            "accepted_count": 26,
+            "accepted_precision": 0.96153846,
+            "selection_source": "inner_contract_family_oof_predictions"
+          }
+        }
+      }
+    }
+  ]
+}

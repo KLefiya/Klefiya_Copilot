@@ -1,0 +1,1555 @@
+{
+  "_run_info": {
+    "content_sha256": "77cf099e51fb1697ff2147d5e02d5093a78266aaac3bf14303c33633bb566e63",
+    "note": "_run_info is deterministic for LTR v1 artifacts; compare content_sha256 for report body reproducibility."
+  },
+  "experiment_id": "schema_matching_pairwise_ltr_v1",
+  "development_only": true,
+  "production_model": false,
+  "sealed_holdout_evaluated": false,
+  "metrics": {
+    "leave_one_scenario_out": {
+      "baseline": {
+        "case_count": 107,
+        "target_bearing_case_count": 84,
+        "single_target_case_count": 75,
+        "multi_target_case_count": 9,
+        "no_target_case_count": 23,
+        "expected_target_link_count": 95,
+        "single_target_top1_accuracy": 0.7867,
+        "target_link_recall_at_1": 0.6842,
+        "target_link_recall_at_3": 0.9158,
+        "target_link_mrr": 0.7807,
+        "multi_target_full_coverage_at_3": 0.7778,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "bank_account__swift_identifier",
+            "scenario_id": "bank_account",
+            "source_field": "swift_identifier",
+            "missing_expected_targets": [
+              "bank_branch.bic"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          },
+          {
+            "case_id": "sales_order_fulfillment__material_ref",
+            "scenario_id": "sales_order_fulfillment",
+            "source_field": "material_ref",
+            "missing_expected_targets": [
+              "sales_order_line.product_id"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 107,
+        "target_bearing_case_count": 84,
+        "single_target_case_count": 75,
+        "multi_target_case_count": 9,
+        "no_target_case_count": 23,
+        "expected_target_link_count": 95,
+        "single_target_top1_accuracy": 0.8667,
+        "target_link_recall_at_1": 0.7579,
+        "target_link_recall_at_3": 0.9579,
+        "target_link_mrr": 0.8456,
+        "multi_target_full_coverage_at_3": 0.8889,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          }
+        ]
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 107,
+        "target_bearing_case_count": 84,
+        "single_target_case_count": 75,
+        "multi_target_case_count": 9,
+        "no_target_case_count": 23,
+        "expected_target_link_count": 95,
+        "single_target_top1_accuracy": 0.84,
+        "target_link_recall_at_1": 0.7263,
+        "target_link_recall_at_3": 0.9158,
+        "target_link_mrr": 0.8105,
+        "multi_target_full_coverage_at_3": 0.6667,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_account.bank_key",
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          },
+          {
+            "case_id": "erpnext_item_price__article_number",
+            "scenario_id": "erpnext_item_price",
+            "source_field": "article_number",
+            "missing_expected_targets": [
+              "item_price.item_code"
+            ]
+          }
+        ]
+      }
+    },
+    "leave_one_contract_out": {
+      "baseline": {
+        "case_count": 107,
+        "target_bearing_case_count": 84,
+        "single_target_case_count": 75,
+        "multi_target_case_count": 9,
+        "no_target_case_count": 23,
+        "expected_target_link_count": 95,
+        "single_target_top1_accuracy": 0.7867,
+        "target_link_recall_at_1": 0.6842,
+        "target_link_recall_at_3": 0.9158,
+        "target_link_mrr": 0.7807,
+        "multi_target_full_coverage_at_3": 0.7778,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "bank_account__swift_identifier",
+            "scenario_id": "bank_account",
+            "source_field": "swift_identifier",
+            "missing_expected_targets": [
+              "bank_branch.bic"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          },
+          {
+            "case_id": "sales_order_fulfillment__material_ref",
+            "scenario_id": "sales_order_fulfillment",
+            "source_field": "material_ref",
+            "missing_expected_targets": [
+              "sales_order_line.product_id"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 107,
+        "target_bearing_case_count": 84,
+        "single_target_case_count": 75,
+        "multi_target_case_count": 9,
+        "no_target_case_count": 23,
+        "expected_target_link_count": 95,
+        "single_target_top1_accuracy": 0.8667,
+        "target_link_recall_at_1": 0.7579,
+        "target_link_recall_at_3": 0.9579,
+        "target_link_mrr": 0.8456,
+        "multi_target_full_coverage_at_3": 0.8889,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          }
+        ]
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 107,
+        "target_bearing_case_count": 84,
+        "single_target_case_count": 75,
+        "multi_target_case_count": 9,
+        "no_target_case_count": 23,
+        "expected_target_link_count": 95,
+        "single_target_top1_accuracy": 0.8267,
+        "target_link_recall_at_1": 0.7158,
+        "target_link_recall_at_3": 0.9053,
+        "target_link_mrr": 0.8018,
+        "multi_target_full_coverage_at_3": 0.6667,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_account.bank_key",
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "erpnext_item_price__article_number",
+            "scenario_id": "erpnext_item_price",
+            "source_field": "article_number",
+            "missing_expected_targets": [
+              "item_price.item_code"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_mainProcurementCategory",
+            "missing_expected_targets": [
+              "sales_order_header.distribution_channel"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "case_deltas": {
+    "leave_one_scenario_out": {
+      "ltr_improved_vs_baseline": [
+        "bank_account__account_domicile",
+        "bank_account__beneficiary_label",
+        "bank_account__branch_domicile",
+        "bank_account__swift_identifier",
+        "sales_order_fulfillment__legacy_line_item_no",
+        "sales_order_fulfillment__material_ref",
+        "sales_order_fulfillment__sold_to_ref"
+      ],
+      "ltr_regressed_vs_baseline": [
+        "bank_account__institution_ref",
+        "contracts_finder_procurement_2026__tender_title",
+        "erpnext_item_price__article_number"
+      ],
+      "ltr_improved_vs_v5": [],
+      "ltr_regressed_vs_v5": [
+        "bank_account__clearing_code",
+        "bank_account__institution_ref",
+        "contracts_finder_procurement_2026__tender_title",
+        "erpnext_item_price__article_number"
+      ],
+      "ltr_expected_target_missing_from_top3": [
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "source_field": "clearing_code",
+          "missing_expected_targets": [
+            "bank_branch.routing_number"
+          ]
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "source_field": "institution_ref",
+          "missing_expected_targets": [
+            "bank_account.bank_key",
+            "bank_branch.bank_key"
+          ]
+        },
+        {
+          "case_id": "bank_account__legacy_bank_ref",
+          "scenario_id": "bank_account",
+          "source_field": "legacy_bank_ref",
+          "missing_expected_targets": [
+            "bank_account.account_id"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "source_field": "id",
+          "missing_expected_targets": [
+            "sales_order_header.sales_order_id",
+            "delivery_schedule.sales_order_id"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "source_field": "tender_id",
+          "missing_expected_targets": [
+            "sales_order_header.customer_purchase_order"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__article_number",
+          "scenario_id": "erpnext_item_price",
+          "source_field": "article_number",
+          "missing_expected_targets": [
+            "item_price.item_code"
+          ]
+        }
+      ]
+    },
+    "leave_one_contract_out": {
+      "ltr_improved_vs_baseline": [
+        "bank_account__account_domicile",
+        "bank_account__beneficiary_label",
+        "bank_account__branch_domicile",
+        "bank_account__swift_identifier",
+        "contracts_finder_procurement_2026__tender_classification_id",
+        "sales_order_fulfillment__legacy_line_item_no",
+        "sales_order_fulfillment__material_ref",
+        "sales_order_fulfillment__sold_to_ref"
+      ],
+      "ltr_regressed_vs_baseline": [
+        "bank_account__institution_ref",
+        "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+        "contracts_finder_procurement_2026__tender_title",
+        "erpnext_item_price__article_number"
+      ],
+      "ltr_improved_vs_v5": [
+        "contracts_finder_procurement_2026__tender_classification_id"
+      ],
+      "ltr_regressed_vs_v5": [
+        "bank_account__clearing_code",
+        "bank_account__institution_ref",
+        "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+        "contracts_finder_procurement_2026__tender_title",
+        "erpnext_item_price__article_number"
+      ],
+      "ltr_expected_target_missing_from_top3": [
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "source_field": "clearing_code",
+          "missing_expected_targets": [
+            "bank_branch.routing_number"
+          ]
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "source_field": "institution_ref",
+          "missing_expected_targets": [
+            "bank_account.bank_key",
+            "bank_branch.bank_key"
+          ]
+        },
+        {
+          "case_id": "bank_account__legacy_bank_ref",
+          "scenario_id": "bank_account",
+          "source_field": "legacy_bank_ref",
+          "missing_expected_targets": [
+            "bank_account.account_id"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "source_field": "id",
+          "missing_expected_targets": [
+            "sales_order_header.sales_order_id",
+            "delivery_schedule.sales_order_id"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "source_field": "tender_id",
+          "missing_expected_targets": [
+            "sales_order_header.customer_purchase_order"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "source_field": "tender_mainProcurementCategory",
+          "missing_expected_targets": [
+            "sales_order_header.distribution_channel"
+          ]
+        },
+        {
+          "case_id": "erpnext_item_price__article_number",
+          "scenario_id": "erpnext_item_price",
+          "source_field": "article_number",
+          "missing_expected_targets": [
+            "item_price.item_code"
+          ]
+        }
+      ]
+    }
+  },
+  "by_scenario": {
+    "bank_account": {
+      "baseline": {
+        "case_count": 16,
+        "target_bearing_case_count": 14,
+        "single_target_case_count": 13,
+        "multi_target_case_count": 1,
+        "no_target_case_count": 2,
+        "expected_target_link_count": 15,
+        "single_target_top1_accuracy": 0.5385,
+        "target_link_recall_at_1": 0.4667,
+        "target_link_recall_at_3": 0.7333,
+        "target_link_mrr": 0.5778,
+        "multi_target_full_coverage_at_3": 0.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "bank_account__swift_identifier",
+            "scenario_id": "bank_account",
+            "source_field": "swift_identifier",
+            "missing_expected_targets": [
+              "bank_branch.bic"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 16,
+        "target_bearing_case_count": 14,
+        "single_target_case_count": 13,
+        "multi_target_case_count": 1,
+        "no_target_case_count": 2,
+        "expected_target_link_count": 15,
+        "single_target_top1_accuracy": 0.8462,
+        "target_link_recall_at_1": 0.8,
+        "target_link_recall_at_3": 0.9333,
+        "target_link_mrr": 0.8667,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          }
+        ]
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 16,
+        "target_bearing_case_count": 14,
+        "single_target_case_count": 13,
+        "multi_target_case_count": 1,
+        "no_target_case_count": 2,
+        "expected_target_link_count": 15,
+        "single_target_top1_accuracy": 0.7692,
+        "target_link_recall_at_1": 0.6667,
+        "target_link_recall_at_3": 0.7333,
+        "target_link_mrr": 0.7,
+        "multi_target_full_coverage_at_3": 0.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_account.bank_key",
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          }
+        ]
+      }
+    },
+    "contracts_finder_procurement_2026": {
+      "baseline": {
+        "case_count": 23,
+        "target_bearing_case_count": 16,
+        "single_target_case_count": 14,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 7,
+        "expected_target_link_count": 19,
+        "single_target_top1_accuracy": 0.5714,
+        "target_link_recall_at_1": 0.4737,
+        "target_link_recall_at_3": 0.8421,
+        "target_link_mrr": 0.614,
+        "multi_target_full_coverage_at_3": 0.5,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 23,
+        "target_bearing_case_count": 16,
+        "single_target_case_count": 14,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 7,
+        "expected_target_link_count": 19,
+        "single_target_top1_accuracy": 0.5714,
+        "target_link_recall_at_1": 0.4737,
+        "target_link_recall_at_3": 0.8421,
+        "target_link_mrr": 0.614,
+        "multi_target_full_coverage_at_3": 0.5,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          }
+        ]
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 23,
+        "target_bearing_case_count": 16,
+        "single_target_case_count": 14,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 7,
+        "expected_target_link_count": 19,
+        "single_target_top1_accuracy": 0.5,
+        "target_link_recall_at_1": 0.4211,
+        "target_link_recall_at_3": 0.8421,
+        "target_link_mrr": 0.5877,
+        "multi_target_full_coverage_at_3": 0.5,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          }
+        ]
+      }
+    },
+    "erpnext_item_price": {
+      "baseline": {
+        "case_count": 10,
+        "target_bearing_case_count": 9,
+        "single_target_case_count": 7,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 0.7143,
+        "target_link_recall_at_1": 0.5455,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.7576,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 10,
+        "target_bearing_case_count": 9,
+        "single_target_case_count": 7,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 0.7143,
+        "target_link_recall_at_1": 0.5455,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.7576,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 10,
+        "target_bearing_case_count": 9,
+        "single_target_case_count": 7,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 0.7143,
+        "target_link_recall_at_1": 0.5455,
+        "target_link_recall_at_3": 0.9091,
+        "target_link_mrr": 0.7273,
+        "multi_target_full_coverage_at_3": 0.5,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "erpnext_item_price__article_number",
+            "scenario_id": "erpnext_item_price",
+            "source_field": "article_number",
+            "missing_expected_targets": [
+              "item_price.item_code"
+            ]
+          }
+        ]
+      }
+    },
+    "generic_customer": {
+      "baseline": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      }
+    },
+    "open_food_facts_products": {
+      "baseline": {
+        "case_count": 12,
+        "target_bearing_case_count": 4,
+        "single_target_case_count": 2,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 8,
+        "expected_target_link_count": 6,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 0.6667,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.8333,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 12,
+        "target_bearing_case_count": 4,
+        "single_target_case_count": 2,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 8,
+        "expected_target_link_count": 6,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 0.6667,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.8333,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 12,
+        "target_bearing_case_count": 4,
+        "single_target_case_count": 2,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 8,
+        "expected_target_link_count": 6,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 0.6667,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.8333,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      }
+    },
+    "sales_order_fulfillment": {
+      "baseline": {
+        "case_count": 22,
+        "target_bearing_case_count": 19,
+        "single_target_case_count": 17,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 3,
+        "expected_target_link_count": 22,
+        "single_target_top1_accuracy": 0.8824,
+        "target_link_recall_at_1": 0.7727,
+        "target_link_recall_at_3": 0.9545,
+        "target_link_mrr": 0.8409,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "sales_order_fulfillment__material_ref",
+            "scenario_id": "sales_order_fulfillment",
+            "source_field": "material_ref",
+            "missing_expected_targets": [
+              "sales_order_line.product_id"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 22,
+        "target_bearing_case_count": 19,
+        "single_target_case_count": 17,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 3,
+        "expected_target_link_count": 22,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 0.8636,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.9242,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 22,
+        "target_bearing_case_count": 19,
+        "single_target_case_count": 17,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 3,
+        "expected_target_link_count": 22,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 0.8636,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.9242,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      }
+    },
+    "supplier_reference": {
+      "baseline": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      }
+    }
+  },
+  "by_contract_family": {
+    "bank_account": {
+      "baseline": {
+        "case_count": 16,
+        "target_bearing_case_count": 14,
+        "single_target_case_count": 13,
+        "multi_target_case_count": 1,
+        "no_target_case_count": 2,
+        "expected_target_link_count": 15,
+        "single_target_top1_accuracy": 0.5385,
+        "target_link_recall_at_1": 0.4667,
+        "target_link_recall_at_3": 0.7333,
+        "target_link_mrr": 0.5778,
+        "multi_target_full_coverage_at_3": 0.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          },
+          {
+            "case_id": "bank_account__swift_identifier",
+            "scenario_id": "bank_account",
+            "source_field": "swift_identifier",
+            "missing_expected_targets": [
+              "bank_branch.bic"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 16,
+        "target_bearing_case_count": 14,
+        "single_target_case_count": 13,
+        "multi_target_case_count": 1,
+        "no_target_case_count": 2,
+        "expected_target_link_count": 15,
+        "single_target_top1_accuracy": 0.8462,
+        "target_link_recall_at_1": 0.8,
+        "target_link_recall_at_3": 0.9333,
+        "target_link_mrr": 0.8667,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          }
+        ]
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 16,
+        "target_bearing_case_count": 14,
+        "single_target_case_count": 13,
+        "multi_target_case_count": 1,
+        "no_target_case_count": 2,
+        "expected_target_link_count": 15,
+        "single_target_top1_accuracy": 0.7692,
+        "target_link_recall_at_1": 0.6667,
+        "target_link_recall_at_3": 0.7333,
+        "target_link_mrr": 0.7,
+        "multi_target_full_coverage_at_3": 0.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "bank_account__clearing_code",
+            "scenario_id": "bank_account",
+            "source_field": "clearing_code",
+            "missing_expected_targets": [
+              "bank_branch.routing_number"
+            ]
+          },
+          {
+            "case_id": "bank_account__institution_ref",
+            "scenario_id": "bank_account",
+            "source_field": "institution_ref",
+            "missing_expected_targets": [
+              "bank_account.bank_key",
+              "bank_branch.bank_key"
+            ]
+          },
+          {
+            "case_id": "bank_account__legacy_bank_ref",
+            "scenario_id": "bank_account",
+            "source_field": "legacy_bank_ref",
+            "missing_expected_targets": [
+              "bank_account.account_id"
+            ]
+          }
+        ]
+      }
+    },
+    "generic_customer": {
+      "baseline": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      }
+    },
+    "item_item_price": {
+      "baseline": {
+        "case_count": 22,
+        "target_bearing_case_count": 13,
+        "single_target_case_count": 9,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 9,
+        "expected_target_link_count": 17,
+        "single_target_top1_accuracy": 0.7778,
+        "target_link_recall_at_1": 0.5882,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.7843,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 22,
+        "target_bearing_case_count": 13,
+        "single_target_case_count": 9,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 9,
+        "expected_target_link_count": 17,
+        "single_target_top1_accuracy": 0.7778,
+        "target_link_recall_at_1": 0.5882,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 0.7843,
+        "multi_target_full_coverage_at_3": 1.0,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 22,
+        "target_bearing_case_count": 13,
+        "single_target_case_count": 9,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 9,
+        "expected_target_link_count": 17,
+        "single_target_top1_accuracy": 0.7778,
+        "target_link_recall_at_1": 0.5882,
+        "target_link_recall_at_3": 0.9412,
+        "target_link_mrr": 0.7647,
+        "multi_target_full_coverage_at_3": 0.75,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "erpnext_item_price__article_number",
+            "scenario_id": "erpnext_item_price",
+            "source_field": "article_number",
+            "missing_expected_targets": [
+              "item_price.item_code"
+            ]
+          }
+        ]
+      }
+    },
+    "sales_order_fulfillment": {
+      "baseline": {
+        "case_count": 45,
+        "target_bearing_case_count": 35,
+        "single_target_case_count": 31,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 10,
+        "expected_target_link_count": 41,
+        "single_target_top1_accuracy": 0.7419,
+        "target_link_recall_at_1": 0.6341,
+        "target_link_recall_at_3": 0.9024,
+        "target_link_mrr": 0.7358,
+        "multi_target_full_coverage_at_3": 0.75,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          },
+          {
+            "case_id": "sales_order_fulfillment__material_ref",
+            "scenario_id": "sales_order_fulfillment",
+            "source_field": "material_ref",
+            "missing_expected_targets": [
+              "sales_order_line.product_id"
+            ]
+          }
+        ]
+      },
+      "precision_tiered_v5": {
+        "case_count": 45,
+        "target_bearing_case_count": 35,
+        "single_target_case_count": 31,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 10,
+        "expected_target_link_count": 41,
+        "single_target_top1_accuracy": 0.8065,
+        "target_link_recall_at_1": 0.6829,
+        "target_link_recall_at_3": 0.9268,
+        "target_link_mrr": 0.7805,
+        "multi_target_full_coverage_at_3": 0.75,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          }
+        ]
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 45,
+        "target_bearing_case_count": 35,
+        "single_target_case_count": 31,
+        "multi_target_case_count": 4,
+        "no_target_case_count": 10,
+        "expected_target_link_count": 41,
+        "single_target_top1_accuracy": 0.7419,
+        "target_link_recall_at_1": 0.6341,
+        "target_link_recall_at_3": 0.9024,
+        "target_link_mrr": 0.748,
+        "multi_target_full_coverage_at_3": 0.75,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": [
+          {
+            "case_id": "contracts_finder_procurement_2026__id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "id",
+            "missing_expected_targets": [
+              "sales_order_header.sales_order_id",
+              "delivery_schedule.sales_order_id"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_id",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_id",
+            "missing_expected_targets": [
+              "sales_order_header.customer_purchase_order"
+            ]
+          },
+          {
+            "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+            "scenario_id": "contracts_finder_procurement_2026",
+            "source_field": "tender_mainProcurementCategory",
+            "missing_expected_targets": [
+              "sales_order_header.distribution_channel"
+            ]
+          }
+        ]
+      }
+    },
+    "supplier_reference": {
+      "baseline": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "precision_tiered_v5": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      },
+      "learned_pairwise_linear_v1": {
+        "case_count": 12,
+        "target_bearing_case_count": 11,
+        "single_target_case_count": 11,
+        "multi_target_case_count": 0,
+        "no_target_case_count": 1,
+        "expected_target_link_count": 11,
+        "single_target_top1_accuracy": 1.0,
+        "target_link_recall_at_1": 1.0,
+        "target_link_recall_at_3": 1.0,
+        "target_link_mrr": 1.0,
+        "multi_target_full_coverage_at_3": null,
+        "no_target_accuracy": "not_applicable",
+        "abstention_learning": "not_implemented_in_ltr_v1",
+        "expected_target_missing_from_top3_cases": []
+      }
+    }
+  },
+  "coefficient_summary": {
+    "top_absolute_coefficients": [
+      {
+        "feature": "semantic_score",
+        "coefficient": 0.82043567
+      },
+      {
+        "feature": "identifier_adjusted_score",
+        "coefficient": 0.70813086
+      },
+      {
+        "feature": "v4_score",
+        "coefficient": 0.68733428
+      },
+      {
+        "feature": "v3_score",
+        "coefficient": 0.68139587
+      },
+      {
+        "feature": "baseline_score",
+        "coefficient": 0.64548588
+      },
+      {
+        "feature": "lexical_overlap",
+        "coefficient": 0.62587929
+      },
+      {
+        "feature": "value_pattern_score",
+        "coefficient": 0.44698902
+      },
+      {
+        "feature": "fuzzy_score",
+        "coefficient": 0.32275513
+      }
+    ],
+    "positive_coefficients": [
+      {
+        "feature": "semantic_score",
+        "coefficient": 0.82043567
+      },
+      {
+        "feature": "identifier_adjusted_score",
+        "coefficient": 0.70813086
+      },
+      {
+        "feature": "v4_score",
+        "coefficient": 0.68733428
+      },
+      {
+        "feature": "v3_score",
+        "coefficient": 0.68139587
+      },
+      {
+        "feature": "baseline_score",
+        "coefficient": 0.64548588
+      },
+      {
+        "feature": "lexical_overlap",
+        "coefficient": 0.62587929
+      },
+      {
+        "feature": "value_pattern_score",
+        "coefficient": 0.44698902
+      },
+      {
+        "feature": "fuzzy_score",
+        "coefficient": 0.32275513
+      },
+      {
+        "feature": "identifier_bonus",
+        "coefficient": 0.29027906
+      },
+      {
+        "feature": "v5_top1_eligible",
+        "coefficient": 0.28363157
+      },
+      {
+        "feature": "resource_context_score",
+        "coefficient": 0.18199734
+      },
+      {
+        "feature": "resource_context_support",
+        "coefficient": 0.18199734
+      },
+      {
+        "feature": "supportive_bonus",
+        "coefficient": 0.17222569
+      },
+      {
+        "feature": "type_gate",
+        "coefficient": 0.17129848
+      },
+      {
+        "feature": "diagnostic_bonus",
+        "coefficient": 0.13439246
+      },
+      {
+        "feature": "top1_eligible",
+        "coefficient": 0.13439246
+      },
+      {
+        "feature": "alias_hit",
+        "coefficient": 0.0399106
+      }
+    ],
+    "negative_coefficients": [],
+    "alias_or_heuristic_dependency_visible": true
+  },
+  "negative_result_summary": "LTR v1 is a deterministic prototype; no-target abstention is not learned."
+}

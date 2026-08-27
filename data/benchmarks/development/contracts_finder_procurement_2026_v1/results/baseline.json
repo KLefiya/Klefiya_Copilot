@@ -1,0 +1,939 @@
+{
+  "_run_info": {
+    "content_sha256": "a9104bb54ff123bb3f9ffa19c35688e2409cf6b1ccf0d950cec0f28742d78dfa",
+    "note": "_run_info is excluded from semantic benchmark content comparisons."
+  },
+  "_meta": {
+    "component": "schema_matching_benchmark_evaluation",
+    "benchmark_id": "schema_matching_public_dev_v1",
+    "synthetic_demo": false,
+    "ground_truth_runtime_boundary": "evaluation_only",
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_runtime": false,
+    "ground_truth_used_for_evaluation": true,
+    "scorer_variant": "baseline",
+    "feature_version": null,
+    "source_reports": [
+      {
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_path": "data/benchmarks/development/contracts_finder_procurement_2026_v1/source_contracts_finder_procurement_2026_v1.csv",
+        "source_sha256": "8ca09532998b1be5dc66d11150f47780f117caebc5307d70e2e70cd334693e28",
+        "contract_path": "data/benchmarks/fixtures/sales_order_fulfillment/contract/datapackage.yaml",
+        "contract_sha256": "e7da15c612dd7f46fd34b0d7702532b08bc4b3157bf28694ff7fdfcafcf2d28a",
+        "answer_source_path": "data/benchmarks/development/contracts_finder_procurement_2026_v1/ground_truth.json",
+        "answer_source_sha256": "718ba65199fe5d4353989833c12a370f22a98ecc9e31cd6c691d85c827ebafd4"
+      }
+    ],
+    "development_benchmark": true,
+    "sealed_holdout": false,
+    "repeated_evaluation_allowed": true,
+    "not_evidence_of_unseen_generalization": true,
+    "formal_evaluation": false
+  },
+  "overall": {
+    "scenario_count": 1,
+    "case_count": 23,
+    "single_target_case_count": 14,
+    "multi_target_case_count": 2,
+    "no_target_case_count": 7,
+    "expected_target_link_count": 19,
+    "single_target_top1_accuracy": 0.5714,
+    "target_link_recall_at_1": 0.4737,
+    "target_link_recall_at_3": 0.8421,
+    "target_link_mrr": 0.614,
+    "no_target_accuracy": 1.0,
+    "multi_target_full_coverage_at_3": 0.5
+  },
+  "by_scenario": [
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "split": "development",
+      "metrics": {
+        "scenario_count": 1,
+        "case_count": 23,
+        "single_target_case_count": 14,
+        "multi_target_case_count": 2,
+        "no_target_case_count": 7,
+        "expected_target_link_count": 19,
+        "single_target_top1_accuracy": 0.5714,
+        "target_link_recall_at_1": 0.4737,
+        "target_link_recall_at_3": 0.8421,
+        "target_link_mrr": 0.614,
+        "no_target_accuracy": 1.0,
+        "multi_target_full_coverage_at_3": 0.5
+      }
+    }
+  ],
+  "case_results": [
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__buyer_id",
+      "source_field": "buyer_id",
+      "expected_targets": [
+        "sales_order_header.customer_id"
+      ],
+      "recommendation": "sales_order_header.customer_id",
+      "top_candidates": [
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 1,
+          "score": 0.4831,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "sales_order_line.order_quantity",
+          "rank": 2,
+          "score": 0.311,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "sales_order_line.sales_order_id",
+          "rank": 3,
+          "score": 0.3094,
+          "mapping_basis": "mixed"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.1721,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__buyer_name",
+      "source_field": "buyer_name",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.order_quantity",
+          "rank": 1,
+          "score": 0.329,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 2,
+          "score": 0.318,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 3,
+          "score": 0.2989,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.011,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__date",
+      "source_field": "date",
+      "expected_targets": [
+        "sales_order_header.order_date"
+      ],
+      "recommendation": "delivery_schedule.requested_ship_date",
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 1,
+          "score": 0.5834,
+          "mapping_basis": "fuzzy"
+        },
+        {
+          "target": "delivery_schedule.confirmed_ship_date",
+          "rank": 2,
+          "score": 0.5541,
+          "mapping_basis": "fuzzy"
+        },
+        {
+          "target": "sales_order_header.order_date",
+          "rank": 3,
+          "score": 0.5289,
+          "mapping_basis": "fuzzy"
+        }
+      ],
+      "best_expected_rank": 3,
+      "error_type": "correct_but_ranked_2_or_3",
+      "score_margin_top1_top2": 0.0293,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__id",
+      "source_field": "id",
+      "expected_targets": [
+        "sales_order_header.sales_order_id",
+        "sales_order_line.sales_order_id",
+        "delivery_schedule.sales_order_id"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 1,
+          "score": 0.2828,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.product_id",
+          "rank": 2,
+          "score": 0.2767,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.sales_order_id",
+          "rank": 3,
+          "score": 0.2711,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 3,
+      "error_type": "multi_target_partially_covered",
+      "score_margin_top1_top2": 0.0061,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "multi_target",
+        "multi_table_identifier"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__initiationType",
+      "source_field": "initiationType",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.confirmed_quantity",
+          "rank": 1,
+          "score": 0.2336,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.fulfillment_status",
+          "rank": 2,
+          "score": 0.2123,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.item_description",
+          "rank": 3,
+          "score": 0.2077,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0213,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__language",
+      "source_field": "language",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.item_description",
+          "rank": 1,
+          "score": 0.1896,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.distribution_channel",
+          "rank": 2,
+          "score": 0.1411,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.quantity_uom",
+          "rank": 3,
+          "score": 0.1306,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0485,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__ocid",
+      "source_field": "ocid",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.product_id",
+          "rank": 1,
+          "score": 0.2164,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 2,
+          "score": 0.1739,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.distribution_channel",
+          "rank": 3,
+          "score": 0.1632,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0425,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+      "source_field": "tender_classification_description",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.item_description",
+          "rank": 1,
+          "score": 0.3092,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 2,
+          "score": 0.2143,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.confirmed_quantity",
+          "rank": 3,
+          "score": 0.2097,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.0949,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+      "source_field": "tender_classification_id",
+      "expected_targets": [
+        "sales_order_line.product_id"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 1,
+          "score": 0.3832,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.sales_order_id",
+          "rank": 2,
+          "score": 0.3268,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.product_id",
+          "rank": 3,
+          "score": 0.3202,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 3,
+      "error_type": "correct_but_ranked_2_or_3",
+      "score_margin_top1_top2": 0.0564,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+      "source_field": "tender_classification_scheme",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_header.distribution_channel",
+          "rank": 1,
+          "score": 0.28,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.currency_code",
+          "rank": 2,
+          "score": 0.2712,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 3,
+          "score": 0.2611,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0088,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+      "source_field": "tender_contractPeriod_endDate",
+      "expected_targets": [
+        "delivery_schedule.confirmed_ship_date"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.confirmed_ship_date",
+          "rank": 1,
+          "score": 0.3489,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.order_date",
+          "rank": 2,
+          "score": 0.3179,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 3,
+          "score": 0.2992,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.031,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+      "source_field": "tender_contractPeriod_startDate",
+      "expected_targets": [
+        "delivery_schedule.requested_ship_date"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.confirmed_ship_date",
+          "rank": 1,
+          "score": 0.3675,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.order_date",
+          "rank": 2,
+          "score": 0.3525,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 3,
+          "score": 0.2978,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 3,
+      "error_type": "correct_but_ranked_2_or_3",
+      "score_margin_top1_top2": 0.015,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+      "source_field": "tender_datePublished",
+      "expected_targets": [
+        "sales_order_header.order_date"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 1,
+          "score": 0.3635,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.confirmed_ship_date",
+          "rank": 2,
+          "score": 0.3511,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.order_date",
+          "rank": 3,
+          "score": 0.3412,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 3,
+      "error_type": "correct_but_ranked_2_or_3",
+      "score_margin_top1_top2": 0.0124,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_description",
+      "source_field": "tender_description",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.item_description",
+          "rank": 1,
+          "score": 0.3831,
+          "mapping_basis": "fuzzy"
+        },
+        {
+          "target": "delivery_schedule.confirmed_quantity",
+          "rank": 2,
+          "score": 0.2017,
+          "mapping_basis": "fuzzy"
+        },
+        {
+          "target": "sales_order_line.unit_price",
+          "rank": 3,
+          "score": 0.1954,
+          "mapping_basis": "fuzzy"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.1814,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_id",
+      "source_field": "tender_id",
+      "expected_targets": [
+        "sales_order_header.customer_purchase_order"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 1,
+          "score": 0.3894,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.sales_order_id",
+          "rank": 2,
+          "score": 0.3788,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.sales_order_id",
+          "rank": 3,
+          "score": 0.3762,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "expected_target_missing_from_top3",
+      "score_margin_top1_top2": 0.0106,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+      "source_field": "tender_mainProcurementCategory",
+      "expected_targets": [
+        "sales_order_header.distribution_channel"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_header.distribution_channel",
+          "rank": 1,
+          "score": 0.2426,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.confirmed_quantity",
+          "rank": 2,
+          "score": 0.2282,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 3,
+          "score": 0.2265,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.0144,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_procurementMethod",
+      "source_field": "tender_procurementMethod",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.unit_price",
+          "rank": 1,
+          "score": 0.292,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.order_quantity",
+          "rank": 2,
+          "score": 0.2612,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.confirmed_quantity",
+          "rank": 3,
+          "score": 0.257,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0308,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_status",
+      "source_field": "tender_status",
+      "expected_targets": [
+        "sales_order_header.order_status",
+        "delivery_schedule.fulfillment_status"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.fulfillment_status",
+          "rank": 1,
+          "score": 0.2974,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.order_status",
+          "rank": 2,
+          "score": 0.2969,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.confirmed_quantity",
+          "rank": 3,
+          "score": 0.2446,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "multi_target_fully_covered",
+      "score_margin_top1_top2": 0.0005,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "multi_target",
+        "status_overlap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+      "source_field": "tender_tenderPeriod_endDate",
+      "expected_targets": [],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "delivery_schedule.confirmed_ship_date",
+          "rank": 1,
+          "score": 0.2949,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.order_date",
+          "rank": 2,
+          "score": 0.2915,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 3,
+          "score": 0.286,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": null,
+      "error_type": "correct_no_target",
+      "score_margin_top1_top2": 0.0034,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "no_target",
+        "no_target_gap"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_title",
+      "source_field": "tender_title",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.item_description",
+          "rank": 1,
+          "score": 0.2181,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_header.customer_id",
+          "rank": 2,
+          "score": 0.217,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "sales_order_line.order_quantity",
+          "rank": 3,
+          "score": 0.2143,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.0011,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+      "source_field": "tender_value_amount",
+      "expected_targets": [
+        "sales_order_line.line_amount"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.unit_price",
+          "rank": 1,
+          "score": 0.4462,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "sales_order_line.line_amount",
+          "rank": 2,
+          "score": 0.4275,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "sales_order_header.currency_code",
+          "rank": 3,
+          "score": 0.2991,
+          "mapping_basis": "mixed"
+        }
+      ],
+      "best_expected_rank": 2,
+      "error_type": "correct_but_ranked_2_or_3",
+      "score_margin_top1_top2": 0.0187,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__tender_value_currency",
+      "source_field": "tender_value_currency",
+      "expected_targets": [
+        "sales_order_header.currency_code"
+      ],
+      "recommendation": "sales_order_header.currency_code",
+      "top_candidates": [
+        {
+          "target": "sales_order_header.currency_code",
+          "rank": 1,
+          "score": 0.6664,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "sales_order_line.unit_price",
+          "rank": 2,
+          "score": 0.3222,
+          "mapping_basis": "mixed"
+        },
+        {
+          "target": "sales_order_line.line_amount",
+          "rank": 3,
+          "score": 0.2958,
+          "mapping_basis": "mixed"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.3442,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "case_id": "contracts_finder_procurement_2026__title",
+      "source_field": "title",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "recommendation": null,
+      "top_candidates": [
+        {
+          "target": "sales_order_line.item_description",
+          "rank": 1,
+          "score": 0.2069,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.requested_ship_date",
+          "rank": 2,
+          "score": 0.1992,
+          "mapping_basis": "none"
+        },
+        {
+          "target": "delivery_schedule.line_number",
+          "rank": 3,
+          "score": 0.1882,
+          "mapping_basis": "none"
+        }
+      ],
+      "best_expected_rank": 1,
+      "error_type": "correct_top1",
+      "score_margin_top1_top2": 0.0077,
+      "difficulty_tags": [
+        "public_data",
+        "public_procurement",
+        "single_target"
+      ]
+    }
+  ],
+  "error_count_by_type": {
+    "correct_but_ranked_2_or_3": 5,
+    "correct_no_target": 7,
+    "correct_top1": 8,
+    "expected_target_missing_from_top3": 1,
+    "multi_target_fully_covered": 1,
+    "multi_target_partially_covered": 1
+  },
+  "error_count_by_scenario": {
+    "contracts_finder_procurement_2026": 23
+  },
+  "error_count_by_difficulty_tag": {
+    "multi_table_identifier": 1,
+    "multi_target": 2,
+    "no_target": 7,
+    "no_target_gap": 7,
+    "public_data": 23,
+    "public_procurement": 23,
+    "single_target": 14,
+    "status_overlap": 1
+  }
+}

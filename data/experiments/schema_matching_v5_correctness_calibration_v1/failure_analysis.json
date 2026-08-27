@@ -1,0 +1,2315 @@
+{
+  "_run_info": {
+    "content_sha256": "c093b9acafc2dcf259f8eaf3424302d9e5c9d5501802139c00f3949029c1fc02",
+    "note": "_run_info is deterministic for V5 correctness calibration artifacts."
+  },
+  "experiment_id": "schema_matching_v5_correctness_calibration_v1",
+  "repair_type": "deterministic post-processing repair",
+  "privacy": "Case ids are included for traceability; raw source values, source field names, target paths, target names, and expected target identities are not included.",
+  "case_count": 107,
+  "positive_label_count": 72,
+  "by_strategy_policy": {
+    "existing_v5_policy": {
+      "confident_wrong_target_acceptance": [],
+      "no_target_false_acceptance": [],
+      "correct_prediction_unnecessarily_rejected": [
+        {
+          "case_id": "bank_account__account_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__activation_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__branch_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__closure_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__domestic_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_name",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__international_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__preferred_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_end",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__inventory_measure",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__lifecycle_block",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__tariff_name",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "generic_customer__nation",
+          "scenario_id": "generic_customer",
+          "contract_family": "generic_customer",
+          "outer_fold": "leave_one_contract_family__generic_customer",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__code",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__product_name",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__quantity",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__confirmed_qty",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__confirmed_ship_on",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__customer_po_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__distribution_channel",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__legacy_line_item_no",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__legacy_sales_order_id",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__net_unit_amount",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__order_created_on",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__order_state",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__ordered_qty",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__requested_ship_on",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__schedule_seq",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "supplier_reference__partner_type",
+          "scenario_id": "supplier_reference",
+          "contract_family": "supplier_reference",
+          "outer_fold": "leave_one_contract_family__supplier_reference",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "supplier_reference__preferred_language",
+          "scenario_id": "supplier_reference",
+          "contract_family": "supplier_reference",
+          "outer_fold": "leave_one_contract_family__supplier_reference",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "supplier_reference__vendor_country",
+          "scenario_id": "supplier_reference",
+          "contract_family": "supplier_reference",
+          "outer_fold": "leave_one_contract_family__supplier_reference",
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "score_only_multifeature_disagreement": [],
+      "reconciliation": {
+        "case_count": 107,
+        "positive_label_count": 72,
+        "accepted_count": 23,
+        "rejected_count": 84,
+        "accepted_correct_count": 23,
+        "accepted_incorrect_count": 0,
+        "correct_prediction_accepted_count": 23,
+        "correct_prediction_unnecessarily_rejected_count": 49,
+        "no_target_accepted_count": 0,
+        "wrong_target_accepted_count": 0,
+        "accepted_balance_ok": true,
+        "coverage_balance_ok": true,
+        "incorrect_breakdown_ok": true,
+        "correct_breakdown_ok": true
+      }
+    },
+    "score_only_target_precision_90": {
+      "confident_wrong_target_acceptance": [
+        {
+          "case_id": "bank_account__legacy_bank_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__date",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        }
+      ],
+      "no_target_false_acceptance": [
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__line_analyst_note",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        }
+      ],
+      "correct_prediction_unnecessarily_rejected": [
+        {
+          "case_id": "bank_account__branch_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_end",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__inventory_measure",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__lifecycle_block",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__code",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__quantity",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "score_only_multifeature_disagreement": [
+        {
+          "case_id": "bank_account__activation_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__legacy_bank_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_procurementMethod",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__header_audit_marker",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "reconciliation": {
+        "case_count": 107,
+        "positive_label_count": 72,
+        "accepted_count": 64,
+        "rejected_count": 43,
+        "accepted_correct_count": 57,
+        "accepted_incorrect_count": 7,
+        "correct_prediction_accepted_count": 57,
+        "correct_prediction_unnecessarily_rejected_count": 15,
+        "no_target_accepted_count": 2,
+        "wrong_target_accepted_count": 5,
+        "accepted_balance_ok": true,
+        "coverage_balance_ok": true,
+        "incorrect_breakdown_ok": true,
+        "correct_breakdown_ok": true
+      }
+    },
+    "score_only_target_precision_95": {
+      "confident_wrong_target_acceptance": [
+        {
+          "case_id": "contracts_finder_procurement_2026__date",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        }
+      ],
+      "no_target_false_acceptance": [],
+      "correct_prediction_unnecessarily_rejected": [
+        {
+          "case_id": "bank_account__activation_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__branch_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_end",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__inventory_measure",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__lifecycle_block",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__code",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__quantity",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__schedule_seq",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "score_only_multifeature_disagreement": [
+        {
+          "case_id": "bank_account__account_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__closure_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__domestic_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_name",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__international_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__preferred_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__tariff_name",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__line_analyst_note",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__schedule_seq",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "reconciliation": {
+        "case_count": 107,
+        "positive_label_count": 72,
+        "accepted_count": 51,
+        "rejected_count": 56,
+        "accepted_correct_count": 50,
+        "accepted_incorrect_count": 1,
+        "correct_prediction_accepted_count": 50,
+        "correct_prediction_unnecessarily_rejected_count": 22,
+        "no_target_accepted_count": 0,
+        "wrong_target_accepted_count": 1,
+        "accepted_balance_ok": true,
+        "coverage_balance_ok": true,
+        "incorrect_breakdown_ok": true,
+        "correct_breakdown_ok": true
+      }
+    },
+    "multifeature_target_precision_90": {
+      "confident_wrong_target_acceptance": [
+        {
+          "case_id": "contracts_finder_procurement_2026__date",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        }
+      ],
+      "no_target_false_acceptance": [
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_procurementMethod",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__header_audit_marker",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__line_analyst_note",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        }
+      ],
+      "correct_prediction_unnecessarily_rejected": [
+        {
+          "case_id": "bank_account__activation_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__branch_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_end",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__inventory_measure",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__lifecycle_block",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__code",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__quantity",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "score_only_multifeature_disagreement": [
+        {
+          "case_id": "bank_account__activation_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__legacy_bank_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_procurementMethod",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__header_audit_marker",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "reconciliation": {
+        "case_count": 107,
+        "positive_label_count": 72,
+        "accepted_count": 68,
+        "rejected_count": 39,
+        "accepted_correct_count": 55,
+        "accepted_incorrect_count": 13,
+        "correct_prediction_accepted_count": 55,
+        "correct_prediction_unnecessarily_rejected_count": 17,
+        "no_target_accepted_count": 6,
+        "wrong_target_accepted_count": 7,
+        "accepted_balance_ok": true,
+        "coverage_balance_ok": true,
+        "incorrect_breakdown_ok": true,
+        "correct_breakdown_ok": true
+      }
+    },
+    "multifeature_target_precision_95": {
+      "confident_wrong_target_acceptance": [
+        {
+          "case_id": "contracts_finder_procurement_2026__date",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": true
+        }
+      ],
+      "no_target_false_acceptance": [
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__line_analyst_note",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": false,
+          "has_expected_target": false
+        }
+      ],
+      "correct_prediction_unnecessarily_rejected": [
+        {
+          "case_id": "bank_account__account_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__activation_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__branch_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__clearing_code",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__closure_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__domestic_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_name",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_ref",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__international_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__preferred_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__settlement_ccy",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__swift_identifier",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "outer_fold": "leave_one_contract_family__bank_account",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__title",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "outer_fold": "leave_one_contract_family__sales_order_fulfillment",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_end",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__inventory_measure",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__lifecycle_block",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__tariff_name",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__code",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__quantity",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "outer_fold": "leave_one_contract_family__item_item_price",
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "score_only_multifeature_disagreement": [
+        {
+          "case_id": "bank_account__account_domicile",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__closure_date",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__domestic_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__institution_name",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__international_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "bank_account__preferred_account",
+          "scenario_id": "bank_account",
+          "contract_family": "bank_account",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_description",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+          "scenario_id": "contracts_finder_procurement_2026",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__effective_start",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__retail_amount",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "erpnext_item_price__tariff_name",
+          "scenario_id": "erpnext_item_price",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "scenario_id": "open_food_facts_products",
+          "contract_family": "item_item_price",
+          "score_only_accept": true,
+          "multifeature_accept": false,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__line_analyst_note",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": false,
+          "has_expected_target": false
+        },
+        {
+          "case_id": "sales_order_fulfillment__material_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sales_uom",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__schedule_seq",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        },
+        {
+          "case_id": "sales_order_fulfillment__sold_to_ref",
+          "scenario_id": "sales_order_fulfillment",
+          "contract_family": "sales_order_fulfillment",
+          "score_only_accept": false,
+          "multifeature_accept": true,
+          "top1_correct": true,
+          "has_expected_target": true
+        }
+      ],
+      "reconciliation": {
+        "case_count": 107,
+        "positive_label_count": 72,
+        "accepted_count": 57,
+        "rejected_count": 50,
+        "accepted_correct_count": 47,
+        "accepted_incorrect_count": 10,
+        "correct_prediction_accepted_count": 47,
+        "correct_prediction_unnecessarily_rejected_count": 25,
+        "no_target_accepted_count": 4,
+        "wrong_target_accepted_count": 6,
+        "accepted_balance_ok": true,
+        "coverage_balance_ok": true,
+        "incorrect_breakdown_ok": true,
+        "correct_breakdown_ok": true
+      }
+    }
+  },
+  "contract_family_calibration_shift": {
+    "score_only_calibrator": [
+      {
+        "contract_family": "bank_account",
+        "case_count": 16,
+        "average_probability": 0.60070459,
+        "observed_top1_accuracy": 0.75,
+        "probability_minus_accuracy": -0.14929541
+      },
+      {
+        "contract_family": "generic_customer",
+        "case_count": 12,
+        "average_probability": 0.91450997,
+        "observed_top1_accuracy": 0.91666667,
+        "probability_minus_accuracy": -0.0021567
+      },
+      {
+        "contract_family": "item_item_price",
+        "case_count": 22,
+        "average_probability": 0.56441612,
+        "observed_top1_accuracy": 0.45454545,
+        "probability_minus_accuracy": 0.10987066
+      },
+      {
+        "contract_family": "sales_order_fulfillment",
+        "case_count": 45,
+        "average_probability": 0.64766651,
+        "observed_top1_accuracy": 0.62222222,
+        "probability_minus_accuracy": 0.02544429
+      },
+      {
+        "contract_family": "supplier_reference",
+        "case_count": 12,
+        "average_probability": 0.91215685,
+        "observed_top1_accuracy": 0.91666667,
+        "probability_minus_accuracy": -0.00450982
+      }
+    ],
+    "multifeature_calibrator": [
+      {
+        "contract_family": "bank_account",
+        "case_count": 16,
+        "average_probability": 0.54156753,
+        "observed_top1_accuracy": 0.75,
+        "probability_minus_accuracy": -0.20843247
+      },
+      {
+        "contract_family": "generic_customer",
+        "case_count": 12,
+        "average_probability": 0.9722245,
+        "observed_top1_accuracy": 0.91666667,
+        "probability_minus_accuracy": 0.05555783
+      },
+      {
+        "contract_family": "item_item_price",
+        "case_count": 22,
+        "average_probability": 0.57290496,
+        "observed_top1_accuracy": 0.45454545,
+        "probability_minus_accuracy": 0.1183595
+      },
+      {
+        "contract_family": "sales_order_fulfillment",
+        "case_count": 45,
+        "average_probability": 0.78372613,
+        "observed_top1_accuracy": 0.62222222,
+        "probability_minus_accuracy": 0.16150391
+      },
+      {
+        "contract_family": "supplier_reference",
+        "case_count": 12,
+        "average_probability": 0.95000516,
+        "observed_top1_accuracy": 0.91666667,
+        "probability_minus_accuracy": 0.03333849
+      }
+    ]
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "_run_info": {
+    "content_sha256": "252ee67047a98834f38fa48195dcffe2a0557d25e31ff0287978da4aaab88bee",
+    "note": "_run_info is deterministic for V5 correctness calibration artifacts."
+  },
+  "experiment_id": "schema_matching_v5_correctness_calibration_v1",
+  "development_only": true,
+  "production_promoted": false,
+  "sealed_holdout_validated": false,
+  "case_count": 107,
+  "positive_label_count": 72,
+  "negative_label_count": 35,
+  "strategy_summary": {
+    "existing_v5_policy": {
+      "probability_metrics": "not_applicable_existing_rule_policy",
+      "policy_metrics": {
+        "current_suggested_auto_accept": {
+          "threshold": null,
+          "threshold_policy": "existing_v5_suggested_status",
+          "case_count": 107,
+          "accepted_count": 23,
+          "review_count": 84,
+          "coverage": 0.21495327,
+          "review_rate": 0.78504673,
+          "accepted_precision": 1.0,
+          "accepted_correct_count": 23,
+          "accepted_incorrect_count": 0,
+          "target_bearing_auto_map_recall": 0.27380952,
+          "no_target_accepted_count": 0,
+          "no_target_rejection_rate": 1.0,
+          "wrong_target_accepted_count": 0
+        }
+      }
+    },
+    "score_only_calibrator": {
+      "probability_metrics": {
+        "brier_score": 0.14090701,
+        "log_loss": 0.42318028,
+        "roc_auc": 0.8734127,
+        "average_precision": 0.94362612,
+        "ece_5_bin": {
+          "scheme": "five_fixed_probability_bins_width_0.2",
+          "value": 0.0498246,
+          "bins": [
+            {
+              "bin": 1,
+              "lower_inclusive": 0.0,
+              "upper_exclusive": 0.2,
+              "upper_inclusive": null,
+              "count": 0,
+              "average_confidence": null,
+              "accuracy": null
+            },
+            {
+              "bin": 2,
+              "lower_inclusive": 0.2,
+              "upper_exclusive": 0.4,
+              "upper_inclusive": null,
+              "count": 17,
+              "average_confidence": 0.33595616,
+              "accuracy": 0.17647059
+            },
+            {
+              "bin": 3,
+              "lower_inclusive": 0.4,
+              "upper_exclusive": 0.6,
+              "upper_inclusive": null,
+              "count": 23,
+              "average_confidence": 0.50004664,
+              "accuracy": 0.47826087
+            },
+            {
+              "bin": 4,
+              "lower_inclusive": 0.6,
+              "upper_exclusive": 0.8,
+              "upper_inclusive": null,
+              "count": 27,
+              "average_confidence": 0.69078734,
+              "accuracy": 0.7037037
+            },
+            {
+              "bin": 5,
+              "lower_inclusive": 0.8,
+              "upper_exclusive": null,
+              "upper_inclusive": 1.0,
+              "count": 40,
+              "average_confidence": 0.93074593,
+              "accuracy": 0.975
+            }
+          ]
+        },
+        "aurc": 0.1045324
+      },
+      "policy_metrics": {
+        "target_precision_90": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 64,
+          "review_count": 43,
+          "coverage": 0.59813084,
+          "review_rate": 0.40186916,
+          "accepted_precision": 0.890625,
+          "accepted_correct_count": 57,
+          "accepted_incorrect_count": 7,
+          "target_bearing_auto_map_recall": 0.67857143,
+          "no_target_accepted_count": 2,
+          "no_target_rejection_rate": 0.91304348,
+          "wrong_target_accepted_count": 5
+        },
+        "target_precision_95": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 51,
+          "review_count": 56,
+          "coverage": 0.47663551,
+          "review_rate": 0.52336449,
+          "accepted_precision": 0.98039216,
+          "accepted_correct_count": 50,
+          "accepted_incorrect_count": 1,
+          "target_bearing_auto_map_recall": 0.5952381,
+          "no_target_accepted_count": 0,
+          "no_target_rejection_rate": 1.0,
+          "wrong_target_accepted_count": 1
+        }
+      }
+    },
+    "multifeature_calibrator": {
+      "probability_metrics": {
+        "brier_score": 0.17758211,
+        "log_loss": 0.53419224,
+        "roc_auc": 0.7968254,
+        "average_precision": 0.90168478,
+        "ece_5_bin": {
+          "scheme": "five_fixed_probability_bins_width_0.2",
+          "value": 0.09377311,
+          "bins": [
+            {
+              "bin": 1,
+              "lower_inclusive": 0.0,
+              "upper_exclusive": 0.2,
+              "upper_inclusive": null,
+              "count": 2,
+              "average_confidence": 0.1434264,
+              "accuracy": 0.5
+            },
+            {
+              "bin": 2,
+              "lower_inclusive": 0.2,
+              "upper_exclusive": 0.4,
+              "upper_inclusive": null,
+              "count": 13,
+              "average_confidence": 0.34599974,
+              "accuracy": 0.38461538
+            },
+            {
+              "bin": 3,
+              "lower_inclusive": 0.4,
+              "upper_exclusive": 0.6,
+              "upper_inclusive": null,
+              "count": 18,
+              "average_confidence": 0.49304099,
+              "accuracy": 0.33333333
+            },
+            {
+              "bin": 4,
+              "lower_inclusive": 0.6,
+              "upper_exclusive": 0.8,
+              "upper_inclusive": null,
+              "count": 21,
+              "average_confidence": 0.7237437,
+              "accuracy": 0.66666667
+            },
+            {
+              "bin": 5,
+              "lower_inclusive": 0.8,
+              "upper_exclusive": null,
+              "upper_inclusive": 1.0,
+              "count": 53,
+              "average_confidence": 0.95745692,
+              "accuracy": 0.86792453
+            }
+          ]
+        },
+        "aurc": 0.13664275
+      },
+      "policy_metrics": {
+        "target_precision_90": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 68,
+          "review_count": 39,
+          "coverage": 0.63551402,
+          "review_rate": 0.36448598,
+          "accepted_precision": 0.80882353,
+          "accepted_correct_count": 55,
+          "accepted_incorrect_count": 13,
+          "target_bearing_auto_map_recall": 0.6547619,
+          "no_target_accepted_count": 6,
+          "no_target_rejection_rate": 0.73913043,
+          "wrong_target_accepted_count": 7
+        },
+        "target_precision_95": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 57,
+          "review_count": 50,
+          "coverage": 0.53271028,
+          "review_rate": 0.46728972,
+          "accepted_precision": 0.8245614,
+          "accepted_correct_count": 47,
+          "accepted_incorrect_count": 10,
+          "target_bearing_auto_map_recall": 0.55952381,
+          "no_target_accepted_count": 4,
+          "no_target_rejection_rate": 0.82608696,
+          "wrong_target_accepted_count": 6
+        }
+      }
+    }
+  },
+  "conclusion": "This experiment evaluates whether V5 Top-1 recommendations can be gated for auto-accept. Abstention means human review, not a no-target decision. Results are development-only."
+}

@@ -1,0 +1,142 @@
+{
+  "experiment_id": "schema_matching_v5_correctness_calibration_v1",
+  "score_only_feature_order": [
+    "top1_v5_score",
+    "v5_score_margin_top1_top2"
+  ],
+  "multifeature_feature_order": [
+    "top1_v5_score",
+    "v5_score_margin_top1_top2",
+    "top1_semantic_score",
+    "semantic_score_margin_top1_top2",
+    "top1_baseline_score",
+    "top1_lexical_overlap",
+    "top1_fuzzy_score",
+    "top1_value_pattern_score",
+    "top1_resource_context_score",
+    "top1_identifier_adjusted_score",
+    "top1_type_gate",
+    "top1_v5_top1_eligible",
+    "eligible_candidate_count",
+    "candidate_count"
+  ],
+  "feature_count": 14,
+  "features": [
+    {
+      "name": "top1_v5_score",
+      "source": "Existing V5 candidate diagnostic `score` after precision-tiered identifier adjustment.",
+      "meaning": "score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "v5_score_margin_top1_top2",
+      "source": "Difference between the first two V5 candidate `score` values.",
+      "meaning": "V5 score gap between the V5-ranked first and second candidates",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_semantic_score",
+      "source": "Existing base candidate `semantic_score` for the V5 Top-1 candidate.",
+      "meaning": "semantic score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "semantic_score_margin_top1_top2",
+      "source": "Difference between the largest and second-largest candidate `semantic_score` values.",
+      "meaning": "semantic-score gap between the two strongest semantic candidates",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_baseline_score",
+      "source": "Existing V2/V3/V4/V5 diagnostic `baseline_score` carried forward before calibration.",
+      "meaning": "baseline score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_lexical_overlap",
+      "source": "Existing numeric `lexical_overlap` diagnostic.",
+      "meaning": "lexical overlap on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_fuzzy_score",
+      "source": "Existing numeric `fuzzy_score` diagnostic.",
+      "meaning": "fuzzy score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_value_pattern_score",
+      "source": "Existing V2 `value_pattern_score` diagnostic.",
+      "meaning": "value-pattern score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_resource_context_score",
+      "source": "Existing V3 `resource_context_score` diagnostic.",
+      "meaning": "resource-context score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_identifier_adjusted_score",
+      "source": "Existing V5 `identifier_adjusted_score` diagnostic.",
+      "meaning": "identifier-adjusted score on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_type_gate",
+      "source": "Existing numeric `type_gate` diagnostic.",
+      "meaning": "type compatibility gate on the V5-ranked top candidate",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "top1_v5_top1_eligible",
+      "source": "Existing boolean `v5_top1_eligible` encoded as 0/1.",
+      "meaning": "whether the V5-ranked top candidate had identifier evidence eligibility",
+      "requires_scaling": false,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "eligible_candidate_count",
+      "source": "Count of existing boolean `v5_top1_eligible` diagnostics across candidates.",
+      "meaning": "count of candidates with V5 top-1 eligibility evidence",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    },
+    {
+      "name": "candidate_count",
+      "source": "Length of the V5 candidate list emitted for the case.",
+      "meaning": "number of target candidates available for the source field",
+      "requires_scaling": true,
+      "leakage_rationale": "Numeric or boolean scorer diagnostic available before labels are read; it does not include raw source field text, target path text, scenario/family/case identifiers, expected targets, ground truth counts, or label-derived values."
+    }
+  ],
+  "forbidden_identity_or_ground_truth_inputs": [
+    "source",
+    "target",
+    "path",
+    "name",
+    "text",
+    "scenario",
+    "benchmark",
+    "contract",
+    "family",
+    "case",
+    "ground",
+    "truth",
+    "expected",
+    "label",
+    "id"
+  ],
+  "ground_truth_derived_features": false
+}

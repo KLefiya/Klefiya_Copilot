@@ -36,6 +36,11 @@ class SchemaMatchingBenchmarkError(Exception):
 
 
 BASELINE_SCORER_ID = "baseline"
+ALLOWED_BENCHMARK_IDS = {
+    "schema_matching_v1",
+    "schema_matching_public_dev_v1",
+}
+ALLOWED_SPLITS = {"train", "validation", "test", "development"}
 ALLOWED_SCORERS = {
     BASELINE_SCORER_ID,
     VALUE_PATTERN_SCORER_ID,
@@ -140,12 +145,13 @@ def load_benchmark(path: Path) -> dict[str, Any]:
         raise SchemaMatchingBenchmarkError("benchmark_json_error", "Benchmark fixture is not valid JSON") from exc
     benchmark = _require_mapping(benchmark, "benchmark")
     meta = _require_mapping(benchmark.get("_meta"), "_meta")
-    if meta.get("benchmark_id") != "schema_matching_v1":
-        raise SchemaMatchingBenchmarkError("unexpected_benchmark_id", "Benchmark id must be schema_matching_v1")
+    benchmark_id = meta.get("benchmark_id")
+    if benchmark_id not in ALLOWED_BENCHMARK_IDS:
+        allowed = ", ".join(sorted(ALLOWED_BENCHMARK_IDS))
+        raise SchemaMatchingBenchmarkError("unexpected_benchmark_id", f"Benchmark id must be one of: {allowed}")
     scenarios = _require_list(benchmark.get("scenarios"), "scenarios")
     seen_scenario_ids: set[str] = set()
     seen_case_ids: set[str] = set()
-    allowed_splits = {"train", "validation", "test"}
     for scenario_value in scenarios:
         scenario = _require_mapping(scenario_value, "scenario")
         scenario_id = scenario.get("scenario_id")
@@ -157,7 +163,7 @@ def load_benchmark(path: Path) -> dict[str, Any]:
         seen_scenario_ids.add(scenario_id)
         if not isinstance(split, str) or not split:
             raise SchemaMatchingBenchmarkError("split_missing", f"{scenario_id} is missing split")
-        if split not in allowed_splits:
+        if split not in ALLOWED_SPLITS:
             raise SchemaMatchingBenchmarkError("unknown_split", f"Unknown scenario split: {split}")
         source_path = _project_path(str(scenario.get("source_path", "")), "source_path")
         contract_path = _project_path(str(scenario.get("contract_path", "")), "contract_path")
@@ -420,12 +426,13 @@ def evaluate_benchmark(
             }
         )
 
+    meta = benchmark["_meta"]
     body = {
         "_meta": {
             "component": "schema_matching_benchmark_evaluation",
-            "benchmark_id": benchmark["_meta"]["benchmark_id"],
-            "synthetic_demo": bool(benchmark["_meta"].get("synthetic_demo")),
-            "ground_truth_runtime_boundary": benchmark["_meta"].get("ground_truth_runtime_boundary"),
+            "benchmark_id": meta["benchmark_id"],
+            "synthetic_demo": bool(meta.get("synthetic_demo")),
+            "ground_truth_runtime_boundary": meta.get("ground_truth_runtime_boundary"),
             "ground_truth_used_for_candidate_generation": False,
             "ground_truth_used_for_runtime": False,
             "ground_truth_used_for_evaluation": True,
@@ -452,6 +459,16 @@ def evaluate_benchmark(
         "error_count_by_scenario": dict(sorted(count_by_scenario.items())),
         "error_count_by_difficulty_tag": dict(sorted(count_by_difficulty.items())),
     }
+    for flag in (
+        "development_benchmark",
+        "sealed_holdout",
+        "repeated_evaluation_allowed",
+        "not_evidence_of_unseen_generalization",
+    ):
+        if flag in meta:
+            body["_meta"][flag] = bool(meta[flag])
+    if "formal_evaluation" in meta:
+        body["_meta"]["formal_evaluation"] = bool(meta["formal_evaluation"])
     return attach_content_sha(body)
 
 

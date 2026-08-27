@@ -1,0 +1,1540 @@
+{
+  "_run_info": {
+    "content_sha256": "d666ceb00fdbf597588ef317c456d982e84c246649c08db66e3f4811922c9aa9",
+    "note": "_run_info is deterministic for V5 correctness calibration artifacts."
+  },
+  "experiment_id": "schema_matching_v5_correctness_calibration_v1",
+  "outer_cv": "leave_one_contract_family_out",
+  "inner_cv": "leave_one_contract_family_out_within_outer_training_families",
+  "outer_fold_count": 5,
+  "target_precisions": [
+    0.9,
+    0.95
+  ],
+  "leakage_controls": {
+    "outer_held_out_used_for_training": false,
+    "outer_held_out_used_for_scaling": false,
+    "outer_held_out_used_for_threshold_selection": false,
+    "threshold_source": "inner_oof_predictions_only",
+    "field_level_random_split": false,
+    "identity_features_used": false
+  },
+  "folds": [
+    {
+      "fold_id": "leave_one_contract_family__bank_account",
+      "held_out_contract_family": "bank_account",
+      "train_contract_families": [
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_case_count": 16,
+      "train_case_count": 91,
+      "outer_held_out_used_for_threshold_selection": false,
+      "strategies": {
+        "score_only_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2"
+          ],
+          "inner_oof_case_count": 91,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.57981006,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 53,
+              "accepted_precision": 0.90566038,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.65146171,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 47,
+              "accepted_precision": 0.95744681,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.14562039,
+            "log_loss": 0.46951479,
+            "roc_auc": 0.875,
+            "average_precision": 0.95598244,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.21903692,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 2,
+                  "average_confidence": 0.27896604,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 4,
+                  "average_confidence": 0.523892,
+                  "accuracy": 0.75
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 8,
+                  "average_confidence": 0.66395997,
+                  "accuracy": 0.875
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 2,
+                  "average_confidence": 0.82304679,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.07856605
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.57981006,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 16,
+              "accepted_count": 11,
+              "review_count": 5,
+              "coverage": 0.6875,
+              "review_rate": 0.3125,
+              "accepted_precision": 0.90909091,
+              "accepted_correct_count": 10,
+              "accepted_incorrect_count": 1,
+              "target_bearing_auto_map_recall": 0.71428571,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 1
+            },
+            "target_precision_95": {
+              "threshold": 0.65146171,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 16,
+              "accepted_count": 6,
+              "review_count": 10,
+              "coverage": 0.375,
+              "review_rate": 0.625,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 6,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.42857143,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        },
+        "multifeature_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2",
+            "top1_semantic_score",
+            "semantic_score_margin_top1_top2",
+            "top1_baseline_score",
+            "top1_lexical_overlap",
+            "top1_fuzzy_score",
+            "top1_value_pattern_score",
+            "top1_resource_context_score",
+            "top1_identifier_adjusted_score",
+            "top1_type_gate",
+            "top1_v5_top1_eligible",
+            "eligible_candidate_count",
+            "candidate_count"
+          ],
+          "inner_oof_case_count": 91,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.69353031,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 50,
+              "accepted_precision": 0.9,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.81407369,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 41,
+              "accepted_precision": 0.95121951,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.1768151,
+            "log_loss": 0.52898105,
+            "roc_auc": 0.83333333,
+            "average_precision": 0.93968971,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.22634681,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 1,
+                  "average_confidence": 0.14331469,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 3,
+                  "average_confidence": 0.30628323,
+                  "accuracy": 0.66666667
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 5,
+                  "average_confidence": 0.49182105,
+                  "accuracy": 0.8
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 6,
+                  "average_confidence": 0.72242916,
+                  "accuracy": 0.83333333
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 1,
+                  "average_confidence": 0.80923587,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.09270296
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.69353031,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 16,
+              "accepted_count": 6,
+              "review_count": 10,
+              "coverage": 0.375,
+              "review_rate": 0.625,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 6,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.42857143,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.81407369,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 16,
+              "accepted_count": 0,
+              "review_count": 16,
+              "coverage": 0.0,
+              "review_rate": 1.0,
+              "accepted_precision": null,
+              "accepted_correct_count": 0,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__generic_customer",
+      "held_out_contract_family": "generic_customer",
+      "train_contract_families": [
+        "bank_account",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_case_count": 12,
+      "train_case_count": 95,
+      "outer_held_out_used_for_threshold_selection": false,
+      "strategies": {
+        "score_only_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2"
+          ],
+          "inner_oof_case_count": 95,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.66696432,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 47,
+              "accepted_precision": 0.91489362,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.69129544,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 41,
+              "accepted_precision": 0.95121951,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.00622352,
+            "log_loss": 0.04706646,
+            "roc_auc": 1.0,
+            "average_precision": 1.0,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.04340848,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 1,
+                  "average_confidence": 0.24751069,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 11,
+                  "average_confidence": 0.97514627,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.00694444
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.66696432,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.69129544,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        },
+        "multifeature_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2",
+            "top1_semantic_score",
+            "semantic_score_margin_top1_top2",
+            "top1_baseline_score",
+            "top1_lexical_overlap",
+            "top1_fuzzy_score",
+            "top1_value_pattern_score",
+            "top1_resource_context_score",
+            "top1_identifier_adjusted_score",
+            "top1_type_gate",
+            "top1_v5_top1_eligible",
+            "eligible_candidate_count",
+            "candidate_count"
+          ],
+          "inner_oof_case_count": 95,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.91056949,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 31,
+              "accepted_precision": 0.90322581,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.95525032,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 26,
+              "accepted_precision": 0.96153846,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.04627282,
+            "log_loss": 0.1202262,
+            "roc_auc": 1.0,
+            "average_precision": 1.0,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.0685204,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 1,
+                  "average_confidence": 0.74446942,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 11,
+                  "average_confidence": 0.99292951,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.00694444
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.91056949,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.95525032,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__item_item_price",
+      "held_out_contract_family": "item_item_price",
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "held_out_case_count": 22,
+      "train_case_count": 85,
+      "outer_held_out_used_for_threshold_selection": false,
+      "strategies": {
+        "score_only_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2"
+          ],
+          "inner_oof_case_count": 85,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.71664112,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 51,
+              "accepted_precision": 0.90196078,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.73484299,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 46,
+              "accepted_precision": 0.95652174,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.18523393,
+            "log_loss": 0.55049012,
+            "roc_auc": 0.85,
+            "average_precision": 0.86238095,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.1375946,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 5,
+                  "average_confidence": 0.35533374,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 8,
+                  "average_confidence": 0.49318114,
+                  "accuracy": 0.375
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 7,
+                  "average_confidence": 0.71067493,
+                  "accuracy": 0.71428571
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 2,
+                  "average_confidence": 0.8601561,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.27913909
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.71664112,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 22,
+              "accepted_count": 5,
+              "review_count": 17,
+              "coverage": 0.22727273,
+              "review_rate": 0.77272727,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 5,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.38461538,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.73484299,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 22,
+              "accepted_count": 5,
+              "review_count": 17,
+              "coverage": 0.22727273,
+              "review_rate": 0.77272727,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 5,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.38461538,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        },
+        "multifeature_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2",
+            "top1_semantic_score",
+            "semantic_score_margin_top1_top2",
+            "top1_baseline_score",
+            "top1_lexical_overlap",
+            "top1_fuzzy_score",
+            "top1_value_pattern_score",
+            "top1_resource_context_score",
+            "top1_identifier_adjusted_score",
+            "top1_type_gate",
+            "top1_v5_top1_eligible",
+            "eligible_candidate_count",
+            "candidate_count"
+          ],
+          "inner_oof_case_count": 85,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.85441082,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 43,
+              "accepted_precision": 0.90697674,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.9032539,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 37,
+              "accepted_precision": 0.97297297,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.20320063,
+            "log_loss": 0.59660883,
+            "roc_auc": 0.78333333,
+            "average_precision": 0.83894661,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.22290717,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 1,
+                  "average_confidence": 0.14353812,
+                  "accuracy": 1.0
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 6,
+                  "average_confidence": 0.3532992,
+                  "accuracy": 0.16666667
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 5,
+                  "average_confidence": 0.47827894,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 7,
+                  "average_confidence": 0.74896336,
+                  "accuracy": 0.71428571
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 3,
+                  "average_confidence": 0.90214584,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.29955776
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.85441082,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 22,
+              "accepted_count": 2,
+              "review_count": 20,
+              "coverage": 0.09090909,
+              "review_rate": 0.90909091,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 2,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.15384615,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.9032539,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 22,
+              "accepted_count": 1,
+              "review_count": 21,
+              "coverage": 0.04545455,
+              "review_rate": 0.95454545,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 1,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 0.07692308,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__sales_order_fulfillment",
+      "held_out_contract_family": "sales_order_fulfillment",
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "supplier_reference"
+      ],
+      "held_out_case_count": 45,
+      "train_case_count": 62,
+      "outer_held_out_used_for_threshold_selection": false,
+      "strategies": {
+        "score_only_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2"
+          ],
+          "inner_oof_case_count": 62,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.6001878,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 43,
+              "accepted_precision": 0.90697674,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.72698825,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 33,
+              "accepted_precision": 0.96969697,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.18717727,
+            "log_loss": 0.53693749,
+            "roc_auc": 0.76890756,
+            "average_precision": 0.88049325,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.0556628,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 8,
+                  "average_confidence": 0.34351206,
+                  "accuracy": 0.375
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 11,
+                  "average_confidence": 0.49636869,
+                  "accuracy": 0.45454545
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 12,
+                  "average_confidence": 0.69707116,
+                  "accuracy": 0.58333333
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 14,
+                  "average_confidence": 0.89799908,
+                  "accuracy": 0.92857143
+                }
+              ]
+            },
+            "aurc": 0.17600388
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.6001878,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 45,
+              "accepted_count": 26,
+              "review_count": 19,
+              "coverage": 0.57777778,
+              "review_rate": 0.42222222,
+              "accepted_precision": 0.76923077,
+              "accepted_correct_count": 20,
+              "accepted_incorrect_count": 6,
+              "target_bearing_auto_map_recall": 0.57142857,
+              "no_target_accepted_count": 2,
+              "no_target_rejection_rate": 0.8,
+              "wrong_target_accepted_count": 4
+            },
+            "target_precision_95": {
+              "threshold": 0.72698825,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 45,
+              "accepted_count": 18,
+              "review_count": 27,
+              "coverage": 0.4,
+              "review_rate": 0.6,
+              "accepted_precision": 0.94444444,
+              "accepted_correct_count": 17,
+              "accepted_incorrect_count": 1,
+              "target_bearing_auto_map_recall": 0.48571429,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 1
+            }
+          }
+        },
+        "multifeature_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2",
+            "top1_semantic_score",
+            "semantic_score_margin_top1_top2",
+            "top1_baseline_score",
+            "top1_lexical_overlap",
+            "top1_fuzzy_score",
+            "top1_value_pattern_score",
+            "top1_resource_context_score",
+            "top1_identifier_adjusted_score",
+            "top1_type_gate",
+            "top1_v5_top1_eligible",
+            "eligible_candidate_count",
+            "candidate_count"
+          ],
+          "inner_oof_case_count": 62,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.47418741,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 44,
+              "accepted_precision": 0.90909091,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.59765792,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 41,
+              "accepted_precision": 0.95121951,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.24192377,
+            "log_loss": 0.74018869,
+            "roc_auc": 0.72478992,
+            "average_precision": 0.83274655,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.18553272,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 4,
+                  "average_confidence": 0.36483795,
+                  "accuracy": 0.5
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 7,
+                  "average_confidence": 0.50231503,
+                  "accuracy": 0.28571429
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 7,
+                  "average_confidence": 0.69668996,
+                  "accuracy": 0.57142857
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 27,
+                  "average_confidence": 0.94130701,
+                  "accuracy": 0.74074074
+                }
+              ]
+            },
+            "aurc": 0.21026396
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.47418741,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 45,
+              "accepted_count": 38,
+              "review_count": 7,
+              "coverage": 0.84444444,
+              "review_rate": 0.15555556,
+              "accepted_precision": 0.65789474,
+              "accepted_correct_count": 25,
+              "accepted_incorrect_count": 13,
+              "target_bearing_auto_map_recall": 0.71428571,
+              "no_target_accepted_count": 6,
+              "no_target_rejection_rate": 0.4,
+              "wrong_target_accepted_count": 7
+            },
+            "target_precision_95": {
+              "threshold": 0.59765792,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 45,
+              "accepted_count": 34,
+              "review_count": 11,
+              "coverage": 0.75555556,
+              "review_rate": 0.24444444,
+              "accepted_precision": 0.70588235,
+              "accepted_correct_count": 24,
+              "accepted_incorrect_count": 10,
+              "target_bearing_auto_map_recall": 0.68571429,
+              "no_target_accepted_count": 4,
+              "no_target_rejection_rate": 0.6,
+              "wrong_target_accepted_count": 6
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__supplier_reference",
+      "held_out_contract_family": "supplier_reference",
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment"
+      ],
+      "held_out_case_count": 12,
+      "train_case_count": 95,
+      "outer_held_out_used_for_threshold_selection": false,
+      "strategies": {
+        "score_only_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2"
+          ],
+          "inner_oof_case_count": 95,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.66382138,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 47,
+              "accepted_precision": 0.91489362,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.68788352,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 42,
+              "accepted_precision": 0.95238095,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.01452647,
+            "log_loss": 0.07752385,
+            "roc_auc": 1.0,
+            "average_precision": 1.0,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.06801763,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 1,
+                  "average_confidence": 0.38104687,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 11,
+                  "average_confidence": 0.96043957,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.00694444
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.66382138,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.68788352,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        },
+        "multifeature_calibrator": {
+          "feature_order": [
+            "top1_v5_score",
+            "v5_score_margin_top1_top2",
+            "top1_semantic_score",
+            "semantic_score_margin_top1_top2",
+            "top1_baseline_score",
+            "top1_lexical_overlap",
+            "top1_fuzzy_score",
+            "top1_value_pattern_score",
+            "top1_resource_context_score",
+            "top1_identifier_adjusted_score",
+            "top1_type_gate",
+            "top1_v5_top1_eligible",
+            "eligible_candidate_count",
+            "candidate_count"
+          ],
+          "inner_oof_case_count": 95,
+          "inner_thresholds": {
+            "target_precision_90": {
+              "target_precision": 0.9,
+              "threshold": 0.91578375,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 30,
+              "accepted_precision": 0.9,
+              "selection_source": "inner_contract_family_oof_predictions"
+            },
+            "target_precision_95": {
+              "target_precision": 0.95,
+              "threshold": 0.93630215,
+              "policy": "accept_probability_at_or_above_threshold",
+              "accepted_count": 26,
+              "accepted_precision": 0.96153846,
+              "selection_source": "inner_contract_family_oof_predictions"
+            }
+          },
+          "held_out_probability_metrics": {
+            "brier_score": 0.0216656,
+            "log_loss": 0.0681894,
+            "roc_auc": 1.0,
+            "average_precision": 1.0,
+            "ece_5_bin": {
+              "scheme": "five_fixed_probability_bins_width_0.2",
+              "value": 0.05133361,
+              "bins": [
+                {
+                  "bin": 1,
+                  "lower_inclusive": 0.0,
+                  "upper_exclusive": 0.2,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 2,
+                  "lower_inclusive": 0.2,
+                  "upper_exclusive": 0.4,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 3,
+                  "lower_inclusive": 0.4,
+                  "upper_exclusive": 0.6,
+                  "upper_inclusive": null,
+                  "count": 1,
+                  "average_confidence": 0.50803259,
+                  "accuracy": 0.0
+                },
+                {
+                  "bin": 4,
+                  "lower_inclusive": 0.6,
+                  "upper_exclusive": 0.8,
+                  "upper_inclusive": null,
+                  "count": 0,
+                  "average_confidence": null,
+                  "accuracy": null
+                },
+                {
+                  "bin": 5,
+                  "lower_inclusive": 0.8,
+                  "upper_exclusive": null,
+                  "upper_inclusive": 1.0,
+                  "count": 11,
+                  "average_confidence": 0.99018448,
+                  "accuracy": 1.0
+                }
+              ]
+            },
+            "aurc": 0.00694444
+          },
+          "held_out_policy_metrics": {
+            "target_precision_90": {
+              "threshold": 0.91578375,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            },
+            "target_precision_95": {
+              "threshold": 0.93630215,
+              "threshold_policy": "accept_probability_at_or_above_threshold",
+              "case_count": 12,
+              "accepted_count": 11,
+              "review_count": 1,
+              "coverage": 0.91666667,
+              "review_rate": 0.08333333,
+              "accepted_precision": 1.0,
+              "accepted_correct_count": 11,
+              "accepted_incorrect_count": 0,
+              "target_bearing_auto_map_recall": 1.0,
+              "no_target_accepted_count": 0,
+              "no_target_rejection_rate": 1.0,
+              "wrong_target_accepted_count": 0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "pooled": {
+    "existing_v5_policy": {
+      "probability_metrics": "not_applicable_existing_rule_policy",
+      "policy_metrics": {
+        "current_suggested_auto_accept": {
+          "threshold": null,
+          "threshold_policy": "existing_v5_suggested_status",
+          "case_count": 107,
+          "accepted_count": 23,
+          "review_count": 84,
+          "coverage": 0.21495327,
+          "review_rate": 0.78504673,
+          "accepted_precision": 1.0,
+          "accepted_correct_count": 23,
+          "accepted_incorrect_count": 0,
+          "target_bearing_auto_map_recall": 0.27380952,
+          "no_target_accepted_count": 0,
+          "no_target_rejection_rate": 1.0,
+          "wrong_target_accepted_count": 0
+        }
+      }
+    },
+    "score_only_calibrator": {
+      "probability_metrics": {
+        "brier_score": 0.14090701,
+        "log_loss": 0.42318028,
+        "roc_auc": 0.8734127,
+        "average_precision": 0.94362612,
+        "ece_5_bin": {
+          "scheme": "five_fixed_probability_bins_width_0.2",
+          "value": 0.0498246,
+          "bins": [
+            {
+              "bin": 1,
+              "lower_inclusive": 0.0,
+              "upper_exclusive": 0.2,
+              "upper_inclusive": null,
+              "count": 0,
+              "average_confidence": null,
+              "accuracy": null
+            },
+            {
+              "bin": 2,
+              "lower_inclusive": 0.2,
+              "upper_exclusive": 0.4,
+              "upper_inclusive": null,
+              "count": 17,
+              "average_confidence": 0.33595616,
+              "accuracy": 0.17647059
+            },
+            {
+              "bin": 3,
+              "lower_inclusive": 0.4,
+              "upper_exclusive": 0.6,
+              "upper_inclusive": null,
+              "count": 23,
+              "average_confidence": 0.50004664,
+              "accuracy": 0.47826087
+            },
+            {
+              "bin": 4,
+              "lower_inclusive": 0.6,
+              "upper_exclusive": 0.8,
+              "upper_inclusive": null,
+              "count": 27,
+              "average_confidence": 0.69078734,
+              "accuracy": 0.7037037
+            },
+            {
+              "bin": 5,
+              "lower_inclusive": 0.8,
+              "upper_exclusive": null,
+              "upper_inclusive": 1.0,
+              "count": 40,
+              "average_confidence": 0.93074593,
+              "accuracy": 0.975
+            }
+          ]
+        },
+        "aurc": 0.1045324
+      },
+      "policy_metrics": {
+        "target_precision_90": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 64,
+          "review_count": 43,
+          "coverage": 0.59813084,
+          "review_rate": 0.40186916,
+          "accepted_precision": 0.890625,
+          "accepted_correct_count": 57,
+          "accepted_incorrect_count": 7,
+          "target_bearing_auto_map_recall": 0.67857143,
+          "no_target_accepted_count": 2,
+          "no_target_rejection_rate": 0.91304348,
+          "wrong_target_accepted_count": 5
+        },
+        "target_precision_95": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 51,
+          "review_count": 56,
+          "coverage": 0.47663551,
+          "review_rate": 0.52336449,
+          "accepted_precision": 0.98039216,
+          "accepted_correct_count": 50,
+          "accepted_incorrect_count": 1,
+          "target_bearing_auto_map_recall": 0.5952381,
+          "no_target_accepted_count": 0,
+          "no_target_rejection_rate": 1.0,
+          "wrong_target_accepted_count": 1
+        }
+      }
+    },
+    "multifeature_calibrator": {
+      "probability_metrics": {
+        "brier_score": 0.17758211,
+        "log_loss": 0.53419224,
+        "roc_auc": 0.7968254,
+        "average_precision": 0.90168478,
+        "ece_5_bin": {
+          "scheme": "five_fixed_probability_bins_width_0.2",
+          "value": 0.09377311,
+          "bins": [
+            {
+              "bin": 1,
+              "lower_inclusive": 0.0,
+              "upper_exclusive": 0.2,
+              "upper_inclusive": null,
+              "count": 2,
+              "average_confidence": 0.1434264,
+              "accuracy": 0.5
+            },
+            {
+              "bin": 2,
+              "lower_inclusive": 0.2,
+              "upper_exclusive": 0.4,
+              "upper_inclusive": null,
+              "count": 13,
+              "average_confidence": 0.34599974,
+              "accuracy": 0.38461538
+            },
+            {
+              "bin": 3,
+              "lower_inclusive": 0.4,
+              "upper_exclusive": 0.6,
+              "upper_inclusive": null,
+              "count": 18,
+              "average_confidence": 0.49304099,
+              "accuracy": 0.33333333
+            },
+            {
+              "bin": 4,
+              "lower_inclusive": 0.6,
+              "upper_exclusive": 0.8,
+              "upper_inclusive": null,
+              "count": 21,
+              "average_confidence": 0.7237437,
+              "accuracy": 0.66666667
+            },
+            {
+              "bin": 5,
+              "lower_inclusive": 0.8,
+              "upper_exclusive": null,
+              "upper_inclusive": 1.0,
+              "count": 53,
+              "average_confidence": 0.95745692,
+              "accuracy": 0.86792453
+            }
+          ]
+        },
+        "aurc": 0.13664275
+      },
+      "policy_metrics": {
+        "target_precision_90": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 68,
+          "review_count": 39,
+          "coverage": 0.63551402,
+          "review_rate": 0.36448598,
+          "accepted_precision": 0.80882353,
+          "accepted_correct_count": 55,
+          "accepted_incorrect_count": 13,
+          "target_bearing_auto_map_recall": 0.6547619,
+          "no_target_accepted_count": 6,
+          "no_target_rejection_rate": 0.73913043,
+          "wrong_target_accepted_count": 7
+        },
+        "target_precision_95": {
+          "threshold": null,
+          "threshold_policy": "precomputed_fold_thresholds",
+          "case_count": 107,
+          "accepted_count": 57,
+          "review_count": 50,
+          "coverage": 0.53271028,
+          "review_rate": 0.46728972,
+          "accepted_precision": 0.8245614,
+          "accepted_correct_count": 47,
+          "accepted_incorrect_count": 10,
+          "target_bearing_auto_map_recall": 0.55952381,
+          "no_target_accepted_count": 4,
+          "no_target_rejection_rate": 0.82608696,
+          "wrong_target_accepted_count": 6
+        }
+      }
+    }
+  }
+}

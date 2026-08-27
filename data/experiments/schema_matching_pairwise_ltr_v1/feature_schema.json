@@ -1,0 +1,47 @@
+{
+  "_run_info": {
+    "content_sha256": "f8d0904c4b706dd31dd5ee36eaeb62aae70f6363349174a460b7473f4f7dde81",
+    "note": "_run_info is deterministic for LTR v1 artifacts; compare content_sha256 for report body reproducibility."
+  },
+  "experiment_id": "schema_matching_pairwise_ltr_v1",
+  "feature_order": [
+    "semantic_score",
+    "fuzzy_score",
+    "lexical_overlap",
+    "alias_hit",
+    "type_gate",
+    "baseline_score",
+    "value_pattern_score",
+    "resource_context_score",
+    "resource_context_support",
+    "v3_score",
+    "diagnostic_bonus",
+    "supportive_bonus",
+    "top1_eligible",
+    "v4_score",
+    "identifier_bonus",
+    "identifier_adjusted_score",
+    "v5_top1_eligible"
+  ],
+  "feature_count": 17,
+  "missing_numeric_default": 0.0,
+  "boolean_encoding": {
+    "false": 0.0,
+    "true": 1.0
+  },
+  "forbidden_identity_inputs": [
+    "source_field",
+    "target",
+    "qualified",
+    "scenario",
+    "contract",
+    "case",
+    "expected",
+    "rank"
+  ],
+  "ground_truth_derived_features": false,
+  "notes": [
+    "Features are existing scorer numeric signals generated before pair construction.",
+    "Raw source field names, target qualified names, scenario ids, contract ids, case ids, candidate ranks, and labels are not model features."
+  ]
+}

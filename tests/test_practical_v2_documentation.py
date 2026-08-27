@@ -192,6 +192,31 @@ class PracticalV2DocumentationTests(unittest.TestCase):
         ]:
             self.assertIn(phrase, self.readme)
 
+    def test_20c_readme_indexes_algorithm_ml_evidence_without_overclaiming(self) -> None:
+        for phrase in [
+            "## Algorithm/ML Evidence",
+            "schema_matching_public_dev_v1.json",
+            "Open Food Facts",
+            "UK Contracts Finder",
+            "combined public development results",
+            "35 cases and 25 expected links",
+            "same aggregate metrics",
+            "not a V5 win claim",
+            "pairwise LTR v1 experiment",
+            "negative ML result",
+            "did not beat V5",
+            "V5 correctness calibration experiment",
+            "OOF predictions",
+            "failure analysis",
+            "Existing V5 policy accepted 23/107 cases with 23 correct and 0 incorrect",
+            "score-only 95% development policy accepted 51/107 cases with 50 correct and 1 incorrect",
+            "outperforming the multifeature calibrator",
+            "contract-family-out development evidence",
+            "not sealed holdout evidence",
+            "no runtime promotion has been made",
+        ]:
+            self.assertIn(phrase, self.readme)
+
     def test_21_results_keep_migration_numbers(self) -> None:
         for phrase in ["Target package: valid", "Findings: 0", "Lineage entries: 88"]:
             self.assertIn(phrase, self.readme)

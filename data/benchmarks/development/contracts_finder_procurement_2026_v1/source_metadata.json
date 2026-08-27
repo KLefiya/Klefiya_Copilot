@@ -1,0 +1,78 @@
+{
+  "dataset_id": "contracts_finder_procurement_2026_v1",
+  "source_name": "United Kingdom Contracts Finder OCDS CSV via OCP Data Registry",
+  "source_domain": "public_procurement",
+  "source_homepage": "https://data.open-contracting.org/en/publication/128",
+  "source_download_url": "https://fastly.data.open-contracting.org/downloads/united_kingdom_contracts_finder_releases/4062/2026.csv.tar.gz",
+  "source_publication_page": "https://www.gov.uk/government/publications/open-contracting",
+  "source_api_documentation": "https://www.contractsfinder.service.gov.uk/apidocumentation/Notices/1/GET-Published-Notice-OCDS-Search",
+  "retrieved_date": "2026-08-27",
+  "source_version": "2026 annual CSV export; OCP registry last retrieved Aug 6, 2026",
+  "archive": {
+    "file_name": "contracts_finder_2026.csv.tar.gz",
+    "size_bytes": 15670363,
+    "raw_sha256": "77a56e26ebbb6c7ec754b0795032ca8a8cf031455e673ac85c80a2eeb41da654",
+    "member": "2026/main.csv",
+    "member_header_field_count": 32,
+    "selected_source_field_count": 23
+  },
+  "license": {
+    "name": "Open Government Licence v3.0",
+    "url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "attribution": "Contains public sector information licensed under the Open Government Licence v3.0; data accessed through the Open Contracting Partnership Data Registry."
+  },
+  "candidate_dataset_comparison": [
+    {
+      "name": "United Kingdom Contracts Finder OCDS CSV",
+      "source": "https://data.open-contracting.org/en/publication/128",
+      "domain": "public_procurement",
+      "fit": "Selected: rich procurement notice fields map naturally to the existing sales_order_fulfillment target contract, with more than eight target-bearing fields and multiple natural multi-target cases.",
+      "license": "Open Government Licence v3.0"
+    },
+    {
+      "name": "IDB Project procurement bidding notices and contract awards dataset",
+      "source": "https://data.iadb.org/dataset/project-procurement-bidding-notices-and-notification-of-contract-awards",
+      "domain": "public_procurement",
+      "fit": "Considered but not selected for this step: useful award/procurement data, but less directly aligned to the sales-order fulfillment target fields without pulling in a broader procurement-specific target contract.",
+      "license": "Creative Commons Attribution 4.0 International"
+    }
+  ],
+  "sampling": {
+    "source_member": "2026/main.csv",
+    "method": "Keep the first 24 rows from the 2026 main.csv member where the 13 positive-bearing required fields are non-empty, then project the selected public source columns without renaming them.",
+    "row_count": 24,
+    "field_count": 23,
+    "source_value_normalization": "values are written as read from the CSV export, except UTF-8 output encoding, CSV escaping, and removal of physical line-end trailing spaces required by the repository whitespace gate",
+    "field_name_normalization": "none; selected source column names are copied from the public CSV header",
+    "excluded_public_columns": [
+      "tag",
+      "tender_procurementMethodDetails",
+      "tender_suitability_sme",
+      "tender_suitability_vcse",
+      "tender_minValue_amount",
+      "tender_minValue_currency",
+      "tender_communication_futureNoticeDate",
+      "tender_procedure_isAccelerated",
+      "tender_procedure_acceleratedRationale"
+    ],
+    "sensitive_column_handling": "Only main.csv notice-level fields are used. Parties/contact fields containing names, emails, telephone numbers, and street addresses are not copied into this fixture."
+  },
+  "benchmark_flags": {
+    "development_benchmark": true,
+    "formal_evaluation": false,
+    "sealed_holdout": false,
+    "repeated_evaluation_allowed": true,
+    "not_evidence_of_unseen_generalization": true
+  },
+  "target_contract": {
+    "path": "data/benchmarks/fixtures/sales_order_fulfillment/contract/datapackage.yaml",
+    "synthetic": true,
+    "authoritative": false
+  },
+  "source_csv": {
+    "path": "data/benchmarks/development/contracts_finder_procurement_2026_v1/source_contracts_finder_procurement_2026_v1.csv",
+    "row_count": 24,
+    "field_count": 23,
+    "raw_sha256": "717ba9423302b742dd0cf44403f26adf151c2a4707d483398589404b2624d252"
+  }
+}

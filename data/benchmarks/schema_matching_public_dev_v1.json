@@ -1,0 +1,488 @@
+{
+  "_meta": {
+    "benchmark_id": "schema_matching_public_dev_v1",
+    "development_benchmark": true,
+    "formal_evaluation": false,
+    "sealed_holdout": false,
+    "repeated_evaluation_allowed": true,
+    "not_evidence_of_unseen_generalization": true,
+    "synthetic_demo": false,
+    "public_source_data": true,
+    "source_dataset": "multiple_public_development_datasets",
+    "ground_truth_runtime_boundary": "evaluation_only",
+    "ground_truth_used_for_candidate_generation": false,
+    "ground_truth_used_for_runtime": false,
+    "ground_truth_used_for_evaluation": true,
+    "notes": [
+      "Development-only public-data benchmark for local iteration.",
+      "Not part of the sealed five-scenario formal benchmark.",
+      "Results are repeatable development signals, not evidence of unseen production generalization."
+    ],
+    "source_datasets": [
+      "open_food_facts_products_v1",
+      "contracts_finder_procurement_2026_v1"
+    ]
+  },
+  "scenarios": [
+    {
+      "scenario_id": "open_food_facts_products",
+      "split": "development",
+      "source_path": "data/benchmarks/development/open_food_facts_products_v1/source_open_food_facts_products.csv",
+      "contract_path": "contracts/erpnext_item_price_reference/datapackage.yaml",
+      "data_root_path": "data/examples/blind/erpnext_item_price",
+      "answer_source_path": "data/benchmarks/development/open_food_facts_products_v1/ground_truth.json",
+      "cases": [
+        {
+          "case_id": "open_food_facts_products__code",
+          "source_field": "code",
+          "expected_targets": [
+            "item.item_code",
+            "item_price.item_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "identifier",
+            "multi_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__product_name",
+          "source_field": "product_name",
+          "expected_targets": [
+            "item.item_name"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "product_name",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__generic_name",
+          "source_field": "generic_name",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "description_gap",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__quantity",
+          "source_field": "quantity",
+          "expected_targets": [
+            "item.stock_uom",
+            "item_price.uom"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "unit_of_measure",
+            "value_parsing_needed",
+            "multi_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__categories",
+          "source_field": "categories",
+          "expected_targets": [
+            "item.item_group"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "classification",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__brands",
+          "source_field": "brands",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "brand_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__countries",
+          "source_field": "countries",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "country_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__nutrition_grades",
+          "source_field": "nutrition_grades",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "nutrition_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__nova_group",
+          "source_field": "nova_group",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "classification_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__packaging",
+          "source_field": "packaging",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "packaging_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__stores",
+          "source_field": "stores",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "retailer_without_target",
+            "no_target"
+          ]
+        },
+        {
+          "case_id": "open_food_facts_products__ingredients_text",
+          "source_field": "ingredients_text",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "long_text_without_target",
+            "no_target"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario_id": "contracts_finder_procurement_2026",
+      "split": "development",
+      "source_path": "data/benchmarks/development/contracts_finder_procurement_2026_v1/source_contracts_finder_procurement_2026_v1.csv",
+      "contract_path": "data/benchmarks/fixtures/sales_order_fulfillment/contract/datapackage.yaml",
+      "data_root_path": "data/benchmarks/fixtures/sales_order_fulfillment/target",
+      "answer_source_path": "data/benchmarks/development/contracts_finder_procurement_2026_v1/ground_truth.json",
+      "cases": [
+        {
+          "case_id": "contracts_finder_procurement_2026__id",
+          "source_field": "id",
+          "expected_targets": [
+            "sales_order_header.sales_order_id",
+            "sales_order_line.sales_order_id",
+            "delivery_schedule.sales_order_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "multi_target",
+            "multi_table_identifier"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__date",
+          "source_field": "date",
+          "expected_targets": [
+            "sales_order_header.order_date"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__ocid",
+          "source_field": "ocid",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__language",
+          "source_field": "language",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__initiationType",
+          "source_field": "initiationType",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_id",
+          "source_field": "buyer_id",
+          "expected_targets": [
+            "sales_order_header.customer_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__buyer_name",
+          "source_field": "buyer_name",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_id",
+          "source_field": "tender_id",
+          "expected_targets": [
+            "sales_order_header.customer_purchase_order"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_title",
+          "source_field": "tender_title",
+          "expected_targets": [
+            "sales_order_line.item_description"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+          "source_field": "tender_mainProcurementCategory",
+          "expected_targets": [
+            "sales_order_header.distribution_channel"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_status",
+          "source_field": "tender_status",
+          "expected_targets": [
+            "sales_order_header.order_status",
+            "delivery_schedule.fulfillment_status"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "multi_target",
+            "status_overlap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_description",
+          "source_field": "tender_description",
+          "expected_targets": [
+            "sales_order_line.item_description"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_procurementMethod",
+          "source_field": "tender_procurementMethod",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+          "source_field": "tender_value_amount",
+          "expected_targets": [
+            "sales_order_line.line_amount"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_value_currency",
+          "source_field": "tender_value_currency",
+          "expected_targets": [
+            "sales_order_header.currency_code"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_tenderPeriod_endDate",
+          "source_field": "tender_tenderPeriod_endDate",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+          "source_field": "tender_classification_id",
+          "expected_targets": [
+            "sales_order_line.product_id"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_scheme",
+          "source_field": "tender_classification_scheme",
+          "expected_targets": [],
+          "expected_no_target": true,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "no_target",
+            "no_target_gap"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+          "source_field": "tender_classification_description",
+          "expected_targets": [
+            "sales_order_line.item_description"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+          "source_field": "tender_contractPeriod_startDate",
+          "expected_targets": [
+            "delivery_schedule.requested_ship_date"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+          "source_field": "tender_contractPeriod_endDate",
+          "expected_targets": [
+            "delivery_schedule.confirmed_ship_date"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+          "source_field": "tender_datePublished",
+          "expected_targets": [
+            "sales_order_header.order_date"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        },
+        {
+          "case_id": "contracts_finder_procurement_2026__title",
+          "source_field": "title",
+          "expected_targets": [
+            "sales_order_line.item_description"
+          ],
+          "expected_no_target": false,
+          "difficulty_tags": [
+            "public_data",
+            "public_procurement",
+            "single_target"
+          ]
+        }
+      ]
+    }
+  ]
+}

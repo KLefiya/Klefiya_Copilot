@@ -1,0 +1,197 @@
+{
+  "_meta": {
+    "dataset_id": "contracts_finder_procurement_2026_v1",
+    "development_benchmark": true,
+    "formal_evaluation": false,
+    "sealed_holdout": false,
+    "repeated_evaluation_allowed": true,
+    "not_evidence_of_unseen_generalization": true,
+    "must_not_be_read_by_mapping_engine": true,
+    "target_contract": "data/benchmarks/fixtures/sales_order_fulfillment/contract/datapackage.yaml",
+    "target_contract_synthetic": true,
+    "ground_truth_frozen_before_first_scorer_run": true
+  },
+  "counts": {
+    "case_count": 23,
+    "target_bearing_source_field_count": 16,
+    "single_target_case_count": 14,
+    "multi_target_case_count": 2,
+    "no_target_case_count": 7,
+    "expected_target_link_count": 19
+  },
+  "mappings": [
+    {
+      "source_field": "id",
+      "expected_targets": [
+        "sales_order_header.sales_order_id",
+        "sales_order_line.sales_order_id",
+        "delivery_schedule.sales_order_id"
+      ],
+      "evaluation_group": "multi_target",
+      "label_rationale": "The OCDS release id is the stable process/document identifier and naturally joins header, line, and schedule records."
+    },
+    {
+      "source_field": "date",
+      "expected_targets": [
+        "sales_order_header.order_date"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The release date is the created/publication date for the procurement order-like document."
+    },
+    {
+      "source_field": "ocid",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "The OCDS contracting process id is provenance for the public notice, not a target sales-order field in this contract."
+    },
+    {
+      "source_field": "language",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "The target sales-order fulfillment contract has no language field."
+    },
+    {
+      "source_field": "initiationType",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "The target contract has no field for OCDS initiation type."
+    },
+    {
+      "source_field": "buyer_id",
+      "expected_targets": [
+        "sales_order_header.customer_id"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The public buyer organization id acts as the sold-to/customer identifier for this order-like flow."
+    },
+    {
+      "source_field": "buyer_name",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "The target contract stores customer id but has no customer or buyer name field."
+    },
+    {
+      "source_field": "tender_id",
+      "expected_targets": [
+        "sales_order_header.customer_purchase_order"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The tender id is an external buyer-side procurement reference analogous to a customer purchase order."
+    },
+    {
+      "source_field": "tender_title",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The tender title is a short description of the requested goods or services."
+    },
+    {
+      "source_field": "tender_mainProcurementCategory",
+      "expected_targets": [
+        "sales_order_header.distribution_channel"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The procurement category is a coarse channel/category code for routing the fulfillment process."
+    },
+    {
+      "source_field": "tender_status",
+      "expected_targets": [
+        "sales_order_header.order_status",
+        "delivery_schedule.fulfillment_status"
+      ],
+      "evaluation_group": "multi_target",
+      "label_rationale": "The tender status describes process state and can inform both document status and fulfillment status."
+    },
+    {
+      "source_field": "tender_description",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The tender description is the closest public long-text description for the requested line item."
+    },
+    {
+      "source_field": "tender_procurementMethod",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "Procurement method is sourcing procedure metadata, not a sales-order fulfillment target field."
+    },
+    {
+      "source_field": "tender_value_amount",
+      "expected_targets": [
+        "sales_order_line.line_amount"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The tender value amount is the disclosed extended monetary value of the procurement."
+    },
+    {
+      "source_field": "tender_value_currency",
+      "expected_targets": [
+        "sales_order_header.currency_code"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The tender value currency is the ISO-style currency for order monetary values."
+    },
+    {
+      "source_field": "tender_tenderPeriod_endDate",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "The tender deadline is a bidding cutoff, not a shipment or order creation date."
+    },
+    {
+      "source_field": "tender_classification_id",
+      "expected_targets": [
+        "sales_order_line.product_id"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The procurement classification code is the closest public product/service identifier."
+    },
+    {
+      "source_field": "tender_classification_scheme",
+      "expected_targets": [],
+      "evaluation_group": "no_target",
+      "label_rationale": "The classification scheme names the coding system and has no target fulfillment field."
+    },
+    {
+      "source_field": "tender_classification_description",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The classification description is another product/service description signal."
+    },
+    {
+      "source_field": "tender_contractPeriod_startDate",
+      "expected_targets": [
+        "delivery_schedule.requested_ship_date"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The contract period start date is the closest public requested/initial delivery timing signal."
+    },
+    {
+      "source_field": "tender_contractPeriod_endDate",
+      "expected_targets": [
+        "delivery_schedule.confirmed_ship_date"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The contract period end date is the closest public committed/end delivery timing signal."
+    },
+    {
+      "source_field": "tender_datePublished",
+      "expected_targets": [
+        "sales_order_header.order_date"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The tender publication date is a second public date signal for the order-like document."
+    },
+    {
+      "source_field": "title",
+      "expected_targets": [
+        "sales_order_line.item_description"
+      ],
+      "evaluation_group": "single_target",
+      "label_rationale": "The top-level notice title repeats the human-readable requested-item description."
+    }
+  ]
+}
