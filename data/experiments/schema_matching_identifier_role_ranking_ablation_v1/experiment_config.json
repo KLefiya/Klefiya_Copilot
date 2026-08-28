@@ -1,0 +1,32 @@
+{
+  "alpha_grid": [
+    0.0,
+    0.01,
+    0.02,
+    0.05
+  ],
+  "alpha_grid_basis": "Small fixed grid on the observed V5 score scale, where stored V5 candidate scores are normalized decimals.",
+  "alpha_selection_objective": "maximize inner pooled MRR with no-target and multi-target non-regression constraints; ties choose smaller alpha",
+  "data_boundary": {
+    "allowed": [
+      "data/synthetic/schema_matching_precision_tiered_v5_5scenario_evaluation.json",
+      "data/benchmarks/development/combined_public_dev_v1/results/precision_tiered_v5.json",
+      "data/benchmarks/schema_matching_v1.json",
+      "data/benchmarks/schema_matching_public_dev_v1.json",
+      "data/experiments/schema_matching_identifier_role_v1/source_field_role_labels.json"
+    ],
+    "forbidden": [
+      "Companies House",
+      "FDIC",
+      "external benchmarks",
+      "sealed benchmarks"
+    ]
+  },
+  "experiment_id": "identifier_role_reranker_v1",
+  "experimental_only": true,
+  "production_promoted": false,
+  "role_compatibility_formula": "p_source_identifier * p_target_identifier + (1 - p_source_identifier) * (1 - p_target_identifier)",
+  "runtime_integrated": false,
+  "score_formula": "experimental_score = v5_score + alpha * (2 * role_compatibility - 1)",
+  "sealed_holdout_validated": false
+}

@@ -1,0 +1,33 @@
+{
+  "ambiguous_excluded": [
+    "customer.payment_terms",
+    "item_price.price_list",
+    "supplier_company.payment_terms"
+  ],
+  "confusion_matrix": {
+    "fn": 2,
+    "fp": 6,
+    "tn": 32,
+    "tp": 27
+  },
+  "experiment_id": "identifier_role_reranker_v1",
+  "inference_method": "generic_target_schema_token_rules",
+  "metrics": {
+    "accuracy": 0.88059701,
+    "average_precision": 0.98800348,
+    "balanced_accuracy": 0.88656987,
+    "brier_score": 0.06044776,
+    "case_count": 67,
+    "confusion_matrix": {
+      "fn": 2,
+      "fp": 6,
+      "tn": 32,
+      "tp": 27
+    },
+    "f1": 0.87096774,
+    "precision": 0.81818182,
+    "recall": 0.93103448,
+    "roc_auc": 0.98366606,
+    "specificity": 0.84210526
+  }
+}

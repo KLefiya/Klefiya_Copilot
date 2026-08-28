@@ -1,0 +1,136 @@
+{
+  "alpha_selection": {
+    "alpha_grid": [
+      0.0,
+      0.01,
+      0.02,
+      0.05
+    ],
+    "constraints": {
+      "multi_target_full_coverage_at_3": "must be >= v5_reference on inner pooled predictions",
+      "no_target_accuracy": "must be >= v5_reference on inner pooled predictions"
+    },
+    "objective": "MRR",
+    "outer_held_out_used_for_alpha_selection": false,
+    "tie_break": "choose smaller alpha; this includes 0.0 when tied"
+  },
+  "experiment_id": "identifier_role_reranker_v1",
+  "folds": [
+    {
+      "fold_id": "leave_one_contract_family__bank_account",
+      "held_out_case_count": 16,
+      "held_out_contract_family": "bank_account",
+      "held_out_source_detector_support": {
+        "identifier": 7,
+        "non_identifier": 9
+      },
+      "held_out_used_for_detector_fit": false,
+      "heuristic_selected_alpha": 0.0,
+      "learned_selected_alpha": 0.0,
+      "train_case_count": 91,
+      "train_contract_families": [
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "train_source_detector_support": {
+        "identifier": 29,
+        "non_identifier": 62
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__generic_customer",
+      "held_out_case_count": 12,
+      "held_out_contract_family": "generic_customer",
+      "held_out_source_detector_support": {
+        "identifier": 6,
+        "non_identifier": 6
+      },
+      "held_out_used_for_detector_fit": false,
+      "heuristic_selected_alpha": 0.0,
+      "learned_selected_alpha": 0.0,
+      "train_case_count": 95,
+      "train_contract_families": [
+        "bank_account",
+        "item_item_price",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "train_source_detector_support": {
+        "identifier": 30,
+        "non_identifier": 65
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__item_item_price",
+      "held_out_case_count": 22,
+      "held_out_contract_family": "item_item_price",
+      "held_out_source_detector_support": {
+        "identifier": 2,
+        "non_identifier": 20
+      },
+      "held_out_used_for_detector_fit": false,
+      "heuristic_selected_alpha": 0.0,
+      "learned_selected_alpha": 0.0,
+      "train_case_count": 85,
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "sales_order_fulfillment",
+        "supplier_reference"
+      ],
+      "train_source_detector_support": {
+        "identifier": 34,
+        "non_identifier": 51
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__sales_order_fulfillment",
+      "held_out_case_count": 45,
+      "held_out_contract_family": "sales_order_fulfillment",
+      "held_out_source_detector_support": {
+        "identifier": 13,
+        "non_identifier": 32
+      },
+      "held_out_used_for_detector_fit": false,
+      "heuristic_selected_alpha": 0.0,
+      "learned_selected_alpha": 0.0,
+      "train_case_count": 62,
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "supplier_reference"
+      ],
+      "train_source_detector_support": {
+        "identifier": 23,
+        "non_identifier": 39
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__supplier_reference",
+      "held_out_case_count": 12,
+      "held_out_contract_family": "supplier_reference",
+      "held_out_source_detector_support": {
+        "identifier": 8,
+        "non_identifier": 4
+      },
+      "held_out_used_for_detector_fit": false,
+      "heuristic_selected_alpha": 0.0,
+      "learned_selected_alpha": 0.0,
+      "train_case_count": 95,
+      "train_contract_families": [
+        "bank_account",
+        "generic_customer",
+        "item_item_price",
+        "sales_order_fulfillment"
+      ],
+      "train_source_detector_support": {
+        "identifier": 28,
+        "non_identifier": 67
+      }
+    }
+  ],
+  "outer_cv": "leave_one_contract_family_out"
+}

@@ -1,0 +1,228 @@
+{
+  "experiment_id": "identifier_role_reranker_v1",
+  "reranker_features": [
+    {
+      "leakage_rationale": "Comes from the pre-existing V5 development artifact and does not include labels or expected targets.",
+      "meaning": "Pre-existing V5 candidate ranking score used without changing candidate generation.",
+      "name": "v5_score",
+      "requires_scaling": false,
+      "source": "stored V5 candidate diagnostic score"
+    },
+    {
+      "leakage_rationale": "Learned folds fit only on training source-role annotations and aggregate value-profile features; held-out family labels are excluded.",
+      "meaning": "Probability or binary diagnostic estimate that the source column carries an identifier-like role.",
+      "name": "p_source_identifier",
+      "requires_scaling": false,
+      "source": "heuristic or learned source value-profile identifier detector"
+    },
+    {
+      "leakage_rationale": "Actual heuristic/learned rerankers do not use per-path label lookup or mapping ground truth.",
+      "meaning": "Estimated target-field identifier role from generic schema/path tokens.",
+      "name": "p_target_identifier",
+      "requires_scaling": false,
+      "source": "generic target-schema token inference; oracle only in separate diagnostic system"
+    },
+    {
+      "leakage_rationale": "Derived only from source role probability and generic target role probability.",
+      "meaning": "Positive when source and target roles appear compatible and negative when they appear mismatched.",
+      "name": "signed_role_compatibility",
+      "requires_scaling": false,
+      "source": "2 * (p_source_identifier * p_target_identifier + (1 - p_source_identifier) * (1 - p_target_identifier)) - 1"
+    }
+  ],
+  "source_identifier_detector_features": [
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "number of rows in the source column",
+      "name": "row_count",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "count of non-empty string values",
+      "name": "non_null_count",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "empty value count / row count",
+      "name": "null_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "count of distinct non-empty values",
+      "name": "distinct_count",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "distinct non-empty values / non-empty count",
+      "name": "uniqueness_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "1 - uniqueness ratio",
+      "name": "duplicate_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "Shannon entropy over value frequencies divided by log2(distinct value count)",
+      "name": "normalized_value_frequency_entropy",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "mean character length of non-empty values",
+      "name": "mean_value_length",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "population standard deviation of non-empty value lengths",
+      "name": "value_length_stddev",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "length stddev / mean length",
+      "name": "value_length_coefficient_of_variation",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "most common non-empty value length frequency / non-empty count",
+      "name": "dominant_length_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "non-empty values matching [0-9]+ / non-empty count",
+      "name": "numeric_only_value_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "non-empty values matching [A-Za-z]+ / non-empty count",
+      "name": "alphabetic_only_value_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "non-empty alphanumeric values containing at least one letter and one digit / non-empty count",
+      "name": "alphanumeric_mixed_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "digit characters / all non-empty value characters",
+      "name": "digit_character_fraction",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "alphabetic characters / all non-empty value characters",
+      "name": "alphabetic_character_fraction",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "non-alnum non-space characters / all non-empty value characters",
+      "name": "punctuation_character_fraction",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "whitespace characters / all non-empty value characters",
+      "name": "whitespace_character_fraction",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "values beginning with 0 and containing a digit / non-empty count",
+      "name": "leading_zero_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "UUID-shaped values / non-empty count",
+      "name": "uuid_like_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "long hex-like mixed letter/digit values / non-empty count",
+      "name": "hex_like_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "most common value length frequency / non-empty count",
+      "name": "fixed_width_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "most common compressed value pattern frequency / non-empty count",
+      "name": "dominant_normalized_pattern_ratio",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "Shannon entropy over compressed value patterns divided by log2(distinct pattern count)",
+      "name": "normalized_pattern_entropy",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "share of adjacent numeric-only values that increase",
+      "name": "integer_monotonicity_signal",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    },
+    {
+      "leakage_rationale": "Computed from column values only as aggregate numeric statistics; names, ids, target paths, and mapping ground truth are excluded.",
+      "meaning": "share of adjacent numeric-only differences equal to the dominant difference",
+      "name": "integer_sequentiality_signal",
+      "requires_scaling": true,
+      "source": "header-blind aggregate source-column value profile"
+    }
+  ],
+  "training_matrix_excludes": [
+    "source field name/token/text",
+    "target path/name/text",
+    "scenario id",
+    "benchmark id",
+    "contract family id",
+    "case id",
+    "ground-truth target count",
+    "expected target information",
+    "label-derived features"
+  ]
+}

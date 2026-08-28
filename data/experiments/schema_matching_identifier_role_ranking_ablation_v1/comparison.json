@@ -1,0 +1,192 @@
+{
+  "case_count": 107,
+  "decision_rule": {
+    "criteria": [
+      "learned reranker improves pooled ranking over V5",
+      "improved cases exceed regressed cases",
+      "no-target accuracy does not decline",
+      "multi-target full coverage@3 does not decline",
+      "improvement is not confined to a single source/scenario",
+      "oracle diagnostic supports identifier role value"
+    ],
+    "learned_improvement_contract_families": [],
+    "learned_improvement_scenarios": [],
+    "requires_separate_future_authorization": true,
+    "worth_future_sealed_holdout": false
+  },
+  "experiment_id": "identifier_role_reranker_v1",
+  "experimental_only": true,
+  "pooled_metrics": {
+    "v5_plus_heuristic_identifier_role": {
+      "case_count": 107,
+      "correct_target_entered_top3": 0,
+      "correct_target_left_top3": 0,
+      "improved_cases": 0,
+      "multi_target_full_coverage_at_3": {
+        "denominator": 9,
+        "numerator": 8,
+        "value": 0.88888889
+      },
+      "multi_target_gain": 0,
+      "multi_target_loss": 0,
+      "no_target_accuracy": {
+        "denominator": 23,
+        "numerator": 22,
+        "value": 0.95652174
+      },
+      "regressed_cases": 0,
+      "single_target_top1_accuracy": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_mrr": {
+        "denominator": 84,
+        "numerator": 76.16666666666667,
+        "value": 0.90674603
+      },
+      "target_link_recall_at_1": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_recall_at_3": {
+        "denominator": 84,
+        "numerator": 82,
+        "value": 0.97619048
+      },
+      "top1_gain": 0,
+      "top1_loss": 0,
+      "unchanged_cases": 84
+    },
+    "v5_plus_learned_identifier_role": {
+      "case_count": 107,
+      "correct_target_entered_top3": 0,
+      "correct_target_left_top3": 0,
+      "improved_cases": 0,
+      "multi_target_full_coverage_at_3": {
+        "denominator": 9,
+        "numerator": 8,
+        "value": 0.88888889
+      },
+      "multi_target_gain": 0,
+      "multi_target_loss": 0,
+      "no_target_accuracy": {
+        "denominator": 23,
+        "numerator": 22,
+        "value": 0.95652174
+      },
+      "regressed_cases": 0,
+      "single_target_top1_accuracy": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_mrr": {
+        "denominator": 84,
+        "numerator": 76.16666666666667,
+        "value": 0.90674603
+      },
+      "target_link_recall_at_1": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_recall_at_3": {
+        "denominator": 84,
+        "numerator": 82,
+        "value": 0.97619048
+      },
+      "top1_gain": 0,
+      "top1_loss": 0,
+      "unchanged_cases": 84
+    },
+    "v5_plus_oracle_identifier_role": {
+      "case_count": 107,
+      "correct_target_entered_top3": 0,
+      "correct_target_left_top3": 0,
+      "improved_cases": 0,
+      "multi_target_full_coverage_at_3": {
+        "denominator": 9,
+        "numerator": 8,
+        "value": 0.88888889
+      },
+      "multi_target_gain": 0,
+      "multi_target_loss": 0,
+      "no_target_accuracy": {
+        "denominator": 23,
+        "numerator": 22,
+        "value": 0.95652174
+      },
+      "regressed_cases": 0,
+      "single_target_top1_accuracy": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_mrr": {
+        "denominator": 84,
+        "numerator": 76.16666666666667,
+        "value": 0.90674603
+      },
+      "target_link_recall_at_1": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_recall_at_3": {
+        "denominator": 84,
+        "numerator": 82,
+        "value": 0.97619048
+      },
+      "top1_gain": 0,
+      "top1_loss": 0,
+      "unchanged_cases": 84
+    },
+    "v5_reference": {
+      "case_count": 107,
+      "correct_target_entered_top3": 0,
+      "correct_target_left_top3": 0,
+      "improved_cases": 0,
+      "multi_target_full_coverage_at_3": {
+        "denominator": 9,
+        "numerator": 8,
+        "value": 0.88888889
+      },
+      "multi_target_gain": 0,
+      "multi_target_loss": 0,
+      "no_target_accuracy": {
+        "denominator": 23,
+        "numerator": 22,
+        "value": 0.95652174
+      },
+      "regressed_cases": 0,
+      "single_target_top1_accuracy": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_mrr": {
+        "denominator": 84,
+        "numerator": 76.16666666666667,
+        "value": 0.90674603
+      },
+      "target_link_recall_at_1": {
+        "denominator": 84,
+        "numerator": 72,
+        "value": 0.85714286
+      },
+      "target_link_recall_at_3": {
+        "denominator": 84,
+        "numerator": 82,
+        "value": 0.97619048
+      },
+      "top1_gain": 0,
+      "top1_loss": 0,
+      "unchanged_cases": 84
+    }
+  },
+  "production_promoted": false,
+  "runtime_integrated": false,
+  "sealed_holdout_validated": false
+}

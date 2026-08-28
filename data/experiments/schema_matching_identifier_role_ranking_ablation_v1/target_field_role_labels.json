@@ -1,0 +1,473 @@
+{
+  "actual_reranker_uses_labels": false,
+  "counts": {
+    "ambiguous_excluded": 3,
+    "identifier": 29,
+    "non_identifier": 38,
+    "target_field_count": 70
+  },
+  "experiment_id": "identifier_role_reranker_v1",
+  "generic_inference_tokens": {
+    "negative": [
+      "amount",
+      "category",
+      "country",
+      "currency",
+      "date",
+      "description",
+      "disabled",
+      "flag",
+      "group",
+      "holder",
+      "language",
+      "method",
+      "name",
+      "price",
+      "quantity",
+      "rate",
+      "status",
+      "terms",
+      "uom",
+      "unit",
+      "valid"
+    ],
+    "positive": [
+      "id",
+      "identifier",
+      "number",
+      "num",
+      "code",
+      "key",
+      "reference",
+      "ref",
+      "uuid",
+      "guid",
+      "iban",
+      "bic"
+    ]
+  },
+  "label_scope": "development target fields present in stored V5 candidate diagnostics",
+  "labels": [
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "bank_account.account_holder"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "bank_account.account_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "bank_account.account_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "bank_account.bank_key"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "non_identifier",
+      "target_path": "bank_account.country_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "non_identifier",
+      "target_path": "bank_account.currency_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "bank_account.iban"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "bank_account.primary_flag"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "bank_account.valid_from"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "bank_account.valid_to"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "bank_branch.bank_key"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "bank_branch.bank_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "bank_branch.bic"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "non_identifier",
+      "target_path": "bank_branch.country_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "bank_branch.routing_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "customer.country"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "customer.customer_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "customer.customer_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.35,
+      "role_label": "non_identifier",
+      "target_path": "customer.email"
+    },
+    {
+      "ambiguous_exclusion_reason": "schema role is both coded/reference-like and operationally categorical",
+      "inferred_probability": 0.1,
+      "role_label": "ambiguous_excluded",
+      "target_path": "customer.payment_terms"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.35,
+      "role_label": "non_identifier",
+      "target_path": "customer.phone"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "customer.tax_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "customer_bank.bank_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "customer_bank.currency"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "customer_bank.customer_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "customer_bank.iban"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "delivery_schedule.confirmed_quantity"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "delivery_schedule.confirmed_ship_date"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "delivery_schedule.fulfillment_status"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "delivery_schedule.line_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "delivery_schedule.requested_ship_date"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "delivery_schedule.sales_order_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "delivery_schedule.schedule_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item.disabled"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "item.item_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item.item_group"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item.item_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item.stock_uom"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "identifier",
+      "target_path": "item_price.item_code"
+    },
+    {
+      "ambiguous_exclusion_reason": "schema role is both coded/reference-like and operationally categorical",
+      "inferred_probability": 0.1,
+      "role_label": "ambiguous_excluded",
+      "target_path": "item_price.price_list"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item_price.price_list_rate"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item_price.uom"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item_price.valid_from"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "item_price.valid_upto"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_header.currency_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "sales_order_header.customer_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.35,
+      "role_label": "identifier",
+      "target_path": "sales_order_header.customer_purchase_order"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.35,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_header.distribution_channel"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_header.order_date"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_header.order_status"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "sales_order_header.sales_order_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_line.item_description"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_line.line_amount"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "sales_order_line.line_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_line.order_quantity"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "sales_order_line.product_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_line.quantity_uom"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "sales_order_line.sales_order_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "sales_order_line.unit_price"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "supplier_company.assignment_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "supplier_company.company_code"
+    },
+    {
+      "ambiguous_exclusion_reason": "schema role is both coded/reference-like and operationally categorical",
+      "inferred_probability": 0.1,
+      "role_label": "ambiguous_excluded",
+      "target_path": "supplier_company.payment_terms"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.35,
+      "role_label": "identifier",
+      "target_path": "supplier_company.reconciliation_account"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "supplier_company.supplier_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "supplier_general.business_partner_category"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "non_identifier",
+      "target_path": "supplier_general.country_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.55,
+      "role_label": "non_identifier",
+      "target_path": "supplier_general.language_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.1,
+      "role_label": "non_identifier",
+      "target_path": "supplier_general.organization_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.9,
+      "role_label": "identifier",
+      "target_path": "supplier_general.supplier_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "inferred_probability": 0.8,
+      "role_label": "identifier",
+      "target_path": "supplier_general.tax_number"
+    }
+  ],
+  "oracle_diagnostic_uses_labels": true
+}

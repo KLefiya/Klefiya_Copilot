@@ -1,0 +1,851 @@
+{
+  "categories": {
+    "correct_target_absent_from_candidate_set": [
+      {
+        "case_id": "bank_account__legacy_bank_ref",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": null,
+        "scenario_id": "bank_account",
+        "source_field": "legacy_bank_ref",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.73941992,
+        "v5_best_expected_rank": null
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_id",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": null,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_id",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.05699001,
+        "v5_best_expected_rank": null
+      }
+    ],
+    "correct_target_candidate_present_but_boost_insufficient": [
+      {
+        "case_id": "bank_account__beneficiary_label",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "bank_account",
+        "source_field": "beneficiary_label",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.04218777,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__date",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "date",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.07874416,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__id",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "id",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.07203369,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_classification_id",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.43531327,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_contractPeriod_startDate",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.07940877,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_datePublished",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.02613696,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_value_amount",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0667818,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "erpnext_item_price__article_number",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "article_number",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.66449079,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "erpnext_item_price__catalogue_caption",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "catalogue_caption",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0692082,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "erpnext_item_price__merchandise_family",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "merchandise_family",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.01381425,
+        "v5_best_expected_rank": 2
+      }
+    ],
+    "detector_correct_but_ranking_not_improved": [
+      {
+        "case_id": "bank_account__account_domicile",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "account_domicile",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.12265812,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__beneficiary_label",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "bank_account",
+        "source_field": "beneficiary_label",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.04218777,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "bank_account__branch_domicile",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "branch_domicile",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.12265812,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__clearing_code",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "clearing_code",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.95679428,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__domestic_account",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "domestic_account",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.73079704,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__institution_name",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "institution_name",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.02216275,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__institution_ref",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "institution_ref",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.73941992,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__international_account",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "international_account",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.95724017,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__legacy_bank_ref",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": null,
+        "scenario_id": "bank_account",
+        "source_field": "legacy_bank_ref",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.73941992,
+        "v5_best_expected_rank": null
+      },
+      {
+        "case_id": "bank_account__preferred_account",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "preferred_account",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00862446,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__settlement_ccy",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "settlement_ccy",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.12326821,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "bank_account__swift_identifier",
+        "contract_family": "bank_account",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "bank_account",
+        "source_field": "swift_identifier",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.97929392,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__date",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "date",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.07874416,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_classification_description",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_classification_description",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00526226,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_endDate",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_contractPeriod_endDate",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.15812176,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_contractPeriod_startDate",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_contractPeriod_startDate",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.07940877,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_datePublished",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 3,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_datePublished",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.02613696,
+        "v5_best_expected_rank": 3
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_description",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_description",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00039547,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_mainProcurementCategory",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_mainProcurementCategory",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00280687,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_status",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_status",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00272137,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_title",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_title",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00417072,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_value_amount",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_value_amount",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0667818,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_value_currency",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_value_currency",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.00161884,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__title",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "title",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0002911,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "erpnext_item_price__article_number",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "article_number",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.66449079,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "erpnext_item_price__catalogue_caption",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "catalogue_caption",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0692082,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "erpnext_item_price__effective_end",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "effective_end",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.35336059,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "erpnext_item_price__inventory_measure",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "inventory_measure",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.05874946,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "erpnext_item_price__lifecycle_block",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "lifecycle_block",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.04847357,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "erpnext_item_price__merchandise_family",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 2,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "merchandise_family",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.01381425,
+        "v5_best_expected_rank": 2
+      },
+      {
+        "case_id": "erpnext_item_price__retail_amount",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "retail_amount",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.11556256,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "erpnext_item_price__tariff_name",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "tariff_name",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.1482614,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__account_currency",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "account_currency",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.16438401,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__bank_account_iban",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "bank_account_iban",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.86159528,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__bank_customer_reference",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "bank_customer_reference",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.55108133,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__bank_record_key",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "bank_record_key",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.55108133,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__client_name",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "client_name",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.07787095,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__legacy_client_id",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "legacy_client_id",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.55108133,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__nation",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "nation",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.16336447,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__telephone_number",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "telephone_number",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.22642328,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__terms_code",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "terms_code",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.74440813,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "generic_customer__vat_registration_number",
+        "contract_family": "generic_customer",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "vat_registration_number",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.74962831,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "open_food_facts_products__categories",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "open_food_facts_products",
+        "source_field": "categories",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.03636197,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "open_food_facts_products__code",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "open_food_facts_products",
+        "source_field": "code",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.63865068,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "open_food_facts_products__product_name",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "open_food_facts_products",
+        "source_field": "product_name",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.02670066,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "open_food_facts_products__quantity",
+        "contract_family": "item_item_price",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "open_food_facts_products",
+        "source_field": "quantity",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.01487534,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__confirmed_qty",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "confirmed_qty",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.45829018,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__customer_po_ref",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "customer_po_ref",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.73249586,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__distribution_channel",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "distribution_channel",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.10537383,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__document_currency",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "document_currency",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.13124009,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__fulfillment_state",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "fulfillment_state",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0178914,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__item_description",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "item_description",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.0880385,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__legacy_line_item_no",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "legacy_line_item_no",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.66701081,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__legacy_sales_order_id",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "legacy_sales_order_id",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.71374897,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__line_total_amount",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "line_total_amount",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.36844694,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__material_ref",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "material_ref",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.73249586,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__net_unit_amount",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "net_unit_amount",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.18779109,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__order_state",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "order_state",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.01018935,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__ordered_qty",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "ordered_qty",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.34338302,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__sales_uom",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "sales_uom",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.03930143,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__schedule_seq",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "schedule_seq",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.54528458,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__sold_to_ref",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "sold_to_ref",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.74974735,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__company_assignment_key",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "company_assignment_key",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.5116052,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__legal_entity_code",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "legal_entity_code",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.93414118,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__payment_condition",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "payment_condition",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.80708455,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__preferred_language",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "preferred_language",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.1181633,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__recon_gl_account",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "recon_gl_account",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.95152209,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__vat_number",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "vat_number",
+        "source_identifier_label": 1,
+        "source_identifier_probability": 0.70750457,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__vendor_country",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "vendor_country",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.15427533,
+        "v5_best_expected_rank": 1
+      },
+      {
+        "case_id": "supplier_reference__vendor_legal_name",
+        "contract_family": "supplier_reference",
+        "learned_best_expected_rank": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "vendor_legal_name",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.07109713,
+        "v5_best_expected_rank": 1
+      }
+    ],
+    "detector_error_caused_ranking_regression": [],
+    "heuristic_improved_learned_regressed": [],
+    "identifier_source_ranked_to_non_identifier_target": [],
+    "learned_improved_heuristic_regressed": [],
+    "multi_target_partial_coverage_change": [],
+    "no_target_false_acceptance_change": [
+      {
+        "case_id": "sales_order_fulfillment__line_analyst_note",
+        "contract_family": "sales_order_fulfillment",
+        "learned_best_expected_rank": null,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "line_analyst_note",
+        "source_identifier_label": 0,
+        "source_identifier_probability": 0.40400176,
+        "v5_best_expected_rank": null
+      }
+    ],
+    "non_identifier_source_promoted_to_identifier_target": [],
+    "oracle_improved_learned_not_improved": []
+  },
+  "experiment_id": "identifier_role_reranker_v1",
+  "privacy": "Includes development case ids and source field identifiers only; raw source values are excluded."
+}
