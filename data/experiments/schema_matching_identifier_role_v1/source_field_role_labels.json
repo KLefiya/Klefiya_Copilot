@@ -1,0 +1,996 @@
+{
+  "annotation_inputs_allowed": [
+    "development source field identifiers",
+    "fixture documentation",
+    "human semantic annotation"
+  ],
+  "annotation_inputs_forbidden": [
+    "detector predictions",
+    "V5 candidate rankings",
+    "calibration probabilities",
+    "LTR scores",
+    "Companies House data or results",
+    "FDIC sealed data or results",
+    "mapping target labels as direct identifier labels"
+  ],
+  "annotation_task": "source_column_identifier_role_detection",
+  "annotations": [
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Country attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "account_domicile"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "activation_date"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Beneficiary display label.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "beneficiary_label"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Branch country attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "branch_domicile"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Clearing code identifies a clearing route/institution.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "clearing_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "closure_date"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Domestic account number identifies an account.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "domestic_account"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "fixture documentation",
+      "rationale": "Free text note.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "free_text_note"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Institution display name.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "institution_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "fixture documentation",
+      "rationale": "Institution reference identifies a bank/institution.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "institution_ref"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "IBAN-like account identifier.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "international_account"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "fixture documentation",
+      "rationale": "Legacy bank reference identifies bank-account records.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "legacy_bank_ref"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Legacy operator account reference is an identifier despite no target mapping.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "legacy_operator"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "fixture documentation",
+      "rationale": "Boolean preference flag.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "preferred_account"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Currency attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "bank_account",
+      "source_field": "settlement_ccy"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "bank_account",
+      "evidence_type": "human semantic annotation",
+      "rationale": "SWIFT/BIC is a bank identifier.",
+      "role_label": "identifier",
+      "scenario_id": "bank_account",
+      "source_field": "swift_identifier"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Buyer id identifies an organization.",
+      "role_label": "identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "buyer_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Buyer display name.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "buyer_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "date"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Notice id identifies a public procurement record.",
+      "role_label": "identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Procurement initiation category.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "initiationType"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Language attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "language"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Open Contracting ID is an identifier even though no target is present.",
+      "role_label": "identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "ocid"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Classification description text.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_classification_description"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Classification id is a coded reference.",
+      "role_label": "identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_classification_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Classification scheme name/category.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_classification_scheme"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_contractPeriod_endDate"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_contractPeriod_startDate"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_datePublished"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Description text.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_description"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Tender id identifies a tender.",
+      "role_label": "identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Procurement category.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_mainProcurementCategory"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Procurement method category.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_procurementMethod"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Status category.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_status"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_tenderPeriod_endDate"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Tender title text.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_title"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Monetary amount.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_value_amount"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Currency attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "tender_value_currency"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Short publication title text.",
+      "role_label": "non_identifier",
+      "scenario_id": "contracts_finder_procurement_2026",
+      "source_field": "title"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Article number identifies a product/item.",
+      "role_label": "identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "article_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Caption/name text.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "catalogue_caption"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Person/team ownership text rather than row identifier.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "data_steward"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "effective_end"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "effective_start"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Unit of measure attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "inventory_measure"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Lifecycle status flag/category.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "lifecycle_block"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Product category family.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "merchandise_family"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Monetary amount.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "retail_amount"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Price-list display name.",
+      "role_label": "non_identifier",
+      "scenario_id": "erpnext_item_price",
+      "source_field": "tariff_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Currency code is an attribute/category here.",
+      "role_label": "non_identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "account_currency"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "IBAN is a stable bank account identifier.",
+      "role_label": "identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "bank_account_iban"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "fixture documentation",
+      "rationale": "Reference back to a customer record.",
+      "role_label": "identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "bank_customer_reference"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "fixture documentation",
+      "rationale": "Bank record key is explicitly a key-like reference.",
+      "role_label": "identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "bank_record_key"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Customer display name, not a stable key.",
+      "role_label": "non_identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "client_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Contact channel, not the primary identifier role for the row.",
+      "role_label": "non_identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "contact_email"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Legacy customer identifier used to distinguish source records.",
+      "role_label": "identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "legacy_client_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "fixture documentation",
+      "rationale": "Boolean preference flag.",
+      "role_label": "non_identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "marketing_opt_in"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Country/category value rather than entity identifier.",
+      "role_label": "non_identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "nation"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Contact channel, not the primary identifier role for the row.",
+      "role_label": "non_identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "telephone_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "fixture documentation",
+      "rationale": "Payment term code references a stable terms master value.",
+      "role_label": "identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "terms_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "generic_customer",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Tax registration number is a stable business identifier.",
+      "role_label": "identifier",
+      "scenario_id": "generic_customer",
+      "source_field": "vat_registration_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Brand names.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "brands"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Category labels.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "categories"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Public product barcode/code identifies a product.",
+      "role_label": "identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Country list attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "countries"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Generic product description.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "generic_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Long ingredient text.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "ingredients_text"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Nutrition classification.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "nova_group"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Nutrition category.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "nutrition_grades"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Container description/category.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "packaging"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Product display name.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "product_name"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Package quantity text.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "quantity"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "item_item_price",
+      "evidence_type": "fixture documentation",
+      "rationale": "Retailer names.",
+      "role_label": "non_identifier",
+      "scenario_id": "open_food_facts_products",
+      "source_field": "stores"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Quantity measure.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "confirmed_qty"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "confirmed_ship_on"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Customer purchase-order reference identifies an external order.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "customer_po_ref"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Sales channel category.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "distribution_channel"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Currency attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "document_currency"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Status category.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "fulfillment_state"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Audit marker is a no-target identifier-like lineage token.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "header_audit_marker"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Description text.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "item_description"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Line item number identifies a line within an order.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "legacy_line_item_no"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Sales order id identifies an order.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "legacy_sales_order_id"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Free text note.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "line_analyst_note"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Monetary amount.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "line_total_amount"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Material reference identifies the item.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "material_ref"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Migration batch label identifies a processing batch but has no mapping target.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "migration_batch_label"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Monetary amount.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "net_unit_amount"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "order_created_on"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Status category.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "order_state"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Quantity measure.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "ordered_qty"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Date attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "requested_ship_on"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Unit of measure attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "sales_uom"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Schedule sequence number identifies schedule lines.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "schedule_seq"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "sales_order_fulfillment",
+      "evidence_type": "fixture documentation",
+      "rationale": "Sold-to reference identifies the customer account.",
+      "role_label": "identifier",
+      "scenario_id": "sales_order_fulfillment",
+      "source_field": "sold_to_ref"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "fixture documentation",
+      "rationale": "Assignment key links supplier and company context.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "company_assignment_key"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "fixture documentation",
+      "rationale": "Company-specific supplier reference.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "company_vendor_reference"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Legacy user reference identifies the creator account even without a mapping target.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "legacy_created_by"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "fixture documentation",
+      "rationale": "Legal entity code is a stable coded identifier.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "legal_entity_code"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "fixture documentation",
+      "rationale": "Legacy vendor number identifies supplier records.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "old_vendor_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Low-cardinality category.",
+      "role_label": "non_identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "partner_type"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "fixture documentation",
+      "rationale": "Payment condition code references payment term logic.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "payment_condition"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Language attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "preferred_language"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "G/L account code references an account master.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "recon_gl_account"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "VAT number is a tax identifier.",
+      "role_label": "identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "vat_number"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Country attribute.",
+      "role_label": "non_identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "vendor_country"
+    },
+    {
+      "ambiguous_exclusion_reason": null,
+      "contract_family": "supplier_reference",
+      "evidence_type": "human semantic annotation",
+      "rationale": "Supplier legal name, not a key.",
+      "role_label": "non_identifier",
+      "scenario_id": "supplier_reference",
+      "source_field": "vendor_legal_name"
+    }
+  ],
+  "counts": {
+    "ambiguous_excluded": 0,
+    "identifier": 36,
+    "non_identifier": 71,
+    "total_annotations": 107
+  },
+  "development_only": true,
+  "experiment_id": "value_profile_identifier_detector_v1",
+  "label_definitions": {
+    "ambiguous_excluded": "Ambiguous role excluded from model training and evaluation.",
+    "identifier": "Column primarily carries a stable identifier, code, key, or reference role.",
+    "non_identifier": "Column primarily carries names, descriptions, dates, quantities, statuses, categories, amounts, or free text."
+  },
+  "sealed_or_external_data_used": false
+}

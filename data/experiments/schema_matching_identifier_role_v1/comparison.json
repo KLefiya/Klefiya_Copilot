@@ -1,0 +1,294 @@
+{
+  "ablation_feature_sets": {
+    "combined": [
+      "row_count",
+      "non_null_count",
+      "null_ratio",
+      "distinct_count",
+      "uniqueness_ratio",
+      "duplicate_ratio",
+      "normalized_value_frequency_entropy",
+      "mean_value_length",
+      "value_length_stddev",
+      "value_length_coefficient_of_variation",
+      "dominant_length_ratio",
+      "numeric_only_value_ratio",
+      "alphabetic_only_value_ratio",
+      "alphanumeric_mixed_ratio",
+      "digit_character_fraction",
+      "alphabetic_character_fraction",
+      "punctuation_character_fraction",
+      "whitespace_character_fraction",
+      "leading_zero_ratio",
+      "uuid_like_ratio",
+      "hex_like_ratio",
+      "fixed_width_ratio",
+      "dominant_normalized_pattern_ratio",
+      "normalized_pattern_entropy",
+      "integer_monotonicity_signal",
+      "integer_sequentiality_signal"
+    ],
+    "distribution_only": [
+      "row_count",
+      "non_null_count",
+      "null_ratio",
+      "distinct_count",
+      "uniqueness_ratio",
+      "duplicate_ratio",
+      "normalized_value_frequency_entropy"
+    ],
+    "pattern_only": [
+      "mean_value_length",
+      "value_length_stddev",
+      "value_length_coefficient_of_variation",
+      "dominant_length_ratio",
+      "numeric_only_value_ratio",
+      "alphabetic_only_value_ratio",
+      "alphanumeric_mixed_ratio",
+      "digit_character_fraction",
+      "alphabetic_character_fraction",
+      "punctuation_character_fraction",
+      "whitespace_character_fraction",
+      "leading_zero_ratio",
+      "uuid_like_ratio",
+      "hex_like_ratio",
+      "fixed_width_ratio",
+      "dominant_normalized_pattern_ratio",
+      "normalized_pattern_entropy",
+      "integer_monotonicity_signal",
+      "integer_sequentiality_signal"
+    ]
+  },
+  "case_counts": {
+    "ambiguous_excluded": 0,
+    "contract_family_count": 5,
+    "identifier": 36,
+    "modeled_cases": 107,
+    "non_identifier": 71,
+    "scenario_count": 7,
+    "total_annotations": 107
+  },
+  "conclusion": "This development-only experiment asks whether value profiles can identify identifier-role columns. It is not full schema matching, not V5 integration, and not external or sealed generalization evidence.",
+  "development_only": true,
+  "experiment_id": "value_profile_identifier_detector_v1",
+  "pooled_metrics": {
+    "leave_one_contract_family_out": {
+      "constant_prevalence_baseline": {
+        "metrics": {
+          "accuracy": 0.6635514,
+          "average_precision": 0.26647225,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.23705461,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 36,
+            "fp": 0,
+            "tn": 71,
+            "tp": 0
+          },
+          "identifier_f1": null,
+          "identifier_precision": null,
+          "identifier_recall": 0.0,
+          "roc_auc": 0.28814554,
+          "specificity": 1.0
+        },
+        "prediction_count": 107
+      },
+      "simple_deterministic_heuristic": {
+        "metrics": {
+          "accuracy": 0.71028037,
+          "average_precision": 0.48992681,
+          "balanced_accuracy": 0.58313772,
+          "brier_score": 0.28971963,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 29,
+            "fp": 2,
+            "tn": 69,
+            "tp": 7
+          },
+          "identifier_f1": 0.31111111,
+          "identifier_precision": 0.77777778,
+          "identifier_recall": 0.19444444,
+          "roc_auc": 0.58313772,
+          "specificity": 0.97183099
+        },
+        "prediction_count": 107
+      },
+      "value_profile_logistic_combined": {
+        "metrics": {
+          "accuracy": 0.85046729,
+          "average_precision": 0.88826726,
+          "balanced_accuracy": 0.83255086,
+          "brier_score": 0.10647141,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 8,
+            "fp": 8,
+            "tn": 63,
+            "tp": 28
+          },
+          "identifier_f1": 0.77777778,
+          "identifier_precision": 0.77777778,
+          "identifier_recall": 0.77777778,
+          "roc_auc": 0.91627543,
+          "specificity": 0.88732394
+        },
+        "prediction_count": 107
+      },
+      "value_profile_logistic_distribution_only": {
+        "metrics": {
+          "accuracy": 0.62616822,
+          "average_precision": 0.43100151,
+          "balanced_accuracy": 0.58822379,
+          "brier_score": 0.20353929,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 19,
+            "fp": 21,
+            "tn": 50,
+            "tp": 17
+          },
+          "identifier_f1": 0.45945946,
+          "identifier_precision": 0.44736842,
+          "identifier_recall": 0.47222222,
+          "roc_auc": 0.64788732,
+          "specificity": 0.70422535
+        },
+        "prediction_count": 107
+      },
+      "value_profile_logistic_pattern_only": {
+        "metrics": {
+          "accuracy": 0.79439252,
+          "average_precision": 0.85788442,
+          "balanced_accuracy": 0.76975743,
+          "brier_score": 0.10746123,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 11,
+            "fp": 11,
+            "tn": 60,
+            "tp": 25
+          },
+          "identifier_f1": 0.69444444,
+          "identifier_precision": 0.69444444,
+          "identifier_recall": 0.69444444,
+          "roc_auc": 0.91901408,
+          "specificity": 0.84507042
+        },
+        "prediction_count": 107
+      }
+    },
+    "leave_one_scenario_out": {
+      "constant_prevalence_baseline": {
+        "metrics": {
+          "accuracy": 0.6635514,
+          "average_precision": 0.29809126,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.23297394,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 36,
+            "fp": 0,
+            "tn": 71,
+            "tp": 0
+          },
+          "identifier_f1": null,
+          "identifier_precision": null,
+          "identifier_recall": 0.0,
+          "roc_auc": 0.29831768,
+          "specificity": 1.0
+        },
+        "prediction_count": 107
+      },
+      "simple_deterministic_heuristic": {
+        "metrics": {
+          "accuracy": 0.71028037,
+          "average_precision": 0.60103411,
+          "balanced_accuracy": 0.58313772,
+          "brier_score": 0.28971963,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 29,
+            "fp": 2,
+            "tn": 69,
+            "tp": 7
+          },
+          "identifier_f1": 0.31111111,
+          "identifier_precision": 0.77777778,
+          "identifier_recall": 0.19444444,
+          "roc_auc": 0.58313772,
+          "specificity": 0.97183099
+        },
+        "prediction_count": 107
+      },
+      "value_profile_logistic_combined": {
+        "metrics": {
+          "accuracy": 0.8317757,
+          "average_precision": 0.86711953,
+          "balanced_accuracy": 0.81161972,
+          "brier_score": 0.11277546,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 9,
+            "fp": 9,
+            "tn": 62,
+            "tp": 27
+          },
+          "identifier_f1": 0.75,
+          "identifier_precision": 0.75,
+          "identifier_recall": 0.75,
+          "roc_auc": 0.9029734,
+          "specificity": 0.87323944
+        },
+        "prediction_count": 107
+      },
+      "value_profile_logistic_distribution_only": {
+        "metrics": {
+          "accuracy": 0.62616822,
+          "average_precision": 0.43222143,
+          "balanced_accuracy": 0.58822379,
+          "brier_score": 0.20403786,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 19,
+            "fp": 21,
+            "tn": 50,
+            "tp": 17
+          },
+          "identifier_f1": 0.45945946,
+          "identifier_precision": 0.44736842,
+          "identifier_recall": 0.47222222,
+          "roc_auc": 0.65062598,
+          "specificity": 0.70422535
+        },
+        "prediction_count": 107
+      },
+      "value_profile_logistic_pattern_only": {
+        "metrics": {
+          "accuracy": 0.79439252,
+          "average_precision": 0.86838176,
+          "balanced_accuracy": 0.76975743,
+          "brier_score": 0.10791121,
+          "case_count": 107,
+          "confusion_matrix": {
+            "fn": 11,
+            "fp": 11,
+            "tn": 60,
+            "tp": 25
+          },
+          "identifier_f1": 0.69444444,
+          "identifier_precision": 0.69444444,
+          "identifier_recall": 0.69444444,
+          "roc_auc": 0.92175274,
+          "specificity": 0.84507042
+        },
+        "prediction_count": 107
+      }
+    }
+  },
+  "production_promoted": false,
+  "ranking_integrated": false,
+  "sealed_holdout_validated": false,
+  "task": "header_blind_source_column_identifier_role_detection"
+}

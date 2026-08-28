@@ -1,0 +1,210 @@
+{
+  "contract_family_order": [
+    "bank_account",
+    "generic_customer",
+    "item_item_price",
+    "sales_order_fulfillment",
+    "supplier_reference"
+  ],
+  "experiment_id": "value_profile_identifier_detector_v1",
+  "leakage_controls": {
+    "feature_schema_contains_identity_or_ground_truth": false,
+    "field_level_random_split": false,
+    "fold_group_used_only_for_splitting": true,
+    "held_out_group_used_for_model_fit": false,
+    "held_out_group_used_for_scaler_fit": false
+  },
+  "leave_one_contract_family_out": [
+    {
+      "fold_id": "leave_one_contract_family__bank_account",
+      "held_out_case_count": 16,
+      "held_out_class_support": {
+        "identifier": 7,
+        "non_identifier": 9
+      },
+      "held_out_group": "bank_account",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 91,
+      "train_class_support": {
+        "identifier": 29,
+        "non_identifier": 62
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__generic_customer",
+      "held_out_case_count": 12,
+      "held_out_class_support": {
+        "identifier": 6,
+        "non_identifier": 6
+      },
+      "held_out_group": "generic_customer",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 95,
+      "train_class_support": {
+        "identifier": 30,
+        "non_identifier": 65
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__item_item_price",
+      "held_out_case_count": 22,
+      "held_out_class_support": {
+        "identifier": 2,
+        "non_identifier": 20
+      },
+      "held_out_group": "item_item_price",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 85,
+      "train_class_support": {
+        "identifier": 34,
+        "non_identifier": 51
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__sales_order_fulfillment",
+      "held_out_case_count": 45,
+      "held_out_class_support": {
+        "identifier": 13,
+        "non_identifier": 32
+      },
+      "held_out_group": "sales_order_fulfillment",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 62,
+      "train_class_support": {
+        "identifier": 23,
+        "non_identifier": 39
+      }
+    },
+    {
+      "fold_id": "leave_one_contract_family__supplier_reference",
+      "held_out_case_count": 12,
+      "held_out_class_support": {
+        "identifier": 8,
+        "non_identifier": 4
+      },
+      "held_out_group": "supplier_reference",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 95,
+      "train_class_support": {
+        "identifier": 28,
+        "non_identifier": 67
+      }
+    }
+  ],
+  "leave_one_scenario_out": [
+    {
+      "fold_id": "leave_one_scenario_id__generic_customer",
+      "held_out_case_count": 12,
+      "held_out_class_support": {
+        "identifier": 6,
+        "non_identifier": 6
+      },
+      "held_out_group": "generic_customer",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 95,
+      "train_class_support": {
+        "identifier": 30,
+        "non_identifier": 65
+      }
+    },
+    {
+      "fold_id": "leave_one_scenario_id__supplier_reference",
+      "held_out_case_count": 12,
+      "held_out_class_support": {
+        "identifier": 8,
+        "non_identifier": 4
+      },
+      "held_out_group": "supplier_reference",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 95,
+      "train_class_support": {
+        "identifier": 28,
+        "non_identifier": 67
+      }
+    },
+    {
+      "fold_id": "leave_one_scenario_id__erpnext_item_price",
+      "held_out_case_count": 10,
+      "held_out_class_support": {
+        "identifier": 1,
+        "non_identifier": 9
+      },
+      "held_out_group": "erpnext_item_price",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 97,
+      "train_class_support": {
+        "identifier": 35,
+        "non_identifier": 62
+      }
+    },
+    {
+      "fold_id": "leave_one_scenario_id__bank_account",
+      "held_out_case_count": 16,
+      "held_out_class_support": {
+        "identifier": 7,
+        "non_identifier": 9
+      },
+      "held_out_group": "bank_account",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 91,
+      "train_class_support": {
+        "identifier": 29,
+        "non_identifier": 62
+      }
+    },
+    {
+      "fold_id": "leave_one_scenario_id__sales_order_fulfillment",
+      "held_out_case_count": 22,
+      "held_out_class_support": {
+        "identifier": 8,
+        "non_identifier": 14
+      },
+      "held_out_group": "sales_order_fulfillment",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 85,
+      "train_class_support": {
+        "identifier": 28,
+        "non_identifier": 57
+      }
+    },
+    {
+      "fold_id": "leave_one_scenario_id__open_food_facts_products",
+      "held_out_case_count": 12,
+      "held_out_class_support": {
+        "identifier": 1,
+        "non_identifier": 11
+      },
+      "held_out_group": "open_food_facts_products",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 95,
+      "train_class_support": {
+        "identifier": 35,
+        "non_identifier": 60
+      }
+    },
+    {
+      "fold_id": "leave_one_scenario_id__contracts_finder_procurement_2026",
+      "held_out_case_count": 23,
+      "held_out_class_support": {
+        "identifier": 5,
+        "non_identifier": 18
+      },
+      "held_out_group": "contracts_finder_procurement_2026",
+      "held_out_used_for_scaler_or_model_fit": false,
+      "train_case_count": 84,
+      "train_class_support": {
+        "identifier": 31,
+        "non_identifier": 53
+      }
+    }
+  ],
+  "scenario_order": [
+    "generic_customer",
+    "supplier_reference",
+    "erpnext_item_price",
+    "bank_account",
+    "sales_order_fulfillment",
+    "open_food_facts_products",
+    "contracts_finder_procurement_2026"
+  ]
+}

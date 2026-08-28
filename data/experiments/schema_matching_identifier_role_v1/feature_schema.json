@@ -1,0 +1,327 @@
+{
+  "ablation_feature_sets": {
+    "combined": [
+      "row_count",
+      "non_null_count",
+      "null_ratio",
+      "distinct_count",
+      "uniqueness_ratio",
+      "duplicate_ratio",
+      "normalized_value_frequency_entropy",
+      "mean_value_length",
+      "value_length_stddev",
+      "value_length_coefficient_of_variation",
+      "dominant_length_ratio",
+      "numeric_only_value_ratio",
+      "alphabetic_only_value_ratio",
+      "alphanumeric_mixed_ratio",
+      "digit_character_fraction",
+      "alphabetic_character_fraction",
+      "punctuation_character_fraction",
+      "whitespace_character_fraction",
+      "leading_zero_ratio",
+      "uuid_like_ratio",
+      "hex_like_ratio",
+      "fixed_width_ratio",
+      "dominant_normalized_pattern_ratio",
+      "normalized_pattern_entropy",
+      "integer_monotonicity_signal",
+      "integer_sequentiality_signal"
+    ],
+    "distribution_only": [
+      "row_count",
+      "non_null_count",
+      "null_ratio",
+      "distinct_count",
+      "uniqueness_ratio",
+      "duplicate_ratio",
+      "normalized_value_frequency_entropy"
+    ],
+    "pattern_only": [
+      "mean_value_length",
+      "value_length_stddev",
+      "value_length_coefficient_of_variation",
+      "dominant_length_ratio",
+      "numeric_only_value_ratio",
+      "alphabetic_only_value_ratio",
+      "alphanumeric_mixed_ratio",
+      "digit_character_fraction",
+      "alphabetic_character_fraction",
+      "punctuation_character_fraction",
+      "whitespace_character_fraction",
+      "leading_zero_ratio",
+      "uuid_like_ratio",
+      "hex_like_ratio",
+      "fixed_width_ratio",
+      "dominant_normalized_pattern_ratio",
+      "normalized_pattern_entropy",
+      "integer_monotonicity_signal",
+      "integer_sequentiality_signal"
+    ]
+  },
+  "experiment_id": "value_profile_identifier_detector_v1",
+  "feature_order": [
+    "row_count",
+    "non_null_count",
+    "null_ratio",
+    "distinct_count",
+    "uniqueness_ratio",
+    "duplicate_ratio",
+    "normalized_value_frequency_entropy",
+    "mean_value_length",
+    "value_length_stddev",
+    "value_length_coefficient_of_variation",
+    "dominant_length_ratio",
+    "numeric_only_value_ratio",
+    "alphabetic_only_value_ratio",
+    "alphanumeric_mixed_ratio",
+    "digit_character_fraction",
+    "alphabetic_character_fraction",
+    "punctuation_character_fraction",
+    "whitespace_character_fraction",
+    "leading_zero_ratio",
+    "uuid_like_ratio",
+    "hex_like_ratio",
+    "fixed_width_ratio",
+    "dominant_normalized_pattern_ratio",
+    "normalized_pattern_entropy",
+    "integer_monotonicity_signal",
+    "integer_sequentiality_signal"
+  ],
+  "features": [
+    {
+      "formula": "number of rows in the source column",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "row_count",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "count of non-empty string values",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "non_null_count",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "empty value count / row count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "null_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "count of distinct non-empty values",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "distinct_count",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "distinct non-empty values / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "uniqueness_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "1 - uniqueness ratio",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "duplicate_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "Shannon entropy over value frequencies divided by log2(distinct value count)",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "normalized_value_frequency_entropy",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "mean character length of non-empty values",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "mean_value_length",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "population standard deviation of non-empty value lengths",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "value_length_stddev",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "length stddev / mean length",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "value_length_coefficient_of_variation",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "most common non-empty value length frequency / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "dominant_length_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "non-empty values matching [0-9]+ / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "numeric_only_value_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "non-empty values matching [A-Za-z]+ / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "alphabetic_only_value_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "non-empty alphanumeric values containing at least one letter and one digit / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "alphanumeric_mixed_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "digit characters / all non-empty value characters",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "digit_character_fraction",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "alphabetic characters / all non-empty value characters",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "alphabetic_character_fraction",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "non-alnum non-space characters / all non-empty value characters",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "punctuation_character_fraction",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "whitespace characters / all non-empty value characters",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "whitespace_character_fraction",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "values beginning with 0 and containing a digit / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "leading_zero_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "UUID-shaped values / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "uuid_like_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "long hex-like mixed letter/digit values / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "hex_like_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "most common value length frequency / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "fixed_width_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "most common compressed value pattern frequency / non-empty count",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "dominant_normalized_pattern_ratio",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "Shannon entropy over compressed value patterns divided by log2(distinct pattern count)",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "normalized_pattern_entropy",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "share of adjacent numeric-only values that increase",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "integer_monotonicity_signal",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    },
+    {
+      "formula": "share of adjacent numeric-only differences equal to the dominant difference",
+      "leakage_rationale": "Computed from column values only and stored as aggregate numeric statistics. The feature matrix excludes source field names, target identity, scenario id, contract family, case id, mapping ground truth, mapping scores, ranks, and labels.",
+      "name": "integer_sequentiality_signal",
+      "requires_scaling": true,
+      "source": "CSV column value distribution only",
+      "type": "numeric"
+    }
+  ],
+  "forbidden_model_inputs": [
+    "field",
+    "name",
+    "source",
+    "target",
+    "path",
+    "scenario",
+    "contract",
+    "family",
+    "case",
+    "expected",
+    "ground",
+    "truth",
+    "label",
+    "rank",
+    "score"
+  ],
+  "model_input_boundary": "header_blind_value_profile_only",
+  "pattern_normalization": {
+    "compression": "consecutive identical pattern classes are compressed for distribution features",
+    "digit": "9",
+    "lowercase_letter": "a",
+    "other_symbol": "x",
+    "uppercase_letter": "A"
+  },
+  "raw_values_written_to_artifacts": false
+}

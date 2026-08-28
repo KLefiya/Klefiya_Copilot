@@ -1,0 +1,557 @@
+{
+  "experiment_id": "value_profile_identifier_detector_v1",
+  "leave_one_contract_family_out": {
+    "false_negatives": [
+      {
+        "case_id": "bank_account__legacy_operator",
+        "contract_family": "bank_account",
+        "probability": 0.05970323,
+        "scenario_id": "bank_account",
+        "source_field": "legacy_operator"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__buyer_id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.10893855,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "buyer_id"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.07203369,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "id"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__ocid",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.38318882,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "ocid"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.43531327,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_classification_id"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.05699001,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_id"
+      },
+      {
+        "case_id": "supplier_reference__company_vendor_reference",
+        "contract_family": "supplier_reference",
+        "probability": 0.46405092,
+        "scenario_id": "supplier_reference",
+        "source_field": "company_vendor_reference"
+      },
+      {
+        "case_id": "supplier_reference__old_vendor_number",
+        "contract_family": "supplier_reference",
+        "probability": 0.46405092,
+        "scenario_id": "supplier_reference",
+        "source_field": "old_vendor_number"
+      }
+    ],
+    "false_positives": [
+      {
+        "case_id": "bank_account__activation_date",
+        "contract_family": "bank_account",
+        "probability": 0.56761391,
+        "scenario_id": "bank_account",
+        "source_field": "activation_date"
+      },
+      {
+        "case_id": "bank_account__closure_date",
+        "contract_family": "bank_account",
+        "probability": 0.56761391,
+        "scenario_id": "bank_account",
+        "source_field": "closure_date"
+      },
+      {
+        "case_id": "erpnext_item_price__effective_start",
+        "contract_family": "item_item_price",
+        "probability": 0.53341652,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "effective_start"
+      },
+      {
+        "case_id": "generic_customer__contact_email",
+        "contract_family": "generic_customer",
+        "probability": 0.58439323,
+        "scenario_id": "generic_customer",
+        "source_field": "contact_email"
+      },
+      {
+        "case_id": "sales_order_fulfillment__confirmed_ship_on",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.61753679,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "confirmed_ship_on"
+      },
+      {
+        "case_id": "sales_order_fulfillment__order_created_on",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.61753679,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "order_created_on"
+      },
+      {
+        "case_id": "sales_order_fulfillment__requested_ship_on",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.61753679,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "requested_ship_on"
+      },
+      {
+        "case_id": "supplier_reference__partner_type",
+        "contract_family": "supplier_reference",
+        "probability": 0.60147213,
+        "scenario_id": "supplier_reference",
+        "source_field": "partner_type"
+      }
+    ],
+    "heuristic_logistic_disagreements": [
+      {
+        "case_id": "bank_account__activation_date",
+        "contract_family": "bank_account",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "bank_account",
+        "source_field": "activation_date",
+        "true_label": 0
+      },
+      {
+        "case_id": "bank_account__closure_date",
+        "contract_family": "bank_account",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "bank_account",
+        "source_field": "closure_date",
+        "true_label": 0
+      },
+      {
+        "case_id": "bank_account__domestic_account",
+        "contract_family": "bank_account",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "bank_account",
+        "source_field": "domestic_account",
+        "true_label": 1
+      },
+      {
+        "case_id": "bank_account__institution_ref",
+        "contract_family": "bank_account",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "bank_account",
+        "source_field": "institution_ref",
+        "true_label": 1
+      },
+      {
+        "case_id": "bank_account__legacy_bank_ref",
+        "contract_family": "bank_account",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "bank_account",
+        "source_field": "legacy_bank_ref",
+        "true_label": 1
+      },
+      {
+        "case_id": "erpnext_item_price__article_number",
+        "contract_family": "item_item_price",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "article_number",
+        "true_label": 1
+      },
+      {
+        "case_id": "erpnext_item_price__effective_start",
+        "contract_family": "item_item_price",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "effective_start",
+        "true_label": 0
+      },
+      {
+        "case_id": "generic_customer__bank_customer_reference",
+        "contract_family": "generic_customer",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "bank_customer_reference",
+        "true_label": 1
+      },
+      {
+        "case_id": "generic_customer__bank_record_key",
+        "contract_family": "generic_customer",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "bank_record_key",
+        "true_label": 1
+      },
+      {
+        "case_id": "generic_customer__contact_email",
+        "contract_family": "generic_customer",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "contact_email",
+        "true_label": 0
+      },
+      {
+        "case_id": "generic_customer__legacy_client_id",
+        "contract_family": "generic_customer",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "legacy_client_id",
+        "true_label": 1
+      },
+      {
+        "case_id": "generic_customer__terms_code",
+        "contract_family": "generic_customer",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "terms_code",
+        "true_label": 1
+      },
+      {
+        "case_id": "generic_customer__vat_registration_number",
+        "contract_family": "generic_customer",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "generic_customer",
+        "source_field": "vat_registration_number",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__confirmed_qty",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 1,
+        "logistic_prediction": 0,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "confirmed_qty",
+        "true_label": 0
+      },
+      {
+        "case_id": "sales_order_fulfillment__confirmed_ship_on",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "confirmed_ship_on",
+        "true_label": 0
+      },
+      {
+        "case_id": "sales_order_fulfillment__customer_po_ref",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "customer_po_ref",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__header_audit_marker",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "header_audit_marker",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__legacy_line_item_no",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "legacy_line_item_no",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__legacy_sales_order_id",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "legacy_sales_order_id",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__material_ref",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "material_ref",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__migration_batch_label",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "migration_batch_label",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__order_created_on",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "order_created_on",
+        "true_label": 0
+      },
+      {
+        "case_id": "sales_order_fulfillment__ordered_qty",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 1,
+        "logistic_prediction": 0,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "ordered_qty",
+        "true_label": 0
+      },
+      {
+        "case_id": "sales_order_fulfillment__requested_ship_on",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "requested_ship_on",
+        "true_label": 0
+      },
+      {
+        "case_id": "sales_order_fulfillment__schedule_seq",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "schedule_seq",
+        "true_label": 1
+      },
+      {
+        "case_id": "sales_order_fulfillment__sold_to_ref",
+        "contract_family": "sales_order_fulfillment",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "sold_to_ref",
+        "true_label": 1
+      },
+      {
+        "case_id": "supplier_reference__company_assignment_key",
+        "contract_family": "supplier_reference",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "company_assignment_key",
+        "true_label": 1
+      },
+      {
+        "case_id": "supplier_reference__legacy_created_by",
+        "contract_family": "supplier_reference",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "legacy_created_by",
+        "true_label": 1
+      },
+      {
+        "case_id": "supplier_reference__partner_type",
+        "contract_family": "supplier_reference",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "partner_type",
+        "true_label": 0
+      },
+      {
+        "case_id": "supplier_reference__payment_condition",
+        "contract_family": "supplier_reference",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "payment_condition",
+        "true_label": 1
+      },
+      {
+        "case_id": "supplier_reference__vat_number",
+        "contract_family": "supplier_reference",
+        "heuristic_prediction": 0,
+        "logistic_prediction": 1,
+        "scenario_id": "supplier_reference",
+        "source_field": "vat_number",
+        "true_label": 1
+      }
+    ]
+  },
+  "leave_one_scenario_out": {
+    "false_negatives": [
+      {
+        "case_id": "bank_account__legacy_operator",
+        "contract_family": "bank_account",
+        "probability": 0.05970323,
+        "scenario_id": "bank_account",
+        "source_field": "legacy_operator"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__buyer_id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.07105782,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "buyer_id"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.06210456,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "id"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__ocid",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.37646553,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "ocid"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_classification_id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.26224564,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_classification_id"
+      },
+      {
+        "case_id": "contracts_finder_procurement_2026__tender_id",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.02653033,
+        "scenario_id": "contracts_finder_procurement_2026",
+        "source_field": "tender_id"
+      },
+      {
+        "case_id": "sales_order_fulfillment__schedule_seq",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.48255574,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "schedule_seq"
+      },
+      {
+        "case_id": "supplier_reference__company_vendor_reference",
+        "contract_family": "supplier_reference",
+        "probability": 0.46405092,
+        "scenario_id": "supplier_reference",
+        "source_field": "company_vendor_reference"
+      },
+      {
+        "case_id": "supplier_reference__old_vendor_number",
+        "contract_family": "supplier_reference",
+        "probability": 0.46405092,
+        "scenario_id": "supplier_reference",
+        "source_field": "old_vendor_number"
+      }
+    ],
+    "false_positives": [
+      {
+        "case_id": "bank_account__activation_date",
+        "contract_family": "bank_account",
+        "probability": 0.56761391,
+        "scenario_id": "bank_account",
+        "source_field": "activation_date"
+      },
+      {
+        "case_id": "bank_account__closure_date",
+        "contract_family": "bank_account",
+        "probability": 0.56761391,
+        "scenario_id": "bank_account",
+        "source_field": "closure_date"
+      },
+      {
+        "case_id": "erpnext_item_price__effective_start",
+        "contract_family": "item_item_price",
+        "probability": 0.54761221,
+        "scenario_id": "erpnext_item_price",
+        "source_field": "effective_start"
+      },
+      {
+        "case_id": "generic_customer__contact_email",
+        "contract_family": "generic_customer",
+        "probability": 0.58439323,
+        "scenario_id": "generic_customer",
+        "source_field": "contact_email"
+      },
+      {
+        "case_id": "sales_order_fulfillment__confirmed_qty",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.52867525,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "confirmed_qty"
+      },
+      {
+        "case_id": "sales_order_fulfillment__confirmed_ship_on",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.61819761,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "confirmed_ship_on"
+      },
+      {
+        "case_id": "sales_order_fulfillment__order_created_on",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.61819761,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "order_created_on"
+      },
+      {
+        "case_id": "sales_order_fulfillment__requested_ship_on",
+        "contract_family": "sales_order_fulfillment",
+        "probability": 0.61819761,
+        "scenario_id": "sales_order_fulfillment",
+        "source_field": "requested_ship_on"
+      },
+      {
+        "case_id": "supplier_reference__partner_type",
+        "contract_family": "supplier_reference",
+        "probability": 0.60147213,
+        "scenario_id": "supplier_reference",
+        "source_field": "partner_type"
+      }
+    ]
+  },
+  "per_contract_family_failure_counts": {
+    "bank_account": {
+      "false_negative": 1,
+      "false_positive": 2
+    },
+    "generic_customer": {
+      "false_negative": 0,
+      "false_positive": 1
+    },
+    "item_item_price": {
+      "false_negative": 0,
+      "false_positive": 1
+    },
+    "sales_order_fulfillment": {
+      "false_negative": 5,
+      "false_positive": 3
+    },
+    "supplier_reference": {
+      "false_negative": 2,
+      "false_positive": 1
+    }
+  },
+  "privacy": "Contains scenario/case/source-field identifiers for traceability, but no raw column values."
+}
