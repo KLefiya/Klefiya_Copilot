@@ -1,0 +1,11 @@
+{
+  "artifact_type": "fdic_bankfind_locations_first_evaluation_attempt",
+  "benchmark_id": "fdic_bankfind_locations_v1",
+  "calibration_model_sha": "73b6597a8ee1fb81555c189bfd01aa0a39115251824ce4b1ce7737d5b1bf70b2",
+  "git_head": "620c49bbd22a6196b8b1eb7ee508513b1053d670",
+  "ground_truth_sha": "9c8a1417176f1ca4b60b910d2afbd3169df44b834105265cea71933fab8929f9",
+  "protocol_sha": "9ee72d856ee331a6dae25328e2d117c645ec46e17497beccb1fb4acf8a59df5f",
+  "runner_sha": "cca0d6b184698b4a8c8441a33656ee6b7e90edc48b6a4c5eb50b840b15e06568",
+  "source_sha": "775dbdac1a7c02bad64b8e1f4af117e227b43bf85d3e6e15e26db10c3f915da1",
+  "status": "started"
+}

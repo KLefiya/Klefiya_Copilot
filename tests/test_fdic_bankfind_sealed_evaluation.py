@@ -20,6 +20,10 @@ from scripts import evaluate_fdic_bankfind_sealed_benchmark as runner
 
 REAL_ATTEMPT = PROJECT_ROOT / "data/benchmarks/sealed/fdic_bankfind_locations_v1/first_evaluation_attempt.json"
 REAL_RESULT = PROJECT_ROOT / "data/benchmarks/sealed/fdic_bankfind_locations_v1/first_evaluation.json"
+REAL_ATTEMPT_SHA = "62d35cda6b50aab0bcf98863d0184f884b8be9aa5a72646166146378b9b1dadd"
+REAL_RESULT_SHA = "504c9206b31a5016ccc8631c474a5d85eb52e60663046e87f5d0cfcc7b2ecfed"
+REAL_RUNNER_SHA = "cca0d6b184698b4a8c8441a33656ee6b7e90edc48b6a4c5eb50b840b15e06568"
+REAL_HEAD = "620c49bbd22a6196b8b1eb7ee508513b1053d670"
 
 
 def _sha(path: Path) -> str:
@@ -272,33 +276,27 @@ def _successful_callback(paths: runner.SealedPaths, context: dict, marker: dict)
 
 
 class FdicBankFindSealedEvaluationRunnerTest(unittest.TestCase):
-    def test_validate_only_cli_succeeds_and_writes_nothing(self) -> None:
-        before = {path: path.exists() for path in (REAL_ATTEMPT, REAL_RESULT)}
-        result = subprocess.run(
-            [sys.executable, "-u", "scripts/evaluate_fdic_bankfind_sealed_benchmark.py", "--validate-only"],
-            cwd=PROJECT_ROOT,
-            check=False,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-        self.assertIn("validated_without_model_or_predictions", result.stdout)
-        self.assertNotIn("SentenceTransformer", result.stdout + result.stderr)
-        self.assertEqual({path: path.exists() for path in (REAL_ATTEMPT, REAL_RESULT)}, before)
-
-    def test_validate_only_cli_succeeds_from_external_cwd(self) -> None:
+    def test_validate_only_succeeds_and_writes_nothing_on_temporary_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            result = subprocess.run(
-                [sys.executable, "-u", str(PROJECT_ROOT / "scripts/evaluate_fdic_bankfind_sealed_benchmark.py"), "--validate-only"],
-                cwd=temp_dir,
-                check=False,
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-        self.assertIn("validated_without_model_or_predictions", result.stdout)
+            fixture = TempSealedFixture(Path(temp_dir))
+            before = {path: path.exists() for path in (fixture.attempt, fixture.result)}
+            summary = runner.validate_only(fixture.paths, fixture.expectations)
+            self.assertEqual(summary["status"], "validated_without_model_or_predictions")
+            self.assertEqual(summary["source_shape"], {"rows": 128, "columns": 14})
+            self.assertTrue(summary["attempt_marker_absent"])
+            self.assertTrue(summary["result_absent"])
+            self.assertEqual({path: path.exists() for path in (fixture.attempt, fixture.result)}, before)
+
+    def test_validate_only_import_bootstrap_is_independent_of_current_working_directory(self) -> None:
+        original_cwd = Path.cwd()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture = TempSealedFixture(Path(temp_dir) / "repo")
+            try:
+                os.chdir(temp_dir)
+                summary = runner.validate_only(fixture.paths, fixture.expectations)
+            finally:
+                os.chdir(original_cwd)
+        self.assertEqual(summary["status"], "validated_without_model_or_predictions")
 
     def test_validate_only_and_execute_are_mutually_exclusive(self) -> None:
         result = subprocess.run(
@@ -553,9 +551,73 @@ class FdicBankFindSealedEvaluationRunnerTest(unittest.TestCase):
             synthetic_local_path = "C:" + "\\" + "Users" + "\\example"
             runner.validate_result_schema({**payload, "note": synthetic_local_path})
 
-    def test_real_sealed_fixture_still_has_no_attempt_or_result(self) -> None:
-        self.assertFalse(REAL_ATTEMPT.exists())
-        self.assertFalse(REAL_RESULT.exists())
+    def test_real_sealed_fixture_records_frozen_marker_and_result(self) -> None:
+        self.assertTrue(REAL_ATTEMPT.exists())
+        self.assertTrue(REAL_RESULT.exists())
+        self.assertEqual(_sha(REAL_ATTEMPT), REAL_ATTEMPT_SHA)
+        self.assertEqual(_sha(REAL_RESULT), REAL_RESULT_SHA)
+
+        marker = json.loads(REAL_ATTEMPT.read_text(encoding="utf-8"))
+        result = json.loads(REAL_RESULT.read_text(encoding="utf-8"))
+        self.assertEqual(marker["status"], "started")
+        self.assertEqual(marker["git_head"], REAL_HEAD)
+        self.assertEqual(marker["runner_sha"], REAL_RUNNER_SHA)
+        self.assertEqual(marker["protocol_sha"], runner.PROTOCOL_SHA)
+        self.assertEqual(result["git_head"], REAL_HEAD)
+        self.assertEqual(result["runner"]["raw_sha256"], REAL_RUNNER_SHA)
+        self.assertEqual(result["frozen_input_shas"]["protocol"], runner.PROTOCOL_SHA)
+        self.assertEqual(result["attempt_marker_sha256"], REAL_ATTEMPT_SHA)
+        self.assertFalse(result["production_promoted"])
+        self.assertFalse(result["post_unseal_tuning_performed"])
+
+    def test_real_result_counts_metrics_and_privacy_are_frozen(self) -> None:
+        result = json.loads(REAL_RESULT.read_text(encoding="utf-8"))
+        records = result["per_case_audit_records"]
+        self.assertEqual(result["corpus_counts"], {
+            "case_count": 14,
+            "expected_target_link_count": 3,
+            "multi_target_case_count": 0,
+            "no_target_case_count": 11,
+            "single_target_case_count": 3,
+            "target_bearing_case_count": 3,
+        })
+        self.assertEqual(len(records), 14)
+        self.assertEqual(len({record["case_id"] for record in records}), 14)
+        for metrics in result["ranking_metrics"].values():
+            self.assertEqual(metrics["single_target_top1_accuracy"]["numerator"], 2)
+            self.assertEqual(metrics["single_target_top1_accuracy"]["denominator"], 3)
+            self.assertEqual(metrics["target_link_recall_at_3"]["numerator"], 2)
+            self.assertEqual(metrics["no_target_accuracy"]["numerator"], 11)
+            self.assertEqual(metrics["no_target_accuracy"]["denominator"], 11)
+            self.assertIsNone(metrics["multi_target_full_coverage_at_3"]["value"])
+        for metrics in result["selective_policy_counts"].values():
+            self.assertEqual(metrics["accepted_count"], 0)
+            self.assertEqual(metrics["review_count"], 14)
+            self.assertEqual(metrics["accepted_incorrect_count"], 0)
+            self.assertIsNone(metrics["accepted_precision"])
+            self.assertEqual(metrics["no_target_accepted_count"], 0)
+            self.assertEqual(metrics["wrong_target_accepted_count"], 0)
+
+        result_text = REAL_RESULT.read_text(encoding="utf-8")
+        self.assertNotIn("NaN", result_text)
+        self.assertNotIn("Infinity", result_text)
+        self.assertNotIn("timestamp", result_text.lower())
+        self.assertNotIn("C:" + "\\\\", result_text)
+        self.assertNotIn("/Users/", result_text)
+        self.assertNotIn("/home/", result_text)
+        with runner.default_paths().source_path.open(newline="", encoding="utf-8") as handle:
+            source_values = {
+                value
+                for row in csv.DictReader(handle)
+                for value in row.values()
+                if value and len(value) >= 8 and not value.replace("/", "").isdigit()
+            }
+        for value in source_values:
+            self.assertNotIn(value, result_text)
+
+    def test_real_runner_rejects_second_execute_before_any_new_attempt(self) -> None:
+        with self.assertRaises(runner.FdicSealedEvaluationError):
+            runner.validate_frozen_inputs(runner.default_paths(), runner.default_expectations())
 
     def test_runner_has_no_hardcoded_user_path_or_custom_output_option(self) -> None:
         source = (PROJECT_ROOT / "scripts/evaluate_fdic_bankfind_sealed_benchmark.py").read_text(encoding="utf-8")

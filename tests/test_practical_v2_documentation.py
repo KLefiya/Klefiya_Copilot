@@ -214,6 +214,13 @@ class PracticalV2DocumentationTests(unittest.TestCase):
             "contract-family-out development evidence",
             "not sealed holdout evidence",
             "no runtime promotion has been made",
+            "FDIC sealed banking evidence",
+            "first sealed result",
+            "Baseline, V4, and V5 ranking all scored Top-1 2/3",
+            "accepted 0/14 cases",
+            "all 11 no-target cases were safely rejected",
+            "development coverage improvement did not reproduce",
+            "negative evidence, not a production promotion",
         ]:
             self.assertIn(phrase, self.readme)
 

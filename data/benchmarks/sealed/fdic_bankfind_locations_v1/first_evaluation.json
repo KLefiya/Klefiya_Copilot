@@ -1,0 +1,596 @@
+{
+  "artifact_type": "fdic_bankfind_locations_first_evaluation",
+  "attempt_marker_sha256": "62d35cda6b50aab0bcf98863d0184f884b8be9aa5a72646166146378b9b1dadd",
+  "attempt_marker_status": "started",
+  "benchmark_id": "fdic_bankfind_locations_v1",
+  "calibration_metrics": {
+    "multifeature_calibrator_target_precision_95": {
+      "aurc": 0.69858633,
+      "average_precision": 0.66666667,
+      "brier_score": 0.11682946,
+      "ece_5_bin": {
+        "bins": [
+          {
+            "accuracy": 0.0,
+            "average_confidence": 0.15922422,
+            "bin": 1,
+            "count": 4,
+            "lower_inclusive": 0.0,
+            "upper_exclusive": 0.2,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": 0.125,
+            "average_confidence": 0.28084488,
+            "bin": 2,
+            "count": 8,
+            "lower_inclusive": 0.2,
+            "upper_exclusive": 0.4,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": 0.5,
+            "average_confidence": 0.51607578,
+            "bin": 3,
+            "count": 2,
+            "lower_inclusive": 0.4,
+            "upper_exclusive": 0.6,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": null,
+            "average_confidence": null,
+            "bin": 4,
+            "count": 0,
+            "lower_inclusive": 0.6,
+            "upper_exclusive": 0.8,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": null,
+            "average_confidence": null,
+            "bin": 5,
+            "count": 0,
+            "lower_inclusive": 0.8,
+            "upper_exclusive": null,
+            "upper_inclusive": 1.0
+          }
+        ],
+        "scheme": "five_fixed_probability_bins_width_0.2",
+        "value": 0.13684339
+      },
+      "log_loss": 0.39595324,
+      "roc_auc": 0.83333333
+    },
+    "score_only_calibrator_target_precision_95": {
+      "aurc": 0.77001491,
+      "average_precision": 0.41666667,
+      "brier_score": 0.15636489,
+      "ece_5_bin": {
+        "bins": [
+          {
+            "accuracy": null,
+            "average_confidence": null,
+            "bin": 1,
+            "count": 0,
+            "lower_inclusive": 0.0,
+            "upper_exclusive": 0.2,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": 0.11111111,
+            "average_confidence": 0.28371457,
+            "bin": 2,
+            "count": 9,
+            "lower_inclusive": 0.2,
+            "upper_exclusive": 0.4,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": 0.2,
+            "average_confidence": 0.50221645,
+            "bin": 3,
+            "count": 5,
+            "lower_inclusive": 0.4,
+            "upper_exclusive": 0.6,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": null,
+            "average_confidence": null,
+            "bin": 4,
+            "count": 0,
+            "lower_inclusive": 0.6,
+            "upper_exclusive": 0.8,
+            "upper_inclusive": null
+          },
+          {
+            "accuracy": null,
+            "average_confidence": null,
+            "bin": 5,
+            "count": 0,
+            "lower_inclusive": 0.8,
+            "upper_exclusive": null,
+            "upper_inclusive": 1.0
+          }
+        ],
+        "scheme": "five_fixed_probability_bins_width_0.2",
+        "value": 0.21889381
+      },
+      "log_loss": 0.49163319,
+      "roc_auc": 0.79166667
+    }
+  },
+  "candidate_roles": {
+    "primary_decision_comparison": [
+      "existing_v5_policy",
+      "score_only_calibrator_target_precision_95"
+    ],
+    "secondary_diagnostic_limits": [
+      "precision_tiered_v4 is not the current promotion candidate.",
+      "multifeature_calibrator_target_precision_95 is not the current promotion candidate.",
+      "Secondary diagnostic results must not override the primary decision rule."
+    ],
+    "secondary_diagnostics": [
+      "baseline",
+      "precision_tiered_v4",
+      "precision_tiered_v5",
+      "multifeature_calibrator_target_precision_95"
+    ]
+  },
+  "corpus_counts": {
+    "case_count": 14,
+    "expected_target_link_count": 3,
+    "multi_target_case_count": 0,
+    "no_target_case_count": 11,
+    "single_target_case_count": 3,
+    "target_bearing_case_count": 3
+  },
+  "failure_categories": {
+    "confident_wrong_target_acceptance": [],
+    "correct_prediction_unnecessarily_rejected": [
+      "fdic_bankfind_locations__NAME",
+      "fdic_bankfind_locations__OFFNAME"
+    ],
+    "no_target_false_acceptance": []
+  },
+  "first_evaluation_attempt_marker": "data/benchmarks/sealed/fdic_bankfind_locations_v1/first_evaluation_attempt.json",
+  "frozen_input_shas": {
+    "calibration_development_model": "73b6597a8ee1fb81555c189bfd01aa0a39115251824ce4b1ce7737d5b1bf70b2",
+    "fixture_lock": "27ce0cde37ff8347211d8386a6d78fb212ddd81d6b5847496e40287ae3d2e2f1",
+    "ground_truth": "9c8a1417176f1ca4b60b910d2afbd3169df44b834105265cea71933fab8929f9",
+    "protocol": "9ee72d856ee331a6dae25328e2d117c645ec46e17497beccb1fb4acf8a59df5f",
+    "source_metadata": "26046319da20dab17d4a0e73d7e35404dd1fc2049131d027cf80685eb80d5acf",
+    "source_sample": "775dbdac1a7c02bad64b8e1f4af117e227b43bf85d3e6e15e26db10c3f915da1",
+    "target_contract": "5a6552fc04358c7c25f03225ed55a00f2655a9d46a53e144ad005541b9ee0e08"
+  },
+  "git_head": "620c49bbd22a6196b8b1eb7ee508513b1053d670",
+  "per_case_audit_records": [
+    {
+      "case_id": "fdic_bankfind_locations__CERT",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.20612213,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.29416372,
+      "score_only_threshold": 0.68142199,
+      "source_field": "CERT",
+      "top1_target": "bank_account.primary_flag"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__CITY",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.23004959,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.33043269,
+      "score_only_threshold": 0.68142199,
+      "source_field": "CITY",
+      "top1_target": "bank_branch.country_code"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__COUNTY",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.33915555,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.40249331,
+      "score_only_threshold": 0.68142199,
+      "source_field": "COUNTY",
+      "top1_target": "bank_account.country_code"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__MAINOFF",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.36770542,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.51990896,
+      "score_only_threshold": 0.68142199,
+      "source_field": "MAINOFF",
+      "top1_target": "bank_account.primary_flag"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__NAME",
+      "case_type": "single_target",
+      "correctness_label": 1,
+      "existing_v5_accepted": false,
+      "expected_rank": 1,
+      "expected_target_count": 1,
+      "failure_category": "correct_prediction_unnecessarily_rejected",
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.55081422,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.52803852,
+      "score_only_threshold": 0.68142199,
+      "source_field": "NAME",
+      "top1_target": "bank_branch.bank_name"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__OFFDOM",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.13279547,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.21203062,
+      "score_only_threshold": 0.68142199,
+      "source_field": "OFFDOM",
+      "top1_target": "bank_account.account_holder"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__OFFNAME",
+      "case_type": "single_target",
+      "correctness_label": 1,
+      "existing_v5_accepted": false,
+      "expected_rank": 1,
+      "expected_target_count": 1,
+      "failure_category": "correct_prediction_unnecessarily_rejected",
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.28490054,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.38792417,
+      "score_only_threshold": 0.68142199,
+      "source_field": "OFFNAME",
+      "top1_target": "bank_branch.bank_name"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__RUNDATE",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.48133733,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.55600274,
+      "score_only_threshold": 0.68142199,
+      "source_field": "RUNDATE",
+      "top1_target": "bank_account.valid_to"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__SERVTYPE",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.16641877,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.24792318,
+      "score_only_threshold": 0.68142199,
+      "source_field": "SERVTYPE",
+      "top1_target": "bank_account.account_id"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__SERVTYPE_DESC",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.16912634,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.26924266,
+      "score_only_threshold": 0.68142199,
+      "source_field": "SERVTYPE_DESC",
+      "top1_target": "bank_branch.bic"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__STALP",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.22652887,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.30063154,
+      "score_only_threshold": 0.68142199,
+      "source_field": "STALP",
+      "top1_target": "bank_account.country_code"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__STNAME",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.38581672,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.50463874,
+      "score_only_threshold": 0.68142199,
+      "source_field": "STNAME",
+      "top1_target": "bank_branch.bank_name"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__UNINUM",
+      "case_type": "single_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 1,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.20648021,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.25695197,
+      "score_only_threshold": 0.68142199,
+      "source_field": "UNINUM",
+      "top1_target": "bank_account.account_number"
+    },
+    {
+      "case_id": "fdic_bankfind_locations__ZIP",
+      "case_type": "no_target",
+      "correctness_label": 0,
+      "existing_v5_accepted": false,
+      "expected_rank": null,
+      "expected_target_count": 0,
+      "failure_category": null,
+      "multifeature_accepted": false,
+      "multifeature_probability": 0.16855631,
+      "multifeature_threshold": 0.95143512,
+      "score_only_accepted": false,
+      "score_only_probability": 0.25413056,
+      "score_only_threshold": 0.68142199,
+      "source_field": "ZIP",
+      "top1_target": "bank_branch.bic"
+    }
+  ],
+  "post_unseal_tuning_performed": false,
+  "preregistered_limitations": {
+    "contract_family_novelty": "The bank_account contract family already appears in the development corpus, so this is an unseen-source holdout, not an unseen-contract-family holdout.",
+    "evaluation_status": "not_run",
+    "multi_target_metrics": "N/A because the frozen denominator is 0.",
+    "no_target_focus": "The 11 no-target cases make this holdout especially useful for observing false acceptance of no-target source fields.",
+    "population_precision_claim": "This small sealed holdout cannot by itself support broad generalization or precise 95% population precision claims.",
+    "positive_bearing_case_count": 3,
+    "post_unseal_tuning_allowed": false,
+    "ranking_metric_resolution": "low; target-bearing ranking metrics are based on only 3 positive-bearing source fields",
+    "source_novelty": "The source is an unseen public banking source."
+  },
+  "primary_decision_comparison": {
+    "accepted_error_delta": 0,
+    "baseline_comparator": "existing_v5_policy",
+    "coverage_delta": 0.0,
+    "limitations": {
+      "contract_family_novelty": "The bank_account contract family already appears in the development corpus, so this is an unseen-source holdout, not an unseen-contract-family holdout.",
+      "evaluation_status": "not_run",
+      "multi_target_metrics": "N/A because the frozen denominator is 0.",
+      "no_target_focus": "The 11 no-target cases make this holdout especially useful for observing false acceptance of no-target source fields.",
+      "population_precision_claim": "This small sealed holdout cannot by itself support broad generalization or precise 95% population precision claims.",
+      "positive_bearing_case_count": 3,
+      "post_unseal_tuning_allowed": false,
+      "ranking_metric_resolution": "low; target-bearing ranking metrics are based on only 3 positive-bearing source fields",
+      "source_novelty": "The source is an unseen public banking source."
+    },
+    "no_target_false_acceptance_delta": 0,
+    "observed_result_supports_future_opt_in_integration_consideration": false,
+    "post_unseal_tuning_performed": false,
+    "primary_candidate": "score_only_calibrator_target_precision_95",
+    "production_promoted": false
+  },
+  "production_promoted": false,
+  "protocol_id": "fdic_bankfind_locations_v1_protocol",
+  "ranking_metrics": {
+    "baseline": {
+      "multi_target_full_coverage_at_3": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "not_applicable",
+        "value": null
+      },
+      "no_target_accuracy": {
+        "denominator": 11,
+        "numerator": 11,
+        "value": 1.0
+      },
+      "single_target_top1_accuracy": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      },
+      "target_link_mrr": {
+        "denominator": 3,
+        "numerator": 2.0,
+        "value": 0.66666667
+      },
+      "target_link_recall_at_1": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      },
+      "target_link_recall_at_3": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      }
+    },
+    "precision_tiered_v4": {
+      "multi_target_full_coverage_at_3": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "not_applicable",
+        "value": null
+      },
+      "no_target_accuracy": {
+        "denominator": 11,
+        "numerator": 11,
+        "value": 1.0
+      },
+      "single_target_top1_accuracy": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      },
+      "target_link_mrr": {
+        "denominator": 3,
+        "numerator": 2.0,
+        "value": 0.66666667
+      },
+      "target_link_recall_at_1": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      },
+      "target_link_recall_at_3": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      }
+    },
+    "precision_tiered_v5": {
+      "multi_target_full_coverage_at_3": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "not_applicable",
+        "value": null
+      },
+      "no_target_accuracy": {
+        "denominator": 11,
+        "numerator": 11,
+        "value": 1.0
+      },
+      "single_target_top1_accuracy": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      },
+      "target_link_mrr": {
+        "denominator": 3,
+        "numerator": 2.0,
+        "value": 0.66666667
+      },
+      "target_link_recall_at_1": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      },
+      "target_link_recall_at_3": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.66666667
+      }
+    }
+  },
+  "runner": {
+    "path": "scripts/evaluate_fdic_bankfind_sealed_benchmark.py",
+    "raw_sha256": "cca0d6b184698b4a8c8441a33656ee6b7e90edc48b6a4c5eb50b840b15e06568"
+  },
+  "schema_version": "1.0",
+  "selective_policy_counts": {
+    "existing_v5_policy": {
+      "accepted_correct_count": 0,
+      "accepted_count": 0,
+      "accepted_incorrect_count": 0,
+      "accepted_precision": null,
+      "case_count": 14,
+      "coverage": 0.0,
+      "no_target_accepted_count": 0,
+      "no_target_rejection_rate": 1.0,
+      "rejection_semantics": "human_review_not_no_target_prediction",
+      "review_count": 14,
+      "review_rate": 1.0,
+      "target_bearing_auto_map_recall": 0.0,
+      "wrong_target_accepted_count": 0
+    },
+    "multifeature_calibrator_target_precision_95": {
+      "accepted_correct_count": 0,
+      "accepted_count": 0,
+      "accepted_incorrect_count": 0,
+      "accepted_precision": null,
+      "case_count": 14,
+      "coverage": 0.0,
+      "no_target_accepted_count": 0,
+      "no_target_rejection_rate": 1.0,
+      "rejection_semantics": "human_review_not_no_target_prediction",
+      "review_count": 14,
+      "review_rate": 1.0,
+      "target_bearing_auto_map_recall": 0.0,
+      "wrong_target_accepted_count": 0
+    },
+    "score_only_calibrator_target_precision_95": {
+      "accepted_correct_count": 0,
+      "accepted_count": 0,
+      "accepted_incorrect_count": 0,
+      "accepted_precision": null,
+      "case_count": 14,
+      "coverage": 0.0,
+      "no_target_accepted_count": 0,
+      "no_target_rejection_rate": 1.0,
+      "rejection_semantics": "human_review_not_no_target_prediction",
+      "review_count": 14,
+      "review_rate": 1.0,
+      "target_bearing_auto_map_recall": 0.0,
+      "wrong_target_accepted_count": 0
+    }
+  }
+}

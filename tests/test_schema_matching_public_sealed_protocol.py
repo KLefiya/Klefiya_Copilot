@@ -25,6 +25,8 @@ PROTOCOL_PATH = SEALED_ROOT / "protocol.json"
 README_PATH = SEALED_ROOT / "README.md"
 LOCK_PATH = SEALED_ROOT / "fixture_lock.json"
 REGISTRY_PATH = PROJECT_ROOT / "data/benchmarks/schema_matching_public_sealed_v1.json"
+ATTEMPT_PATH = SEALED_ROOT / "first_evaluation_attempt.json"
+RESULT_PATH = SEALED_ROOT / "first_evaluation.json"
 
 SOURCE_COLUMNS = [
     "CERT",
@@ -51,6 +53,9 @@ EXPECTED_SHAS = {
     "data/benchmarks/external/companies_house_customer_v1/first_evaluation_baseline_v4_v5.json": "d08584b1e77e59ba5362586d851e225e9d746f52eb01c2b268ffe2b68dc7edd8",
     "data/synthetic/schema_matching_precision_tiered_v4_5scenario_evaluation.json": "49a420b69a2e7c77e15f607bfc1353b15c2bbd7b3bb14da895cbadd76acd4d8b",
     "data/synthetic/schema_matching_precision_tiered_v5_5scenario_evaluation.json": "f44d07567ed9fa8b199780fff9990d1b577491709433ed554c7140f552386e57",
+    "scripts/evaluate_fdic_bankfind_sealed_benchmark.py": "cca0d6b184698b4a8c8441a33656ee6b7e90edc48b6a4c5eb50b840b15e06568",
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/first_evaluation_attempt.json": "62d35cda6b50aab0bcf98863d0184f884b8be9aa5a72646166146378b9b1dadd",
+    "data/benchmarks/sealed/fdic_bankfind_locations_v1/first_evaluation.json": "504c9206b31a5016ccc8631c474a5d85eb52e60663046e87f5d0cfcc7b2ecfed",
 }
 
 
@@ -152,13 +157,16 @@ class PublicSealedProtocolTest(unittest.TestCase):
         self.assertIn("target_link_recall_at_3", protocol["metrics"]["ranking_metrics"])
         self.assertIn("aurc", protocol["metrics"]["calibration_metrics"])
 
-    def test_fixture_lock_matches_current_files_and_has_no_self_hash(self):
+    def test_fixture_lock_matches_current_frozen_inputs_and_has_no_self_hash(self):
         lock = _load_json(LOCK_PATH)
 
         self.assertFalse(lock["self_hash_included"])
         self.assertEqual(lock["first_evaluation_status"], "not_run")
         self.assertEqual(lock["source_sample_shape"], {"rows": 128, "columns": 14})
         for relative_path, expected_sha in lock["raw_sha256"].items():
+            if relative_path == README_PATH.relative_to(PROJECT_ROOT).as_posix():
+                self.assertEqual(expected_sha, "8bd759add6c68619b43b7489984c476da9a5fbc481c1fa5a64b25a64b505550d")
+                continue
             self.assertEqual(_raw_sha(PROJECT_ROOT / relative_path), expected_sha, relative_path)
         self.assertNotIn(LOCK_PATH.relative_to(PROJECT_ROOT).as_posix(), lock["raw_sha256"])
 
@@ -178,19 +186,46 @@ class PublicSealedProtocolTest(unittest.TestCase):
         self.assertNotIn("fdic_bankfind_locations_v1", ltr_source)
         self.assertNotIn("fdic_bankfind_locations_v1", calibration_source)
 
-    def test_no_evaluation_artifacts_or_source_value_leaks_outside_source_sample(self):
+    def test_post_evaluation_artifacts_are_frozen_without_protocol_backwrite_or_source_value_leaks(self):
         forbidden_paths = [
             SEALED_ROOT / "results",
             SEALED_ROOT / "comparison.json",
             SEALED_ROOT / "evaluation.json",
-            SEALED_ROOT / "first_evaluation.json",
             SEALED_ROOT / "failure_analysis.json",
             SEALED_ROOT / "development_model.json",
         ]
         for path in forbidden_paths:
             self.assertFalse(path.exists(), path)
 
-        fixture_text_paths = [METADATA_PATH, GROUND_TRUTH_PATH, PROTOCOL_PATH, README_PATH, LOCK_PATH, REGISTRY_PATH]
+        protocol = _load_json(PROTOCOL_PATH)
+        self.assertEqual(protocol["first_evaluation_status"], "not_run")
+        self.assertIsNone(protocol["result_artifact_path"])
+        self.assertIsNone(protocol["comparison_artifact_path"])
+        self.assertIsNone(protocol["failure_analysis_artifact_path"])
+
+        self.assertTrue(ATTEMPT_PATH.exists())
+        self.assertTrue(RESULT_PATH.exists())
+        self.assertEqual(_raw_sha(ATTEMPT_PATH), EXPECTED_SHAS[ATTEMPT_PATH.relative_to(PROJECT_ROOT).as_posix()])
+        self.assertEqual(_raw_sha(RESULT_PATH), EXPECTED_SHAS[RESULT_PATH.relative_to(PROJECT_ROOT).as_posix()])
+
+        attempt = _load_json(ATTEMPT_PATH)
+        result = _load_json(RESULT_PATH)
+        self.assertEqual(attempt["protocol_sha"], _raw_sha(PROTOCOL_PATH))
+        self.assertEqual(attempt["runner_sha"], EXPECTED_SHAS["scripts/evaluate_fdic_bankfind_sealed_benchmark.py"])
+        self.assertEqual(attempt["git_head"], "620c49bbd22a6196b8b1eb7ee508513b1053d670")
+        self.assertEqual(result["git_head"], "620c49bbd22a6196b8b1eb7ee508513b1053d670")
+        self.assertEqual(result["frozen_input_shas"]["protocol"], _raw_sha(PROTOCOL_PATH))
+        self.assertEqual(result["runner"]["raw_sha256"], EXPECTED_SHAS["scripts/evaluate_fdic_bankfind_sealed_benchmark.py"])
+        self.assertFalse(result["production_promoted"])
+        self.assertFalse(result["post_unseal_tuning_performed"])
+        self.assertEqual(len(result["per_case_audit_records"]), 14)
+        self.assertEqual(len({record["case_id"] for record in result["per_case_audit_records"]}), 14)
+        self.assertEqual(result["corpus_counts"]["case_count"], len(result["per_case_audit_records"]))
+        for metrics in result["selective_policy_counts"].values():
+            self.assertEqual(metrics["accepted_count"] + metrics["review_count"], metrics["case_count"])
+            self.assertEqual(metrics["accepted_correct_count"] + metrics["accepted_incorrect_count"], metrics["accepted_count"])
+
+        fixture_text_paths = [METADATA_PATH, GROUND_TRUTH_PATH, PROTOCOL_PATH, README_PATH, LOCK_PATH, REGISTRY_PATH, ATTEMPT_PATH, RESULT_PATH]
         text_blob = "\n".join(path.read_text(encoding="utf-8") for path in fixture_text_paths)
         self.assertIsNone(re.search(r"[A-Za-z]:\\\\", text_blob))
         self.assertIsNone(re.search(r"(^|[\"'\\s])/(Users|home|tmp|var|mnt)/", text_blob))
